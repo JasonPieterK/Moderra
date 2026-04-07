@@ -10,7 +10,7 @@ filters:
 messages:
   warning-player: "&eNot allowed: '&f{word}&e' in &f{source}&e. Warning &f{count}/{limit}&e. &7({remaining} before punishment)"
   warning-broadcast-format: "&8[&cAntiBadWords&8] &f{player}&7: {warning}"
-  punishment-player: "&cWatch your language."
+  punishment-player: "&cFor your bad words, you are punished with: &f{punishments}&c."
   notify-staff: true
   staff-notify-format: "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7."
   broadcast-warning-to-server: true
@@ -19,67 +19,93 @@ punishment:
 # How many violations before punishing the player
   violations-before-punish: 2
   effects:
-  # format: "<effect>-<amplifier>-<duration>"
+  # structured format:
+  # effect-name: minecraft:blindness
+  # amplifier: 0
+  # duration: 3 #seconds
     blindness:
       enabled: false
-      format: "blindness-0-3"
+      effect-name: "minecraft:blindness"
+      amplifier: 0
+      duration: 3
     slowness:
       enabled: false
-      format: "slowness-2-3"
+      effect-name: "minecraft:slowness"
+      amplifier: 2
+      duration: 3
     weakness:
       enabled: false
-      format: "weakness-1-3"
+      effect-name: "minecraft:weakness"
+      amplifier: 1
+      duration: 3
     nausea:
       enabled: false
-      format: "nausea-0-5"
+      effect-name: "minecraft:nausea"
+      amplifier: 0
+      duration: 5
     mining_fatigue:
       enabled: false
-      format: "mining_fatigue-1-6"
+      effect-name: "minecraft:mining_fatigue"
+      amplifier: 1
+      duration: 6
     glow:
       enabled: false
-      format: "glowing-0-10"
+      effect-name: "minecraft:glowing"
+      amplifier: 0
+      duration: 10
   attributes:
-  # format: "<attribute>-<amplifier>-<duration>"
-    shrink_scale:
-      enabled: false
-      # Slightly shrink player model size.
-      format: "generic.scale-0.75-8"
-    tiny_scale:
-      enabled: false
-      # Make player very small for a short time.
-      format: "generic.scale-0.50-6"
+  # structured format:
+  # attribute-name: minecraft:generic.max_health
+  # value: 0.75
+  # duration: 8 #seconds
     reduce_speed:
       enabled: false
       # Lower movement speed heavily.
-      format: "generic.movement_speed-0.05-8"
+      attribute-name: "minecraft:generic.movement_speed"
+      value: 0.05
+      duration: 8
     very_slow_speed:
       enabled: false
       # Extreme slow movement.
-      format: "generic.movement_speed-0.02-5"
+      attribute-name: "minecraft:generic.movement_speed"
+      value: 0.02
+      duration: 5
     reduce_attack:
       enabled: false
       # Reduce melee attack damage output.
-      format: "generic.attack_damage-1.0-8"
+      attribute-name: "minecraft:generic.attack_damage"
+      value: 1.0
+      duration: 8
     low_max_health:
       enabled: false
       # Temporarily lower max HP (careful: can be lethal if current HP is high/low edge cases).
-      format: "generic.max_health-8.0-10"
+      attribute-name: "minecraft:generic.max_health"
+      value: 8.0
+      duration: 10
     lower_knockback_resist:
       enabled: false
       # Player is easier to knock back.
-      format: "generic.knockback_resistance-0.0-8"
+      attribute-name: "minecraft:generic.knockback_resistance"
+      value: 0.0
+      duration: 8
     short_reach:
       enabled: false
-      # Reduce block interaction range.
-      format: "player.block_interaction_range-2.0-8"
+      # Reduce armor points temporarily.
+      attribute-name: "minecraft:generic.armor"
+      value: 0.0
+      duration: 8
     shorter_entity_reach:
       enabled: false
-      # Reduce hit/interact range on entities.
-      format: "player.entity_interaction_range-2.0-8"
+      # Reduce armor toughness temporarily.
+      attribute-name: "minecraft:generic.armor_toughness"
+      value: 0.0
+      duration: 8
     reduce_jump_strength:
       enabled: false
-      # Lower jump strength/power.
-      format: "generic.jump_strength-0.21-8"
+      # Lower attack speed to make hits slower.
+      attribute-name: "minecraft:generic.attack_speed"
+      value: 1.0
+      duration: 8
 
 word-lists:
   english:

@@ -1,7 +1,11 @@
 package com.jason.plugins.antibadwords;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.NamespacedKey;
 import org.bukkit.Bukkit;
@@ -132,13 +136,20 @@ public final class AntiBadWordsListener implements Listener {
 
     private void punish(Player player, String matchedWord, String source, int count, int limit) {
         AntiBadWordsSettings settings = plugin.getSettings();
+        List<String> appliedPunishments = new ArrayList<>();
         for (PunishmentAction action : settings.punishmentActions()) {
             if (!action.enabled()) {
                 continue;
             }
-            executeAction(player, action);
+            String applied = executeAction(player, action);
+            if (applied != null && !applied.isBlank()) {
+                appliedPunishments.add(applied);
+            }
         }
-        player.sendMessage(settings.punishmentMessage());
+        String punishmentsText = formatPunishmentList(appliedPunishments);
+        player.sendMessage(settings.punishmentMessage()
+            .replace("{punishments}", punishmentsText)
+            .replace("{punishment}", punishmentsText));
 
         if (settings.notifyStaff()) {
             String staff = fillTemplate(settings.staffNotifyFormat(), player.getName(), matchedWord, source,
@@ -149,51 +160,58 @@ public final class AntiBadWordsListener implements Listener {
         }
     }
 
-    private void executeAction(Player player, PunishmentAction action) {
+    private String executeAction(Player player, PunishmentAction action) {
         String type = action.type();
         String format = action.format();
         try {
-            switch (type) {
+            return switch (type) {
                 case "effect" -> applyEffect(player, format);
                 case "attribute" -> applyAttribute(player, format);
                 case "command" -> runConsoleCommand(player, format);
                 case "sound" -> playSound(player, format);
-                default -> plugin.getLogger().warning("Unknown punishment type: " + type);
-            }
+                default -> {
+                    plugin.getLogger().warning("Unknown punishment type: " + type);
+                    yield null;
+                }
+            };
         } catch (Exception ex) {
             plugin.getLogger().warning("Invalid punishment format (" + type + "): " + format);
+            return null;
         }
     }
 
-    private void applyEffect(Player player, String format) {
+    private String applyEffect(Player player, String format) {
         String[] parts = format.split("-");
         if (parts.length < 3) {
-            return;
+            return null;
         }
-        String effectName = parts[0].trim().toLowerCase(Locale.ROOT);
+        String effectName = parts[0].trim();
         int amplifier = Math.max(0, Integer.parseInt(parts[1].trim()));
         int seconds = Math.max(1, Integer.parseInt(parts[2].trim()));
-        PotionEffectType type = PotionEffectType.getByKey(NamespacedKey.minecraft(effectName));
+        PotionEffectType type = resolveEffect(effectName);
         if (type == null) {
-            return;
+            plugin.getLogger().warning("Unknown effect name: " + effectName);
+            return null;
         }
         player.addPotionEffect(type.createEffect(seconds * 20, amplifier));
+        return prettyName(effectName);
     }
 
-    private void applyAttribute(Player player, String format) {
+    private String applyAttribute(Player player, String format) {
         String[] parts = format.split("-");
         if (parts.length < 3) {
-            return;
+            return null;
         }
-        String attributeName = parts[0].trim().toLowerCase(Locale.ROOT);
+        String attributeName = parts[0].trim();
         double value = Double.parseDouble(parts[1].trim());
         int seconds = Math.max(1, Integer.parseInt(parts[2].trim()));
         Attribute attribute = resolveAttribute(attributeName);
         if (attribute == null) {
-            return;
+            plugin.getLogger().warning("Unknown attribute name: " + attributeName);
+            return null;
         }
         if (player.getAttribute(attribute) == null) {
-            return;
+            return null;
         }
         double oldBase = player.getAttribute(attribute).getBaseValue();
         player.getAttribute(attribute).setBaseValue(value);
@@ -202,22 +220,26 @@ public final class AntiBadWordsListener implements Listener {
                 player.getAttribute(attribute).setBaseValue(oldBase);
             }
         }, seconds * 20L);
+        return prettyName(attributeName);
     }
 
-    private void runConsoleCommand(Player player, String format) {
+    private String runConsoleCommand(Player player, String format) {
         String command = format.replace("{player}", player.getName());
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        return "server command";
     }
 
-    private void playSound(Player player, String format) {
+    private String playSound(Player player, String format) {
         String[] parts = format.split("-");
         if (parts.length < 3) {
-            return;
+            return null;
         }
-        Sound sound = Sound.valueOf(parts[0].trim().toUpperCase(Locale.ROOT).replace('.', '_'));
+        String soundName = parts[0].trim().toLowerCase(Locale.ROOT).replace("minecraft:", "");
+        Sound sound = Sound.valueOf(soundName.toUpperCase(Locale.ROOT).replace('.', '_'));
         float volume = Float.parseFloat(parts[1].trim());
         float pitch = Float.parseFloat(parts[2].trim());
         player.playSound(player.getLocation(), sound, volume, pitch);
+        return prettyName(soundName) + " sound";
     }
 
     private String findBlockedWord(String rawInput) {
@@ -294,13 +316,86 @@ public final class AntiBadWordsListener implements Listener {
     }
 
     private Attribute resolveAttribute(String raw) {
+        String input = normalizeAttributeAlias(raw);
+        Set<String> aliases = new HashSet<>();
+        aliases.add(input);
+        addShortAttributeAlias(aliases, input);
+
         for (Attribute attribute : Attribute.values()) {
-            String key = attribute.getKey().getKey().toLowerCase(Locale.ROOT);
-            String namespaced = attribute.getKey().toString().toLowerCase(Locale.ROOT);
-            if (raw.equals(key) || raw.equals(namespaced)) {
+            String key = normalizeAttributeAlias(attribute.getKey().getKey());
+            String namespaced = normalizeAttributeAlias(attribute.getKey().toString());
+            if (aliases.contains(key) || aliases.contains(namespaced)) {
                 return attribute;
             }
         }
         return null;
+    }
+
+    private PotionEffectType resolveEffect(String raw) {
+        String input = raw.toLowerCase(Locale.ROOT).trim();
+        if (input.startsWith("minecraft:")) {
+            input = input.substring("minecraft:".length());
+        }
+
+        PotionEffectType byKey = PotionEffectType.getByKey(NamespacedKey.minecraft(input));
+        if (byKey != null) {
+            return byKey;
+        }
+
+        String dotted = input.replace('_', '.');
+        byKey = PotionEffectType.getByKey(NamespacedKey.minecraft(dotted));
+        if (byKey != null) {
+            return byKey;
+        }
+
+        for (PotionEffectType type : PotionEffectType.values()) {
+            if (type == null) {
+                continue;
+            }
+            String key = type.getKey().getKey().toLowerCase(Locale.ROOT);
+            String shortKey = key.contains(".") ? key.substring(key.lastIndexOf('.') + 1) : key;
+            if (input.equals(key) || input.equals(shortKey)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    private String normalizeAttributeAlias(String raw) {
+        String out = raw.toLowerCase(Locale.ROOT).trim();
+        out = out.replace("minecraft:", "");
+        out = out.replace('.', '_');
+        return out;
+    }
+
+    private void addShortAttributeAlias(Set<String> aliases, String input) {
+        String[] prefixes = {"generic_", "player_", "horse_", "zombie_"};
+        for (String prefix : prefixes) {
+            if (input.startsWith(prefix)) {
+                aliases.add(input.substring(prefix.length()));
+            }
+        }
+    }
+
+    private String prettyName(String rawName) {
+        String base = rawName.toLowerCase(Locale.ROOT).trim().replace("minecraft:", "");
+        int lastDot = base.lastIndexOf('.');
+        if (lastDot >= 0 && lastDot + 1 < base.length()) {
+            base = base.substring(lastDot + 1);
+        }
+        return base.replace('_', ' ');
+    }
+
+    private String formatPunishmentList(List<String> items) {
+        if (items.isEmpty()) {
+            return "punishment";
+        }
+        if (items.size() == 1) {
+            return items.get(0);
+        }
+        if (items.size() == 2) {
+            return items.get(0) + " and " + items.get(1);
+        }
+        return String.join(", ", items.subList(0, items.size() - 1)) + ", and " + items.get(items.size() - 1);
     }
 }

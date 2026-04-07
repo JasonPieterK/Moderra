@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -83,6 +84,12 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
             getConfig().getBoolean("filters.matching.collapse-repeated-letters", true),
             Math.max(2, getConfig().getInt("filters.matching.repeated-letter-threshold", 3))
         );
+
+        long enabledCount = actions.stream().filter(PunishmentAction::enabled).count();
+        getLogger().info("Loaded punishment actions: " + actions.size() + " total, " + enabledCount + " enabled.");
+        if (enabledCount == 0) {
+            getLogger().warning("No punishment actions are enabled in config.");
+        }
     }
 
     public AntiBadWordsSettings getSettings() {
@@ -190,7 +197,31 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         for (String key : section.getKeys(false)) {
             String basePath = sectionPath + "." + key;
             boolean enabled = getConfig().getBoolean(basePath + ".enabled", false);
-            String format = getConfig().getString(basePath + ".format", "").trim();
+
+            String format;
+            if (type.equals("effect")) {
+                String effectName = getConfig().getString(basePath + ".effect-name", "").trim();
+                int amplifier = getConfig().getInt(basePath + ".amplifier", 0);
+                int duration = getConfig().getInt(basePath + ".duration", 0);
+                if (!effectName.isBlank() && duration > 0) {
+                    format = effectName + "-" + amplifier + "-" + duration;
+                } else {
+                    format = getConfig().getString(basePath + ".format", "").trim();
+                }
+            } else if (type.equals("attribute")) {
+                String attributeName = getConfig().getString(basePath + ".attribute-name", "").trim();
+                Object valueObj = getConfig().get(basePath + ".value");
+                String valueRaw = valueObj == null ? "" : String.valueOf(valueObj).trim();
+                int duration = getConfig().getInt(basePath + ".duration", 0);
+                if (!attributeName.isBlank() && !valueRaw.isBlank() && duration > 0) {
+                    format = attributeName + "-" + valueRaw + "-" + duration;
+                } else {
+                    format = getConfig().getString(basePath + ".format", "").trim();
+                }
+            } else {
+                format = getConfig().getString(basePath + ".format", "").trim();
+            }
+
             if (!format.isBlank()) {
                 destination.add(new PunishmentAction(enabled, type, format));
             }
@@ -198,11 +229,29 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     }
 
     private void logStartupBanner() {
+        String version = getPluginMeta().getVersion();
         String line = "==============================================";
+
+        ConsoleCommandSender console = getServer().getConsoleSender();
+        console.sendMessage(ChatColor.DARK_GRAY + line);
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "    █████╗ ███╗   ██╗████████╗██╗");
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   ██╔══██╗████╗  ██║╚══██╔══╝██║");
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   ███████║██╔██╗ ██║   ██║   ██║");
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   ██╔══██║██║╚██╗██║   ██║   ██║");
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   ██║  ██║██║ ╚████║   ██║   ██║");
+        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   ╚═╝  ╚═╝╚═╝  ╚═══╝   ╚═╝   ╚═╝");
+        console.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "             BAD WORDS GUARD");
+        console.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "AntiBadWords" + ChatColor.GRAY + "] "
+            + ChatColor.WHITE + "Version: " + ChatColor.GOLD + version);
+        console.sendMessage(ChatColor.GRAY + "[" + ChatColor.RED + "AntiBadWords" + ChatColor.GRAY + "] "
+            + ChatColor.GREEN + "Chat and text filter loaded successfully.");
+        console.sendMessage(ChatColor.DARK_GRAY + line);
+
+        // Plain logger fallback for hosts that strip legacy color codes.
         getLogger().info(line);
-        getLogger().info("  ANTI BAD WORDS");
-        getLogger().info("  Version: " + getPluginMeta().getVersion());
-        getLogger().info("  Chat and text filter loaded successfully.");
+        getLogger().info("ANTI BAD WORDS");
+        getLogger().info("Version: " + version);
+        getLogger().info("Chat and text filter loaded successfully.");
         getLogger().info(line);
     }
 }
