@@ -1,0 +1,5 @@
+com\jason\plugins\antibadwords\AntiBadWordsPlugin.class
+com\jason\plugins\antibadwords\AntiBadWordsListener.class
+com\jason\plugins\antibadwords\AntiBadWordsCommand.class
+com\jason\plugins\antibadwords\AntiBadWordsSettings.class
+com\jason\plugins\antibadwords\PunishmentAction.class
