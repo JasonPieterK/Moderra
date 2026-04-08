@@ -26,7 +26,7 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
             if (isAdmin) {
                 sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " <reload|addword|removeword|listwords|violations|resetviolations>");
             } else {
-                sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " listwords [active|english|indonesian|custom]");
+                sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " listwords [list-name]");
             }
             return true;
         }
@@ -124,7 +124,7 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
             return prefix(Arrays.asList("listwords", "list"), args[0]);
         }
         if (args.length == 2 && (args[0].equalsIgnoreCase("listwords") || args[0].equalsIgnoreCase("list"))) {
-            return prefix(Arrays.asList("active", "english", "indonesian", "custom"), args[1]);
+            return prefix(plugin.getAvailableLists(), args[1]);
         }
         return List.of();
     }

@@ -117,16 +117,16 @@ public final class AntiBadWordsListener implements Listener {
         AntiBadWordsSettings settings = plugin.getSettings();
         int limit = Math.max(1, settings.violationsBeforePunish());
         int remaining = Math.max(0, limit - count);
-        String warning = fillTemplate(settings.warningMessage(), player.getName(), matchedWord, source, count, limit, remaining);
-
-        player.sendMessage(warning);
-        if (settings.broadcastWarningToServer()) {
-            String broadcast = fillTemplate(settings.warningBroadcastFormat(), player.getName(), matchedWord, source, count, limit, remaining)
-                .replace("{warning}", warning);
-            Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(broadcast));
-        }
+        String broadcastWarning = fillTemplate(settings.violationBroadcastMessage(), player.getName(), matchedWord, source, count, limit, remaining);
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(broadcastWarning));
+        player.sendMessage(fillTemplate(settings.violatorWarningMessage(), player.getName(), matchedWord, source, count, limit, remaining));
 
         if (count < limit) {
+            return;
+        }
+
+        if (!settings.punishmentEnabled()) {
+            player.sendMessage(fillTemplate(settings.punishmentDisabledMessage(), player.getName(), matchedWord, source, count, limit, remaining));
             return;
         }
 
@@ -147,9 +147,19 @@ public final class AntiBadWordsListener implements Listener {
             }
         }
         String punishmentsText = formatPunishmentList(appliedPunishments);
-        player.sendMessage(settings.punishmentMessage()
+        String punishmentBroadcast = fillTemplate(settings.punishmentBroadcastMessage(), player.getName(), matchedWord, source, count, limit, 0)
+            .replace("{punishments}", punishmentsText)
+            .replace("{punishment}", punishmentsText);
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(punishmentBroadcast));
+
+        player.sendMessage(settings.punishmentPlayerMessage()
             .replace("{punishments}", punishmentsText)
             .replace("{punishment}", punishmentsText));
+
+        if (settings.finalCommandEnabled() && !settings.finalCommand().isBlank()) {
+            String cmd = fillTemplate(settings.finalCommand(), player.getName(), matchedWord, source, count, limit, 0);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+        }
 
         if (settings.notifyStaff()) {
             String staff = fillTemplate(settings.staffNotifyFormat(), player.getName(), matchedWord, source,
@@ -308,11 +318,17 @@ public final class AntiBadWordsListener implements Listener {
     private String fillTemplate(String template, String player, String word, String source, int count, int limit, int remaining) {
         return template
             .replace("{player}", player)
+            .replace("{PLAYER}", player)
             .replace("{word}", word)
+            .replace("{WORD}", word)
             .replace("{source}", source)
+            .replace("{SOURCE}", source)
             .replace("{count}", Integer.toString(count))
+            .replace("{COUNT}", Integer.toString(count))
             .replace("{limit}", Integer.toString(limit))
-            .replace("{remaining}", Integer.toString(remaining));
+            .replace("{LIMIT}", Integer.toString(limit))
+            .replace("{remaining}", Integer.toString(remaining))
+            .replace("{REMAINING}", Integer.toString(remaining));
     }
 
     private Attribute resolveAttribute(String raw) {

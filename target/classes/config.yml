@@ -2,22 +2,34 @@ filters:
   enabled-word-lists:
     - english
     - indonesian
+    - portuguese_brazil
+    - russian
+    - uk_english
+    - german
+    - chinese
     - custom
+  protection-level: 3 # 1=LOW, 2=MEDIUM, 3=HIGH
   matching:
     collapse-repeated-letters: true
     repeated-letter-threshold: 3
 
 messages:
-  warning-player: "&eNot allowed: '&f{word}&e' in &f{source}&e. Warning &f{count}/{limit}&e. &7({remaining} before punishment)"
-  warning-broadcast-format: "&8[&cAntiBadWords&8] &f{player}&7: {warning}"
-  punishment-player: "&cFor your bad words, you are punished with: &f{punishments}&c."
+  warning-broadcast-format: "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED."
+  warning-player: "&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN."
+  punishment-broadcast-format: "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH &F{PUNISHMENTS}&C."
+  punishment-player: "&CFOR YOUR BADWORDS, YOU ARE PUNISHED WITH &F{PUNISHMENTS}&C."
+  punishment-disabled-player: "&EYOUR MESSAGE WAS BLOCKED. PUNISHMENT IS CURRENTLY DISABLED."
   notify-staff: true
   staff-notify-format: "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7."
-  broadcast-warning-to-server: true
 
 punishment:
+  enabled: true
 # How many violations before punishing the player
   violations-before-punish: 2
+  final-command:
+    enabled: false
+    # NOTE: Example command -> "lp user {player} permission settemp antibadwords.muted true 30s"
+    command: ""
   effects:
   # structured format:
   # effect-name: minecraft:blindness
@@ -109,90 +121,212 @@ punishment:
 
 word-lists:
   english:
-    - fuck
-    - fucking
-    - shit
-    - shitty
-    - bitch
-    - bastard
-    - asshole
-    - dick
-    - pussy
-    - motherfucker
-    - mf
-    - fck
-    - fk
-    - fuk
-    - fukin
-    - fking
-    - sh1t
-    - bs
-    - bullshit
-    - horseshit
-    - damn
-    - crap
-    - piss
-    - pissed
-    - dickhead
-    - dipshit
-    - jackass
-    - dumbass
-    - wtf
-    - stfu
-    - gtfo
-    - sybau
-    - nigga
-    - nigger
-    - n1gga
-    - n1gger
-    - niga
-    - nword
-    - whore
-    - slut
-    - prick
-    - twat
-    - wanker
-    - arse
-    - arsehole
-    - cunt
-    - cock
-    - penis
-    - vagina
-    - bollocks
+    level-1:
+      - stupid
+      - dumb
+      - idiot
+      - moron
+      - loser
+      - noob
+      - trash
+      - crap
+      - damn
+      - piss
+      - wtf
+    level-2:
+      - bitch
+      - bastard
+      - asshole
+      - dickhead
+      - dipshit
+      - jackass
+      - dumbass
+      - bullshit
+      - horseshit
+      - stfu
+      - gtfo
+      - whore
+      - slut
+      - prick
+      - twat
+      - wanker
+      - arse
+      - arsehole
+      - sybau
+    level-3:
+      - fuck
+      - fucking
+      - fck
+      - fk
+      - fuk
+      - fukin
+      - fking
+      - shit
+      - shitty
+      - sh1t
+      - motherfucker
+      - mf
+      - dick
+      - pussy
+      - cunt
+      - cock
+      - penis
+      - vagina
+      - bollocks
+      - nigga
+      - nigger
+      - n1gga
+      - n1gger
+      - niga
+      - nword
   indonesian:
-    - anjing
-    - anjeng
-    - anjir
-    - anjrit
-    - asu
-    - bangsat
-    - bajingan
-    - kampret
-    - sialan
-    - goblok
-    - gblk
-    - tolol
-    - bego
-    - bodo
-    - bodoh
-    - idiot
-    - bejat
-    - brengsek
-    - tai
-    - taik
-    - kontol
-    - kntl
-    - memek
-    - mmk
-    - ngentot
-    - ngewe
-    - perek
-    - pelacur
-    - lonte
-    - bacot
-    - bacod
-    - mampus
-    - jancok
-    - jancuk
-    - cuk
+    level-1:
+      - bodoh
+      - bodo
+      - bego
+      - goblok
+      - gblk
+      - tolol
+      - bacot
+      - bacod
+      - sialan
+      - kampret
+    level-2:
+      - bangsat
+      - bajingan
+      - brengsek
+      - tai
+      - taik
+      - asu
+      - anjing
+      - anjeng
+      - anjir
+      - anjrit
+      - mampus
+      - perek
+      - pelacur
+      - lonte
+    level-3:
+      - kontol
+      - kntl
+      - memek
+      - mmk
+      - ngentot
+      - ngewe
+      - jancok
+      - jancuk
+      - cuk
+  portuguese_brazil:
+    level-1:
+      - burro
+      - idiota
+      - estupido
+      - lixo
+      - noob
+      - otario
+    level-2:
+      - babaca
+      - imbecil
+      - retardado
+      - arrombado
+      - cuzão
+      - corno
+    level-3:
+      - porra
+      - caralho
+      - foda
+      - foder
+      - filha da puta
+      - puta
+      - merda
+  russian:
+    level-1:
+      - durak
+      - tupoi
+      - idiot
+      - loh
+      - noob
+    level-2:
+      - ublyudok
+      - pridurok
+      - svin'ya
+      - kozol
+      - mudak
+    level-3:
+      - blyat
+      - suka
+      - nahui
+      - pizdec
+      - yebat
+      - hui
+  uk_english:
+    level-1:
+      - stupid
+      - dumb
+      - idiot
+      - prat
+      - muppet
+      - pillock
+    level-2:
+      - tosser
+      - knobhead
+      - bellend
+      - twat
+      - wanker
+      - arsehole
+    level-3:
+      - cunt
+      - fuck
+      - motherfucker
+      - shit
+      - dickhead
+      - prick
+  german:
+    level-1:
+      - dumm
+      - idiot
+      - loser
+      - trottel
+      - noob
+    level-2:
+      - arsch
+      - wichser
+      - spast
+      - depp
+      - vollidiot
+    level-3:
+      - scheisse
+      - hurensohn
+      - fotze
+      - bastard
+      - fick dich
+      - verfickt
+  chinese:
+    level-1:
+      - sha bi
+      - ben dan
+      - bai chi
+      - ruo zhi
+      - 傻逼
+      - 笨蛋
+      - 白痴
+      - 弱智
+    level-2:
+      - nao can
+      - gou
+      - fei wu
+      - gun dan
+      - 脑残
+      - 狗东西
+      - 废物
+      - 滚蛋
+    level-3:
+      - cao ni ma
+      - ta ma de
+      - ni ma
+      - sha bi dong xi
+      - 操你妈
+      - 他妈的
+      - 你妈
+      - 傻逼东西
   custom: []
