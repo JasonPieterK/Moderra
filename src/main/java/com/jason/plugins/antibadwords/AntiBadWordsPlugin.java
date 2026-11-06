@@ -15,33 +15,70 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * AntiBadWords - blocks profanity in chat, commands, signs, books and anvil renames and punishes
+ * repeat offenders. This class owns the loaded configuration, the word lists and the violation counters.
+ */
 public final class AntiBadWordsPlugin extends JavaPlugin {
-    private final ConcurrentMap<UUID, Integer> violations = new ConcurrentHashMap<>();
+    /** Permission that exempts a player from every check. */
+    public static final String PERMISSION_BYPASS = "antibadwords.bypass";
+    /** Permission for the admin sub-commands. */
+    public static final String PERMISSION_ADMIN = "antibadwords.admin";
+    /** Permission to receive staff notifications about blocked words. */
+    public static final String PERMISSION_NOTIFY = "antibadwords.notify";
+
+    private record Violation(int count, long lastMillis) {
+    }
+
+    private final ConcurrentMap<UUID, Violation> violations = new ConcurrentHashMap<>();
+    // Only touched from the main thread (config load / admin commands).
     private final Map<String, Set<String>> languageWordLists = new LinkedHashMap<>();
     private final Set<String> customWords = new LinkedHashSet<>();
-    private Set<String> activeWords = Set.of();
-    private AntiBadWordsSettings settings;
+
+    // Replaced as a whole on every reload; volatile so async chat threads always see a consistent value.
+    private volatile WordMatcher matcher = new WordMatcher(List.of(), WordMatcher.Options.defaults());
+    private volatile Set<String> activeWords = Set.of();
+    private volatile AntiBadWordsSettings settings;
+    private PunishmentExecutor punishmentExecutor;
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        punishmentExecutor = new PunishmentExecutor(this);
         loadPluginConfig();
 
-        AntiBadWordsListener listener = new AntiBadWordsListener(this);
-        getServer().getPluginManager().registerEvents(listener, this);
+        getServer().getPluginManager().registerEvents(new AntiBadWordsListener(this), this);
 
+        PluginCommand pluginCommand = Objects.requireNonNull(getCommand("antibadwords"),
+            "antibadwords command not defined in plugin.yml");
         AntiBadWordsCommand command = new AntiBadWordsCommand(this);
-        Objects.requireNonNull(getCommand("antibadwords"), "antibadwords command not defined")
-            .setExecutor(command);
-        Objects.requireNonNull(getCommand("antibadwords"), "antibadwords command not defined")
-            .setTabCompleter(command);
+        pluginCommand.setExecutor(command);
+        pluginCommand.setTabCompleter(command);
+
+        // Players who were already online during a /reload: repair leftovers from earlier sessions.
+        getServer().getOnlinePlayers().forEach(punishmentExecutor::restoreLeftovers);
         logStartupBanner();
     }
 
+    @Override
+    public void onDisable() {
+        // Never leave a player with a half-applied attribute punishment.
+        if (punishmentExecutor != null) {
+            punishmentExecutor.restoreEverything();
+        }
+        violations.clear();
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Configuration
+    // ------------------------------------------------------------------------------------------
+
+    /** (Re)loads config.yml and rebuilds the word matcher and settings snapshot. */
     public void loadPluginConfig() {
         reloadConfig();
         languageWordLists.clear();
@@ -66,12 +103,27 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
             .map(s -> s.toLowerCase(Locale.ROOT).trim())
             .filter(s -> !s.isBlank())
             .collect(Collectors.toCollection(LinkedHashSet::new));
-
         if (enabledLists.isEmpty()) {
             enabledLists.addAll(languageWordLists.keySet());
         }
         enabledLists.add("custom");
-        activeWords = buildActiveWords(enabledLists);
+        for (String name : enabledLists) {
+            if (!name.equals("custom") && !languageWordLists.containsKey(name)) {
+                getLogger().warning("filters.enabled-word-lists contains '" + name + "' but there is no word-lists." + name + " section.");
+            }
+        }
+        Set<String> active = buildActiveWords(enabledLists);
+        activeWords = Set.copyOf(active);
+
+        WordMatcher.Options options = new WordMatcher.Options(
+            getConfig().getBoolean("filters.matching.collapse-repeated-letters", true),
+            Math.max(2, getConfig().getInt("filters.matching.repeated-letter-threshold", 3)),
+            getConfig().getBoolean("filters.matching.detect-spaced-letters", true),
+            getConfig().getBoolean("filters.matching.join-adjacent-words", false),
+            getConfig().getBoolean("filters.matching.partial-match", false),
+            Math.max(3, getConfig().getInt("filters.matching.partial-min-length", 4)),
+            getConfig().getStringList("filters.whitelist"));
+        matcher = new WordMatcher(active, options);
 
         List<PunishmentAction> actions = new ArrayList<>();
         readTypedActions("punishment.effects", "effect", actions);
@@ -81,12 +133,17 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
         settings = new AntiBadWordsSettings(
             getConfig().getBoolean("punishment.enabled", true),
-            getConfig().getInt("punishment.violations-before-punish", 2),
+            Math.max(1, getConfig().getInt("punishment.violations-before-punish", 2)),
+            Math.max(0, getConfig().getInt("punishment.violations-expire-minutes", 0)),
+            getConfig().getBoolean("punishment.clear-violations-on-quit", true),
             List.copyOf(actions),
-            color(getConfig().getString("messages.warning-player",
-                "&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN.")),
+            getConfig().getBoolean("punishment.final-command.enabled", false),
+            getConfig().getString("punishment.final-command.command", ""),
+            getConfig().getBoolean("messages.broadcast-warnings", true),
             color(getConfig().getString("messages.warning-broadcast-format",
                 "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED.")),
+            color(getConfig().getString("messages.warning-player",
+                "&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN.")),
             color(getConfig().getString("messages.punishment-broadcast-format",
                 "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH &F{PUNISHMENTS}&C.")),
             color(getConfig().getString("messages.punishment-player",
@@ -95,18 +152,22 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
                 "&EYOUR MESSAGE WAS BLOCKED. PUNISHMENT IS CURRENTLY DISABLED.")),
             getConfig().getBoolean("messages.notify-staff", true),
             color(getConfig().getString("messages.staff-notify-format",
-                "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7.")),
-            getConfig().getBoolean("punishment.final-command.enabled", false),
-            getConfig().getString("punishment.final-command.command", ""),
-            getConfig().getBoolean("filters.matching.collapse-repeated-letters", true),
-            Math.max(2, getConfig().getInt("filters.matching.repeated-letter-threshold", 3))
-        );
+                "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7 (&f{count}&7/&f{limit}&7).")),
+            getConfig().getBoolean("logging.console", true),
+            getConfig().getBoolean("filters.scan.chat", true),
+            getConfig().getBoolean("filters.scan.commands", true),
+            getConfig().getBoolean("filters.scan.signs", true),
+            getConfig().getBoolean("filters.scan.books", true),
+            getConfig().getBoolean("filters.scan.anvil", true),
+            lowerCaseSet(getConfig().getStringList("filters.scanned-commands")),
+            lowerCaseSet(getConfig().getStringList("filters.ignored-commands")));
 
         long enabledCount = actions.stream().filter(PunishmentAction::enabled).count();
-        getLogger().info("LOADED PUNISHMENT ACTIONS: " + actions.size() + " TOTAL, " + enabledCount + " ENABLED.");
-        getLogger().info("PROTECTION LEVEL: " + protectionLevel + " (1=LOW, 2=MEDIUM, 3=HIGH)");
-        if (enabledCount == 0) {
-            getLogger().warning("NO PUNISHMENT ACTIONS ARE ENABLED IN CONFIG.");
+        getLogger().info("Loaded " + matcher.size() + " blocked words from " + enabledLists.size() + " lists.");
+        getLogger().info("Loaded punishment actions: " + actions.size() + " total, " + enabledCount + " enabled.");
+        getLogger().info("Protection level: " + protectionLevel + " (1=LOW, 2=MEDIUM, 3=HIGH)");
+        if (settings.punishmentEnabled() && enabledCount == 0) {
+            getLogger().warning("Punishment is enabled but no punishment action is enabled in config.yml.");
         }
     }
 
@@ -114,49 +175,81 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         return settings;
     }
 
+    public WordMatcher getMatcher() {
+        return matcher;
+    }
+
+    public PunishmentExecutor getPunishmentExecutor() {
+        return punishmentExecutor;
+    }
+
     public Set<String> getActiveWords() {
         return activeWords;
     }
 
+    /** {@code true} when the player may say anything (permission {@value #PERMISSION_BYPASS}). */
+    public boolean isBypassed(Player player) {
+        return player.hasPermission(PERMISSION_BYPASS);
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Violations
+    // ------------------------------------------------------------------------------------------
+
+    /** Adds one violation and returns the new total (old violations may have expired first). */
     public int addViolation(UUID playerId) {
-        return violations.merge(playerId, 1, Integer::sum);
+        long now = System.currentTimeMillis();
+        long expireMillis = settings.violationExpireMinutes() * 60_000L;
+        return violations.merge(playerId, new Violation(1, now), (old, ignored) -> {
+            boolean expired = expireMillis > 0 && now - old.lastMillis() > expireMillis;
+            return new Violation(expired ? 1 : old.count() + 1, now);
+        }).count();
     }
 
     public int getViolation(UUID playerId) {
-        return violations.getOrDefault(playerId, 0);
+        Violation violation = violations.get(playerId);
+        if (violation == null) {
+            return 0;
+        }
+        long expireMillis = settings.violationExpireMinutes() * 60_000L;
+        if (expireMillis > 0 && System.currentTimeMillis() - violation.lastMillis() > expireMillis) {
+            return 0;
+        }
+        return violation.count();
     }
 
     public void resetViolation(UUID playerId) {
-        violations.put(playerId, 0);
-    }
-
-    public void clearViolation(UUID playerId) {
         violations.remove(playerId);
     }
 
+    // ------------------------------------------------------------------------------------------
+    // Word lists
+    // ------------------------------------------------------------------------------------------
+
     public boolean addCustomWord(String rawWord) {
-        String normalized = normalizeWord(rawWord);
-        if (normalized.isBlank()) {
+        if (!WordMatcher.isValidEntry(rawWord)) {
             return false;
         }
-        if (!customWords.add(normalized)) {
+        if (!customWords.add(WordMatcher.cleanEntry(rawWord))) {
             return false;
         }
-        getConfig().set("word-lists.custom", new ArrayList<>(customWords));
-        saveConfig();
-        loadPluginConfig();
+        saveCustomWords();
         return true;
     }
 
     public boolean removeCustomWord(String rawWord) {
-        String normalized = normalizeWord(rawWord);
-        if (!customWords.remove(normalized)) {
+        if (!customWords.remove(WordMatcher.cleanEntry(rawWord))) {
             return false;
         }
-        getConfig().set("word-lists.custom", new ArrayList<>(customWords));
+        saveCustomWords();
+        return true;
+    }
+
+    private void saveCustomWords() {
+        List<String> snapshot = new ArrayList<>(customWords);
+        getConfig().set("word-lists.custom", snapshot);
         saveConfig();
         loadPluginConfig();
-        return true;
     }
 
     public List<String> listWords(String listName) {
@@ -179,26 +272,30 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     }
 
     public Player findOnlinePlayer(String name) {
-        return getServer().getOnlinePlayers().stream()
-            .filter(p -> p.getName().equalsIgnoreCase(name))
-            .findFirst()
-            .orElse(null);
+        return getServer().getPlayerExact(name);
     }
 
     private void readWordList(String path, Collection<String> destination) {
         for (String word : getConfig().getStringList(path)) {
-            String normalized = normalizeWord(word);
-            if (!normalized.isBlank()) {
-                destination.add(normalized);
+            String cleaned = WordMatcher.cleanEntry(word);
+            if (WordMatcher.isValidEntry(cleaned)) {
+                destination.add(cleaned);
             }
         }
     }
 
+    /**
+     * Reads {@code level-1}..{@code level-3} below {@code basePath}.
+     *
+     * <p>Level 3 holds the most severe words and level 1 the mildest, so a higher protection level blocks
+     * <em>more</em>: LOW (1) blocks only level 3, MEDIUM (2) blocks levels 2-3, HIGH (3) blocks 1-3.
+     */
     private void readTieredWordList(String basePath, Collection<String> destination, int protectionLevel) {
-        // Backward compatibility: old flat list format.
+        // Backward compatibility: old flat list format (a plain list under the language name).
         readWordList(basePath, destination);
-        for (int level = 1; level <= protectionLevel; level++) {
-            readWordList(basePath + ".level-" + level, destination);
+        int lowestIncludedTier = 4 - protectionLevel;
+        for (int tier = lowestIncludedTier; tier <= 3; tier++) {
+            readWordList(basePath + ".level-" + tier, destination);
         }
     }
 
@@ -212,16 +309,23 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         if (enabledLists.contains("custom")) {
             result.addAll(customWords);
         }
-        return Set.copyOf(result);
+        return result;
     }
 
-    private String normalizeWord(String input) {
-        return input.toLowerCase(Locale.ROOT).trim().replaceAll("[^a-z0-9]", "");
+    private static Set<String> lowerCaseSet(List<String> values) {
+        return values.stream()
+            .map(s -> s.toLowerCase(Locale.ROOT).trim())
+            .filter(s -> !s.isEmpty())
+            .collect(Collectors.toUnmodifiableSet());
     }
 
     private String color(String input) {
         return ChatColor.translateAlternateColorCodes('&', input == null ? "" : input);
     }
+
+    // ------------------------------------------------------------------------------------------
+    // Punishment actions
+    // ------------------------------------------------------------------------------------------
 
     private void readTypedActions(String sectionPath, String type, List<PunishmentAction> destination) {
         ConfigurationSection section = getConfig().getConfigurationSection(sectionPath);
@@ -231,61 +335,92 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         for (String key : section.getKeys(false)) {
             String basePath = sectionPath + "." + key;
             boolean enabled = getConfig().getBoolean(basePath + ".enabled", false);
-
-            String format;
-            if (type.equals("effect")) {
-                String effectName = getConfig().getString(basePath + ".effect-name", "").trim();
-                int amplifier = getConfig().getInt(basePath + ".amplifier", 0);
-                int duration = getConfig().getInt(basePath + ".duration", 0);
-                if (!effectName.isBlank() && duration > 0) {
-                    format = effectName + "-" + amplifier + "-" + duration;
-                } else {
-                    format = getConfig().getString(basePath + ".format", "").trim();
+            List<String> args = switch (type) {
+                case "effect" -> structuredArgs(basePath, "effect-name", "amplifier", "duration");
+                case "attribute" -> structuredArgs(basePath, "attribute-name", "value", "duration");
+                case "sound" -> structuredArgs(basePath, "sound-name", "volume", "pitch");
+                default -> {
+                    String command = getConfig().getString(basePath + ".command", "").trim();
+                    yield command.isEmpty() ? legacyArgs(basePath, 1) : List.of(command);
                 }
-            } else if (type.equals("attribute")) {
-                String attributeName = getConfig().getString(basePath + ".attribute-name", "").trim();
-                Object valueObj = getConfig().get(basePath + ".value");
-                String valueRaw = valueObj == null ? "" : String.valueOf(valueObj).trim();
-                int duration = getConfig().getInt(basePath + ".duration", 0);
-                if (!attributeName.isBlank() && !valueRaw.isBlank() && duration > 0) {
-                    format = attributeName + "-" + valueRaw + "-" + duration;
-                } else {
-                    format = getConfig().getString(basePath + ".format", "").trim();
+            };
+            if (args.isEmpty()) {
+                if (enabled) {
+                    getLogger().warning(sectionPath + "." + key + " is enabled but incomplete; it will be ignored.");
                 }
-            } else {
-                format = getConfig().getString(basePath + ".format", "").trim();
+                continue;
             }
-
-            if (!format.isBlank()) {
-                destination.add(new PunishmentAction(enabled, type, format));
-            }
+            destination.add(new PunishmentAction(enabled, type, key, List.copyOf(args)));
         }
     }
+
+    /** Reads the structured keys, or falls back to the legacy single-line {@code format:} key. */
+    private List<String> structuredArgs(String basePath, String first, String second, String third) {
+        String a = getConfig().getString(basePath + "." + first, "").trim();
+        Object bRaw = getConfig().get(basePath + "." + second);
+        Object cRaw = getConfig().get(basePath + "." + third);
+        if (!a.isEmpty() && bRaw != null && cRaw != null) {
+            return List.of(a, String.valueOf(bRaw).trim(), String.valueOf(cRaw).trim());
+        }
+        return legacyArgs(basePath, 3);
+    }
+
+    /**
+     * Legacy format {@code name-value-value}. The last two {@code -} separated parts are taken from the
+     * right, so names and values may themselves contain dashes.
+     */
+    private List<String> legacyArgs(String basePath, int expectedParts) {
+        String format = getConfig().getString(basePath + ".format", "").trim();
+        if (format.isEmpty()) {
+            return List.of();
+        }
+        if (expectedParts == 1) {
+            return List.of(format);
+        }
+        int last = format.lastIndexOf('-');
+        int secondLast = last <= 0 ? -1 : format.lastIndexOf('-', last - 1);
+        if (last < 0 || secondLast < 0) {
+            return List.of();
+        }
+        return List.of(format.substring(0, secondLast).trim(),
+            format.substring(secondLast + 1, last).trim(),
+            format.substring(last + 1).trim());
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Startup banner
+    // ------------------------------------------------------------------------------------------
 
     private void logStartupBanner() {
         String version = getPluginMeta().getVersion();
         String line = "==============================================";
         String gameVersion = getServer().getMinecraftVersion();
+        String red = ChatColor.RED.toString() + ChatColor.BOLD;
 
         ConsoleCommandSender console = getServer().getConsoleSender();
         console.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + line);
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "    AAA   N   N  TTTTT  III ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   A   A  NN  N    T     I  ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   AAAAA  N N N    T     I  ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   A   A  N  NN    T     I  ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   A   A  N   N    T    III ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   BBBB    AAA   DDDD ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   B   B  A   A  D   D");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   BBBB   AAAAA  D   D");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   B   B  A   A  D   D");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   BBBB   A   A  DDDD ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   W   W  OOO  RRRR   DDDD   SSSS ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   W   W O   O R   R  D   D S     ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   W W W O   O RRRR   D   D  SSS  ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   WW WW O   O R  R   D   D     S ");
-        console.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "   W   W  OOO  R   R  DDDD  SSSS  ");
+        String[] art = {
+            "   AAA   N   N  TTTTT  III ",
+            "   A   A  NN  N    T     I  ",
+            "   AAAAA  N N N    T     I  ",
+            "   A   A  N  NN    T     I  ",
+            "   A   A  N   N    T    III ",
+            " ",
+            "   BBBB    AAA   DDDD ",
+            "   B   B  A   A  D   D",
+            "   BBBB   AAAAA  D   D",
+            "   B   B  A   A  D   D",
+            "   BBBB   A   A  DDDD ",
+            " ",
+            "   W   W  OOO  RRRR   DDDD   SSSS ",
+            "   W   W O   O R   R  D   D S     ",
+            "   W W W O   O RRRR   D   D  SSS  ",
+            "   WW WW O   O R  R   D   D     S ",
+            "   W   W  OOO  R   R  DDDD  SSSS  "
+        };
+        for (String row : art) {
+            console.sendMessage(red + row);
+        }
         console.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "-- GAME VERSION: " + ChatColor.AQUA + gameVersion.toUpperCase(Locale.ROOT) + ChatColor.LIGHT_PURPLE + " --");
         console.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "-- PLUGIN VERSION: " + ChatColor.GREEN + version.toUpperCase(Locale.ROOT) + ChatColor.YELLOW + " --");
         console.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "-- MADE BY " + ChatColor.GOLD + "JASON P" + ChatColor.AQUA + " --");

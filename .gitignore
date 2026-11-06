@@ -1,0 +1,9 @@
+# Maven build output (jars worth keeping are copied to dist/ by build-all.sh)
+target/
+# IDE
+.idea/
+*.iml
+.vscode/
+.classpath
+.project
+.settings/

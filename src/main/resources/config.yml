@@ -1,4 +1,11 @@
+# =====================================================================================
+#  AntiBadWords - configuration
+#  Reload with /abw reload (no restart needed).
+#  Text may use & colour codes (&c = red, &e = yellow, &f = white, ...).
+# =====================================================================================
+
 filters:
+  # Which word lists below are active. "custom" is always active (managed with /abw addword).
   enabled-word-lists:
     - english
     - indonesian
@@ -8,33 +15,124 @@ filters:
     - german
     - chinese
     - custom
-  protection-level: 3 # 1=LOW, 2=MEDIUM, 3=HIGH
+
+  # How strict the filter is. Every list is split into level-1 (mild), level-2 (rude)
+  # and level-3 (severe) words.
+  #   1 = LOW    -> only level-3 words are blocked
+  #   2 = MEDIUM -> level-2 and level-3 words are blocked
+  #   3 = HIGH   -> everything is blocked (level-1, 2 and 3)
+  protection-level: 3
+
+  # Where the plugin looks for bad words.
+  scan:
+    chat: true
+    commands: true
+    signs: true
+    books: true
+    anvil: true
+
+  # Commands whose arguments are scanned (only used when scan.commands is true).
+  # Use "*" to scan the arguments of every command.
+  scanned-commands:
+    - msg
+    - tell
+    - w
+    - whisper
+    - r
+    - reply
+    - me
+    - say
+    - teammsg
+    - tm
+    - mail
+    - nick
+    - broadcast
+  # Commands that are never scanned (so admins can still manage the word list).
+  ignored-commands:
+    - antibadwords
+    - abw
+    - antiwords
+
   matching:
+    # "fuuuuck" -> "fuck". Letters repeated this many times (or more) in a row are collapsed.
     collapse-repeated-letters: true
     repeated-letter-threshold: 3
+    # Catch "f u c k" and "f.u.c.k" (3 or more single letters in a row).
+    detect-spaced-letters: true
+    # Also glue ADJACENT words together before matching (catches "fu ck", but also "pen is").
+    # Off by default because it causes false positives.
+    join-adjacent-words: false
+    # Block a word when it merely CONTAINS a blocked word (e.g. "motherfuckers").
+    # Off by default because it flags innocent words such as "class", "closer" or "scrap".
+    # If you turn it on, add the innocent words to the whitelist below.
+    partial-match: false
+    partial-min-length: 4
+
+  # Words that must never be blocked (mainly useful together with partial-match).
+  whitelist:
+    - class
+    - classic
+    - assassin
+    - assume
+    - assist
+    - bass
+    - glass
+    - grass
+    - pass
+    - mass
+    - closer
+    - scrap
+    - cockpit
+    - cocktail
+    - peacock
+    - computer
+    - computing
+    - dickens
+    - analysis
+    - therapist
 
 messages:
+  # Placeholders (any capitalisation): {player} {word} {source} {count} {limit} {remaining} {punishments}
+  # Show the warning to every player (true) or only to the player who swore (false).
+  broadcast-warnings: true
+  # Sent to everyone when a bad word is blocked.
   warning-broadcast-format: "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED."
+  # Sent only to the player who swore (while they are not punished yet).
   warning-player: "&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN."
+  # Sent to everyone / to the player when the punishment is applied.
   punishment-broadcast-format: "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH &F{PUNISHMENTS}&C."
   punishment-player: "&CFOR YOUR BADWORDS, YOU ARE PUNISHED WITH &F{PUNISHMENTS}&C."
+  # Sent to the player when punishment.enabled is false but they reached the limit.
   punishment-disabled-player: "&EYOUR MESSAGE WAS BLOCKED. PUNISHMENT IS CURRENTLY DISABLED."
+  # Tell staff (permission antibadwords.notify) about every blocked word.
   notify-staff: true
-  staff-notify-format: "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7."
+  staff-notify-format: "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7 (&f{count}&7/&f{limit}&7)."
+
+logging:
+  # Print every blocked word to the server console.
+  console: true
 
 punishment:
   enabled: true
-# How many violations before punishing the player
+  # How many violations before punishing the player
   violations-before-punish: 2
+  # Violations older than this many minutes are forgotten (0 = never expire).
+  violations-expire-minutes: 0
+  # Forget a player's violations when they leave the server.
+  clear-violations-on-quit: true
   final-command:
     enabled: false
-    # NOTE: Example command -> "lp user {player} permission settemp antibadwords.muted true 30s"
+    # Runs from the console after the actions below. Supports {player}, {word}, {source}.
+    # Example: "lp user {player} permission settemp antibadwords.muted true 30s"
     command: ""
+
+  # Every action below is applied (when enabled: true) at the moment a player is punished.
+
   effects:
-  # structured format:
-  # effect-name: minecraft:blindness
-  # amplifier: 0
-  # duration: 3 #seconds
+    # structured format:
+    #   effect-name: minecraft:blindness
+    #   amplifier: 0       (0 = level I)
+    #   duration: 3        (seconds)
     blindness:
       enabled: false
       effect-name: "minecraft:blindness"
@@ -65,59 +163,106 @@ punishment:
       effect-name: "minecraft:glowing"
       amplifier: 0
       duration: 10
+
   attributes:
-  # structured format:
-  # attribute-name: minecraft:generic.max_health
-  # value: 0.75
-  # duration: 8 #seconds
+    # Temporarily SETS an attribute to a value, then restores the original value automatically
+    # (also when the player leaves, the server stops, or after a crash).
+    # structured format:
+    #   attribute-name: minecraft:movement_speed   (old names like minecraft:generic.movement_speed also work)
+    #   value: 0.05
+    #   duration: 8        (seconds)
     reduce_speed:
       enabled: false
-      # Lower movement speed heavily.
-      attribute-name: "minecraft:generic.movement_speed"
+      # Normal walking speed is 0.1. Lower movement speed heavily.
+      attribute-name: "minecraft:movement_speed"
       value: 0.05
       duration: 8
     very_slow_speed:
       enabled: false
       # Extreme slow movement.
-      attribute-name: "minecraft:generic.movement_speed"
+      attribute-name: "minecraft:movement_speed"
       value: 0.02
       duration: 5
     reduce_attack:
       enabled: false
-      # Reduce melee attack damage output.
-      attribute-name: "minecraft:generic.attack_damage"
-      value: 1.0
+      # Normal attack damage is 1.0 (bare hand). 0 = no melee damage.
+      attribute-name: "minecraft:attack_damage"
+      value: 0.0
       duration: 8
     low_max_health:
       enabled: false
-      # Temporarily lower max HP (careful: can be lethal if current HP is high/low edge cases).
-      attribute-name: "minecraft:generic.max_health"
+      # Temporarily lower max HP (normal is 20.0 = 10 hearts). Careful: low values can be lethal.
+      attribute-name: "minecraft:max_health"
       value: 8.0
       duration: 10
-    lower_knockback_resist:
+    no_knockback_resistance:
       enabled: false
-      # Player is easier to knock back.
-      attribute-name: "minecraft:generic.knockback_resistance"
+      # Remove knockback resistance (players normally have 0, netherite armor adds some).
+      attribute-name: "minecraft:knockback_resistance"
       value: 0.0
       duration: 8
-    short_reach:
+    reduce_armor:
       enabled: false
-      # Reduce armor points temporarily.
-      attribute-name: "minecraft:generic.armor"
+      # Remove all armor points temporarily.
+      attribute-name: "minecraft:armor"
       value: 0.0
       duration: 8
-    shorter_entity_reach:
+    reduce_armor_toughness:
       enabled: false
-      # Reduce armor toughness temporarily.
-      attribute-name: "minecraft:generic.armor_toughness"
+      # Remove armor toughness temporarily.
+      attribute-name: "minecraft:armor_toughness"
       value: 0.0
       duration: 8
-    reduce_jump_strength:
+    reduce_attack_speed:
       enabled: false
-      # Lower attack speed to make hits slower.
-      attribute-name: "minecraft:generic.attack_speed"
+      # Normal attack speed is 4.0. Lower value = slower hits.
+      attribute-name: "minecraft:attack_speed"
       value: 1.0
       duration: 8
+    short_entity_reach:
+      enabled: false
+      # Normal reach for attacking entities is 3.0 blocks.
+      attribute-name: "minecraft:entity_interaction_range"
+      value: 1.0
+      duration: 8
+    short_block_reach:
+      enabled: false
+      # Normal reach for breaking/placing blocks is 4.5 blocks.
+      attribute-name: "minecraft:block_interaction_range"
+      value: 1.5
+      duration: 8
+    weak_jump:
+      enabled: false
+      # Normal jump strength is 0.42.
+      attribute-name: "minecraft:jump_strength"
+      value: 0.2
+      duration: 8
+
+  sounds:
+    # structured format:
+    #   sound-name: entity.villager.no     (any sound from /playsound)
+    #   volume: 1.0
+    #   pitch: 1.0
+    villager_no:
+      enabled: true
+      sound-name: "entity.villager.no"
+      volume: 1.0
+      pitch: 1.0
+    anvil_land:
+      enabled: false
+      sound-name: "block.anvil.land"
+      volume: 1.0
+      pitch: 0.8
+
+  commands:
+    # Console commands run for the punished player. {player} is replaced by their name.
+    # Examples (all disabled):
+    kick:
+      enabled: false
+      command: "kick {player} Please watch your language!"
+    mute:
+      enabled: false
+      command: "mute {player} 5m Bad language"
 
 word-lists:
   english:
@@ -246,12 +391,20 @@ word-lists:
       - idiot
       - loh
       - noob
+      - дурак
+      - тупой
+      - лох
     level-2:
       - ublyudok
       - pridurok
-      - svin'ya
-      - kozol
+      - svinya
+      - kozel
       - mudak
+      - придурок
+      - мудак
+      - ублюдок
+      - козел
+      - свинья
     level-3:
       - blyat
       - suka
@@ -259,6 +412,15 @@ word-lists:
       - pizdec
       - yebat
       - hui
+      - блять
+      - блядь
+      - сука
+      - нахуй
+      - пиздец
+      - ебать
+      - хуй
+      - пизда
+      - хуйня
   uk_english:
     level-1:
       - stupid
@@ -313,7 +475,7 @@ word-lists:
       - 弱智
     level-2:
       - nao can
-      - gou
+      - gou dong xi
       - fei wu
       - gun dan
       - 脑残

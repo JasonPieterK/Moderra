@@ -5,68 +5,107 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerEditBookEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.potion.PotionEffectType;
 
+/**
+ * Wires every place a player can type text into the {@link WordMatcher}.
+ *
+ * <p>Every handler follows the same rule: <em>detect</em> (possibly off the main thread), <em>cancel</em>
+ * the event, then hand over to {@link #handleViolation} which always runs on the main thread.
+ */
 public final class AntiBadWordsListener implements Listener {
+    private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
+
     private final AntiBadWordsPlugin plugin;
+    /** Players that were already punished for the anvil text they are currently typing (see onPrepareAnvil). */
+    private final Set<UUID> anvilFlagged = new HashSet<>();
 
     public AntiBadWordsListener(AntiBadWordsPlugin plugin) {
         this.plugin = plugin;
     }
 
+    // ------------------------------------------------------------------------------------------
+    // Detection: one handler per text source
+    // ------------------------------------------------------------------------------------------
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onAsyncChat(AsyncChatEvent event) {
-        Player player = event.getPlayer();
-        String plain = PlainTextComponentSerializer.plainText().serialize(event.message());
-        String matchedWord = findBlockedWord(plain);
-        if (matchedWord == null) {
+        if (!plugin.getSettings().scanChat()) {
             return;
         }
-
+        Player player = event.getPlayer();
+        if (plugin.isBypassed(player)) {
+            return;
+        }
+        String matched = plugin.getMatcher().find(PLAIN.serialize(event.message()));
+        if (matched == null) {
+            return;
+        }
         event.setCancelled(true);
-        int newCount = plugin.addViolation(player.getUniqueId());
-        Bukkit.getScheduler().runTask(plugin, () -> warnOrPunish(player, newCount, matchedWord, "chat"));
+        // Chat runs on an async thread; Bukkit API (messages, effects, commands) must run on the main thread.
+        Bukkit.getScheduler().runTask(plugin, () -> handleViolation(player, matched, "chat"));
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onCommand(PlayerCommandPreprocessEvent event) {
+        AntiBadWordsSettings settings = plugin.getSettings();
         Player player = event.getPlayer();
-        String matchedWord = findBlockedWord(event.getMessage());
-        if (matchedWord == null) {
+        if (!settings.scanCommands() || plugin.isBypassed(player)) {
             return;
         }
 
-        event.setCancelled(true);
-        warnOrPunish(player, plugin.addViolation(player.getUniqueId()), matchedWord, "command");
+        String message = event.getMessage();
+        int space = message.indexOf(' ');
+        if (space < 0) {
+            return; // a bare command has no arguments that could contain a bad word
+        }
+        String label = commandLabel(message.substring(0, space));
+        if (settings.ignoredCommands().contains(label)) {
+            return; // e.g. /antibadwords addword <word> must keep working for admins
+        }
+        if (!settings.scannedCommands().contains("*") && !settings.scannedCommands().contains(label)) {
+            return;
+        }
+
+        String matched = plugin.getMatcher().find(message.substring(space + 1));
+        if (matched != null) {
+            event.setCancelled(true);
+            handleViolation(player, matched, "command");
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSignWrite(SignChangeEvent event) {
         Player player = event.getPlayer();
-        for (String line : event.getLines()) {
-            String matchedWord = findBlockedWord(line);
-            if (matchedWord != null) {
+        if (!plugin.getSettings().scanSigns() || plugin.isBypassed(player)) {
+            return;
+        }
+        for (Component line : event.lines()) {
+            String matched = plugin.getMatcher().find(PLAIN.serialize(line));
+            if (matched != null) {
                 event.setCancelled(true);
-                warnOrPunish(player, plugin.addViolation(player.getUniqueId()), matchedWord, "sign");
+                handleViolation(player, matched, "sign");
                 return;
             }
         }
@@ -75,334 +114,192 @@ public final class AntiBadWordsListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onBookEdit(PlayerEditBookEvent event) {
         Player player = event.getPlayer();
-        BookMeta bookMeta = event.getNewBookMeta();
-        for (String page : bookMeta.getPages()) {
-            String matchedWord = findBlockedWord(page);
-            if (matchedWord != null) {
+        if (!plugin.getSettings().scanBooks() || plugin.isBypassed(player)) {
+            return;
+        }
+        BookMeta meta = event.getNewBookMeta();
+        List<String> texts = new ArrayList<>();
+        for (Component page : meta.pages()) {
+            texts.add(PLAIN.serialize(page));
+        }
+        if (meta.hasTitle() && meta.title() != null) {
+            texts.add(PLAIN.serialize(meta.title()));
+        }
+        for (String text : texts) {
+            String matched = plugin.getMatcher().find(text);
+            if (matched != null) {
                 event.setCancelled(true);
-                warnOrPunish(player, plugin.addViolation(player.getUniqueId()), matchedWord, "book");
+                handleViolation(player, matched, "book");
                 return;
             }
         }
     }
 
+    /**
+     * PrepareAnvilEvent fires on <em>every keystroke</em>, so we only count one violation per anvil
+     * session; the result slot stays empty for as long as the name contains a blocked word.
+     */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onPrepareAnvil(PrepareAnvilEvent event) {
+        if (!plugin.getSettings().scanAnvil() || !(event.getView().getPlayer() instanceof Player player)) {
+            return;
+        }
+        if (plugin.isBypassed(player)) {
+            return;
+        }
         AnvilInventory anvil = event.getInventory();
         String renameText = anvil.getRenameText();
         if (renameText == null || renameText.isBlank()) {
             return;
         }
-
-        String matchedWord = findBlockedWord(renameText);
-        if (matchedWord == null || !(event.getView().getPlayer() instanceof Player player)) {
+        String matched = plugin.getMatcher().find(renameText);
+        if (matched == null) {
             return;
         }
-
         ItemStack result = event.getResult();
         if (result == null || result.getType() == Material.AIR) {
             return;
         }
 
         event.setResult(null);
-        warnOrPunish(player, plugin.addViolation(player.getUniqueId()), matchedWord, "anvil");
+        if (anvilFlagged.add(player.getUniqueId())) {
+            handleViolation(player, matched, "anvil");
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClose(InventoryCloseEvent event) {
+        if (event.getInventory() instanceof AnvilInventory) {
+            anvilFlagged.remove(event.getPlayer().getUniqueId());
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Housekeeping
+    // ------------------------------------------------------------------------------------------
+
+    @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        // Repairs attributes left modified by a crash during an attribute punishment.
+        plugin.getPunishmentExecutor().restoreLeftovers(event.getPlayer());
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        plugin.clearViolation(event.getPlayer().getUniqueId());
+        release(event.getPlayer());
     }
 
-    private void warnOrPunish(Player player, int count, String matchedWord, String source) {
+    @EventHandler
+    public void onKick(PlayerKickEvent event) {
+        // A punishment command (or anything else) may kick the player; restore attributes before data is saved.
+        plugin.getPunishmentExecutor().restoreAll(event.getPlayer());
+    }
+
+    private void release(Player player) {
+        plugin.getPunishmentExecutor().restoreAll(player);
+        anvilFlagged.remove(player.getUniqueId());
+        if (plugin.getSettings().clearViolationsOnQuit()) {
+            plugin.resetViolation(player.getUniqueId());
+        }
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Reaction (main thread)
+    // ------------------------------------------------------------------------------------------
+
+    private void handleViolation(Player player, String matchedWord, String source) {
         AntiBadWordsSettings settings = plugin.getSettings();
-        int limit = Math.max(1, settings.violationsBeforePunish());
+        int count = plugin.addViolation(player.getUniqueId());
+        int limit = settings.violationsBeforePunish();
         int remaining = Math.max(0, limit - count);
-        String broadcastWarning = fillTemplate(settings.violationBroadcastMessage(), player.getName(), matchedWord, source, count, limit, remaining);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(broadcastWarning));
-        player.sendMessage(fillTemplate(settings.violatorWarningMessage(), player.getName(), matchedWord, source, count, limit, remaining));
+        boolean punish = count >= limit && settings.punishmentEnabled();
 
-        if (count < limit) {
+        Map<String, String> values = Map.of(
+            "player", player.getName(),
+            "word", matchedWord,
+            "source", source,
+            "count", Integer.toString(count),
+            "limit", Integer.toString(limit),
+            "remaining", Integer.toString(remaining));
+
+        notifyStaff(values);
+
+        if (punish) {
+            punish(player, values);
+            plugin.resetViolation(player.getUniqueId());
             return;
         }
 
-        if (!settings.punishmentEnabled()) {
-            player.sendMessage(fillTemplate(settings.punishmentDisabledMessage(), player.getName(), matchedWord, source, count, limit, remaining));
-            return;
+        // Plain warning (or "blocked, but punishment is disabled").
+        if (settings.broadcastWarnings()) {
+            String broadcast = Placeholders.apply(settings.warningBroadcastMessage(), values);
+            Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(broadcast));
         }
-
-        punish(player, matchedWord, source, count, limit);
-        plugin.resetViolation(player.getUniqueId());
+        if (count >= limit) {
+            player.sendMessage(Placeholders.apply(settings.punishmentDisabledMessage(), values));
+        } else {
+            player.sendMessage(Placeholders.apply(settings.warningPlayerMessage(), values));
+        }
     }
 
-    private void punish(Player player, String matchedWord, String source, int count, int limit) {
+    private void punish(Player player, Map<String, String> baseValues) {
         AntiBadWordsSettings settings = plugin.getSettings();
-        List<String> appliedPunishments = new ArrayList<>();
+        List<String> applied = new ArrayList<>();
         for (PunishmentAction action : settings.punishmentActions()) {
             if (!action.enabled()) {
                 continue;
             }
-            String applied = executeAction(player, action);
-            if (applied != null && !applied.isBlank()) {
-                appliedPunishments.add(applied);
+            String description = plugin.getPunishmentExecutor().execute(player, action);
+            if (description != null && !description.isBlank()) {
+                applied.add(description);
             }
         }
-        String punishmentsText = formatPunishmentList(appliedPunishments);
-        String punishmentBroadcast = fillTemplate(settings.punishmentBroadcastMessage(), player.getName(), matchedWord, source, count, limit, 0)
-            .replace("{punishments}", punishmentsText)
-            .replace("{punishment}", punishmentsText);
-        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(punishmentBroadcast));
 
-        player.sendMessage(settings.punishmentPlayerMessage()
-            .replace("{punishments}", punishmentsText)
-            .replace("{punishment}", punishmentsText));
+        Map<String, String> values = new java.util.HashMap<>(baseValues);
+        values.put("remaining", "0");
+        values.put("punishments", formatPunishmentList(applied));
+        values.put("punishment", values.get("punishments"));
+
+        String broadcast = Placeholders.apply(settings.punishmentBroadcastMessage(), values);
+        Bukkit.getOnlinePlayers().forEach(p -> p.sendMessage(broadcast));
+        player.sendMessage(Placeholders.apply(settings.punishmentPlayerMessage(), values));
 
         if (settings.finalCommandEnabled() && !settings.finalCommand().isBlank()) {
-            String cmd = fillTemplate(settings.finalCommand(), player.getName(), matchedWord, source, count, limit, 0);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), cmd);
+            String command = Placeholders.apply(settings.finalCommand(), values);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command.startsWith("/") ? command.substring(1) : command);
         }
+    }
 
+    private void notifyStaff(Map<String, String> values) {
+        AntiBadWordsSettings settings = plugin.getSettings();
+        String staff = Placeholders.apply(settings.staffNotifyFormat(), values);
         if (settings.notifyStaff()) {
-            String staff = fillTemplate(settings.staffNotifyFormat(), player.getName(), matchedWord, source,
-                count, limit, 0);
             Bukkit.getOnlinePlayers().stream()
-                .filter(p -> p.hasPermission("antibadwords.admin"))
+                .filter(p -> p.hasPermission(AntiBadWordsPlugin.PERMISSION_NOTIFY))
+                .filter(p -> !p.getName().equals(values.get("player")))
                 .forEach(p -> p.sendMessage(staff));
         }
-    }
-
-    private String executeAction(Player player, PunishmentAction action) {
-        String type = action.type();
-        String format = action.format();
-        try {
-            return switch (type) {
-                case "effect" -> applyEffect(player, format);
-                case "attribute" -> applyAttribute(player, format);
-                case "command" -> runConsoleCommand(player, format);
-                case "sound" -> playSound(player, format);
-                default -> {
-                    plugin.getLogger().warning("Unknown punishment type: " + type);
-                    yield null;
-                }
-            };
-        } catch (Exception ex) {
-            plugin.getLogger().warning("Invalid punishment format (" + type + "): " + format);
-            return null;
+        if (settings.logToConsole()) {
+            plugin.getLogger().info(values.get("player") + " said blocked word '" + values.get("word")
+                + "' in " + values.get("source") + " (violation " + values.get("count") + "/" + values.get("limit") + ")");
         }
     }
 
-    private String applyEffect(Player player, String format) {
-        String[] parts = format.split("-");
-        if (parts.length < 3) {
-            return null;
+    // ------------------------------------------------------------------------------------------
+    // Helpers
+    // ------------------------------------------------------------------------------------------
+
+    /** {@code "/Minecraft:Msg"} -> {@code "msg"}. */
+    private static String commandLabel(String firstWord) {
+        String label = firstWord.startsWith("/") ? firstWord.substring(1) : firstWord;
+        int colon = label.indexOf(':');
+        if (colon >= 0) {
+            label = label.substring(colon + 1);
         }
-        String effectName = parts[0].trim();
-        int amplifier = Math.max(0, Integer.parseInt(parts[1].trim()));
-        int seconds = Math.max(1, Integer.parseInt(parts[2].trim()));
-        PotionEffectType type = resolveEffect(effectName);
-        if (type == null) {
-            plugin.getLogger().warning("Unknown effect name: " + effectName);
-            return null;
-        }
-        player.addPotionEffect(type.createEffect(seconds * 20, amplifier));
-        return prettyName(effectName);
+        return label.toLowerCase(Locale.ROOT);
     }
 
-    private String applyAttribute(Player player, String format) {
-        String[] parts = format.split("-");
-        if (parts.length < 3) {
-            return null;
-        }
-        String attributeName = parts[0].trim();
-        double value = Double.parseDouble(parts[1].trim());
-        int seconds = Math.max(1, Integer.parseInt(parts[2].trim()));
-        Attribute attribute = resolveAttribute(attributeName);
-        if (attribute == null) {
-            plugin.getLogger().warning("Unknown attribute name: " + attributeName);
-            return null;
-        }
-        if (player.getAttribute(attribute) == null) {
-            return null;
-        }
-        double oldBase = player.getAttribute(attribute).getBaseValue();
-        player.getAttribute(attribute).setBaseValue(value);
-        Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            if (player.isOnline() && player.getAttribute(attribute) != null) {
-                player.getAttribute(attribute).setBaseValue(oldBase);
-            }
-        }, seconds * 20L);
-        return prettyName(attributeName);
-    }
-
-    private String runConsoleCommand(Player player, String format) {
-        String command = format.replace("{player}", player.getName());
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        return "server command";
-    }
-
-    private String playSound(Player player, String format) {
-        String[] parts = format.split("-");
-        if (parts.length < 3) {
-            return null;
-        }
-        String soundName = parts[0].trim().toLowerCase(Locale.ROOT).replace("minecraft:", "");
-        Sound sound = Sound.valueOf(soundName.toUpperCase(Locale.ROOT).replace('.', '_'));
-        float volume = Float.parseFloat(parts[1].trim());
-        float pitch = Float.parseFloat(parts[2].trim());
-        player.playSound(player.getLocation(), sound, volume, pitch);
-        return prettyName(soundName) + " sound";
-    }
-
-    private String findBlockedWord(String rawInput) {
-        String normalizedInput = normalizeText(rawInput);
-        String[] parts = normalizedInput.split("\\s+");
-        StringBuilder compactBuilder = new StringBuilder();
-
-        for (String part : parts) {
-            String normalizedPart = canonicalizeForMatch(part);
-            if (normalizedPart.isBlank() || normalizedPart.length() < 2) {
-                continue;
-            }
-            compactBuilder.append(normalizedPart);
-            for (String blockedWord : plugin.getActiveWords()) {
-                if (normalizedPart.equals(canonicalizeForMatch(blockedWord))) {
-                    return blockedWord;
-                }
-            }
-        }
-
-        // Catch bypasses like "f u c k" or "n g e n t o t" by checking compacted text.
-        String compact = compactBuilder.toString();
-        if (compact.length() >= 4) {
-            for (String blockedWord : plugin.getActiveWords()) {
-                String blockedCanonical = canonicalizeForMatch(blockedWord);
-                if (blockedCanonical.length() >= 4 && compact.contains(blockedCanonical)) {
-                    return blockedWord;
-                }
-            }
-        }
-        return null;
-    }
-
-    private String normalizeText(String input) {
-        return input.toLowerCase(Locale.ROOT).replaceAll("[^a-z0-9\\s]", " ");
-    }
-
-    private String canonicalizeForMatch(String token) {
-        String mapped = token.toLowerCase(Locale.ROOT)
-            .replace('@', 'a')
-            .replace('$', 's')
-            .replace('!', 'i')
-            .replace('|', 'i')
-            .replace('0', 'o')
-            .replace('1', 'i')
-            .replace('3', 'e')
-            .replace('4', 'a')
-            .replace('5', 's')
-            .replace('7', 't')
-            .replace('8', 'b')
-            .replace('9', 'g');
-
-        String cleaned = mapped.replaceAll("[^a-z0-9]", "");
-        if (cleaned.isBlank()) {
-            return "";
-        }
-
-        AntiBadWordsSettings settings = plugin.getSettings();
-        if (!settings.collapseRepeatedLetters()) {
-            return cleaned;
-        }
-        int threshold = settings.repeatedLettersThreshold();
-        return cleaned.replaceAll("(.)\\1{" + (threshold - 1) + ",}", "$1");
-    }
-
-    private String fillTemplate(String template, String player, String word, String source, int count, int limit, int remaining) {
-        return template
-            .replace("{player}", player)
-            .replace("{PLAYER}", player)
-            .replace("{word}", word)
-            .replace("{WORD}", word)
-            .replace("{source}", source)
-            .replace("{SOURCE}", source)
-            .replace("{count}", Integer.toString(count))
-            .replace("{COUNT}", Integer.toString(count))
-            .replace("{limit}", Integer.toString(limit))
-            .replace("{LIMIT}", Integer.toString(limit))
-            .replace("{remaining}", Integer.toString(remaining))
-            .replace("{REMAINING}", Integer.toString(remaining));
-    }
-
-    private Attribute resolveAttribute(String raw) {
-        String input = normalizeAttributeAlias(raw);
-        Set<String> aliases = new HashSet<>();
-        aliases.add(input);
-        addShortAttributeAlias(aliases, input);
-
-        for (Attribute attribute : Attribute.values()) {
-            String key = normalizeAttributeAlias(attribute.getKey().getKey());
-            String namespaced = normalizeAttributeAlias(attribute.getKey().toString());
-            if (aliases.contains(key) || aliases.contains(namespaced)) {
-                return attribute;
-            }
-        }
-        return null;
-    }
-
-    private PotionEffectType resolveEffect(String raw) {
-        String input = raw.toLowerCase(Locale.ROOT).trim();
-        if (input.startsWith("minecraft:")) {
-            input = input.substring("minecraft:".length());
-        }
-
-        PotionEffectType byKey = PotionEffectType.getByKey(NamespacedKey.minecraft(input));
-        if (byKey != null) {
-            return byKey;
-        }
-
-        String dotted = input.replace('_', '.');
-        byKey = PotionEffectType.getByKey(NamespacedKey.minecraft(dotted));
-        if (byKey != null) {
-            return byKey;
-        }
-
-        for (PotionEffectType type : PotionEffectType.values()) {
-            if (type == null) {
-                continue;
-            }
-            String key = type.getKey().getKey().toLowerCase(Locale.ROOT);
-            String shortKey = key.contains(".") ? key.substring(key.lastIndexOf('.') + 1) : key;
-            if (input.equals(key) || input.equals(shortKey)) {
-                return type;
-            }
-        }
-        return null;
-    }
-
-    private String normalizeAttributeAlias(String raw) {
-        String out = raw.toLowerCase(Locale.ROOT).trim();
-        out = out.replace("minecraft:", "");
-        out = out.replace('.', '_');
-        return out;
-    }
-
-    private void addShortAttributeAlias(Set<String> aliases, String input) {
-        String[] prefixes = {"generic_", "player_", "horse_", "zombie_"};
-        for (String prefix : prefixes) {
-            if (input.startsWith(prefix)) {
-                aliases.add(input.substring(prefix.length()));
-            }
-        }
-    }
-
-    private String prettyName(String rawName) {
-        String base = rawName.toLowerCase(Locale.ROOT).trim().replace("minecraft:", "");
-        int lastDot = base.lastIndexOf('.');
-        if (lastDot >= 0 && lastDot + 1 < base.length()) {
-            base = base.substring(lastDot + 1);
-        }
-        return base.replace('_', ' ');
-    }
-
-    private String formatPunishmentList(List<String> items) {
+    private static String formatPunishmentList(List<String> items) {
         if (items.isEmpty()) {
             return "punishment";
         }

@@ -1,10 +1,10 @@
 name: AntiBadWords
-version: 1.00
+version: ${project.version}
 main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
-api-version: '1.21'
+api-version: '${mc.api.version}'
 authors:
   - Jason
-description: Advanced anti-profanity plugin for chat, signs, books, commands, and more.
+description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:
   antibadwords:
     description: AntiBadWords admin command.
@@ -12,5 +12,11 @@ commands:
     aliases: [abw, antiwords]
 permissions:
   antibadwords.admin:
-    description: Access to AntiBadWords admin commands.
+    description: Access to the AntiBadWords admin commands (reload, addword, removeword, check, ...).
     default: op
+  antibadwords.notify:
+    description: Receive a staff notification whenever a bad word is blocked.
+    default: op
+  antibadwords.bypass:
+    description: Exempt from all AntiBadWords checks.
+    default: false
