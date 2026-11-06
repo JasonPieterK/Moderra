@@ -139,12 +139,19 @@ public final class PunishmentExecutor {
         int token = ++restoreCounter;
         forPlayer.put(attribute, new PendingRestore(original, token));
 
+        UUID playerId = player.getUniqueId();
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            Map<Attribute, PendingRestore> current = pending.get(player.getUniqueId());
+            Map<Attribute, PendingRestore> current = pending.get(playerId);
             PendingRestore latest = current == null ? null : current.get(attribute);
             // Only the most recent punishment of this attribute is allowed to restore it.
-            if (latest != null && latest.token() == token) {
-                restore(player, attribute);
+            if (latest == null || latest.token() != token) {
+                return;
+            }
+            // Look the player up again: after dying/respawning the old Player object is a stale entity,
+            // and restoring on it would silently do nothing. Offline players are restored on quit.
+            Player live = Bukkit.getPlayer(playerId);
+            if (live != null) {
+                restore(live, attribute);
             }
         }, seconds * 20L);
         return prettyName(name);

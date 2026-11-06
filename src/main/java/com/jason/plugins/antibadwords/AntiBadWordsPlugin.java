@@ -125,11 +125,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
             getConfig().getStringList("filters.whitelist"));
         matcher = new WordMatcher(active, options);
 
-        List<PunishmentAction> actions = new ArrayList<>();
-        readTypedActions("punishment.effects", "effect", actions);
-        readTypedActions("punishment.attributes", "attribute", actions);
-        readTypedActions("punishment.sounds", "sound", actions);
-        readTypedActions("punishment.commands", "command", actions);
+        List<PunishmentAction> actions = PunishmentParser.parse(getConfig(), getLogger());
 
         settings = new AntiBadWordsSettings(
             getConfig().getBoolean("punishment.enabled", true),
@@ -321,70 +317,6 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
     private String color(String input) {
         return ChatColor.translateAlternateColorCodes('&', input == null ? "" : input);
-    }
-
-    // ------------------------------------------------------------------------------------------
-    // Punishment actions
-    // ------------------------------------------------------------------------------------------
-
-    private void readTypedActions(String sectionPath, String type, List<PunishmentAction> destination) {
-        ConfigurationSection section = getConfig().getConfigurationSection(sectionPath);
-        if (section == null) {
-            return;
-        }
-        for (String key : section.getKeys(false)) {
-            String basePath = sectionPath + "." + key;
-            boolean enabled = getConfig().getBoolean(basePath + ".enabled", false);
-            List<String> args = switch (type) {
-                case "effect" -> structuredArgs(basePath, "effect-name", "amplifier", "duration");
-                case "attribute" -> structuredArgs(basePath, "attribute-name", "value", "duration");
-                case "sound" -> structuredArgs(basePath, "sound-name", "volume", "pitch");
-                default -> {
-                    String command = getConfig().getString(basePath + ".command", "").trim();
-                    yield command.isEmpty() ? legacyArgs(basePath, 1) : List.of(command);
-                }
-            };
-            if (args.isEmpty()) {
-                if (enabled) {
-                    getLogger().warning(sectionPath + "." + key + " is enabled but incomplete; it will be ignored.");
-                }
-                continue;
-            }
-            destination.add(new PunishmentAction(enabled, type, key, List.copyOf(args)));
-        }
-    }
-
-    /** Reads the structured keys, or falls back to the legacy single-line {@code format:} key. */
-    private List<String> structuredArgs(String basePath, String first, String second, String third) {
-        String a = getConfig().getString(basePath + "." + first, "").trim();
-        Object bRaw = getConfig().get(basePath + "." + second);
-        Object cRaw = getConfig().get(basePath + "." + third);
-        if (!a.isEmpty() && bRaw != null && cRaw != null) {
-            return List.of(a, String.valueOf(bRaw).trim(), String.valueOf(cRaw).trim());
-        }
-        return legacyArgs(basePath, 3);
-    }
-
-    /**
-     * Legacy format {@code name-value-value}. The last two {@code -} separated parts are taken from the
-     * right, so names and values may themselves contain dashes.
-     */
-    private List<String> legacyArgs(String basePath, int expectedParts) {
-        String format = getConfig().getString(basePath + ".format", "").trim();
-        if (format.isEmpty()) {
-            return List.of();
-        }
-        if (expectedParts == 1) {
-            return List.of(format);
-        }
-        int last = format.lastIndexOf('-');
-        int secondLast = last <= 0 ? -1 : format.lastIndexOf('-', last - 1);
-        if (last < 0 || secondLast < 0) {
-            return List.of();
-        }
-        return List.of(format.substring(0, secondLast).trim(),
-            format.substring(secondLast + 1, last).trim(),
-            format.substring(last + 1).trim());
     }
 
     // ------------------------------------------------------------------------------------------

@@ -45,6 +45,14 @@
 19. **Packaging:** build output (`target/`) was committed; `plugin.yml` version was hard-coded separately from
     the pom; `addword`/`removeword` only used the first argument (phrases were impossible).
 
+### Follow-up fixes (punishments)
+
+20. **Attribute punishments were not restored after the player died/respawned** (the timer held a stale
+    `Player` object). The player is now looked up again when the timer fires.
+21. **Negative values in the legacy `format:` option** (`name--2.5-10`) were mis-parsed; now handled.
+22. Punishment config parsing moved into `PunishmentParser` and covered by tests that load the shipped config.yml.
+23. `/abw listwords` now requires `antibadwords.admin` like every other sub-command.
+
 ### New
 
 - Jars for every Minecraft release of the last year: 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3 (`build-all.sh`).

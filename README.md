@@ -27,7 +27,7 @@ Minecraft 26.x needs Java 25 on the server. Paper (or a Paper fork) is required.
 | `/abw check <text>` | `antibadwords.admin` | test whether a text would be blocked |
 | `/abw violations <player>` / `resetviolations <player>` | `antibadwords.admin` | inspect / clear a player's strikes |
 | `/abw info` | `antibadwords.admin` | status summary |
-| `/abw listwords [list]` | everyone | show a word list |
+| `/abw listwords [list]` | `antibadwords.admin` | show a word list |
 
 Other permissions: `antibadwords.notify` (staff alerts, default op), `antibadwords.bypass` (exempt, default nobody).
 

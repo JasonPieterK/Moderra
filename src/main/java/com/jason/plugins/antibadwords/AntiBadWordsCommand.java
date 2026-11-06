@@ -15,12 +15,11 @@ import org.bukkit.entity.Player;
 /**
  * {@code /antibadwords} (aliases {@code /abw}, {@code /antiwords}).
  *
- * <p>Everyone may use {@code listwords}; every other sub-command needs {@code antibadwords.admin}.
+ * <p>Every sub-command (including {@code listwords}) needs {@code antibadwords.admin}.
  */
 public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter {
     private static final List<String> ADMIN_SUBCOMMANDS = List.of(
         "reload", "addword", "removeword", "listwords", "check", "violations", "resetviolations", "info");
-    private static final List<String> PUBLIC_SUBCOMMANDS = List.of("listwords");
 
     private final AntiBadWordsPlugin plugin;
 
@@ -33,8 +32,9 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
         boolean isAdmin = sender.hasPermission(AntiBadWordsPlugin.PERMISSION_ADMIN);
 
         if (args.length == 0) {
-            List<String> available = isAdmin ? ADMIN_SUBCOMMANDS : PUBLIC_SUBCOMMANDS;
-            sender.sendMessage(ChatColor.YELLOW + "Usage: /" + label + " <" + String.join("|", available) + ">");
+            sender.sendMessage(isAdmin
+                ? ChatColor.YELLOW + "Usage: /" + label + " <" + String.join("|", ADMIN_SUBCOMMANDS) + ">"
+                : ChatColor.RED + "No permission.");
             return true;
         }
 
@@ -43,7 +43,7 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
         if (sub.equals("list")) {
             sub = "listwords";
         }
-        if (!sub.equals("listwords") && !isAdmin) {
+        if (!isAdmin) {
             sender.sendMessage(ChatColor.RED + "No permission.");
             return true;
         }
@@ -152,14 +152,14 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
         boolean isAdmin = sender.hasPermission(AntiBadWordsPlugin.PERMISSION_ADMIN);
         if (args.length == 1) {
-            return prefix(isAdmin ? ADMIN_SUBCOMMANDS : PUBLIC_SUBCOMMANDS, args[0]);
+            return isAdmin ? prefix(ADMIN_SUBCOMMANDS, args[0]) : List.of();
+        }
+        if (!isAdmin) {
+            return List.of();
         }
         String sub = args[0].toLowerCase(Locale.ROOT);
         if (args.length == 2 && (sub.equals("listwords") || sub.equals("list"))) {
             return prefix(plugin.getAvailableLists(), args[1]);
-        }
-        if (!isAdmin) {
-            return List.of();
         }
         if (args.length == 2 && sub.equals("removeword")) {
             return prefix(plugin.listWords("custom"), args[1]);
