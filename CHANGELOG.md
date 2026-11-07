@@ -55,6 +55,8 @@
 
 ### New
 
+- **Works on Spigot and Paper** with the same jar: all Paper-only APIs were removed and the jars are
+  compiled against the Spigot API.
 - Jars for every Minecraft release of the last year: 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3 (`build-all.sh`).
 - `antibadwords.bypass` and `antibadwords.notify` permissions.
 - `/abw check <text>`, `/abw info`, tab completion for words and players.

@@ -115,7 +115,7 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
             }
             case "info" -> {
                 AntiBadWordsSettings s = plugin.getSettings();
-                sender.sendMessage(ChatColor.GOLD + "AntiBadWords " + plugin.getPluginMeta().getVersion());
+                sender.sendMessage(ChatColor.GOLD + "AntiBadWords " + plugin.getDescription().getVersion());
                 sender.sendMessage(ChatColor.GRAY + "Blocked words: " + ChatColor.WHITE + plugin.getMatcher().size()
                     + ChatColor.GRAY + " | Punishment: " + ChatColor.WHITE + (s.punishmentEnabled() ? "on" : "off")
                     + ChatColor.GRAY + " after " + ChatColor.WHITE + s.violationsBeforePunish() + ChatColor.GRAY + " violations");

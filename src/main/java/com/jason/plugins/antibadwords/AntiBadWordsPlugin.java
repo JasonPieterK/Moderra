@@ -324,9 +324,10 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     // ------------------------------------------------------------------------------------------
 
     private void logStartupBanner() {
-        String version = getPluginMeta().getVersion();
+        String version = getDescription().getVersion();
         String line = "==============================================";
-        String gameVersion = getServer().getMinecraftVersion();
+        // "26.3-R0.1-SNAPSHOT" -> "26.3" (getMinecraftVersion() is Paper-only)
+        String gameVersion = getServer().getBukkitVersion().split("-")[0];
         String red = ChatColor.RED.toString() + ChatColor.BOLD;
 
         ConsoleCommandSender console = getServer().getConsoleSender();

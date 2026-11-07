@@ -5,7 +5,7 @@ You take these in Minecraft; the page text in [PAGE_TEXT.md](PAGE_TEXT.md) refer
 
 ## Setup once
 
-- Test server: Paper 1.21.11 or 26.x, `online-mode=false` is fine for a second account.
+- Test server: Paper or Spigot, 1.21.11 or 26.x (ideally take a few shots on each), `online-mode=false` is fine for a second account.
 - Two accounts: **Player** (the one who swears, no op) and **Admin** (op). Two game windows, or take the
   Player shots first, then the Admin shots.
 - Video settings: 1920x1080 (or 1280x720), GUI scale 2-3, `F1` hides the hotbar when you want clean chat,
@@ -55,7 +55,7 @@ it can be fixed.
 
 | Asset | Size | Notes |
 |-------|------|-------|
-| Icon / logo | 512x512 PNG | **Waiting for Jason** (logo not started). Modrinth icon is shown at small sizes: keep it simple. |
+| Icon / logo | 512x512 PNG | Jason decided to skip the logo for now; Modrinth shows a default icon until one is added. |
 | Banner (optional) | about 1200x300 | Name + tagline, same style as logo. Use at the top of the page. |
 | Divider / feature icons (optional) | 64x64 | One small icon per feature row if you want them. |
 

@@ -1,6 +1,6 @@
 # AntiBadWords
 
-Paper plugin that blocks profanity in **chat, commands, signs, books and anvil renames** and punishes repeat
+Spigot/Paper plugin that blocks profanity in **chat, commands, signs, books and anvil renames** and punishes repeat
 offenders (potion effects, temporary attribute changes, sounds, console commands).
 
 ## Supported Minecraft versions
@@ -9,14 +9,16 @@ One jar per release from the last 12 months (releases only, no snapshots/betas).
 
 | Minecraft | Jar | Built against |
 |-----------|-----|---------------|
-| 1.21.11 | `AntiBadWords.1.21.11.V1.10.jar` | paper-api 1.21.11 (Java 21) |
-| 26.1 | `AntiBadWords.26.1.V1.10.jar` | paper-api 26.1.1 (Java 25) |
-| 26.1.1 | `AntiBadWords.26.1.1.V1.10.jar` | paper-api 26.1.1 (Java 25) |
-| 26.1.2 | `AntiBadWords.26.1.2.V1.10.jar` | paper-api 26.1.2 (Java 25) |
-| 26.2 | `AntiBadWords.26.2.V1.10.jar` | paper-api 26.2 (Java 25) |
-| 26.3 | `AntiBadWords.26.3.V1.10.jar` | paper-api 26.3 (Java 25) |
+| 1.21.11 | `AntiBadWords.1.21.11.V1.10.jar` | spigot-api 1.21.11 (Java 21) |
+| 26.1 | `AntiBadWords.26.1.V1.10.jar` | spigot-api 26.1 (Java 25) |
+| 26.1.1 | `AntiBadWords.26.1.1.V1.10.jar` | spigot-api 26.1.1 (Java 25) |
+| 26.1.2 | `AntiBadWords.26.1.2.V1.10.jar` | spigot-api 26.1.2 (Java 25) |
+| 26.2 | `AntiBadWords.26.2.V1.10.jar` | spigot-api 26.2 (Java 25) |
+| 26.3 | `AntiBadWords.26.3.V1.10.jar` | spigot-api 26.3 (Java 25) |
 
-Minecraft 26.x needs Java 25 on the server. Paper (or a Paper fork) is required.
+Minecraft 26.x needs Java 25 on the server.
+
+**Server software:** Spigot and Paper (same jar). Purpur/other forks untested. Not for Folia, Fabric or Forge.
 
 ## Commands and permissions
 

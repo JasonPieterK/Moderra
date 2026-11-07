@@ -1,6 +1,5 @@
 package com.jason.plugins.antibadwords;
 
-import io.papermc.paper.event.player.AsyncChatEvent;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,8 +7,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -17,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
@@ -31,12 +29,12 @@ import org.bukkit.inventory.meta.BookMeta;
 /**
  * Wires every place a player can type text into the {@link WordMatcher}.
  *
+ * <p>Uses only the Bukkit/Spigot API, so the same jar runs on Spigot and Paper.
+ *
  * <p>Every handler follows the same rule: <em>detect</em> (possibly off the main thread), <em>cancel</em>
  * the event, then hand over to {@link #handleViolation} which always runs on the main thread.
  */
 public final class AntiBadWordsListener implements Listener {
-    private static final PlainTextComponentSerializer PLAIN = PlainTextComponentSerializer.plainText();
-
     private final AntiBadWordsPlugin plugin;
     /** Players that were already punished for the anvil text they are currently typing (see onPrepareAnvil). */
     private final Set<UUID> anvilFlagged = new HashSet<>();
@@ -50,7 +48,7 @@ public final class AntiBadWordsListener implements Listener {
     // ------------------------------------------------------------------------------------------
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-    public void onAsyncChat(AsyncChatEvent event) {
+    public void onAsyncChat(AsyncPlayerChatEvent event) {
         if (!plugin.getSettings().scanChat()) {
             return;
         }
@@ -58,7 +56,7 @@ public final class AntiBadWordsListener implements Listener {
         if (plugin.isBypassed(player)) {
             return;
         }
-        String matched = plugin.getMatcher().find(PLAIN.serialize(event.message()));
+        String matched = plugin.getMatcher().find(event.getMessage());
         if (matched == null) {
             return;
         }
@@ -101,8 +99,8 @@ public final class AntiBadWordsListener implements Listener {
         if (!plugin.getSettings().scanSigns() || plugin.isBypassed(player)) {
             return;
         }
-        for (Component line : event.lines()) {
-            String matched = plugin.getMatcher().find(PLAIN.serialize(line));
+        for (String line : event.getLines()) {
+            String matched = plugin.getMatcher().find(line);
             if (matched != null) {
                 event.setCancelled(true);
                 handleViolation(player, matched, "sign");
@@ -119,11 +117,9 @@ public final class AntiBadWordsListener implements Listener {
         }
         BookMeta meta = event.getNewBookMeta();
         List<String> texts = new ArrayList<>();
-        for (Component page : meta.pages()) {
-            texts.add(PLAIN.serialize(page));
-        }
-        if (meta.hasTitle() && meta.title() != null) {
-            texts.add(PLAIN.serialize(meta.title()));
+        texts.addAll(meta.getPages());
+        if (meta.hasTitle() && meta.getTitle() != null) {
+            texts.add(meta.getTitle());
         }
         for (String text : texts) {
             String matched = plugin.getMatcher().find(text);

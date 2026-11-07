@@ -1,6 +1,6 @@
 # Project summary
 
-**AntiBadWords** is a Paper server **plugin** (not a mod) that blocks profanity and punishes repeat offenders.
+**AntiBadWords** is a Spigot/Paper server **plugin** (not a mod) that blocks profanity and punishes repeat offenders.
 Current version: **1.10**. Licence: MIT. Author: Jason P.
 
 ## What was done (by Bram, with Jason)
@@ -18,9 +18,11 @@ Current version: **1.10**. Licence: MIT. Author: Jason P.
 4. **Fixed word-list translations** and added real Cyrillic spellings.
 5. **Added features**: `antibadwords.bypass` / `antibadwords.notify`, `/abw check`, `/abw info`, per-source
    toggles, command scan list, whitelist, violation expiry, console logging.
-6. **Multi-version builds**: one jar per Minecraft release of the last 12 months, built by `build-all.sh`.
-7. **Tests**: 21 unit tests (matcher, placeholders, config parsing of the shipped `config.yml`).
-8. **Organised the repo**: `.gitignore`, build output removed from git, `dist/` for release jars,
+6. **Spigot + Paper support (v1.10)**: removed every Paper-only API (Adventure components, `AsyncChatEvent`,
+   `getPluginMeta`, `getMinecraftVersion`); one jar runs on both.
+7. **Multi-version builds**: one jar per Minecraft release of the last 12 months, built by `build-all.sh`.
+8. **Tests**: 22 unit tests (matcher, placeholders, config parsing of the shipped `config.yml`).
+9. **Organised the repo**: `.gitignore`, build output removed from git, `dist/` for release jars,
    `docs/` for documentation, MIT `LICENSE`.
 
 ## Supported Minecraft versions
@@ -41,15 +43,16 @@ Minecraft 1.21.10 (Oct 2025) falls just outside "the last year" and was not buil
 
 | Software | Status |
 |----------|--------|
-| Paper | Supported (what the jars are compiled against) |
-| Purpur | Expected to work (Paper fork) - **not tested** |
-| Spigot / CraftBukkit | **Not supported**: the plugin uses Paper-only APIs (`AsyncChatEvent`, Adventure components, `getPluginMeta`) |
+| Spigot | Supported: the jars are compiled against the Spigot API and use no Paper-only classes |
+| Paper | Supported (Paper includes the whole Bukkit/Spigot API) |
+| Purpur and other Paper/Spigot forks | Expected to work - **not tested** |
+| CraftBukkit | Should work (Spigot API) - not tested |
 | Folia | **Not supported**: uses the regular Bukkit scheduler |
 | Fabric / Forge | **Not possible** with this code: it is a Bukkit-API plugin. A Fabric mod would be a separate port. |
 
 ## Honest status
 
-- Compiles against the real Paper API of all 6 versions; 21 unit tests pass.
+- Compiles against the real Spigot API of all 6 versions (so it uses nothing Paper-only); 22 unit tests pass.
 - **Never run on an actual server** (the sandbox this was built in could not start one). Test on a server
   before publishing: especially the punishment effects/attributes, signs, books and the anvil.
 
@@ -57,4 +60,4 @@ Minecraft 1.21.10 (Oct 2025) falls just outside "the last year" and was not buil
 
 - Logo (waiting for Jason).
 - Real gallery screenshots (plan: [modrinth/SCREENSHOT_PLAN.md](modrinth/SCREENSHOT_PLAN.md)).
-- Decide whether to build a Spigot-compatible or Fabric version.
+- A Fabric/Forge mod would be a separate project (this is a Bukkit-API plugin).

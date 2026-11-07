@@ -15,7 +15,7 @@ Items marked **TODO** need Jason's input. Modrinth supports Markdown, tables, im
 [Italic, centred] Keep your chat clean - in seven languages, everywhere players can type.
 
 [Row of badges or plain bold text, centred]
-**Paper** · **Minecraft 1.21.11 - 26.3** · **MIT licensed** · **Free**
+**Spigot** · **Paper** · **Minecraft 1.21.11 - 26.3** · **MIT licensed** · **Free**
 
 ---
 
@@ -215,8 +215,9 @@ Every message supports `&` colour codes and `{player}`, `{word}`, `{source}`, `{
 | 1.21.11 | 21 or newer |
 | 26.1, 26.1.1, 26.1.2, 26.2, 26.3 | 25 |
 
-- **Software:** Paper. *(Add "Purpur" only after it has been tested - TODO.)*
-- Not for plain Spigot, Folia, Fabric or Forge.
+- **Software:** Spigot and Paper (the same jar). *(Add "Purpur" only after it has been tested - TODO.)*
+- Not for Folia, Fabric or Forge.
+- Uses only the standard Bukkit/Spigot API, so it needs no other plugins or libraries.
 - **Download the file whose name matches your Minecraft version**, e.g. `AntiBadWords.26.3.V1.10.jar`.
 - Only full releases from the last year are published; snapshots are not supported.
 
@@ -238,7 +239,7 @@ inverted in 1.00** (LOW blocked only mild words). In 1.10 higher means stricter.
 ## 13. FAQ [Heading 2, then `<details>` for each]
 
 **Does it work with LuckPerms / EssentialsX / other chat plugins?**
-It listens to Paper's chat event at the highest priority and cancels bad messages, so it works alongside
+It listens to the standard chat event at the highest priority and cancels bad messages, so it works alongside
 most chat plugins. Plugins that rewrite or send chat themselves without the event can't be filtered.
 
 **Can staff swear?**
@@ -272,6 +273,7 @@ Words are indexed once when the config loads; checking a message is a quick look
 
 - Everything on the page matches what the code does, **except that it has never been run on a real server**.
   Do the test list in [UPLOAD_HANDOFF.md](UPLOAD_HANDOFF.md) before publishing.
-- Section 0 (banner/logo) and the "Purpur" mention are waiting on you.
+- Section 0 (banner/logo; Jason decided to skip the logo for now) and the "Purpur" mention are waiting on you.
+- Also test once on real Spigot and real Paper before claiming both.
 - Section 12 matters: the old inverted protection level is a real upgrade trap.
 - Hide any severe words in screenshots if you want a family-friendly page (the plan suggests mild words).
