@@ -52,4 +52,4 @@ To support a new Minecraft release add one line to `MINECRAFT_VERSIONS` in `buil
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Every config option and permission |
 | [docs/modrinth/](docs/modrinth/) | Modrinth page text, screenshot plan and upload hand-off |
 
-Licensed under the [MIT License](LICENSE). Server software: **Paper** (Purpur untested; not Spigot/Folia/Fabric).
+Licensed under the [MIT License](LICENSE). Server software: **Spigot and Paper** (Purpur untested; not Folia/Fabric).
