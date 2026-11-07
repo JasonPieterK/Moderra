@@ -11,6 +11,14 @@
     <name>AntiBadWords</name>
     <description>Advanced profanity blocking with punishments and admin tools.</description>
 
+    <url>https://github.com/JasonPieterK/AntiBadWordsPlugin</url>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 

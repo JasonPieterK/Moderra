@@ -101,6 +101,11 @@ class WordMatcherTest {
     }
 
     @Test
+    void catchesFullWidthCharacters() {
+        assertEquals("shit", matcher().find("\uFF33\uFF28\uFF29\uFF34"));
+    }
+
+    @Test
     void handlesNonLatinScripts() {
         WordMatcher m = matcher();
         assertEquals("傻逼", m.find("你是个傻逼吧"));

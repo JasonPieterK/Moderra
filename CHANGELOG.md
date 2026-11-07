@@ -62,4 +62,5 @@
 - Detection of spaced letters (`f u c k`), masked words (`f*ck`), zero-width characters, Cyrillic look-alikes,
   multi-word entries (`fick dich`), and book titles.
 - Violations can expire (`punishment.violations-expire-minutes`); sound punishment enabled by default.
-- Unit tests for the matcher and placeholders.
+- Unit tests for the matcher, placeholders and config parsing.
+- Full-width Unicode letters (`ＳＨＩＴ`) are now normalised and caught.

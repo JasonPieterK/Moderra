@@ -319,7 +319,7 @@ public final class WordMatcher {
         if (input == null) {
             return tokens;
         }
-        String text = Normalizer.normalize(input, Normalizer.Form.NFD);
+        String text = Normalizer.normalize(input, Normalizer.Form.NFKD);
         StringBuilder raw = new StringBuilder();
         for (int i = 0; i < text.length(); ) {
             int cp = text.codePointAt(i);

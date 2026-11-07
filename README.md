@@ -41,4 +41,13 @@ JAVA21_HOME=... JAVA25_HOME=... ./build-all.sh   # every supported version -> di
 
 To support a new Minecraft release add one line to `MINECRAFT_VERSIONS` in `build-all.sh`.
 
-See [CHANGELOG.md](CHANGELOG.md) for what changed in 1.10 and the list of bugs that were fixed.
+## Documentation
+
+| File | Contents |
+|------|----------|
+| [CHANGELOG.md](CHANGELOG.md) | What changed in 1.10 and the bugs that were fixed |
+| [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md) | Work done, supported versions, honest status |
+| [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Every config option and permission |
+| [docs/modrinth/](docs/modrinth/) | Modrinth page text, screenshot plan and upload hand-off |
+
+Licensed under the [MIT License](LICENSE). Server software: **Paper** (Purpur untested; not Spigot/Folia/Fabric).
