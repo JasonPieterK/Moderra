@@ -18,7 +18,9 @@ One jar per release from the last 12 months (releases only, no snapshots/betas).
 
 Minecraft 26.x needs Java 25 on the server.
 
-**Server software:** Spigot and Paper (same jar). Purpur/other forks untested. Not for Folia, Fabric or Forge.
+**Server software:** Bukkit/Spigot and Paper (same jar). Purpur loads Paper plugins, so the same jar should work there (untested). Not for Folia.
+
+**Fabric and Forge:** server-side mod sources live in [`mods/`](mods/README.md). They are **not compiled or tested yet** - read that file first.
 
 ## Commands and permissions
 
@@ -52,4 +54,4 @@ To support a new Minecraft release add one line to `MINECRAFT_VERSIONS` in `buil
 | [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Every config option and permission |
 | [docs/modrinth/](docs/modrinth/) | Modrinth page text, screenshot plan and upload hand-off |
 
-Licensed under the [MIT License](LICENSE). Server software: **Spigot and Paper** (Purpur untested; not Folia/Fabric).
+Licensed under the [MIT License](LICENSE).

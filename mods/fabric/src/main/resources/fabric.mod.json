@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "id": "antibadwords",
+  "version": "${version}",
+  "name": "AntiBadWords",
+  "description": "Blocks profanity in chat and commands and punishes repeat offenders.",
+  "authors": ["Jason"],
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": { "main": ["com.jason.plugins.antibadwords.fabric.AntiBadWordsFabric"] },
+  "depends": {
+    "fabricloader": ">=0.17.0",
+    "fabric-api": "*",
+    "minecraft": "~${minecraft_version}",
+    "java": ">=25"
+  }
+}

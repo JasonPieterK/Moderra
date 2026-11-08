@@ -1,0 +1,44 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+}
+
+version = "${mod_version}+${minecraft_version}"
+base { archivesName = 'AntiBadWords-fabric' }
+
+repositories {
+    mavenCentral()
+}
+
+// Minecraft 26.x is unobfuscated, so there is no mappings line. (For 1.21.x add: mappings loom.officialMojangMappings())
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    implementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft helpers.
+sourceSets {
+    main {
+        java {
+            srcDir '../../src/main/java'
+            srcDir '../core/src/main/java'
+            srcDir '../core/src/mc/java'
+            exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
+                    '**/AntiBadWordsSettings.java', '**/PunishmentAction.java', '**/PunishmentExecutor.java',
+                    '**/PunishmentParser.java'
+        }
+        resources.srcDir '../core/src/main/resources'
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'minecraft_version', minecraft_version
+    filesMatching('fabric.mod.json') {
+        expand version: project.version, minecraft_version: minecraft_version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { options.release = 25 }
+java { sourceCompatibility = JavaVersion.VERSION_25; targetCompatibility = JavaVersion.VERSION_25 }

@@ -7,3 +7,7 @@ target/
 .classpath
 .project
 .settings/
+
+# Gradle (mods/)
+.gradle/
+build/
