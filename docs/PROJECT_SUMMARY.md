@@ -27,17 +27,17 @@ Current version: **1.10**. Licence: MIT. Author: Jason P.
 
 ## Supported Minecraft versions
 
-| Minecraft | Jar | Java on the server |
-|-----------|-----|--------------------|
-| 1.21.11 | `dist/AntiBadWords.1.21.11.V1.10.jar` | 21+ |
-| 26.1 | `dist/AntiBadWords.26.1.V1.10.jar` | 25 |
-| 26.1.1 | `dist/AntiBadWords.26.1.1.V1.10.jar` | 25 |
-| 26.1.2 | `dist/AntiBadWords.26.1.2.V1.10.jar` | 25 |
-| 26.2 | `dist/AntiBadWords.26.2.V1.10.jar` | 25 |
-| 26.3 | `dist/AntiBadWords.26.3.V1.10.jar` | 25 |
+| Minecraft | Jars (`dist/`) | Java on the server |
+|-----------|----------------|--------------------|
+| 26.3 | `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | 25 |
+| 26.2 | `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | 25 |
+| 26.1 | `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | 25 |
+| 1.21.11 | `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar`, `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | 21+ |
 
-Only full releases from the last year (Nov 2025 - Nov 2026). Snapshots, pre-releases and betas are excluded.
-Minecraft 1.21.10 (Oct 2025) falls just outside "the last year" and was not built.
+Only full releases (no snapshots, pre-releases or betas). Version numbering was reset: every jar is release `1`
+(the old `V1.10` jars and the 26.1.1 / 26.1.2 builds were dropped). Fabric and Forge: see `mods/README.md`.
+The Bukkit/Purpur jars were repackaged from the verified 1.10 builds (only `plugin.yml`'s version changed to `1`);
+the next `./build-all.sh` on a machine with the Spigot repository produces them from source.
 
 ## Server software
 

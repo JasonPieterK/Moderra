@@ -3,24 +3,21 @@
 Spigot/Paper plugin that blocks profanity in **chat, commands, signs, books and anvil renames** and punishes repeat
 offenders (potion effects, temporary attribute changes, sounds, console commands).
 
-## Supported Minecraft versions
+## Supported Minecraft versions and file names
 
-One jar per release from the last 12 months (releases only, no snapshots/betas). Download them from [`dist/`](dist/).
+Every jar is named `Antibadwords-RELEASE[LOADER] - VERSION-MCVERSION.jar`. All jars are release **1** (the numbering
+starts again at 1) and only stable Minecraft releases are built (no snapshots, pre-releases or betas).
 
-| Minecraft | Jar | Built against |
-|-----------|-----|---------------|
-| 1.21.11 | `AntiBadWords.1.21.11.V1.10.jar` | spigot-api 1.21.11 (Java 21) |
-| 26.1 | `AntiBadWords.26.1.V1.10.jar` | spigot-api 26.1 (Java 25) |
-| 26.1.1 | `AntiBadWords.26.1.1.V1.10.jar` | spigot-api 26.1.1 (Java 25) |
-| 26.1.2 | `AntiBadWords.26.1.2.V1.10.jar` | spigot-api 26.1.2 (Java 25) |
-| 26.2 | `AntiBadWords.26.2.V1.10.jar` | spigot-api 26.2 (Java 25) |
-| 26.3 | `AntiBadWords.26.3.V1.10.jar` | spigot-api 26.3 (Java 25) |
+| Minecraft | Bukkit / Spigot / Paper | Purpur | Fabric | Forge |
+|-----------|-------------------------|--------|--------|-------|
+| 26.3 | `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | not built yet | not built yet |
+| 26.2 | `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | not built yet | not built yet |
+| 26.1 | `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | not built yet | not built yet |
+| 1.21.11 | `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar` | `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | not built yet | not built yet |
 
-Minecraft 26.x needs Java 25 on the server.
-
-**Server software:** Bukkit/Spigot and Paper (same jar). Purpur loads Paper plugins, so the same jar should work there (untested). Not for Folia.
-
-**Fabric and Forge:** server-side mod sources live in [`mods/`](mods/README.md). They are **not compiled or tested yet** - read that file first.
+Minecraft 26.x needs Java 25 on the server. The Bukkit and Purpur jars of one Minecraft version contain identical
+code (Purpur runs Paper/Spigot plugins unchanged); they are separate files only so each platform has its own download.
+The Fabric and Forge sources are in [`mods/`](mods/README.md): read that file for what is and is not verified.
 
 ## Commands and permissions
 
@@ -38,9 +35,9 @@ Other permissions: `antibadwords.notify` (staff alerts, default op), `antibadwor
 ## Building
 
 ```bash
-mvn clean package                       # jar for 1.21.11 -> target/
+mvn clean package                       # Bukkit jar for 1.21.11 -> target/
 JAVA21_HOME=... JAVA25_HOME=... ./build-all.sh   # every supported version -> dist/
-./build-all.sh 26.3                     # a single version
+./build-all.sh 26.3                     # a single version (builds the Bukkit and the Purpur jar)
 ```
 
 To support a new Minecraft release add one line to `MINECRAFT_VERSIONS` in `build-all.sh`.

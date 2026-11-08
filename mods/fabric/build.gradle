@@ -2,8 +2,9 @@ plugins {
     id 'fabric-loom' version "${loom_version}"
 }
 
-version = "${mod_version}+${minecraft_version}"
-base { archivesName = 'AntiBadWords-fabric' }
+// Jar name: Antibadwords-RELEASE[Fabric] - 1-<minecraft version>.jar
+base { archivesName = "Antibadwords-RELEASE[Fabric] - ${mod_version}" }
+version = minecraft_version
 
 repositories {
     mavenCentral()
@@ -14,10 +15,11 @@ dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.yaml:snakeyaml:2.3'
+    include 'org.yaml:snakeyaml:2.3'
 }
 
-// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft helpers.
+// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft layer.
 sourceSets {
     main {
         java {
@@ -25,18 +27,19 @@ sourceSets {
             srcDir '../core/src/main/java'
             srcDir '../core/src/mc/java'
             exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
-                    '**/AntiBadWordsSettings.java', '**/PunishmentAction.java', '**/PunishmentExecutor.java',
-                    '**/PunishmentParser.java'
+                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
         }
-        resources.srcDir '../core/src/main/resources'
+        resources.srcDir '../core/src/mc/resources'
     }
 }
 
 processResources {
-    inputs.property 'version', project.version
+    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
+    from('../../src/main/resources') { include 'config.yml' }
+    inputs.property 'version', mod_version
     inputs.property 'minecraft_version', minecraft_version
     filesMatching('fabric.mod.json') {
-        expand version: project.version, minecraft_version: minecraft_version
+        expand version: mod_version, minecraft_version: minecraft_version
     }
 }
 

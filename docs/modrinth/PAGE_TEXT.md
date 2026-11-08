@@ -213,12 +213,12 @@ Every message supports `&` colour codes and `{player}`, `{word}`, `{source}`, `{
 | Minecraft | Java on the server |
 |-----------|--------------------|
 | 1.21.11 | 21 or newer |
-| 26.1, 26.1.1, 26.1.2, 26.2, 26.3 | 25 |
+| 26.1, 26.2, 26.3 | 25 |
 
-- **Software:** Spigot and Paper (the same jar). *(Add "Purpur" only after it has been tested - TODO.)*
-- Not for Folia, Fabric or Forge.
+- **Software:** Bukkit, Spigot, Paper and Purpur (Purpur has its own download; same code). *(Test on a Purpur server before publishing - TODO.)*
+- Not for Folia. Fabric and Forge versions are a separate download once they have been tested.
 - Uses only the standard Bukkit/Spigot API, so it needs no other plugins or libraries.
-- **Download the file whose name matches your Minecraft version**, e.g. `AntiBadWords.26.3.V1.10.jar`.
+- **Download the file whose name matches your Minecraft version**, e.g. `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar`.
 - Only full releases from the last year are published; snapshots are not supported.
 
 ## 11. Installation [Heading 2]

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds one AntiBadWords jar per supported Minecraft release into ./dist
+# Builds Antibadwords-RELEASE[Bukkit] and [Purpur] jars (version 1) for each supported Minecraft release into ./dist
 #
 #   ./build-all.sh                 build every version below
 #   ./build-all.sh 26.2 26.3       build only the listed versions
@@ -15,13 +15,12 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 MINECRAFT_VERSIONS=(
-  # Releases from the last 12 months (no snapshots / pre-releases / betas).
-  "1.21.11|1.21|1.21.11-R0.1-SNAPSHOT|21"
-  "26.1|26.1|26.1-R0.1-SNAPSHOT|25"
-  "26.1.1|26.1|26.1.1-R0.1-SNAPSHOT|25"
-  "26.1.2|26.1|26.1.2-R0.1-SNAPSHOT|25"
-  "26.2|26.2|26.2-R0.1-SNAPSHOT|25"
+  # Newest first. "26.0" is NOT listed: no Spigot API exists for it in this repo's history - add it here once
+  # you have confirmed that Minecraft 26.0 really exists and which spigot-api version to use.
   "26.3|26.3|26.3-R0.1-SNAPSHOT|25"
+  "26.2|26.2|26.2-R0.1-SNAPSHOT|25"
+  "26.1|26.1|26.1-R0.1-SNAPSHOT|25"
+  "1.21.11|1.21|1.21.11-R0.1-SNAPSHOT|21"
 )
 
 wanted=("$@")
@@ -41,7 +40,9 @@ for entry in "${MINECRAFT_VERSIONS[@]}"; do
   if ( [ -n "$jdk_home" ] && export JAVA_HOME="$jdk_home" PATH="$jdk_home/bin:$PATH"; \
        mvn -B -q clean package -Dmc.version="$mc" -Dmc.api.version="$api" \
            -Dspigot.api.version="$paper" -Djava.release="$java" ); then
-    cp target/AntiBadWords."$mc".V*.jar dist/
+    # One build serves both Bukkit/Spigot/Paper and Purpur (Purpur runs Paper plugins unchanged).
+    cp "target/Antibadwords-RELEASE[Bukkit] - 1-${mc}.jar" dist/
+    cp "target/Antibadwords-RELEASE[Bukkit] - 1-${mc}.jar" "dist/Antibadwords-RELEASE[Purpur] - 1-${mc}.jar"
   else
     echo "!!! build FAILED for ${mc}"; failed+=("$mc")
   fi

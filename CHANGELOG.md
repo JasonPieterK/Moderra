@@ -1,5 +1,13 @@
 # Changelog
 
+## 1 (numbering restarted)
+
+* Jar names are now `Antibadwords-RELEASE[LOADER] - VERSION-MCVERSION.jar`, release number reset to 1.
+* Versions: 26.3, 26.2, 26.1, 1.21.11 (26.1.1 and 26.1.2 builds dropped).
+* New Purpur download (same code as the Bukkit jar).
+* Fabric and Forge mod sources added under `mods/` (same features and `config.yml`; not compiled yet).
+* The code is otherwise the 1.10 code below.
+
 ## 1.10
 
 ### Bugs fixed

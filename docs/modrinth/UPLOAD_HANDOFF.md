@@ -37,24 +37,30 @@ only about the project settings and the six version uploads.
 
 ## Versions to publish (one upload per jar)
 
-Version number `1.10`, release channel **Release**, files from `dist/`. Do not upload the same jar to multiple
+Version number `1`, release channel **Release**, files from `dist/`. Do not upload the same jar to multiple
 Minecraft versions it was not built for.
 
 | Jar | Game version(s) to tick | Loader |
 |-----|-------------------------|--------|
-| `AntiBadWords.1.21.11.V1.10.jar` | 1.21.11 | Paper, Spigot |
-| `AntiBadWords.26.1.V1.10.jar` | 26.1 | Paper, Spigot |
-| `AntiBadWords.26.1.1.V1.10.jar` | 26.1.1 | Paper, Spigot |
-| `AntiBadWords.26.1.2.V1.10.jar` | 26.1.2 | Paper, Spigot |
-| `AntiBadWords.26.2.V1.10.jar` | 26.2 | Paper, Spigot |
-| `AntiBadWords.26.3.V1.10.jar` | 26.3 | Paper, Spigot |
+| `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar` | 26.3 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar` | 26.2 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar` | 26.1 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar` | 1.21.11 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | 26.3 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | 26.2 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | 26.1 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | 1.21.11 | Purpur |
 
-Version name pattern: `AntiBadWords 1.10 for Minecraft 26.3`.
+Fabric and Forge jars: build them first (see `mods/README.md`), then upload as `Antibadwords-RELEASE[Fabric] - 1-26.3.jar`
+and `Antibadwords-RELEASE[Forge] - 1-26.3.jar` with the Fabric / Forge loader ticked. Do not publish them before they
+have been tested on a real server.
+
+Version name pattern: `AntiBadWords 1 for Minecraft 26.3`.
 
 Changelog text for every upload:
 
 ```
-Version 1.10
+Version 1
 - 23 bug fixes (inverted protection levels, swapped messages, unsafe attribute punishments, false positives, ...)
 - Now works on both Spigot and Paper (one jar)
 - New word matcher: whole-word, Unicode-aware, catches spaced letters, leetspeak and f*ck

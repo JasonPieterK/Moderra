@@ -5,8 +5,9 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
-version = "${mod_version}+${minecraft_version}"
-base { archivesName = 'AntiBadWords-forge' }
+version = minecraft_version
+// Jar name: Antibadwords-RELEASE[Forge] - 1-<minecraft version>.jar
+base { archivesName = "Antibadwords-RELEASE[Forge] - ${mod_version}" }
 
 repositories {
     mavenCentral()
@@ -18,7 +19,8 @@ minecraft {
 
 dependencies {
     minecraft "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
-    implementation 'com.google.code.gson:gson:2.11.0'
+    implementation 'org.yaml:snakeyaml:2.3'
+    jarJar(implementation('org.yaml:snakeyaml:[2.3,3)')) { jarJar.pin(it, '2.3') }
 }
 
 sourceSets {
@@ -28,20 +30,22 @@ sourceSets {
             srcDir '../core/src/main/java'
             srcDir '../core/src/mc/java'
             exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
-                    '**/AntiBadWordsSettings.java', '**/PunishmentAction.java', '**/PunishmentExecutor.java',
-                    '**/PunishmentParser.java'
+                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
         }
-        resources.srcDir '../core/src/main/resources'
+        resources.srcDir '../core/src/mc/resources'
     }
 }
 
 processResources {
-    inputs.property 'version', project.version
+    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
+    from('../../src/main/resources') { include 'config.yml' }
+    inputs.property 'version', mod_version
     filesMatching('META-INF/mods.toml') {
-        expand version: project.version, minecraft_version: minecraft_version
+        expand version: mod_version, minecraft_version: minecraft_version
     }
 }
 
 tasks.withType(JavaCompile).configureEach { options.release = 25 }
 java { sourceCompatibility = JavaVersion.VERSION_25; targetCompatibility = JavaVersion.VERSION_25 }
 jar { finalizedBy 'reobfJar' }
+// Mixin config for the sign/book/anvil/command scanners (also declared in mods.toml).

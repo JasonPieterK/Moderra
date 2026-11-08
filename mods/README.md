@@ -1,49 +1,64 @@
 # AntiBadWords for Fabric and Forge
 
-Server-side mods with the same matcher, word lists, protection levels and strike system as the Bukkit plugin.
-Players do **not** need to install anything.
+Server-side mods that do exactly what the Bukkit plugin does. Players do **not** need to install anything.
+They read the **same `config.yml`** as the plugin (it is copied into `config/antibadwords/config.yml` on first start),
+use the same matcher (`WordMatcher`), word lists, protection levels, messages, strike system and punishments.
 
-| Platform | Folder | Status |
-|----------|--------|--------|
-| Bukkit / Spigot | repo root (`pom.xml`) | built, tested, jars in `dist/` |
-| Paper / Purpur | same jar as Bukkit | Purpur loads Paper plugins; not tested on a Purpur server |
-| Fabric | `mods/fabric` | **source only - not compiled** |
-| Forge | `mods/forge` | **source only - not compiled** |
+Jar names: `Antibadwords-RELEASE[Fabric] - 1-26.3.jar` and `Antibadwords-RELEASE[Forge] - 1-26.3.jar`.
 
-## What was verified, and what was not
+## Status - read this first
 
-Verified (run `cd mods/core && mvn test`, 6 tests pass): the loader-independent core in `mods/core/src/main/java`
-(config loading, word matching, protection levels, strike counting, custom words, colour codes).
+| Part | Status |
+|------|--------|
+| `core/src/main` (config, matching, strikes, messages, `/abw` logic, attribute ledger) | **Compiled and tested**: `cd mods/core && mvn test` runs 17 tests against the plugin's real `config.yml` |
+| `core/src/mc` (chat/command/sign/book/anvil scanning, punishments, `/abw` registration, mixins) | **Written, never compiled or run** |
+| `fabric/`, `forge/` (entry points, permissions, Gradle builds) | **Written, never compiled or run** |
 
-**Not verified:** `mods/core/src/mc`, `mods/fabric` and `mods/forge`. The build sandbox could not reach Mojang, Fabric,
-Forge, Paper or Purpur servers, so the Minecraft-facing code was written from memory of the Mojang-named API and has
-never been compiled or run. Expect to fix a few compile errors on first build. Likely spots:
+The build sandbox could not reach Mojang, Fabric, Forge, Paper or Purpur servers, so no Minecraft jar was available
+to compile against. A syntax-only check of the unverified files found no syntax errors, but expect a few compile
+errors on the first real build. **No Fabric or Forge jar has been produced.** Do not publish them before testing.
 
-* `ModActions.isOperator` - the permission API changed in 1.21.11 (`hasPermission(int)`); fix in that one method.
-* `ModActions.runCommand` - `Commands.performPrefixedCommand` signature.
-* `ResourceLocation`/`Identifier`-style renames do not appear in this code (punishments run as vanilla commands
-  on purpose, to keep the API surface small).
-* `gradle.properties` in each loader folder contains `REPLACE_WITH_...` version numbers I could not look up, and
-  the Forge `build.gradle` plugin id may differ for the newest Forge builds.
+Where it will most likely need a fix:
 
-The target is Minecraft **26.3**, the newest release listed in this repo's `build-all.sh`. I could not check it against
-Mojang's release list; change `minecraft_version` if a newer stable release exists.
+* `ModPermissions.isOperator` - the permission API changed in 1.21.11 (`hasPermission(int)`); one method to fix.
+* Mixin targets (names copied from 1.21.x, unverified for 26.x): `Commands.performCommand`,
+  `ServerGamePacketListenerImpl.updateSignText` / `handleEditBook`, `AnvilMenu.createResult`,
+  `ItemCombinerMenu.removed`. If a name moved, Mixin fails at startup with a clear message naming it.
+* `gradle.properties` in each loader folder has `REPLACE_WITH_...` / guessed version numbers I could not look up,
+  and the Forge `build.gradle` plugin id may differ for the newest Forge builds.
+* `ModRuntime` uses `BuiltInRegistries.ATTRIBUTE`, `BuiltInRegistries.SOUND_EVENT`, `CommandSourceStack.withSuppressedOutput`,
+  `Commands.performPrefixedCommand` - all long-standing, but unchecked against 26.x.
+
+The target is Minecraft **26.3**, the newest release in this repo's `build-all.sh`; it was not checked against
+Mojang's release list. Change `minecraft_version` in `gradle.properties` for another release.
+
+## Feature parity with the plugin
+
+| Plugin feature | Fabric / Forge |
+|----------------|----------------|
+| Chat, commands (`scanned-commands` / `ignored-commands`, `*`, `namespace:cmd`), signs, books (pages + title), anvil renames (one violation per anvil session) | same |
+| `filters.*` (word lists, protection level, matching options, whitelist, scan switches) | same file, same code |
+| Warning / punishment messages, `{player} {word} {source} {count} {limit} {remaining} {punishments}`, `&` colours, staff notifications, console log line | same |
+| `violations-before-punish`, `violations-expire-minutes`, `clear-violations-on-quit`, `final-command` | same |
+| Punishments: effects, attributes, sounds, console commands (+ legacy `format:` lines) | same |
+| Attribute safety: original value remembered, only the newest punishment restores, restored on quit / kick / server stop, and after a crash on next join | same (the crash ledger is `config/antibadwords/pending-attributes.txt` instead of the player's NBT) |
+| `/abw` `/antibadwords` `/antiwords`: reload, addword, removeword, listwords/list, check, violations, resetviolations, info; tab completion; "No permission." messages | same - the command text is handled by the same logic, tested |
+| Custom words written back into `config.yml` keeping its comments | same |
+| Permissions `antibadwords.admin` / `.notify` / `.bypass` with the plugin's defaults (op / op / nobody) | Fabric: via the optional [Fabric Permissions API](https://github.com/lucko/fabric-permissions-api) (LuckPerms etc.), otherwise the defaults. Forge: registered as Forge permission nodes. |
+
+Differences you can see (none remove a feature):
+
+* Attribute timers count real seconds, the plugin counts server ticks (identical unless the server lags).
+* Effects and sounds are applied through the vanilla `/effect` and `/playsound` commands.
+* No coloured ASCII-art banner at startup, only log lines.
+* Faithfully kept plugin quirk: the "punished with ..." text for a sound shows only the last name segment
+  (`entity.villager.no` -> "no sound"). The plugin's own comment says it should be "villager no sound"; if you fix
+  that, fix it in `PunishmentExecutor` and `Names.soundDescription` together.
 
 ## Building
 
 ```bash
-cd mods/fabric && gradle build      # -> build/libs/AntiBadWords-fabric-1.10+26.3.jar   (needs JDK 25)
-cd mods/forge  && gradle build      # -> build/libs/AntiBadWords-forge-1.10+26.3.jar
-cd mods/core   && mvn test          # unit tests of the shared core (JDK 21+)
+cd mods/core   && mvn test          # unit tests of the shared core (JDK 21+), works offline from Maven Central
+cd mods/fabric && gradle build      # -> build/libs/Antibadwords-RELEASE[Fabric] - 1-26.3.jar   (needs JDK 25)
+cd mods/forge  && gradle build      # -> build/libs/Antibadwords-RELEASE[Forge] - 1-26.3.jar
 ```
-
-## Differences from the Bukkit plugin
-
-* Config is `config/antibadwords.json` (generated on first start from `mods/core/src/main/resources/antibadwords-default.json`;
-  regenerate that file from the plugin's `config.yml` with `python3 mods/tools/gen_default_config.py`).
-* Scans **chat and commands that carry a chat message** (Fabric: `/say`, `/msg`, `/me`...; Forge: chat only).
-  Signs, books and anvil renames are not scanned.
-* Punishments are server commands (`effect give {player} minecraft:blindness 3 0 true`, `playsound ...`, `kick ...`).
-  The plugin's attribute punishments are not available.
-* Permissions: `/abw` needs operator level 2; staff alerts go to operators.
-* No `listwords` subcommand; the others (`reload addword removeword check violations resetviolations info`) work the same.
