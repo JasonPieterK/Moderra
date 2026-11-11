@@ -1,54 +1,99 @@
 # AntiBadWords
 
-Spigot/Paper plugin that blocks profanity in **chat, commands, signs, books and anvil renames** and punishes repeat
-offenders (potion effects, temporary attribute changes, sounds, console commands).
+**What is it?** A bouncer for your Minecraft server's chat. When someone types a rude word, the message is blocked.
+Do it again and they get punished (a sound, a potion effect, a kick - you choose in `config.yml`).
+It also checks commands (`/msg`), signs, books and anvil renames, so there is no sneaky way around it.
 
-## Supported Minecraft versions and file names
+## Which file do I download? (60 seconds)
 
-Every jar is named `Antibadwords-RELEASE[LOADER] - VERSION-MCVERSION.jar`. All jars are release **1** (the numbering
-starts again at 1) and only stable Minecraft releases are built (no snapshots, pre-releases or betas).
+1. Open the folder **[`1-download-jars/`](1-download-jars/)**.
+2. Pick the file for **your server type** and **your Minecraft version**. The name tells you everything:
+
+   `Antibadwords-RELEASE[` **Bukkit** `] - 1-` **26.3** `.jar`
+   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ server type &nbsp;&nbsp; ^ Minecraft version
+
+3. Drop it in your server's `plugins/` folder (Bukkit, Spigot, Paper, Purpur) or `mods/` folder (Fabric, Forge). Restart.
+
+| My server is... | Use the jar named... | Folder with the source code |
+|-----------------|----------------------|-----------------------------|
+| Bukkit, Spigot or Paper | `...[Bukkit]...` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) |
+| Purpur | `...[Purpur]...` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) (same code) |
+| Fabric | `...[Fabric]...` | [`3-mod-fabric/`](3-mod-fabric/) |
+| Forge | `...[Forge]...` | [`4-mod-forge/`](4-mod-forge/) |
+
+### Which Minecraft versions? (the 6 newest full releases, checked against Mojang on 2026-11-08)
 
 | Minecraft | Bukkit / Spigot / Paper | Purpur | Fabric | Forge |
-|-----------|-------------------------|--------|--------|-------|
-| 26.3 | `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | not built yet | not built yet |
-| 26.2 | `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | not built yet | not built yet |
-| 26.1 | `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar` | `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | not built yet | not built yet |
-| 1.21.11 | `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar` | `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | not built yet | not built yet |
+|-----------|:----:|:----:|:----:|:----:|
+| **26.3**   | yes | yes | yes | yes |
+| **26.2**   | yes | yes | yes | yes |
+| **26.1.2** | yes | yes | yes | yes |
+| **26.1.1** | yes | yes | yes | yes |
+| **26.1**   | yes | yes | yes | yes |
+| **1.21.11**| yes | yes | yes | yes |
 
-Minecraft 26.x needs Java 25 on the server. The Bukkit and Purpur jars of one Minecraft version contain identical
-code (Purpur runs Paper/Spigot plugins unchanged); they are separate files only so each platform has its own download.
-The Fabric and Forge sources are in [`mods/`](mods/README.md): read that file for what is and is not verified.
+That is 24 jars, all in [`1-download-jars/`](1-download-jars/). Minecraft 26.x needs Java 25 on the server.
+(There is no Minecraft "26.0": the 2026 numbering starts at 26.1.) Players never install anything; this only goes on the server.
 
-## Commands and permissions
+### How well is each one tested?
 
-| Command | Permission | What it does |
-|---------|-----------|--------------|
-| `/abw reload` | `antibadwords.admin` | reload config.yml |
-| `/abw addword <word or phrase>` / `removeword` | `antibadwords.admin` | manage the custom list |
-| `/abw check <text>` | `antibadwords.admin` | test whether a text would be blocked |
-| `/abw violations <player>` / `resetviolations <player>` | `antibadwords.admin` | inspect / clear a player's strikes |
-| `/abw info` | `antibadwords.admin` | status summary |
-| `/abw listwords [list]` | `antibadwords.admin` | show a word list |
+| | Bukkit / Purpur | Fabric | Forge |
+|---|---|---|---|
+| Automatic unit tests | 24 tests | 17 tests (shared code) | 17 tests (shared code) |
+| Started on a **real server** with the jar, `/abw` commands checked | not done | all 6 versions | all 6 versions |
+| A **scripted player** swears in chat, `/msg`, a book, a sign, an anvil | not done | 26.1 (everything), 1.21.11 (chat + commands) | see [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md) |
 
-Other permissions: `antibadwords.notify` (staff alerts, default op), `antibadwords.bypass` (exempt, default nobody).
+The Bukkit and Purpur jars are built from source for all six versions but have **not** been started on a real
+Spigot, Paper or Purpur server. Purpur runs Paper plugins, so it should work, but that is an expectation, not a test.
+Details and the remaining gaps: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md).
 
-## Building
+## What is in each folder?
 
-```bash
-mvn clean package                       # Bukkit jar for 1.21.11 -> target/
-JAVA21_HOME=... JAVA25_HOME=... ./build-all.sh   # every supported version -> dist/
-./build-all.sh 26.3                     # a single version (builds the Bukkit and the Purpur jar)
+```
+AntiBadWordsPlugin/
+├── README.md                    <- you are here
+├── build-everything.sh          <- one button: builds every jar for every version
+├── CHANGELOG.md                 <- what changed, in plain words
+├── LICENSE                      <- MIT: free to use and change
+│
+├── 1-download-jars/             <- THE FINISHED FILES. Start here if you just want to use it.
+├── 2-plugin-bukkit-purpur/      <- source code of the plugin (Bukkit, Spigot, Paper, Purpur)
+├── 3-mod-fabric/                <- source code of the Fabric mod
+├── 4-mod-forge/                 <- source code of the Forge mod
+├── 5-shared-mod-code/           <- the "brain" Fabric and Forge both use (so they behave the same)
+└── 6-guides/                    <- explanations: every config option, project notes, Modrinth page text
 ```
 
-To support a new Minecraft release add one line to `MINECRAFT_VERSIONS` in `build-all.sh`.
+Rule of thumb: **1 = use it, 2-4 = the code for each server type, 5 = shared brain, 6 = reading material.**
 
-## Documentation
+## Commands (in game or console)
 
-| File | Contents |
-|------|----------|
-| [CHANGELOG.md](CHANGELOG.md) | What changed in 1.10 and the bugs that were fixed |
-| [docs/PROJECT_SUMMARY.md](docs/PROJECT_SUMMARY.md) | Work done, supported versions, honest status |
-| [docs/CONFIGURATION.md](docs/CONFIGURATION.md) | Every config option and permission |
-| [docs/modrinth/](docs/modrinth/) | Modrinth page text, screenshot plan and upload hand-off |
+Everything needs the permission `antibadwords.admin` (operators have it by default).
+
+| Command | What it does |
+|---------|--------------|
+| `/abw reload` | re-read `config.yml` |
+| `/abw addword <word>` / `removeword <word>` | add or remove your own blocked word |
+| `/abw listwords [list]` | show a word list |
+| `/abw check <text>` | would this text be blocked? |
+| `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
+| `/abw info` | short status |
+
+Other permissions: `antibadwords.notify` (staff see who got blocked, default: operators) and
+`antibadwords.bypass` (never blocked, default: nobody).
+
+## I want to change how it behaves
+
+Edit `config.yml` (it is created on first start). Every option is explained in
+[`6-guides/CONFIGURATION.md`](6-guides/CONFIGURATION.md): how strict it is (protection level 1-3), which languages,
+what the punishments are, what the messages say.
+
+## I want to build the jars myself
+
+```bash
+./build-everything.sh            # every loader, every version -> 1-download-jars/
+./build-everything.sh 26.3       # only one Minecraft version
+```
+You need Java 21 and Java 25, Maven (plugin) and Gradle 9.8+ (Fabric/Forge). Details are at the top of the scripts.
 
 Licensed under the [MIT License](LICENSE).

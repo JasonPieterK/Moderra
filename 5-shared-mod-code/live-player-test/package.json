@@ -1,0 +1,6 @@
+{
+  "name": "antibadwords-live-player-test",
+  "private": true,
+  "description": "A scripted player that joins a real test server and swears, to check the mod/plugin end to end.",
+  "dependencies": { "mineflayer": "^4.39.0" }
+}
