@@ -27,17 +27,16 @@ Current version: **1.10**. Licence: MIT. Author: Jason P.
 
 ## Supported Minecraft versions
 
-| Minecraft | Jars (`1-download-jars/`) | Java on the server |
-|-----------|----------------|--------------------|
-| 26.3 | `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | 25 |
-| 26.2 | `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | 25 |
-| 26.1 | `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar`, `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | 25 |
-| 1.21.11 | `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar`, `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | 21+ |
+| Minecraft | Jar name (LOADER = Bukkit, Purpur, Fabric or Forge) | Java on the server |
+|-----------|---------------------------------------------------------|--------------------|
+| 26.3 | `Antibadwords-RELEASE[LOADER] - 1-26.3.jar` | 25 |
+| 26.2 | `Antibadwords-RELEASE[LOADER] - 1-26.2.jar` | 25 |
+| 26.1.2 | `Antibadwords-RELEASE[LOADER] - 1-26.1.2.jar` | 25 |
+| 26.1.1 | `Antibadwords-RELEASE[LOADER] - 1-26.1.1.jar` | 25 |
+| 26.1 | `Antibadwords-RELEASE[LOADER] - 1-26.1.jar` | 25 |
+| 1.21.11 | `Antibadwords-RELEASE[LOADER] - 1-1.21.11.jar` | 21+ |
 
-Only full releases (no snapshots, pre-releases or betas). Version numbering was reset: every jar is release `1`
-(the old `V1.10` jars and the 26.1.1 / 26.1.2 builds were dropped). Fabric and Forge: see `6-guides/FABRIC-AND-FORGE-STATUS.md`.
-The Bukkit/Purpur jars were repackaged from the verified 1.10 builds (only `plugin.yml`'s version changed to `1`);
-the next `2-plugin-bukkit-purpur/build-all-versions.sh` on a machine with the Spigot repository produces them from source.
+Only full releases (no snapshots, pre-releases or betas): the six newest, checked against Mojang on 2026-11-08. Version numbering was reset, so every jar is release `1`. All 24 jars are built from source by `./build-everything.sh`. How well each is tested: see the main README and `FABRIC-AND-FORGE-STATUS.md`.
 
 ## Server software
 

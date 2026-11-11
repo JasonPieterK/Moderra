@@ -9,4 +9,4 @@ Pick **one** jar: your server type + your Minecraft version.
 * Versions: 26.3, 26.2, 26.1.2, 26.1.1, 26.1, 1.21.11.
 
 Put the jar into `plugins/` (Bukkit, Spigot, Paper, Purpur) or `mods/` (Fabric, Forge). Do not put two AntiBadWords jars in.
-Which jars exist right now is listed in the main [README](../README.md).
+All 24 jars (4 server types x 6 versions) are here. How well each one was tested is in the main [README](../README.md).

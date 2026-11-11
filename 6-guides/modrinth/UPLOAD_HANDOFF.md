@@ -44,16 +44,30 @@ Minecraft versions it was not built for.
 |-----|-------------------------|--------|
 | `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar` | 26.3 | Paper, Spigot, Bukkit |
 | `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar` | 26.2 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 1-26.1.2.jar` | 26.1.2 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 1-26.1.1.jar` | 26.1.1 | Paper, Spigot, Bukkit |
 | `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar` | 26.1 | Paper, Spigot, Bukkit |
 | `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar` | 1.21.11 | Paper, Spigot, Bukkit |
 | `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | 26.3 | Purpur |
 | `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | 26.2 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 1-26.1.2.jar` | 26.1.2 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 1-26.1.1.jar` | 26.1.1 | Purpur |
 | `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | 26.1 | Purpur |
 | `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | 1.21.11 | Purpur |
+| `Antibadwords-RELEASE[Fabric] - 1-26.3.jar` | 26.3 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 1-26.2.jar` | 26.2 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 1-26.1.2.jar` | 26.1.2 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 1-26.1.1.jar` | 26.1.1 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 1-26.1.jar` | 26.1 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 1-1.21.11.jar` | 1.21.11 | Fabric |
+| `Antibadwords-RELEASE[Forge] - 1-26.3.jar` | 26.3 | Forge |
+| `Antibadwords-RELEASE[Forge] - 1-26.2.jar` | 26.2 | Forge |
+| `Antibadwords-RELEASE[Forge] - 1-26.1.2.jar` | 26.1.2 | Forge |
+| `Antibadwords-RELEASE[Forge] - 1-26.1.1.jar` | 26.1.1 | Forge |
+| `Antibadwords-RELEASE[Forge] - 1-26.1.jar` | 26.1 | Forge |
+| `Antibadwords-RELEASE[Forge] - 1-1.21.11.jar` | 1.21.11 | Forge |
 
-Fabric and Forge jars: build them first (see `6-guides/FABRIC-AND-FORGE-STATUS.md`), then upload as `Antibadwords-RELEASE[Fabric] - 1-26.3.jar`
-and `Antibadwords-RELEASE[Forge] - 1-26.3.jar` with the Fabric / Forge loader ticked. Do not publish them before they
-have been tested on a real server.
+Fabric and Forge jars were started on real servers (see `FABRIC-AND-FORGE-STATUS.md`); the Bukkit and Purpur jars have only unit tests. Say so in the upload notes or test them first.
 
 Version name pattern: `AntiBadWords 1 for Minecraft 26.3`.
 

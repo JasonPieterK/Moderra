@@ -39,13 +39,15 @@ That is 24 jars, all in [`1-download-jars/`](1-download-jars/). Minecraft 26.x n
 
 | | Bukkit / Purpur | Fabric | Forge |
 |---|---|---|---|
-| Automatic unit tests | 24 tests | 17 tests (shared code) | 17 tests (shared code) |
-| Started on a **real server** with the jar, `/abw` commands checked | not done | all 6 versions | all 6 versions |
-| A **scripted player** swears in chat, `/msg`, a book, a sign, an anvil | not done | 26.1 (everything), 1.21.11 (chat + commands) | see [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md) |
+| Automatic unit tests | 24 | 17 (shared code) | 17 (shared code) |
+| Jar started on a **real server**, `/abw` commands checked | not done | all 6 versions | all 6 versions |
+| A **scripted player** swears in chat, `/msg`, a book, a sign, an anvil | not done | 26.1, 26.1.1, 26.1.2, 1.21.11 | 26.1, 26.1.1, 26.1.2, 1.21.11 |
 
-The Bukkit and Purpur jars are built from source for all six versions but have **not** been started on a real
-Spigot, Paper or Purpur server. Purpur runs Paper plugins, so it should work, but that is an expectation, not a test.
-Details and the remaining gaps: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md).
+* The scripted player could not run on 26.2 and 26.3 (the test library does not support those versions yet).
+* The Bukkit and Purpur jars are built from source for all six versions but have **not** been started on a real
+  Spigot, Paper or Purpur server. Purpur runs Paper plugins, so it should work - that is an expectation, not a test.
+
+Full details and remaining gaps: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md).
 
 ## What is in each folder?
 
