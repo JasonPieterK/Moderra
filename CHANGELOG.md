@@ -1,5 +1,35 @@
 # Changelog
 
+## 1 (numbering restarted)
+
+### What is new
+* **Jar names** are now `Antibadwords-RELEASE[LOADER] - VERSION-MCVERSION.jar`, and the release number starts again at 1.
+* **Four server types, six Minecraft versions = 24 jars**: Bukkit/Spigot/Paper, Purpur, Fabric and Forge for
+  26.3, 26.2, 26.1.2, 26.1.1, 26.1 and 1.21.11 (the six newest full releases, checked against Mojang on 2026-11-08;
+  Minecraft "26.0" does not exist).
+* **Fabric and Forge mods** with the same features and the same `config.yml` as the plugin (chat, commands, signs,
+  books, anvils, strikes, punishments, `/abw`). Every Fabric and Forge jar was started on a real server and checked.
+* **Folder layout** rebuilt so it can be navigated at a glance (`1-download-jars/`, `2-plugin-...`, `3-mod-fabric/`, ...).
+* `build-everything.sh`: one command builds all 24 jars.
+
+### Bugs fixed
+1. **Punishment text said "no sound" instead of "villager no sound".** Only the last word of the sound name was kept.
+2. **Partial matching could be dodged with stretched letters.** With `partial-match: true`, `xxfuuuuuuckxx` or two
+   stretched words glued together were not caught (while `xxfuckxx` was). The collapsed variants are now searched too.
+3. **Out-of-range attribute punishment left a stale recovery marker** in the player's data. The marker is now removed when the value is rejected.
+4. **Mod: operator check used an API that no longer exists** (Minecraft 1.21.11+ permission system) - found by compiling.
+5. **Mod: anvil scanning crashed at startup** (Mixin cannot shadow a parent class's fields) - found by starting a
+   real server. Fixed with an accessor mixin.
+6. **Mod: sign packet API differs between Minecraft versions** (`getLines()` array up to 26.2, `lines()` list in 26.3).
+   A tiny per-version shim picks the right one.
+7. Build scripts: logs were deleted by `gradle clean`; Gradle had to run on JDK 25 even when compiling for Java 21.
+
+### Tests added
+* Plugin: 24 unit tests (was 22). Shared mod code: 17 unit tests.
+* `test-on-real-server.sh` (Fabric and Forge): starts a real server and checks that the mixins apply and `/abw` works.
+* `5-shared-mod-code/live-player-test/`: a scripted player that joins a server, swears in chat, `/msg`, a book, a sign
+  and an anvil, and checks the server's reaction.
+
 ## 1.10
 
 ### Bugs fixed
@@ -57,7 +87,7 @@
 
 - **Works on Spigot and Paper** with the same jar: all Paper-only APIs were removed and the jars are
   compiled against the Spigot API.
-- Jars for every Minecraft release of the last year: 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3 (`build-all.sh`).
+- Jars for every Minecraft release of the last year: 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3 (`build-all-versions.sh`).
 - `antibadwords.bypass` and `antibadwords.notify` permissions.
 - `/abw check <text>`, `/abw info`, tab completion for words and players.
 - Per-source toggles (`filters.scan.*`), scanned/ignored command lists, whitelist.

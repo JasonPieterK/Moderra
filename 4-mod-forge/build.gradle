@@ -1,0 +1,81 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle' version '7.0.40'
+    id 'net.minecraftforge.jarjar' version '0.2.3'
+}
+
+// Jar name: Antibadwords-RELEASE[Forge] - 1-<minecraft version>.jar
+base.archivesName = "Antibadwords-RELEASE[Forge] - ${mod_version}"
+version = minecraft_version
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(java_release.toInteger())
+
+minecraft {
+    if (mappings_version) {
+        mappings channel: 'official', version: mappings_version
+    }
+    runs {
+        configureEach {
+            workingDir.convention layout.projectDirectory.dir('run')
+            // Mixin needs the config named on the command line when running from Gradle.
+            args '--mixin.config=antibadwords.mixins.json'
+        }
+        register('server') {
+            args '--nogui'
+        }
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+}
+
+jarJar.register()
+// The jar people download is the one with SnakeYAML bundled inside ("jar-in-jar").
+tasks.named('jar') { archiveClassifier = 'slim' }
+tasks.named('jarJar') { archiveClassifier = null }
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${minecraft_version}-${forge_version}")
+    // No Mixin annotation processor: Minecraft 26.x runs with Mojang names, so there is nothing to remap (no refmap).
+    implementation 'org.yaml:snakeyaml:2.3'
+    jarJar('org.yaml:snakeyaml:2.3')
+}
+
+// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft layer.
+sourceSets {
+    main {
+        java {
+            srcDir '../2-plugin-bukkit-purpur/src/main/java'
+            srcDir '../5-shared-mod-code/src/main/java'
+            srcDir '../5-shared-mod-code/src/mc/java'
+            // Small per-version shims for APIs that changed between Minecraft releases (see build-all-versions.sh).
+            srcDir "../5-shared-mod-code/src/mc-variants/sign-${sign_api}"
+            exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
+                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
+        }
+        resources.srcDir '../5-shared-mod-code/src/mc/resources'
+    }
+}
+
+processResources {
+    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
+    from('../2-plugin-bukkit-purpur/src/main/resources') { include 'config.yml' }
+    inputs.property 'version', mod_version
+    inputs.property 'minecraft_version', minecraft_version
+    filesMatching(['META-INF/mods.toml', 'antibadwords.version']) {
+        expand version: mod_version, minecraft_version: minecraft_version, forge_major: forge_major
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+
+tasks.named('jar', Jar) {
+    manifest {
+        // Lets Mixin find our config at runtime.
+        attributes['MixinConfigs'] = 'antibadwords.mixins.json'
+    }
+}

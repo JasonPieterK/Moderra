@@ -1,0 +1,63 @@
+plugins {
+    // Minecraft 26.x ships unobfuscated, 1.21.x needs the remapping Loom. One of the two is applied below.
+    id 'net.fabricmc.fabric-loom' version "${loom_version}" apply false
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}" apply false
+}
+
+def remapped = remap.toBoolean()
+apply plugin: remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
+
+// Jar name: Antibadwords-RELEASE[Fabric] - 1-<minecraft version>.jar
+base { archivesName = "Antibadwords-RELEASE[Fabric] - ${mod_version}" }
+version = minecraft_version
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    if (remapped) {
+        mappings loom.officialMojangMappings()
+        modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+        modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    } else {
+        implementation "net.fabricmc:fabric-loader:${loader_version}"
+        implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    }
+    implementation 'org.yaml:snakeyaml:2.3'
+    include 'org.yaml:snakeyaml:2.3'
+}
+
+// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft layer.
+sourceSets {
+    main {
+        java {
+            srcDir '../2-plugin-bukkit-purpur/src/main/java'
+            srcDir '../5-shared-mod-code/src/main/java'
+            srcDir '../5-shared-mod-code/src/mc/java'
+            // Small per-version shims for APIs that changed between Minecraft releases (see build-all-versions.sh).
+            srcDir "../5-shared-mod-code/src/mc-variants/sign-${sign_api}"
+            exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
+                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
+        }
+        resources.srcDir '../5-shared-mod-code/src/mc/resources'
+    }
+}
+
+processResources {
+    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
+    from('../2-plugin-bukkit-purpur/src/main/resources') { include 'config.yml' }
+    inputs.property 'version', mod_version
+    inputs.property 'minecraft_version', minecraft_version
+    inputs.property 'java_release', java_release
+    filesMatching('fabric.mod.json') {
+        expand version: mod_version, minecraft_version: minecraft_version, java_release: java_release
+    }
+}
+
+// Gradle itself can run on an older JDK; the toolchain makes it compile with the JDK the Minecraft release needs.
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(java_release.toInteger())
+}
+tasks.withType(JavaCompile).configureEach { options.release = java_release.toInteger() }
