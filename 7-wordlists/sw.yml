@@ -1,0 +1,17 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "sw"
+name: Swahili
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Thin list: Swahili has fewer fixed vulgar words and many insults are phrases or borrowed. Left out on purpose: fala (Portuguese 'speaks'), punda and mbwa alone (donkey, dog), chizi, tako, kinyesi, ngono. 'kuma' is also Japanese 'bear' in romaji and a Turkish word; 'malaya' is also a Filipino word. Strongly needs native review."
+level-1: [
+  "mjinga", "mpumbavu", "kipumbavu", "zezeta", "taahira", "mshamba", "bwege", "pumbavu", "mpuuzi"
+]
+level-2: [
+  "mwanaharamu", "mshenzi", "shenzi", "ushenzi", "mavi", "kumbafu"
+]
+level-3: [
+  "kuma", "malaya", "kahaba", "msenge", "shoga", "kuma yako", "kuma mama yako"
+]

@@ -1,0 +1,24 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "en-gb"
+name: English (United Kingdom extras)
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+notes: "UK slang on top of the en list. Words shared with en (stupid, dumb, idiot, twat, wanker, arsehole, cunt, fuck, shit, motherfucker, dickhead, prick) are repeated on purpose because the old config.yml uk_english list is kept as a superset; enable en-gb together with en and the overlap is harmless. Left out: git, tart, bloody, bollocking (too mild or ambiguous). collisions-ok: en Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: fuck idiot motherfucker Related languages share cognate words on purpose. collisions-ok: en"
+level-1: [
+  "stupid", "dumb", "idiot", "prat", "muppet", "pillock", "plonker", "numpty", "berk", "twit", "wally",
+  "nitwit", "dimwit", "eejit", "minger", "wazzock", "bampot"
+]
+level-2: [
+  "tosser", "knobhead", "bellend", "twat", "wanker", "arsehole", "knob", "knobber", "knobjockey", "bugger",
+  "bugger off", "sod off", "sodding", "shite", "shitebag", "bollocks", "bollox", "gobshite", "slapper",
+  "scrubber", "slag", "tosspot", "arse", "arsewipe", "arsebandit", "pisshead", "pissflaps", "minge",
+  "clunge", "scrote", "scrotes", "tits"
+]
+level-3: [
+  "cunt", "fuck", "motherfucker", "shit", "dickhead", "prick", "cunts", "twatting", "shitehawk",
+  "fanny batter", "spacker", "mong", "mongs", "paki", "pikey", "gyppo", "bollocking", "fuckwit", "fucktard",
+  "wankstain", "wankbag", "shagger", "shag off", "cuntface", "cuntybollocks"
+]

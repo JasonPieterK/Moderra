@@ -6,3 +6,4 @@
 | [PROJECT_SUMMARY.md](PROJECT_SUMMARY.md) | you want the big picture of what was done |
 | [FABRIC-AND-FORGE-STATUS.md](FABRIC-AND-FORGE-STATUS.md) | you use (or build) the Fabric or Forge version |
 | [modrinth/](modrinth/) | you are publishing the project page |
+| [../7-wordlists/README.md](../7-wordlists/README.md) | you want to read, edit or add a bad-word list for a language |

@@ -1,0 +1,27 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "hi"
+name: Hindi (Devanagari and Hinglish)
+script: devanagari
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Devanagari plus Hinglish (Hindi written in Latin letters, the way most players type it). Overlaps heavily with the Roman Urdu spellings in ur; intentional. Left out on purpose: साला/साली (also 'brother-in-law'), पागल, कुत्ता alone, ढक्कन, भाई-style words. 'lund' is also a Swedish place name. collisions-ok: ur bn Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: haramzade Related languages share cognate words on purpose. collisions-ok: bn ur"
+level-1: [
+  "बेवकूफ", "मूर्ख", "गधा", "नालायक", "बदतमीज़", "बदतमीज", "बेशर्म", "घटिया", "फट्टू", "bewakoof", "bewkoof",
+  "bevkoof", "murkh", "gadha", "ullu", "nalayak", "badtameez", "besharam", "ghatiya", "fattu"
+]
+level-2: [
+  "कमीना", "कमीने", "कमीनी", "हरामी", "हरामखोर", "कुत्ते की औलाद", "झाटू", "झांट", "टट्टी", "बकचोद",
+  "kameena", "kamine", "kamini", "harami", "haramkhor", "kutte ki aulad", "kutiya", "jhant", "bakchod",
+  "teri maa ki", "ullu ka pattha"
+]
+level-3: [
+  "हरामज़ादा", "हरामजादा", "चूतिया", "चूतिये", "चूत", "लंड", "लौड़ा", "लौडा", "गांड", "गांडू", "मादरचोद",
+  "बहनचोद", "भोसड़ीके", "भोसड़ी के", "भोसड़ी", "रंडी", "छिनाल", "भड़वा", "भड़वे", "माँ चोद", "haramzada",
+  "haramzade", "chutiya", "chutiye", "chutiyapa", "chut", "choot", "lund", "lauda", "lawda", "gaand",
+  "gandu", "gaandu", "madarchod", "madharchod", "mkc", "bhenchod", "behenchod", "bhosdike", "bhosdi",
+  "bhosda", "bsdk", "bhosdika", "bhosdiwala", "bhosdiwale", "randi", "chhinal", "bhadwa", "bhadwe", "chodu",
+  "maa ki chut", "behen ke lode", "behan ke lode", "behen ke laude", "teri maa ki chut",
+  "teri behen ki chut", "maa chod"
+]

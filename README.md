@@ -64,10 +64,18 @@ AntiBadWordsPlugin/
 ├── 4-mod-forge/                 <- source code of the Forge mod
 ├── 5-shared-mod-code/           <- the "brain" Fabric and Forge both use (so they behave the same)
 ├── 6-guides/                    <- explanations: every config option, project notes, Modrinth page text
+├── 7-wordlists/                 <- the bad-word lists: one file per language (37 files) plus your own custom list
 └── handoffs/                    <- the plan for the next features, split into 5 ready-to-paste session prompts
 ```
 
-Rule of thumb: **1 = use it, 2-4 = the code for each server type, 5 = shared brain, 6 = reading material.**
+Rule of thumb: **1 = use it, 2-4 = the code for each server type, 5 = shared brain, 6 = reading material, 7 = the word lists.**
+
+## Word lists for many languages
+
+The folder [`7-wordlists/`](7-wordlists/) has one bad-word file per language (35 languages in 37 files, from Arabic to Vietnamese),
+three strength tiers each, and an empty `custom.yml` for your own words. They are first drafts written by an AI and are all marked
+`unreviewed`. Nothing is switched on by them yet: the plugin and the mods still use the lists in `config.yml` until a later
+version loads these files. How to read, edit and check them: [`7-wordlists/README.md`](7-wordlists/README.md). Where they come from: [`7-wordlists/NOTICE.md`](7-wordlists/NOTICE.md).
 
 ## Commands (in game or console)
 

@@ -1,0 +1,40 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "es"
+name: Spanish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Covers Spain and Latin America. Accents are stripped by the matcher, so coño also matches the harmless word cono (cone) and joder/jodete are fine. Left out on purpose: concha (shell), perra (dog), burro (donkey, used in the pt-br legacy list), payaso (clown), puto is kept but note it is a normal word for 'boy' in Portugal (pt-pt omits it). Words shared with Portuguese (puta, merda is not shared) are intentional. collisions-ok: pt-br pt-pt fil it Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bobo cagada cagar cretina cretino estupida estupido idiota imbecil lerdo maricas puta putas putona travelo"
+level-1: [
+  "tonto", "tonta", "idiota", "imbecil", "estupido", "estupida", "bobo", "boba", "menso", "mensa", "baboso",
+  "babosa", "tarado", "tarada", "cretino", "cretina", "zoquete", "lerdo", "lerda", "zonzo", "zonza",
+  "atontado", "gilipollas", "subnormal", "bocazas", "sinverguenza", "cabezota", "cabeza hueca",
+  "cara de idiota", "cara de culo", "pedazo de idiota", "paparrucho", "lelo", "panoli", "merluzo",
+  "soplagaitas"
+]
+level-2: [
+  "cabron", "cabrona", "cabrones", "pendejo", "pendeja", "pendejos", "gilipuertas", "mamon", "mamona",
+  "joto", "puto", "puta", "putas", "zorra", "zorras", "culero", "culera", "mierda", "mierdas", "coño",
+  "carajo", "cojones", "hostia", "joder", "jodete", "jodido", "jodida", "verga", "vergas", "polla", "pija",
+  "pinche", "chingada", "chingado", "chingadera", "hdp", "ctm", "ptm", "malparido", "malparida", "hijueputa",
+  "boludo", "boluda", "pelotudo", "pelotuda", "forro", "huevon", "weon", "aweonao", "culiao", "conchudo",
+  "cagada", "cagar", "cagon", "cagona", "capullo", "mamarracho", "soplapollas", "comemierda", "gonorrea",
+  "vete a la mierda", "vete a la verga", "a la mierda", "me cago en", "que te jodan", "hijo de perra",
+  "mala madre", "la concha de tu madre", "la madre que te pario", "desgraciado", "desgraciada", "escoria",
+  "rastrero", "rastrera", "lameculos", "chupamedias", "tragaldabas", "pajero", "pajera", "gilipollez",
+  "gilipollas de mierda", "jilipollas", "hijo de mil putas", "hijoputa", "la puta madre", "putada",
+  "puteada", "putear", "culazo", "pichula", "pichon", "tarado mental", "retrasado", "retrasada", "mongolo",
+  "mongola", "sudaca", "panchito"
+]
+level-3: [
+  "hijo de puta", "hijos de puta", "hijo de la gran puta", "hijo de la chingada", "chinga tu madre",
+  "chingar", "chingate", "chinga", "conchetumare", "conchesumadre", "conchatumadre", "concha tu madre",
+  "concha de tu madre", "concha su madre", "chucha", "chuchatumadre", "puta madre", "puta que te pario",
+  "putisima", "putero", "putita", "putona", "zorron", "maricon", "maricones", "marica", "maricas",
+  "mariconazo", "marimacho", "sarasa", "bujarron", "bugarron", "travelo", "travesti", "negro de mierda",
+  "indio de mierda", "mamabicho", "mamaguevo", "mamahuevo", "guevon", "huevon de mierda", "pendejada",
+  "chupapollas", "culiar", "culear", "culeado", "pajillero", "culona", "picha", "picha floja", "vergon",
+  "vergudo", "pajeros", "cagon de mierda"
+]

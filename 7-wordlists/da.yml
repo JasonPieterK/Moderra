@@ -1,0 +1,24 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "da"
+name: Danish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: sgu, svin (pig), nar, skid (shit, but 'skid' is English), pik is kept in tier 3 although it also means 'pick' in Dutch. Accents are stripped (røv becomes rov, møg becomes mog). collisions-ok: no sv nl en Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: idiot Related languages share cognate words on purpose. collisions-ok: no sv"
+level-1: [
+  "dum", "dumme", "idiot", "tåbe", "fjols", "klaphat", "møgunge", "kryster", "nar", "møg", "pis",
+  "hold kæft", "hold din kæft", "hold mund"
+]
+level-2: [
+  "lort", "lortunge", "lortesvin", "spasser", "spasserhoved", "fanden", "fandeme", "ludder", "stodder",
+  "røv", "rovhul", "pikfjæs", "pikhoved", "pikhovede", "skide", "skiderik", "skidesvin", "møgsvin", "møgdyr",
+  "forpulede", "forpulet", "fuck dig", "fuck af", "luderunge"
+]
+level-3: [
+  "fisse", "fissen", "kusse", "pikken", "tissemand", "kneppe", "knepper", "kneppet", "knep", "røvknepper",
+  "røvknep", "bøsse", "bøsserøv", "luder", "ludere", "luderhoved", "hore", "horer", "horeunge", "pikslikker",
+  "fissefjæs", "fissehul", "fissetryne", "kussetryne", "kusselikker", "kusselikkere", "røvslikker",
+  "røvslikkere", "røvhul", "røvhuller", "neger", "perker"
+]

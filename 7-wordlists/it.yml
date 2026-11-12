@@ -1,0 +1,34 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "it"
+name: Italian
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: finocchio (also fennel), pene, incazzato (very common), negro (also Spanish/Portuguese 'black'). Accents are stripped so 'merdà' style typos are fine. 'cazzata' is mild. 'ostia' is left out (means wafer). collisions-ok: es Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretina cretino idiota merda merdosa merdoso mongoloide"
+level-1: [
+  "stupido", "stupida", "scemo", "scema", "cretino", "cretina", "idiota", "imbecille", "babbeo",
+  "deficiente", "fesso", "fessa", "pirla", "sciocco", "sciocca", "citrullo", "rimbambito", "zuccone",
+  "testone", "mammalucco", "cretinetti", "scimunito", "cazzata", "cazzate"
+]
+level-2: [
+  "stronzo", "stronza", "stronzi", "stronzate", "stronzata", "merda", "bastardo", "bastarda", "bastardi",
+  "coglione", "coglioni", "rompicoglioni", "rompipalle", "rompiscatole", "fottiti", "puttana", "puttane",
+  "troia", "troie", "zoccola", "zoccole", "mignotta", "mignotte", "bocchinara", "culattone", "frocio",
+  "froci", "ricchione", "ricchioni", "paraculo", "mongoloide", "handicappato", "handicappata",
+  "testa di cazzo", "testa di minchia", "figlio di puttana", "figli di puttana", "vaffa", "fanculo",
+  "cagare", "cagata", "merdoso", "merdosa", "pezzo di merda", "faccia di merda", "faccia di cazzo",
+  "succhiacazzi", "leccaculo", "leccapiedi", "pecorino", "cornuto", "cornuta", "cornuti", "cornutone",
+  "sporco negro", "vai a cagare", "vai a farti fottere"
+]
+level-3: [
+  "cazzo", "cazzi", "minchia", "minchione", "fica", "fiche", "figa", "sborra", "sborrata", "pompino",
+  "pompini", "inculare", "inculata", "incula", "inculato", "scopare", "scopata", "scopate", "trombare",
+  "trombata", "segaiolo", "segaiola", "bocchino", "vaffanculo", "porco dio", "porca madonna", "dio cane",
+  "dio bestia", "madonna puttana", "porcodio", "dio porco", "porco giuda", "porca troia", "porca puttana",
+  "vaffanculo a te", "ti inculo", "ti scopo", "ti fotto", "fottere", "fottuto", "fottuta", "fottuti",
+  "fottuto bastardo", "figlio di troia", "figlio di un cane", "figlio di una cagna", "figa di legno",
+  "negro di merda", "terrone", "terroni", "zingaro", "zingari", "ebreo di merda", "sporco ebreo",
+  "sporco ebreo di merda"
+]

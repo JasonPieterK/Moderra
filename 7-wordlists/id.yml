@@ -1,0 +1,29 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "id"
+name: Indonesian (Bahasa Indonesia)
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+notes: "Chat spellings (kntl, mmk, gblk) are included on purpose. Risky: 'asu' and 'tai' are also words in other languages; 'cuk' is mild in Surabaya slang; 'babi' (pig) and 'monyet' (monkey) are insults but also real animals in Minecraft talk. Left out: suka, loh, gila, sampah (too common). collisions-ok: ms Related languages share cognate words on purpose. collisions-ok: ms"
+level-1: [
+  "bodoh", "bodo", "bego", "goblok", "gblk", "tolol", "bacot", "bacod", "sialan", "kampret", "dungu",
+  "bloon", "oon", "sinting", "cupu", "anjay", "goblog", "bebal", "pea", "dongo", "tolol banget", "gak guna",
+  "sok pintar", "dasar bodoh", "bodoh amat", "ngehe", "lemot"
+]
+level-2: [
+  "bangsat", "bajingan", "brengsek", "tai", "taik", "asu", "anjing", "anjeng", "anjir", "anjrit", "mampus",
+  "perek", "pelacur", "lonte", "keparat", "bedebah", "kurang ajar", "monyet", "babi", "kunyuk", "bangke",
+  "celeng", "jablay", "sundal", "jalang", "bgst", "bjngn", "cocot", "setan alas", "anak haram",
+  "anak anjing", "anak babi", "mati aja", "mampus lu", "kampungan", "najis", "bacot lu", "bacot amat",
+  "tai kucing", "tai lu", "bangsat lu", "anjing lu", "dasar anjing", "bangsat banget", "brengsek lu",
+  "sialan lu", "pelacur lu"
+]
+level-3: [
+  "kontol", "kntl", "memek", "mmk", "ngentot", "ngewe", "jancok", "jancuk", "cuk", "dancok", "dancuk",
+  "diancuk", "diancok", "entot", "pantek", "peler", "pepek", "toket", "tetek", "coli", "colmek", "bokep",
+  "bispak", "kentu", "kimak", "kampang", "ngentot lu", "kontol lu", "memek lu", "kontolodon", "jembut",
+  "jembud", "itil", "itil lu", "silit", "ngocok", "bokep banget", "anjing kontol", "anak jancok",
+  "kontol kuda", "kontol babi", "lonte lu", "perek lu"
+]

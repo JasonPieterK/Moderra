@@ -1,0 +1,23 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "bn"
+name: Bengali
+script: bengali
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Bengali script plus Roman spellings. Overlaps with the Hinglish and Roman Urdu spellings (gadha, harami, kutta, gandu). Left out on purpose: ছাগল (goat), পাগল (crazy), ফালতু (mild), বাল romanised (also 'ball'), pod (English word). Needs native review. Related languages share cognate words on purpose. collisions-ok: hi ur"
+level-1: [
+  "বোকা", "গাধা", "উল্লুক", "বেহায়া", "বেয়াদব", "boka", "gadha", "ulluk", "behaya", "beyadob"
+]
+level-2: [
+  "হারামি", "হারামজাদা", "হারামজাদি", "কুত্তা", "কুত্তার বাচ্চা", "শুয়োর", "শুয়োরের বাচ্চা", "বদমাইশ",
+  "পোঁদ", "harami", "haramjada", "haramjadi", "kutta", "kuttar bachcha", "shuor", "shuorer bachcha",
+  "badmaish"
+]
+level-3: [
+  "খানকি", "খানকির পোলা", "খানকির ছেলে", "মাগি", "মাগী", "মাগির পোলা", "মাগীর পোলা", "বেশ্যা",
+  "বেশ্যার ছেলে", "চোদা", "চুদি", "চুদ", "চুদির ভাই", "চুদমারানি", "চোদনা", "গান্ডু", "মাদারচোদ", "বাল",
+  "বালের", "হিজড়া", "ভোদা", "ধোন", "khanki", "khankir pola", "khankir chele", "magi", "magir pola",
+  "beshya", "beshyar chele", "choda", "chudi", "chudir bhai", "chudmarani", "gandu", "madarchod",
+  "maderchod", "bhoda", "dhon"
+]

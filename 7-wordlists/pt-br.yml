@@ -1,0 +1,35 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "pt-br"
+name: Portuguese (Brazil)
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Brazilian chat spellings (fdp, pqp, vsf) included. Legacy words kept: foda is also a common slang word for 'great' (risky), burro means donkey (also Spanish), noob is shared with English and Russian. Left out: cu (too short), pau, rola (too many innocent meanings). Spelling differences from pt-pt: filha da puta, vai se foder, caralho are shared on purpose. collisions-ok: es pt-pt en ru burro noob Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: estupido fdp idiota imbecil lerdo merda mongoloide noob puta putona Related languages share cognate words on purpose. collisions-ok: pt-pt"
+level-1: [
+  "burro", "idiota", "estupido", "lixo", "noob", "otario", "trouxa", "lerdo", "anta", "jumento", "toupeira",
+  "bocó", "panaca", "bocudo", "otaria", "pateta", "sem noção", "cabeça oca", "cabeca oca", "cara de bunda",
+  "cara de pau", "cabeça de vento", "burra"
+]
+level-2: [
+  "babaca", "imbecil", "retardado", "arrombado", "cuzão", "corno", "bosta", "cacete", "vadia", "vagabunda",
+  "vagabundo", "safado", "safada", "desgraçado", "desgraçada", "cuzao", "bundao", "filho da mae", "fdm",
+  "otário", "arrombada", "vai se lascar", "vai tomar", "vai catar coquinho", "vai pro inferno",
+  "va pro inferno", "corno manso", "cornudo", "chifrudo", "piranha", "biscate", "quenga", "pilantra",
+  "mongoloide", "bichona", "boiola", "sapatao", "paneleiro", "retardada", "viado", "viada", "baitola",
+  "pederasta", "escroto", "escrota", "merdinha", "vagaba", "tomar no cu", "mongol de merda"
+]
+level-3: [
+  "porra", "caralho", "foda", "foder", "filha da puta", "puta", "merda", "fdp", "pqp", "vsf", "tnc", "krl",
+  "karalho", "carai", "caraio", "putaria", "puteiro", "puta que pariu", "puta merda", "puta que o pariu",
+  "vai se foder", "vai tomar no cu", "vai pra puta que pariu", "vai se fuder", "vai tomar no seu cu",
+  "vai se ferrar", "foda se", "foda-se", "fodase", "fodido", "fodida", "fodendo", "fodeu", "fodasse",
+  "fuder", "fudido", "fudida", "buceta", "boceta", "xoxota", "xereca", "perereca", "piroca", "punheta",
+  "punheteiro", "siririca", "siriricar", "boquete", "chupa pica", "chupa minha", "trepada", "caralhada",
+  "caralhudo", "cacetada", "cacetinho", "filho da puta de merda", "seu merda", "seu bosta",
+  "babaca de merda", "desgraçado de merda", "vagabunda de merda", "putinha", "putão", "putona", "puta velha",
+  "vai pra merda", "vai à merda", "vai a merda", "vai tomar no meio do cu", "enfia no cu", "enfiar no cu",
+  "tomar no olho do cu", "cuceta", "xibiu"
+]

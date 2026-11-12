@@ -1,0 +1,20 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "fil"
+name: Filipino (Tagalog and some Cebuano)
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Taglish chat spellings. Left out on purpose: leche (also Spanish 'milk'), puke (English), tae (Korean names such as Tae), bogo (also a city), atay, bakla (a neutral word, only a slur by tone), hayop alone (animal). 'puta' and 'putang ina' share roots with Spanish. 'babo' is not used. The list is short because many Filipino insults are mild phrases. collisions-ok: es pt-br Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bobo puta"
+level-1: [
+  "tanga", "bobo", "gago", "engot", "tarantado", "hangal", "siraulo", "gunggong", "bastos", "ungas",
+  "shunga", "buang", "pakshet", "lintik", "bwisit", "buwisit"
+]
+level-2: [
+  "ulol", "pakyu", "pakingshet", "putragis", "puta", "pesteng yawa", "yawa", "pisti", "walanghiya",
+  "walang hiya", "hinayupak", "lecheng", "punyeta"
+]
+level-3: [
+  "tangina", "putang ina", "putangina", "puta ka", "pokpok", "pekpek", "burat", "kantot", "jakol", "hindot"
+]

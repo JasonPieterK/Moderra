@@ -1,0 +1,21 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "he"
+name: Hebrew
+script: hebrew
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Written without vowel marks as people type. Hebrew has no separate lower-case. Left out on purpose: חמור (donkey / serious), כוס alone (also 'cup'), כלב (dog), אפס, חרא spelling variants are kept only as 'חרא'. A few Latin transliterations are included. Thin list: needs a native review before use on a Hebrew server. Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: manyak"
+level-1: [
+  "אידיוט", "אידיוטית", "טיפש", "טיפשה", "מטומטם", "מטומטמת", "דביל", "דבילית", "פראייר", "פראיירית",
+  "עזאזל", "לך לעזאזל", "מפגר", "מפגרת", "חתיכת אידיוט"
+]
+level-2: [
+  "מניאק", "מניאקית", "חרא", "דפוק", "דפוקה", "דפוק בראש", "נבלה", "בן זונה", "בת זונה", "יא בן זונה",
+  "יא מניאק", "בנזונה", "חתיכת חרא", "manyak"
+]
+level-3: [
+  "זין", "זיין", "לזיין", "תזדיין", "לך תזדיין", "מזדיין", "מזדיינת", "שרמוטה", "זונה", "קוקסינל", "כוסאמק",
+  "כוס אמק", "כוס אמא שלך", "כוס אמאשלך", "בן שרמוטה", "בן של שרמוטה", "בן אלף זונות", "מזיין", "מזיינת",
+  "יא זונה", "sharmuta", "kus emek", "kusemek", "kos emek", "kosemek", "ben zona"
+]

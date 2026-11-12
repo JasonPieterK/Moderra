@@ -1,0 +1,25 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "ur"
+name: Urdu (script and Roman Urdu)
+script: arabic
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Urdu script plus Roman Urdu. Roman Urdu overlaps heavily with the Hinglish spellings in hi (same words, same meaning); this is intentional. Left out on purpose: کتا alone (dog), بکواس (nonsense), پاگل (crazy), saala, gashti as plain 'hooker' is kept. 'lund' is also a Swedish place name and a Danish word for 'grove'. collisions-ok: hi bn Related languages share cognate words on purpose. collisions-ok: ar bn fa hi"
+level-1: [
+  "بیوقوف", "بے وقوف", "احمق", "گدھا", "الو کا پٹھا", "bewakoof", "bewaqoof", "bewkoof", "ullu",
+  "ullu ka pattha", "gadha"
+]
+level-2: [
+  "کمینہ", "کمینے", "حرامی", "حرام خور", "حرامخور", "بے غیرت", "بیغیرت", "کتیا", "سور", "خنزیر",
+  "کتے کا بچہ", "کتے کی اولاد", "سور کا بچہ", "harami", "haramkhor", "beghairat", "kutiya", "kutte ka bacha",
+  "kutte ki aulad", "suar ka bacha"
+]
+level-3: [
+  "حرامزادہ", "حرام زادہ", "کنجر", "کنجری", "رنڈی", "بھڑوا", "بھڑوے", "چوت", "لنڈ", "لوڑا", "گانڈ", "گانڈو",
+  "مادرچود", "مادر چود", "بہن چود", "بہنچود", "ماں چود", "ٹٹے", "ہیجڑا", "کھسرا", "گشتی", "haramzada",
+  "haramzadi", "kanjar", "kanjri", "randi", "bhadwa", "bhadwe", "chutiya", "choot", "chut", "lund", "lora",
+  "lauda", "gaand", "gandu", "madarchod", "madar chod", "mderchod", "behnchod", "behenchod", "bhenchod",
+  "maa chod", "tatte", "gashti", "mkc", "bkl", "bsdk", "teri maa ki", "teri ma ki", "maa ki chut",
+  "bhosdike", "bhosdi", "bhosri"
+]

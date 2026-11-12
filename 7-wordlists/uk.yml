@@ -1,0 +1,34 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "uk"
+name: Ukrainian
+script: cyrillic
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Cyrillic plus Latin transliteration. Many Russian swear words are used in Ukrainian too, so there is intentional overlap with ru. 'дупа' (also Polish) and 'бляха' are mild. The ethnic slurs кацап and хохол are included as slurs only; skip them if your server treats them as banter. collisions-ok: ru pl Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa idiot jebat kurva pizda suka Related languages share cognate words on purpose. collisions-ok: ru"
+level-1: [
+  "дурень", "дурна", "ідіот", "тупий", "дебіл", "кретин", "бовдур", "йолоп", "телепень", "довбень", "чмо",
+  "нікчема", "тупак", "дурепа", "безмозкий", "durnyi", "durnyj", "idiot", "tupyj", "tupyi", "debil",
+  "kretin", "yolop", "telepen", "dovben", "nikchema", "бляха", "blyaha", "дурнувате", "дупа", "dupa",
+  "мерзота", "тормоз"
+]
+level-2: [
+  "падлюка", "мерзотник", "покидьок", "виродок", "сволота", "сволоч", "тварюка", "гнида", "скотина",
+  "ублюдок", "повія", "шльонда", "сучка", "сучара", "лайно", "гівно", "говно", "срака", "срань", "хер",
+  "херня", "мудак", "мудило", "москаль", "падло", "паскуда", "svolota", "svoloch", "tvaryuka", "gnyda",
+  "hnyda", "skotyna", "vyrodok", "pokydok", "padlyuka", "pokydko", "lajno", "laino", "hivno", "govno",
+  "sraka", "sran", "hernya", "mudak", "mudylo", "povia", "shlonda", "suchka", "suchara", "paskuda", "мразь",
+  "mrazota", "придурок", "pridurok", "гівнюк", "hivnyuk", "ссикун", "bovdur"
+]
+level-3: [
+  "курва", "пиздець", "піздець", "пізда", "пизда", "хуй", "хуйло", "хуйня", "блядь", "бля", "блять", "сука",
+  "їбати", "єбати", "їбаний", "йобаний", "йоб", "їбана", "їбав", "їбись", "заїбав", "заебав", "нахуй",
+  "похуй", "іди нахуй", "іди в сраку", "підарас", "підор", "підар", "кацап", "хохол", "кацапня", "ебать",
+  "їбаний в рот", "їбанутий", "їбанько", "ебанько", "їбанат", "йобана мать", "йоб твою мать", "йобнутий",
+  "пиздити", "піздити", "піздюк", "пиздюк", "шльондра", "блядюга", "блядина", "курви", "мразота", "nahuy",
+  "nahui", "nakhuy", "nakhui", "pohuy", "pohui", "pizdec", "pizda", "huy", "huylo", "huilo", "khuylo",
+  "huinya", "khuinya", "yebaty", "yebaniy", "yobaniy", "yobany", "yobana", "zayebav", "zaibav", "blyad",
+  "blyat", "bliad", "suka", "kurva", "pidor", "pidar", "pidaras", "pidoras", "kacap", "kacapnya", "hohol",
+  "jebat", "yobnutyi", "ibaty", "ibanyi", "idi nahuy", "idi nahui", "idi na khuy", "chmo", "shlondra",
+  "pizdyuk", "pizdyk", "blyadyuha", "blyadyna", "yebanko", "yobanko"
+]

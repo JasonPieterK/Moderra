@@ -1,0 +1,27 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "nl"
+name: Dutch
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: kanker alone (means cancer, very common in serious talk), eikel (acorn), pik (also tool), homo, flikker alone is kept because it is mainly a slur. 'kut' and 'lul' are everyday vulgar words. Belgian slang (zot, kloot) partly covered. collisions-ok: de da Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: fuck loser"
+level-1: [
+  "stom", "sukkel", "kluns", "mafkees", "idioot", "debiel", "loser", "zeikerd", "zeikwijf", "lamlul",
+  "domkop", "dombo", "sufferd", "droplul", "slapjanus", "hufter", "vuilak", "schoft", "smeerlap", "rot op",
+  "lazer op", "hou je bek", "hou je kop", "hou je mond", "bek dicht", "kop dicht", "klojo", "kloothommel"
+]
+level-2: [
+  "lullen", "lulhannes", "lulletje", "klootzakken", "klote", "kloten", "hoer", "hoeren", "slet",
+  "slettenbak", "trut", "kutzooi", "gvd", "godverdomme", "godver", "verdomme", "verdomd", "verdorie",
+  "tering", "teringlijer", "tyfus", "tyfuslijer", "kankerlijer", "kankerhoer", "kankerzooi", "kankerlul",
+  "pleuris", "pleurislijer", "flikker", "flikkers", "nicht", "pisnicht", "rukker", "hoerenzoon", "klere",
+  "krijg de tering", "krijg de tyfus", "krijg de kanker", "kutkind", "kutwijven", "stomme hoer",
+  "dikke hoer", "vuile hoer", "vuile klootzak", "vuile lul"
+]
+level-3: [
+  "kut", "kutje", "kutten", "neuken", "neuk", "neukt", "fuck", "lul", "kloot", "klootzak", "pijp mij",
+  "lik mijn", "lik m'n", "zuig mijn", "zuig m'n", "kuthoer", "kutwijf", "kutlul", "kutvent", "hoerenjong",
+  "hoerenjongen", "kankerneger"
+]

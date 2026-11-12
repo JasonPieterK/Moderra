@@ -1,0 +1,31 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "pt-pt"
+name: Portuguese (Portugal)
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "European Portuguese slang. 'puto' is left out because it means 'boy' in Portugal. Shared with pt-br: caralho, merda, puta, foder, idiota. 'cona' is a normal word in some Portuguese dialects (and means 'cone' in Italian); 'piça' is mild-vulgar. collisions-ok: pt-br es Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cagada cagar cretino estupida estupido fdp idiota imbecil maricas merda merdosa merdoso mongoloide pica puta putas putona Related languages share cognate words on purpose. collisions-ok: pt-br"
+level-1: [
+  "idiota", "parvo", "parva", "palerma", "estupido", "estupida", "imbecil", "cretino", "lorpa", "javarda",
+  "atrasado mental", "pategas", "patego", "mentecapto", "mentecapta"
+]
+level-2: [
+  "cabrao", "cabrão", "merdoso", "merdosa", "badalhoco", "badalhoca", "javardo", "filho da mae", "estupor",
+  "cabronaço", "desgraçado", "sacana", "sacanas", "mariconço", "maricas", "bicha", "paneleiro", "paneleiros",
+  "retardado", "aleijado", "mongoloide", "cagão", "cagar", "cagada", "cagadela", "merdinha", "ordinario",
+  "fdp", "filho de uma égua", "filho de uma puta", "vai à merda", "vai a merda", "vai pó caralho",
+  "vai para o caralho", "vai prò caralho", "vai-te foder", "vai te foder", "vai para o inferno",
+  "vai pro inferno", "boçal", "cara de cu"
+]
+level-3: [
+  "caralho", "foda-se", "foda se", "fodasse", "puta que pariu", "puta", "putas", "puta que o pariu", "merda",
+  "foder", "foda", "fodido", "fodida", "fodão", "filho da puta", "filhos da puta", "cona", "pila", "piça",
+  "pissa", "pissinhas", "piroca", "caralhos", "caralhete", "caralhito", "carago", "carambas",
+  "cabrão do caralho", "cona da tua mae", "cona da mãe", "cona da tua mãe", "vai para a puta que te pariu",
+  "vai à puta que te pariu", "mama-me", "mama me", "chupa-me", "chupa me", "chupa pila", "punheta",
+  "punheteiro", "sacanagem", "putéfia", "putefia", "putanheiro", "putaria", "putinha", "putona", "vagabunda",
+  "vagabundo", "vagabundo de merda", "enfia no cu", "enfia no rabo", "rabiosque", "caralho de asa",
+  "ranhosa", "ranhoso", "cabrão de merda", "filho da mãe"
+]

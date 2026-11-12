@@ -1,0 +1,35 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "fr"
+name: French
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: 'con' (also Spanish 'with' and English 'con'), baiser (means 'kiss'), negro, andouille, nul. 'fdp' is shared with pt-br. 'idiot' is shared with English. 'merde' appears in other languages as a borrowed word. collisions-ok: en pt-br de Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretin fdp idiot imbecile travelo"
+level-1: [
+  "idiot", "idiote", "imbecile", "débile", "debile", "crétin", "cretin", "cretine", "abruti", "abrutie",
+  "bouffon", "bouffonne", "naze", "nazes", "tocard", "tocarde", "taré", "tarée", "pauvre type", "pauvre con",
+  "sombre idiot", "grosse merde", "ta gueule", "tagueule", "va te faire voir", "vas te faire voir",
+  "bouffon de merde", "tête de noeud", "tete de noeud", "tête de nœud", "petit con", "petit merdeux",
+  "merdeux", "merdeuse"
+]
+level-2: [
+  "connard", "connasse", "connards", "connasses", "salaud", "salauds", "salopard", "salope", "salopes",
+  "saloperie", "enfoiré", "enfoirée", "enfoires", "pute", "putes", "putain", "pouffiasse", "garce", "merde",
+  "emmerdeur", "emmerdeuse", "branleur", "branleuse", "bordel", "bordel de merde", "nique", "niquer", "ntm",
+  "fdp", "enculé", "encule", "enculer", "enculés", "enculee", "tapette", "fiotte", "pédé", "pétasse",
+  "petasse", "trouduc", "trou du cul", "tdc", "sous-merde", "sale pute", "sale con", "grosse conne",
+  "grosse pute", "gros connard", "bâtard", "batard", "batarde", "bâtarde", "sale merde", "nique ta mère",
+  "nique ta mere", "nique ta race", "fils de pute", "fils de chien", "fils de salope", "va chier",
+  "vas chier", "va te faire foutre", "va te faire enculer", "va te faire mettre",
+  "va te faire foutre connard"
+]
+level-3: [
+  "bite", "bites", "couille", "couilles", "zob", "chatte", "chattes", "foutre", "suce", "sucer", "branler",
+  "branlette", "enculeur", "enculeuse", "enculé de ta race", "ntm fdp", "nique ta mère la pute",
+  "ta gueule connard", "ferme ta gueule", "ferme ta gueule connard", "salope de merde", "grosse salope",
+  "sale salope", "sale pute de merde", "bougnoule", "bougnoules", "bamboula", "bamboulas", "youpin",
+  "youpins", "youpine", "pédé de merde", "sale pédé", "sale pede", "sale tapette", "sale enculé",
+  "grosse enculée", "travelo", "travelos"
+]

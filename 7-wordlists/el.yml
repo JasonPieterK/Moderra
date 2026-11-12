@@ -1,0 +1,31 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "el"
+name: Greek
+script: greek
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Greek script plus Greeklish (Latin letters, with w for omega). Accents (tonos) are stripped by the matcher, so each word is listed once. Left out: 'kolo' (also Slavic 'wheel'), koutos, strabos. Greeklish spellings overlap other Latin lists only by accident; none found. short-ok:"
+level-1: [
+  "βλάκας", "ηλίθιος", "χαζός", "κρετίνος", "ανόητος", "βλακεία", "βλάκα", "ηλίθιε", "ηλίθια", "vlakas",
+  "vlaka", "ilithios", "ilithie", "xazos", "xazi", "kretinos", "anoitos", "vlakeia", "vlaka re"
+]
+level-2: [
+  "μαλάκα", "μαλάκες", "μαλακία", "γαμώτο", "γαμώ", "γαμημένος", "γαμημένε", "γαμημένη", "καριόλης",
+  "καριόλα", "κάθαρμα", "καθάρματα", "παλιάνθρωπος", "σκατά", "σκατόψυχος", "ξεφτίλα", "τσόγλανος",
+  "χέστηκα", "χέσε", "ρε μαλάκα", "μαλάκα μου", "παλιομαλάκα", "παλιοκάθαρμα", "σκατόψυχε",
+  "πήγαινε στο διάολο", "στο διάολο", "malaka", "malakes", "malakia", "gamoto", "gamw", "gamo", "gamimenos",
+  "gamimeni", "kariolis", "kariola", "katharma", "katharmata", "paliaanthropos", "skata", "skatopsyxos",
+  "kseftila", "tsoglanos", "xestika", "xese", "re malaka", "malaka mou", "paliomalaka", "paliokatharma",
+  "skatopsyxe", "ste diaolo"
+]
+level-3: [
+  "μαλάκας", "πούστης", "πούστη", "πουτάνα", "πούτσος", "πούτσα", "αρχίδια", "αρχίδι", "μουνί", "μουνιά",
+  "γαμιέσαι", "γαμιόλης", "γαμιόλα", "γαμήσου", "γαμώ τη μάνα σου", "γαμώ την πουτάνα", "γαμώ το σπίτι σου",
+  "πουτανάκι", "ψωλή", "καβλί", "μουνάρα", "μουνάρες", "πουτσαρα", "πουτσάρα", "πουτσοκέφαλος",
+  "πουστόπαιδο", "πουστόπαιδα", "πουστάρα", "πουστάρες", "πούστικο", "malakas", "poustis", "pousti",
+  "poutsos", "poutsa", "poutana", "arxidia", "archidia", "arxidi", "mouni", "mounara", "gamiesai",
+  "gamiolis", "gamiola", "gamisou", "gamw ti mana sou", "gamo ti mana sou", "gamw tin poutana",
+  "gamo tin poutana", "gamo to spiti sou", "poutsara", "poutsokefalos", "poustopaido", "poustara",
+  "poustiko"
+]

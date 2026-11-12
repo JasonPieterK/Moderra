@@ -1,0 +1,37 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "ru"
+name: Russian
+script: cyrillic
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Cyrillic plus the Latin transliteration people type (blyat, nahuy). Legacy entries are kept: idiot and noob overlap with English, suka overlaps with Indonesian/Polish 'suka' (a harmless word in Indonesian: 'like'), hui overlaps pinyin. Risky: хер and хрен (horseradish) were left out of tier 1. collisions-ok: en idiot noob uk id pl suka Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil duren idiot noob pizda suka Related languages share cognate words on purpose. collisions-ok: uk"
+level-1: [
+  "durak", "tupoi", "idiot", "loh", "noob", "дурак", "тупой", "лох", "дебил", "кретин", "тупица", "олух",
+  "чмо", "дурачок", "дурень", "глупый", "debil", "kretin", "tupitsa", "chmo", "tupoj", "duren", "durachok",
+  "oluh", "придурошный", "идиот", "идиотка", "дура", "тормоз", "ничтожество", "nichtozhestvo"
+]
+level-2: [
+  "ublyudok", "pridurok", "svinya", "kozel", "mudak", "придурок", "мудак", "ублюдок", "козел", "свинья",
+  "козёл", "урод", "скотина", "сволочь", "падла", "дрянь", "мразь", "гнида", "говно", "дерьмо", "жопа",
+  "срать", "сучка", "шлюха", "гондон", "мудила", "tupoy", "urod", "skotina", "svoloch", "padla", "mraz",
+  "gnida", "govno", "dermo", "zhopa", "shlyuha", "gandon", "gondon", "mudila", "urodina", "уродина", "тварь",
+  "чмошник", "ублюдки", "мудаки", "выродок", "vyrodok", "мерзавец", "merzavets", "подонок", "podonok",
+  "засранец", "zasranec", "говнюк", "govnyuk", "дебилоид", "лошара", "loshara", "ssyklo"
+]
+level-3: [
+  "blyat", "suka", "nahui", "pizdec", "yebat", "hui", "блять", "блядь", "сука", "нахуй", "пиздец", "ебать",
+  "хуй", "пизда", "хуйня", "blyad", "blya", "bliat", "pidor", "pidoras", "pidaras", "huy", "xui", "xuy",
+  "huinya", "huynya", "ebat", "ebal", "ebanutyj", "ebanat", "zalupa", "pizda", "pohui", "pohuy", "nahuy",
+  "naxui", "nahyi", "ahuet", "ohuet", "ohuenno", "ebanyj", "eblan", "huilo", "pizdabol", "pizdez", "ебал",
+  "ебаный", "ебанутый", "ебанат", "еблан", "блядина", "пидор", "пидорас", "пидарас", "залупа", "похуй",
+  "нахер", "охуеть", "охуенно", "пиздатый", "пиздабол", "пиздеж", "хуёво", "хуевый", "хуйло", "хули",
+  "ёб твою мать", "еб твою мать", "иди нахуй", "иди на хуй", "пошел нахуй", "пошёл нахуй", "пошел на хуй",
+  "ебаться", "долбоёб", "долбоеб", "dolboeb", "dolbojob", "ебло", "ebalo", "уебок", "uebok", "уёбище",
+  "мудозвон", "mudozvon", "хер", "пиздюк", "хуесос", "хуеплёт", "ебанько", "нахуя", "naxuya", "пиздёж",
+  "залупаться", "ебучий", "ebuchiy", "ебливый", "пиздюлей", "pizdyulei", "нахрен", "пошёл ты", "иди в жопу",
+  "idi v zhopu", "иди в пизду", "idi v pizdu", "шалава", "shalava", "бляха", "blyaha", "сучара", "suchara",
+  "проститутка"
+]

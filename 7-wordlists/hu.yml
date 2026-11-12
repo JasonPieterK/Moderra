@@ -1,0 +1,24 @@
+# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "hu"
+name: Hungarian
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Diacritics are stripped (szar folds fine, köcsög becomes kocsog). Left out on purpose: tök, marha alone is kept in tier 1 only, cigány, tetű, fing. Words shared with other Slavic/Romance lists (kurva) are intentional. collisions-ok: cs pl ro Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil idiota kreten kurva"
+level-1: [
+  "hülye", "hulye", "ostoba", "barom", "marha", "idióta", "idiota", "balfasz", "balfék", "balfek", "kretén",
+  "kreten", "debil"
+]
+level-2: [
+  "szar", "szarfaszú", "szarfaszu", "szaros", "rohadt", "rohadek", "köcsög", "kocsog", "seggfej", "segg",
+  "picsába", "a picsaba", "anyád", "anyad", "az anyád", "az anyad", "baszodj meg", "gecit", "gecik",
+  "geciláda", "gecilada", "pöcsfej", "pocsfej", "kurvaanyad", "faszomat"
+]
+level-3: [
+  "fasz", "faszom", "faszfej", "faszkalap", "faszszopó", "faszszopo", "picsa", "pina", "kurva", "kurvaanyád",
+  "kibaszott", "bazdmeg", "baszd meg", "baszki", "bassza meg", "baszódj meg", "baszd el", "baszás", "baszas",
+  "baszni", "geci", "gecis", "pöcs", "pocs", "buzi", "szopj le", "a picsába", "a faszba", "ribanc",
+  "rohadék", "szarházi", "szarhazi"
+]
