@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  *   <li>{@code 6-guides/CONFIGURATION.md} from the settings registry,</li>
  *   <li>{@code 5-shared-engine/src/main/resources/wordlists-index.txt} from the files in {@code 7-wordlists/}.</li>
  * </ul>
- * Run it from {@code 5-shared-engine}: {@code mvn -q compile exec:java} (or see the folder README). A unit test fails
+ * Run it with {@code 5-shared-engine/generate-docs.sh}. A unit test fails
  * when the committed files are out of date.
  */
 public final class GenerateDocs {

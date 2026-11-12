@@ -60,6 +60,8 @@ class LedgerAndNamesTest {
         assertEquals("villager no sound", Names.soundDescription("entity.villager.no"));
         assertEquals("anvil land sound", Names.soundDescription("minecraft:block.anvil.land"));
         assertEquals("pling sound", Names.soundDescription("pling"));
+        assertEquals("note block pling sound", Names.soundDescription("block.note_block.pling"));
+        assertEquals("msg", Names.commandLabel("/Minecraft:Msg"));
         assertEquals("mining fatigue", Names.prettyName("minecraft:mining_fatigue"));
         assertEquals("a", Names.formatPunishmentList(List.of("a")));
         assertEquals("a and b", Names.formatPunishmentList(List.of("a", "b")));
