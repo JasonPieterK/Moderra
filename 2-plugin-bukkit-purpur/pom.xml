@@ -24,7 +24,7 @@
 
         <!--
             One source tree, one jar per Minecraft release. These four properties are overridden per
-            version by build-all.sh (see MINECRAFT_VERSIONS there); the defaults build the oldest
+            version by build-all-versions.sh (see MINECRAFT_VERSIONS there); the defaults build the oldest
             supported release.
               mc.version          Minecraft release the jar is built for (used in the file name)
               mc.api.version      value written to "api-version" in plugin.yml
@@ -54,6 +54,14 @@
             <version>${spigot.api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- The engine reads YAML with SnakeYAML. Every Bukkit server ships it (spigot-api depends on it), so it is only
+             needed for compiling and is not put into the jar. -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.3</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -65,7 +73,7 @@
     <build>
         <finalName>Antibadwords-RELEASE[${loader.name}] - ${project.version}-${mc.version}</finalName>
         <resources>
-            <!-- plugin.yml needs ${project.version} / ${mc.api.version}; config.yml must stay untouched. -->
+            <!-- plugin.yml needs ${project.version} / ${mc.api.version}. -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
@@ -73,15 +81,36 @@
                     <include>plugin.yml</include>
                 </includes>
             </resource>
+            <!-- The shared engine's own files (default punishment sections, word-list index); never filtered. -->
             <resource>
-                <directory>src/main/resources</directory>
+                <directory>../5-shared-engine/src/main/resources</directory>
                 <filtering>false</filtering>
-                <excludes>
-                    <exclude>plugin.yml</exclude>
-                </excludes>
+            </resource>
+            <!-- The word lists (data source of truth: 7-wordlists/) go into the jar as wordlists/<code>.yml. -->
+            <resource>
+                <directory>../7-wordlists</directory>
+                <targetPath>wordlists</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
             </resource>
         </resources>
         <plugins>
+            <!-- The platform-neutral engine is compiled into the plugin jar as a second source folder (no separate jar). -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-engine-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>../5-shared-engine/src/main/java</source></sources></configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>

@@ -1,7 +1,7 @@
 package com.jason.plugins.antibadwords.fabric;
 
+import com.jason.plugins.antibadwords.engine.EngineLog;
 import com.jason.plugins.antibadwords.mod.AbwCommand;
-import com.jason.plugins.antibadwords.mod.ModCore;
 import com.jason.plugins.antibadwords.mod.ModRuntime;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
@@ -19,8 +19,8 @@ public final class AntiBadWordsFabric implements ModInitializer {
     public void onInitialize() {
         String version = FabricLoader.getInstance().getModContainer("antibadwords")
             .map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("1");
-        ModRuntime.init(FabricLoader.getInstance().getConfigDir().resolve("antibadwords"), version, new FabricPermissions(),
-            new ModCore.Log() {
+        ModRuntime.init(FabricLoader.getInstance().getConfigDir().resolve("antibadwords"), version, "Fabric", new FabricPermissions(),
+            new EngineLog() {
                 @Override
                 public void info(String message) {
                     LOGGER.info(message);
@@ -37,7 +37,10 @@ public final class AntiBadWordsFabric implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ModRuntime.restoreLeftovers(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ModRuntime.onQuit(handler.getPlayer()));
         ServerLifecycleEvents.SERVER_STOPPING.register(ModRuntime::restoreEverything);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> ModRuntime.selfTestIfRequested());
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            ModRuntime.remember(server);
+            ModRuntime.selfTestIfRequested();
+        });
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> AbwCommand.register(dispatcher));
     }
 }

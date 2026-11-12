@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class CommandsMixin {
     @Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
     private void antibadwords$scan(ParseResults<CommandSourceStack> parse, String command, CallbackInfo ci) {
-        if (ModRuntime.core != null && ModRuntime.blockCommand(parse.getContext().getSource(), command)) {
+        if (ModRuntime.engine != null && ModRuntime.blockCommand(parse.getContext().getSource(), command)) {
             ci.cancel();
         }
     }

@@ -1,7 +1,7 @@
 package com.jason.plugins.antibadwords.forge;
 
+import com.jason.plugins.antibadwords.engine.EngineLog;
 import com.jason.plugins.antibadwords.mod.AbwCommand;
-import com.jason.plugins.antibadwords.mod.ModCore;
 import com.jason.plugins.antibadwords.mod.ModRuntime;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -20,8 +20,8 @@ public final class AntiBadWordsForge {
 
     public AntiBadWordsForge(FMLJavaModLoadingContext context) {
         String version = readVersion();
-        ModRuntime.init(FMLPaths.CONFIGDIR.get().resolve("antibadwords"), version, new ForgePermissions(),
-            new ModCore.Log() {
+        ModRuntime.init(FMLPaths.CONFIGDIR.get().resolve("antibadwords"), version, "Forge", new ForgePermissions(),
+            new EngineLog() {
                 @Override
                 public void info(String message) {
                     LOGGER.info(message);

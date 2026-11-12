@@ -1,15 +1,19 @@
 package com.jason.plugins.antibadwords.mod;
 
-import com.jason.plugins.antibadwords.AntiBadWordsSettings;
-import com.jason.plugins.antibadwords.Placeholders;
 import com.jason.plugins.antibadwords.PunishmentAction;
+import com.jason.plugins.antibadwords.engine.Engine;
+import com.jason.plugins.antibadwords.engine.EngineLog;
+import com.jason.plugins.antibadwords.engine.Message;
+import com.jason.plugins.antibadwords.engine.Platform;
+import com.jason.plugins.antibadwords.engine.PlayerRef;
+import com.jason.plugins.antibadwords.engine.Verdict;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -23,18 +27,23 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 
 /**
- * Everything that needs Minecraft classes, shared by the Fabric and Forge mods (both use Mojang names).
- * This is the mod-side equivalent of the plugin's AntiBadWordsListener (reaction part) and PunishmentExecutor.
+ * Everything that needs Minecraft classes, shared by the Fabric and Forge mods (both use Mojang names): the
+ * {@link Platform} the shared engine talks to, the entry points the loader events and mixins call, and the punishment
+ * actions that need the game (effects, attributes, sounds). All rules live in the engine; each entry point only builds a
+ * {@link Message}, asks {@code engine.inspect} and reports whether the action must be cancelled.
  * All public methods must be called on the server thread.
  *
  * <p>NOT compiled by the Maven test module; see 6-guides/FABRIC-AND-FORGE-STATUS.md.
  */
 public final class ModRuntime {
-    public static ModCore core;
+    /** The shared engine; {@code null} until {@link #init} ran (the mixins check this). */
+    public static Engine engine;
     private static AttributeLedger ledger;
     private static ModPermissions permissions;
-    private static ModCore.Log log;
-    private static final Set<UUID> ANVIL_FLAGGED = new HashSet<>();
+    private static EngineLog log;
+    /** The running server and its main thread, remembered the first time a player or command reaches us. */
+    private static volatile MinecraftServer server;
+    private static volatile Thread serverThread;
     private static final ScheduledExecutorService TIMER = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "AntiBadWords-timer");
         t.setDaemon(true);
@@ -44,12 +53,24 @@ public final class ModRuntime {
     private ModRuntime() {
     }
 
-    public static void init(Path configDir, String version, ModPermissions perms, ModCore.Log logger) {
+    /**
+     * @param loaderName "Fabric" or "Forge"
+     */
+    public static void init(Path configDir, String version, String loaderName, ModPermissions perms, EngineLog logger) {
         log = logger;
         permissions = perms;
-        core = new ModCore(configDir, version, logger);
         ledger = new AttributeLedger(configDir.resolve("pending-attributes.txt"));
+        // Creates the config folder on the first start, or converts an old single config.yml (a backup is kept).
+        engine = Engine.load(new ModPlatform(configDir, version, loaderName), configDir);
         logger.info("AntiBadWords " + version + " loaded.");
+    }
+
+    /** Remembers the server (and that the calling thread is its main thread). Called from every entry point. */
+    public static void remember(MinecraftServer running) {
+        if (running != null && server != running) {
+            server = running;
+            serverThread = Thread.currentThread();
+        }
     }
 
     /**
@@ -79,56 +100,47 @@ public final class ModRuntime {
 
     // ------------------------------------------------------------------------------------------
     // Detection entry points (called by the loader events / mixins). Each returns true when the
-    // action must be cancelled; the violation is handled before returning.
+    // action must be cancelled; the follow-up (strikes, messages, punishments) is started before returning.
     // ------------------------------------------------------------------------------------------
 
+    /** World names are not passed yet (see handoffs/BUILD-VERIFICATION-TODO.md), so worlds.yml world rules do not match on mods. */
+    private static Message message(ServerPlayer player, String source, String text) {
+        remember(serverOf(player));
+        return Message.of(player.getUUID(), player.getName().getString(), "", source, text, node -> has(player, node));
+    }
+
+    /** A mod cannot rewrite the text at these places, so a censoring verdict cancels like a blocking one. */
+    private static boolean apply(Message message, Verdict verdict) {
+        engine.onViolation(message, verdict);
+        return verdict.blocked() || verdict.censored();
+    }
+
     public static boolean blockChat(ServerPlayer player, String text) {
-        return scan(player, text, "chat", core.settings().scanChat());
+        Message message = message(player, Message.CHAT, text);
+        return apply(message, engine.inspect(message));
     }
 
     public static boolean blockCommand(CommandSourceStack source, String commandLine) {
-        if (!(source.getEntity() instanceof ServerPlayer player) || has(player, ModCore.PERMISSION_BYPASS)) {
+        if (!(source.getEntity() instanceof ServerPlayer player)) {
             return false;
         }
-        String toScan = core.commandTextToScan(commandLine);
-        String word = toScan == null ? null : core.find(toScan);
-        if (word == null) {
-            return false;
-        }
-        handleViolation(player, word, "command");
-        return true;
+        // The engine decides which commands are scanned (scanned-commands / ignored-commands) and looks at the arguments.
+        Message message = message(player, Message.COMMAND, commandLine);
+        return apply(message, engine.inspect(message));
     }
 
     public static boolean blockSign(ServerPlayer player, String[] lines) {
-        if (!core.settings().scanSigns() || has(player, ModCore.PERMISSION_BYPASS)) {
-            return false;
-        }
-        for (String line : lines) {
-            String word = core.find(line);
-            if (word != null) {
-                handleViolation(player, word, "sign");
-                return true;
-            }
-        }
-        return false;
+        Message template = message(player, Message.SIGN, "");
+        return apply(template, engine.inspectFirst(template, Arrays.asList(lines)));
     }
 
     public static boolean blockBook(ServerPlayer player, List<String> pages, String title) {
-        if (!core.settings().scanBooks() || has(player, ModCore.PERMISSION_BYPASS)) {
-            return false;
-        }
         List<String> texts = new ArrayList<>(pages);
         if (title != null) {
             texts.add(title);
         }
-        for (String text : texts) {
-            String word = core.find(text);
-            if (word != null) {
-                handleViolation(player, word, "book");
-                return true;
-            }
-        }
-        return false;
+        Message template = message(player, Message.BOOK, "");
+        return apply(template, engine.inspectFirst(template, texts));
     }
 
     /**
@@ -138,83 +150,158 @@ public final class ModRuntime {
      * @return true when the result slot must be emptied
      */
     public static boolean blockAnvil(ServerPlayer player, String renameText, boolean resultPresent) {
-        if (!core.settings().scanAnvil() || has(player, ModCore.PERMISSION_BYPASS)) {
-            return false;
-        }
         if (renameText == null || renameText.isBlank() || !resultPresent) {
             return false;
         }
-        String word = core.find(renameText);
-        if (word == null) {
+        Message message = message(player, Message.ANVIL, renameText);
+        Verdict verdict = engine.inspect(message);
+        if (!verdict.blocked() && !verdict.censored()) {
             return false;
         }
-        if (ANVIL_FLAGGED.add(player.getUUID())) {
-            handleViolation(player, word, "anvil");
+        if (engine.firstAnvilViolation(player.getUUID())) {
+            engine.onViolation(message, verdict);
         }
         return true;
     }
 
     public static void anvilClosed(UUID player) {
-        ANVIL_FLAGGED.remove(player);
+        engine.anvilClosed(player);
     }
-
-    private static boolean scan(ServerPlayer player, String text, String source, boolean enabled) {
-        if (!enabled || has(player, ModCore.PERMISSION_BYPASS)) {
-            return false;
-        }
-        String word = core.find(text);
-        if (word == null) {
-            return false;
-        }
-        handleViolation(player, word, source);
-        return true;
-    }
-
-    // ------------------------------------------------------------------------------------------
-    // Reaction (port of AntiBadWordsListener.handleViolation / notifyStaff / punish)
-    // ------------------------------------------------------------------------------------------
 
     private static MinecraftServer serverOf(ServerPlayer player) {
         return player.level().getServer();
     }
 
-    private static void handleViolation(ServerPlayer player, String word, String source) {
-        MinecraftServer server = serverOf(player);
-        String name = player.getName().getString();
-        ModCore.Outcome outcome = core.handleViolation(player.getUUID(), name, word, source);
+    // ------------------------------------------------------------------------------------------
+    // What the engine needs from the server
+    // ------------------------------------------------------------------------------------------
 
-        if (outcome.staffMessage() != null) {
-            Component staff = Component.literal(outcome.staffMessage());
-            for (ServerPlayer other : server.getPlayerList().getPlayers()) {
-                if (has(other, ModCore.PERMISSION_NOTIFY) && !other.getName().getString().equals(name)) {
-                    other.sendSystemMessage(staff);
+    private static final class ModPlatform implements Platform {
+        private final Path configDir;
+        private final String version;
+        private final String loaderName;
+
+        ModPlatform(Path configDir, String version, String loaderName) {
+            this.configDir = configDir;
+            this.version = version;
+            this.loaderName = loaderName;
+        }
+
+        private static ServerPlayer player(UUID id) {
+            MinecraftServer running = server;
+            return running == null ? null : running.getPlayerList().getPlayer(id);
+        }
+
+        @Override
+        public String name() {
+            return loaderName;
+        }
+
+        @Override
+        public String pluginVersion() {
+            return version;
+        }
+
+        @Override
+        public Path dataFolder() {
+            return configDir;
+        }
+
+        @Override
+        public EngineLog logger() {
+            return log;
+        }
+
+        @Override
+        public Collection<PlayerRef> onlinePlayers() {
+            List<PlayerRef> out = new ArrayList<>();
+            MinecraftServer running = server;
+            if (running != null) {
+                for (ServerPlayer p : running.getPlayerList().getPlayers()) {
+                    out.add(new PlayerRef(p.getUUID(), p.getName().getString()));
                 }
             }
-        }
-        if (outcome.logLine() != null) {
-            log.info(outcome.logLine());
+            return out;
         }
 
-        if (!outcome.punish()) {
-            if (outcome.broadcast() != null) {
-                broadcast(server, outcome.broadcast());
-            }
-            player.sendSystemMessage(Component.literal(outcome.playerMessage()));
-            return;
+        @Override
+        public Optional<PlayerRef> findPlayer(String exactName) {
+            MinecraftServer running = server;
+            ServerPlayer p = running == null ? null : running.getPlayerList().getPlayerByName(exactName);
+            return p == null ? Optional.empty() : Optional.of(new PlayerRef(p.getUUID(), p.getName().getString()));
         }
 
-        List<String> applied = new ArrayList<>();
-        for (PunishmentAction action : outcome.actions()) {
-            String description = execute(server, player, action);
-            if (description != null && !description.isBlank()) {
-                applied.add(description);
+        @Override
+        public void sendMessage(UUID playerId, String message) {
+            ServerPlayer p = player(playerId);
+            if (p != null) {
+                p.sendSystemMessage(Component.literal(message));
             }
         }
-        ModCore.Punished done = core.finishPunishment(outcome, applied);
-        broadcast(server, done.broadcast());
-        player.sendSystemMessage(Component.literal(done.playerMessage()));
-        if (done.finalCommand() != null) {
-            runAsConsole(server, done.finalCommand());
+
+        @Override
+        public void broadcast(String message) {
+            MinecraftServer running = server;
+            if (running != null) {
+                ModRuntime.broadcast(running, message);
+            }
+        }
+
+        @Override
+        public void runConsoleCommand(String command) {
+            MinecraftServer running = server;
+            if (running != null) {
+                runAsConsole(running, command);
+            }
+        }
+
+        @Override
+        public void kick(UUID playerId, String reason) {
+            ServerPlayer p = player(playerId);
+            if (p != null) {
+                // through the vanilla /kick command, like effects and sounds: no version-specific networking code
+                runAsConsole(server, "kick " + p.getName().getString() + " " + reason);
+            }
+        }
+
+        @Override
+        public boolean has(UUID playerId, String node) {
+            ServerPlayer p = player(playerId);
+            return p != null && ModRuntime.has(p, node);
+        }
+
+        @Override
+        public String worldName(UUID playerId) {
+            return ""; // not available yet on mods, see handoffs/BUILD-VERIFICATION-TODO.md
+        }
+
+        @Override
+        public void runSync(Runnable task) {
+            MinecraftServer running = server;
+            if (running == null || Thread.currentThread() == serverThread) {
+                task.run();
+            } else {
+                running.execute(task);
+            }
+        }
+
+        @Override
+        public void runSyncLater(Runnable task, long delayMillis) {
+            TIMER.schedule(() -> runSync(task), Math.max(0L, delayMillis), TimeUnit.MILLISECONDS);
+        }
+
+        @Override
+        public void runAsync(Runnable task) {
+            Thread thread = new Thread(task, "AntiBadWords-async");
+            thread.setDaemon(true);
+            thread.start();
+        }
+
+        @Override
+        public String applyAction(UUID playerId, PunishmentAction action) {
+            MinecraftServer running = server;
+            ServerPlayer p = player(playerId);
+            return p == null ? null : execute(running, p, action);
         }
     }
 
@@ -226,7 +313,7 @@ public final class ModRuntime {
     }
 
     // ------------------------------------------------------------------------------------------
-    // Punishment actions (port of PunishmentExecutor)
+    // Punishment actions that need the game (the engine runs "command" actions itself)
     // ------------------------------------------------------------------------------------------
 
     private static String execute(MinecraftServer server, ServerPlayer player, PunishmentAction action) {
@@ -235,7 +322,6 @@ public final class ModRuntime {
                 case "effect" -> applyEffect(server, player, action);
                 case "attribute" -> applyAttribute(server, player, action);
                 case "sound" -> playSound(server, player, action);
-                case "command" -> runCommand(server, player, action);
                 default -> {
                     log.warn("Unknown punishment type '" + action.type() + "' (" + action.id() + ")");
                     yield null;
@@ -335,26 +421,25 @@ public final class ModRuntime {
 
     /** Server stop (and mod reload): never leave a player with a half-applied attribute punishment. */
     public static void restoreEverything(MinecraftServer server) {
+        remember(server);
         for (UUID id : ledger.playersWithPending()) {
             ServerPlayer player = server.getPlayerList().getPlayer(id);
             if (player != null) {
                 restoreAll(player);
             }
         }
-        core.clearAllViolations();
+        engine.shutdown();
     }
 
     /** Join: repairs attributes a crash left modified. */
     public static void restoreLeftovers(ServerPlayer player) {
+        remember(serverOf(player));
         ledger.takeLeftovers(player.getUUID()).forEach((key, original) -> setBase(player, key, original));
     }
 
     public static void onQuit(ServerPlayer player) {
         restoreAll(player);
-        ANVIL_FLAGGED.remove(player.getUUID());
-        if (core.settings().clearViolationsOnQuit()) {
-            core.resetViolation(player.getUUID());
-        }
+        engine.onQuit(player.getUUID());
     }
 
     private static String playSound(MinecraftServer server, ServerPlayer player, PunishmentAction action) {
@@ -381,11 +466,6 @@ public final class ModRuntime {
             }
         }
         return lowerName; // maybe a custom (resource pack) sound without dots
-    }
-
-    private static String runCommand(MinecraftServer server, ServerPlayer player, PunishmentAction action) {
-        runAsConsole(server, Placeholders.apply(action.args().get(0), Map.of("player", player.getName().getString())));
-        return "server command";
     }
 
     // ------------------------------------------------------------------------------------------

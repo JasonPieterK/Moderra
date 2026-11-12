@@ -30,6 +30,31 @@ async function runExtras() {
   console_('execute at Tester run setblock ~-2 ~ ~ minecraft:oak_sign');
   await sleep(5000);
 
+  // ---- admin commands added with the shared engine: /abw lang and /abw whitelist (the bot is an operator now) ----
+  // NOT RUN YET: written without a server to try it on, see handoffs/BUILD-VERIFICATION-TODO.md.
+  bot.chat('/abw lang list');
+  await sleep(1500);
+  check('/abw lang list shows the languages', seen(/Languages \(\d+ of \d+ on/));
+  bot.chat('/abw lang enable de');
+  await sleep(2000);
+  check('/abw lang enable de switches German on', seen(/Language de \(German\) switched on/));
+  bot.chat('/abw check du arschloch');
+  await sleep(1500);
+  check('a German word is blocked after enabling de', seen(/Blocked: matches 'arschloch'/));
+  bot.chat('/abw lang disable de');
+  await sleep(2000);
+  check('/abw lang disable de switches German off', seen(/Language de switched off/));
+  bot.chat('/abw whitelist add botsafeword');
+  await sleep(2000);
+  check('/abw whitelist add', seen(/Added to the whitelist: botsafeword/));
+  bot.chat('/abw whitelist list 99');
+  await sleep(1500);
+  check('/abw whitelist list shows the new word on the last page', seen(/Whitelist \(\d+ words\)/) && seen(/botsafeword$/));
+  bot.chat('/abw whitelist remove BOTSAFEWORD');
+  await sleep(2000);
+  check('/abw whitelist remove (capital letters do not matter)', seen(/Removed from the whitelist: botsafeword/));
+  skipped('world-profile difference', 'needs two worlds and a prepared worlds.yml; profile resolution is covered by the engine unit tests');
+
   // ---- books ----
   const slot = bot.inventory.slots.findIndex((i) => i && i.name === 'writable_book');
   if (slot < 0) {

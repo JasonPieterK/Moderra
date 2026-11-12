@@ -22,14 +22,14 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Inject(method = "updateSignText", at = @At("HEAD"), cancellable = true)
     private void antibadwords$sign(ServerboundSignUpdatePacket packet, List<FilteredText> filtered, CallbackInfo ci) {
-        if (ModRuntime.core != null && ModRuntime.blockSign(player, SignLines.of(packet))) {
+        if (ModRuntime.engine != null && ModRuntime.blockSign(player, SignLines.of(packet))) {
             ci.cancel();
         }
     }
 
     @Inject(method = "handleEditBook", at = @At("HEAD"), cancellable = true)
     private void antibadwords$book(ServerboundEditBookPacket packet, CallbackInfo ci) {
-        if (ModRuntime.core != null && ModRuntime.blockBook(player, packet.pages(), packet.title().orElse(null))) {
+        if (ModRuntime.engine != null && ModRuntime.blockBook(player, packet.pages(), packet.title().orElse(null))) {
             ci.cancel();
         }
     }

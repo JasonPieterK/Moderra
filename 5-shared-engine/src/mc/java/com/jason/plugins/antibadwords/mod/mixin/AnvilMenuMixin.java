@@ -21,7 +21,7 @@ public abstract class AnvilMenuMixin {
     private void antibadwords$scan(CallbackInfo ci) {
         ItemCombinerMenuAccessor menu = (ItemCombinerMenuAccessor) (Object) this;
         ResultContainer result = menu.antibadwords$resultSlots();
-        if (ModRuntime.core != null && menu.antibadwords$player() instanceof ServerPlayer sp
+        if (ModRuntime.engine != null && menu.antibadwords$player() instanceof ServerPlayer sp
             && ModRuntime.blockAnvil(sp, itemName, !result.getItem(0).isEmpty())) {
             result.setItem(0, ItemStack.EMPTY);
         }

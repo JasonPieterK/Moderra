@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords;
 
+import com.jason.plugins.antibadwords.mod.Names;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -15,10 +16,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffectType;
 
 /**
- * Applies the configured punishments to a player.
+ * Applies the punishments that need the Bukkit API (effects, attributes, sounds) to a player. The shared engine decides
+ * when a player is punished and runs console commands itself; it calls this class through {@link BukkitPlatform}.
  *
  * <p>All methods must be called on the main server thread.
  *
@@ -31,7 +34,7 @@ import org.bukkit.potion.PotionEffectType;
 public final class PunishmentExecutor {
     private static final String PDC_PREFIX = "attr_";
 
-    private final AntiBadWordsPlugin plugin;
+    private final JavaPlugin plugin;
     /** player -> attribute -> pending restore. Main thread only. */
     private final Map<UUID, Map<Attribute, PendingRestore>> pending = new HashMap<>();
     private int restoreCounter;
@@ -39,7 +42,7 @@ public final class PunishmentExecutor {
     private record PendingRestore(double original, int token) {
     }
 
-    public PunishmentExecutor(AntiBadWordsPlugin plugin) {
+    public PunishmentExecutor(JavaPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -55,7 +58,6 @@ public final class PunishmentExecutor {
                 case "effect" -> applyEffect(player, action);
                 case "attribute" -> applyAttribute(player, action);
                 case "sound" -> playSound(player, action);
-                case "command" -> runCommand(player, action);
                 default -> {
                     plugin.getLogger().warning("Unknown punishment type '" + action.type() + "' (" + action.id() + ")");
                     yield null;
@@ -253,18 +255,7 @@ public final class PunishmentExecutor {
         float pitch = Float.parseFloat(args.get(2).trim());
         String soundKey = resolveSoundKey(name);
         player.playSound(player.getLocation(), soundKey, volume, pitch);
-        return describeSound(name);
-    }
-
-    /**
-     * {@code "entity.villager.no"} -> {@code "villager no sound"}: drops the category word in front of the first dot
-     * and keeps the rest (the old code kept only the last segment and produced "no sound").
-     */
-    static String describeSound(String rawName) {
-        String name = stripNamespace(rawName);
-        int firstDot = name.indexOf('.');
-        String rest = firstDot >= 0 && firstDot + 1 < name.length() ? name.substring(firstDot + 1) : name;
-        return rest.replace('.', ' ').replace('_', ' ') + " sound";
+        return Names.soundDescription(name);
     }
 
     /** Accepts {@code entity.villager.no} as well as the old enum style {@code ENTITY_VILLAGER_NO}. */
@@ -280,15 +271,6 @@ public final class PunishmentExecutor {
             }
         }
         return lowerName; // maybe a custom (resource pack) sound without dots
-    }
-
-    private String runCommand(Player player, PunishmentAction action) {
-        String command = Placeholders.apply(action.args().get(0), Map.of("player", player.getName()));
-        if (command.startsWith("/")) {
-            command = command.substring(1);
-        }
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
-        return "server command";
     }
 
     // ------------------------------------------------------------------------------------------

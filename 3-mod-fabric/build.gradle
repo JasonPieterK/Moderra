@@ -29,25 +29,27 @@ dependencies {
     include 'org.yaml:snakeyaml:2.3'
 }
 
-// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft layer.
+// Shared code: the platform-neutral engine (also compiled into the Bukkit plugin) + the Minecraft layer of the mods.
 sourceSets {
     main {
         java {
-            srcDir '../2-plugin-bukkit-purpur/src/main/java'
-            srcDir '../5-shared-mod-code/src/main/java'
-            srcDir '../5-shared-mod-code/src/mc/java'
+            srcDir '../5-shared-engine/src/main/java'
+            srcDir '../5-shared-engine/src/mc/java'
             // Small per-version shims for APIs that changed between Minecraft releases (see build-all-versions.sh).
-            srcDir "../5-shared-mod-code/src/mc-variants/sign-${sign_api}"
-            exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
-                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
+            srcDir "../5-shared-engine/src/mc-variants/sign-${sign_api}"
         }
-        resources.srcDir '../5-shared-mod-code/src/mc/resources'
+        // The engine's own files (default punishment sections, word-list index) and the mixin config.
+        resources.srcDir '../5-shared-engine/src/main/resources'
+        resources.srcDir '../5-shared-engine/src/mc/resources'
     }
 }
 
 processResources {
-    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
-    from('../2-plugin-bukkit-purpur/src/main/resources') { include 'config.yml' }
+    // The word lists (data source of truth: 7-wordlists/) go into the jar as wordlists/<code>.yml.
+    from('../7-wordlists') {
+        include '*.yml'
+        into 'wordlists'
+    }
     inputs.property 'version', mod_version
     inputs.property 'minecraft_version', minecraft_version
     inputs.property 'java_release', java_release
