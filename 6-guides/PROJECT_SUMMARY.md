@@ -1,5 +1,9 @@
 # Project summary
 
+> Newer than this page: the code was rebuilt around a shared engine (`5-shared-engine/`), a config folder and word-list
+> files for 35 languages. See the top of [`../CHANGELOG.md`](../CHANGELOG.md) and
+> [`FABRIC-AND-FORGE-STATUS.md`](FABRIC-AND-FORGE-STATUS.md) for what that changed and how far it is tested.
+
 **AntiBadWords** is a Spigot/Paper server **plugin** (not a mod) that blocks profanity and punishes repeat offenders.
 Current version: **1.10**. Licence: MIT. Author: Jason P.
 

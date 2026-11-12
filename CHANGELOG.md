@@ -1,5 +1,47 @@
 # Changelog
 
+## Unreleased (source code only - no new jars yet)
+
+**Honest status:** everything below is in the source code and covered by the engine's 88 unit tests. The plugin and mod
+code that connects the engine to a real server could not be compiled against Spigot, Minecraft, Fabric or Forge where it
+was written, and has never run on a server. The jars in `1-download-jars/` are still version 1. To-do list:
+`handoffs/BUILD-VERIFICATION-TODO.md`.
+
+### What is new
+* **One shared engine for all four server types.** `5-shared-mod-code/` became `5-shared-engine/`. It holds every rule
+  (checking text, strikes, messages, commands, config). The Bukkit plugin, the Fabric mod and the Forge mod are now thin
+  adapters: build a message, ask the engine, apply the answer.
+* **Config folder instead of one big file**: `config.yml`, `wordlists/<code>.yml`, `moderation/ladder.yml`, `worlds.yml`
+  and a `data/` folder. All files are generated with a comment above every option.
+* **Automatic migration.** An old `config.yml` is converted on the first start. The old file is kept as
+  `config.yml.bak-<date>`. Your old word lists become `wordlists/*.yml` with exactly your old words, the same languages
+  stay on, and a test compares every decision before and after: nothing changes.
+* **37 language files** from `7-wordlists/` are shipped in the jar. New installs start with English plus your custom
+  list. `/abw lang list`, `/abw lang enable <code>`, `/abw lang disable <code>`.
+* **`/abw whitelist add <word> | remove <word> | list [page]`**: words that are never blocked. Works at once.
+* **Different rules per world or group** (`worlds.yml`): named profiles that change any "per world" setting, picked by
+  world name (with `*`), dimension name or the permission `antibadwords.profile.<name>`.
+  Limit: on Fabric and Forge the world name is not available yet, so only the permission and the default profile work there.
+* **Mistakes in the config do not break the server.** A wrong value is replaced by the default (or the nearest allowed
+  number) and reported with file and key; unknown keys are reported; a file that cannot be read keeps the settings from before.
+* Programmatic edits (custom words, whitelist, languages) change only the lines they must: comments and order stay.
+* `6-guides/CONFIGURATION.md` is now generated from the code, so it cannot drift from the real options.
+
+### For developers
+* Settings registry (`SettingsRegistry`, `Setting`), pipeline of checks (`TextCheck`, `Hit`, `Verdict`), event stream
+  (`ModerationEvent`), replaceable strike counter (`StrikeService`), one-class sub-commands (`SubCommand`),
+  comment-preserving `YamlEditor`. See `5-shared-engine/README.md`.
+* The plugin's unit tests moved into the engine; the old code is kept in the tests as an oracle for the migration.
+* New/extended test scripts that have **not been run yet**: `2-plugin-bukkit-purpur/test-on-real-server.sh`, more checks
+  in the Fabric/Forge `test-on-real-server.sh` (`OLD_CONFIG=1` tests the migration), more checks in the scripted player.
+
+### Things that behave differently on purpose
+* `/abw` with no arguments lists two more sub-commands (`lang`, `whitelist`).
+* `/abw reload` also prints config problems, if there are any.
+* `/abw listwords <language>` uses the new codes (`en`, `de` ...); the old names (`english`, `german` ...) still work.
+* Fabric/Forge only: a setting that is missing from the file now uses its default (like the plugin always did);
+  the version-1 mods treated missing lists as empty.
+
 ## 1 (numbering restarted)
 
 ### What is new
@@ -27,7 +69,7 @@
 ### Tests added
 * Plugin: 24 unit tests (was 22). Shared mod code: 17 unit tests.
 * `test-on-real-server.sh` (Fabric and Forge): starts a real server and checks that the mixins apply and `/abw` works.
-* `5-shared-mod-code/live-player-test/`: a scripted player that joins a server, swears in chat, `/msg`, a book, a sign
+* `5-shared-engine/live-player-test/` (then called `5-shared-mod-code/`): a scripted player that joins a server, swears in chat, `/msg`, a book, a sign
   and an anvil, and checks the server's reaction.
 
 ## 1.10

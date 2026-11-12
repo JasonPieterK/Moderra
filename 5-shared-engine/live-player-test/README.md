@@ -14,3 +14,8 @@ developing did that automatically).
 
 Limits: it only works for Minecraft versions the `mineflayer` library supports. 26.1, 26.1.1, 26.1.2 and 1.21.11
 work (use `26.1` as the version for the two hotfixes); 26.2 and 26.3 do not yet.
+
+New in this round (written but **not run yet**, see `handoffs/BUILD-VERIFICATION-TODO.md`): with "extras" the bot also
+tries `/abw lang list`, `/abw lang enable de` / `disable de` and `/abw whitelist add` / `list` / `remove` (7 more checks).
+A world-profile test is not in the bot (it would need two worlds and a prepared `worlds.yml`); profile rules are covered
+by the engine's unit tests.

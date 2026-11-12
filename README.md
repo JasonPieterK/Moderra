@@ -37,15 +37,30 @@ That is 24 jars, all in [`1-download-jars/`](1-download-jars/). Minecraft 26.x n
 
 ### How well is each one tested?
 
+**Two different things are tested differently. Please read both tables.**
+
+**1. The jars you can download today** (in `1-download-jars/`, version 1, built *before* the current round of changes):
+
 | | Bukkit / Purpur | Fabric | Forge |
 |---|---|---|---|
-| Automatic unit tests | 24 | 17 (shared code) | 17 (shared code) |
 | Jar started on a **real server**, `/abw` commands checked | not done | all 6 versions | all 6 versions |
 | A **scripted player** swears in chat, `/msg`, a book, a sign, an anvil | not done | 26.1, 26.1.1, 26.1.2, 1.21.11 | 26.1, 26.1.1, 26.1.2, 1.21.11 |
 
 * The scripted player could not run on 26.2 and 26.3 (the test library does not support those versions yet).
-* The Bukkit and Purpur jars are built from source for all six versions but have **not** been started on a real
-  Spigot, Paper or Purpur server. Purpur runs Paper plugins, so it should work - that is an expectation, not a test.
+* The Bukkit and Purpur jars have **not** been started on a real Spigot, Paper or Purpur server.
+
+**2. The source code in this repository** (the shared engine, the config folder, `/abw lang`, `/abw whitelist`, world
+profiles - newer than the jars):
+
+| Part | How it was checked |
+|---|---|
+| Shared engine (`5-shared-engine`: all rules, config folder, migration, commands) | **88 automatic unit tests pass** (`cd 5-shared-engine && mvn test`) |
+| Bukkit / Purpur plugin code that connects the engine to the server | **not compiled** against the real Spigot API, **never run** on a server (only compiled against a hand-written stand-in) |
+| Fabric and Forge code that connects the engine to the game | **not compiled** against Minecraft, Fabric or Forge, **never run** on a server (only compiled against a hand-written stand-in) |
+| New jars | **not built**. The place this round was written in could not download Minecraft, Spigot, Fabric or Forge. |
+
+So: the new features are proven in the engine's tests, but nobody has seen them work on a real server yet. What has to
+be done to close that gap is listed in [`handoffs/BUILD-VERIFICATION-TODO.md`](handoffs/BUILD-VERIFICATION-TODO.md).
 
 Full details and remaining gaps: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md).
 
@@ -62,7 +77,7 @@ AntiBadWordsPlugin/
 ├── 2-plugin-bukkit-purpur/      <- source code of the plugin (Bukkit, Spigot, Paper, Purpur)
 ├── 3-mod-fabric/                <- source code of the Fabric mod
 ├── 4-mod-forge/                 <- source code of the Forge mod
-├── 5-shared-mod-code/           <- the "brain" Fabric and Forge both use (so they behave the same)
+├── 5-shared-engine/             <- the "brain" all four server types share (so they behave the same)
 ├── 6-guides/                    <- explanations: every config option, project notes, Modrinth page text
 ├── 7-wordlists/                 <- the bad-word lists: one file per language (37 files) plus your own custom list
 └── handoffs/                    <- the plan for the next features, split into 5 ready-to-paste session prompts
@@ -74,8 +89,8 @@ Rule of thumb: **1 = use it, 2-4 = the code for each server type, 5 = shared bra
 
 The folder [`7-wordlists/`](7-wordlists/) has one bad-word file per language (35 languages in 37 files, from Arabic to Vietnamese),
 three strength tiers each, and an empty `custom.yml` for your own words. They are first drafts written by an AI and are all marked
-`unreviewed`. Nothing is switched on by them yet: the plugin and the mods still use the lists in `config.yml` until a later
-version loads these files. How to read, edit and check them: [`7-wordlists/README.md`](7-wordlists/README.md). Where they come from: [`7-wordlists/NOTICE.md`](7-wordlists/NOTICE.md).
+`unreviewed`. The current source code copies them into the config folder (`wordlists/`) on the first start; English plus your custom list are
+switched on, every other language is one command away (`/abw lang enable de`). The downloadable version-1 jars still use the lists in their `config.yml`. How to read, edit and check them: [`7-wordlists/README.md`](7-wordlists/README.md). Where they come from: [`7-wordlists/NOTICE.md`](7-wordlists/NOTICE.md).
 
 ## Commands (in game or console)
 
@@ -83,21 +98,35 @@ Everything needs the permission `antibadwords.admin` (operators have it by defau
 
 | Command | What it does |
 |---------|--------------|
-| `/abw reload` | re-read `config.yml` |
+| `/abw reload` | read the config folder again (and show what is wrong in it) |
 | `/abw addword <word>` / `removeword <word>` | add or remove your own blocked word |
 | `/abw listwords [list]` | show a word list |
 | `/abw check <text>` | would this text be blocked? |
 | `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
 | `/abw info` | short status |
+| `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off (new, not in the version-1 jars) |
+| `/abw whitelist add <word>` / `remove <word>` / `list [page]` | words that are never blocked (new, not in the version-1 jars) |
 
 Other permissions: `antibadwords.notify` (staff see who got blocked, default: operators) and
-`antibadwords.bypass` (never blocked, default: nobody).
+`antibadwords.bypass` (never blocked, default: nobody). New: `antibadwords.profile.<name>` puts a player on a rule profile from `worlds.yml`.
 
 ## I want to change how it behaves
 
-Edit `config.yml` (it is created on first start). Every option is explained in
-[`6-guides/CONFIGURATION.md`](6-guides/CONFIGURATION.md): how strict it is (protection level 1-3), which languages,
-what the punishments are, what the messages say.
+**Version-1 jars:** edit `config.yml` (created on first start).
+
+**Current source code:** the settings live in a small folder that looks the same on every server type
+(`plugins/AntiBadWords/` or `config/antibadwords/`):
+
+```
+config.yml               general: languages on/off, how strict, where to look, messages
+wordlists/<code>.yml     one file per language, plus custom.yml for your own words
+moderation/ladder.yml    punishments
+worlds.yml               different rules per world or per group of players
+```
+
+Every file is created with a comment above every option. An old `config.yml` is converted automatically on the first
+start (a backup `config.yml.bak-<date>` is kept; the filter blocks exactly what it blocked before). Every option is
+explained in [`6-guides/CONFIGURATION.md`](6-guides/CONFIGURATION.md).
 
 ## I want to build the jars myself
 

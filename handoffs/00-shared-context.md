@@ -21,10 +21,10 @@ Jar naming (do not change): `Antibadwords-RELEASE[LOADER] - 1-<MCVERSION>.jar`, 
 
 Repo map (numbered, plain-language folders; every folder has a README):
 `1-download-jars/` finished jars | `2-plugin-bukkit-purpur/` plugin (`src/main/java/com/jason/plugins/antibadwords/`, `src/test/`,
-`build-all-versions.sh`) | `3-mod-fabric/` | `4-mod-forge/` | `5-shared-mod-code/` (pure-Java `src/main/java/.../mod/`, Minecraft layer
+`build-all-versions.sh`) | `3-mod-fabric/` | `4-mod-forge/` | `5-shared-engine/` (pure-Java `src/main/java/.../mod/`, Minecraft layer
 `src/mc/java/`, per-version shims `src/mc-variants/`, tests, `live-player-test/` bot) | `6-guides/` docs | `build-everything.sh`.
 The plugin's pure classes (`WordMatcher`, `Placeholders`, `PunishmentAction`, `AntiBadWordsSettings`) are compiled into the mods
-as a source root. Fabric/Forge also compile `5-shared-mod-code/src/{main,mc}/java` plus `src/mc-variants/sign-<array|record>`.
+as a source root. Fabric/Forge also compile `5-shared-engine/src/{main,mc}/java` plus `src/mc-variants/sign-<array|record>`.
 
 ## 2. Hard rules for every session
 
@@ -44,22 +44,30 @@ as a source root. Fabric/Forge also compile `5-shared-mod-code/src/{main,mc}/jav
 
 ## 3. Build, test and environment (learned the hard way)
 
-* Unit tests: `cd 5-shared-mod-code && mvn test` and `cd 2-plugin-bukkit-purpur && mvn clean test -Dmc.version=26.3 -Dmc.api.version=26.3 -Dspigot.api.version=26.3-R0.1-SNAPSHOT -Djava.release=25`.
+* Unit tests: `cd 5-shared-engine && mvn test` and `cd 2-plugin-bukkit-purpur && mvn clean test -Dmc.version=26.3 -Dmc.api.version=26.3 -Dspigot.api.version=26.3-R0.1-SNAPSHOT -Djava.release=25`.
 * All jars: `./build-everything.sh [mc versions...]`; add `TEST=1` to also start real Fabric/Forge servers with each jar and check them
   (`3-mod-fabric/test-on-real-server.sh`, `4-mod-forge/test-on-real-server.sh`). A full `TEST=1` run takes about one hour. During development
   use a subset such as `26.3 26.1 1.21.11`; run the full set once before opening the final PR.
-* Scripted player: `5-shared-mod-code/live-player-test/bot.js` joins a real server and checks chat, `/msg`, book, sign, anvil (supports
+* Scripted player: `5-shared-engine/live-player-test/bot.js` joins a real server and checks chat, `/msg`, book, sign, anvil (supports
   26.1, 26.1.1, 26.1.2, 1.21.11; not 26.2/26.3 yet). Extend it for every new feature that a player can trigger.
 * Toolchain: Maven 3.9, **Gradle 9.8+** (Loom 1.19 needs it, running on JDK 25), **JDK 25, 21 and 8** (ForgeGradle needs an old JDK 8 for one
   tool). Set `GRADLE=/path/to/gradle`, `JAVA8_HOME`, `JAVA21_HOME`, `JAVA25_HOME` if they are not under `/usr/lib/jvm`.
 * If Maven Central answers HTTP 429, retry, or use `https://repo1.maven.org/maven2/`; Maven needs the proxy in `~/.m2/settings.xml`
   (it ignores JVM proxy properties). Gradle caches what it downloaded, so retries make progress.
 * Mixin pitfalls: a Mixin cannot `@Shadow` a field that belongs to the target's parent class (use an `@Accessor` mixin on the parent, see
-  `ItemCombinerMenuAccessor`); Minecraft APIs differ between versions (see the `SignLines` shims in `5-shared-mod-code/src/mc-variants/`).
+  `ItemCombinerMenuAccessor`); Minecraft APIs differ between versions (see the `SignLines` shims in `5-shared-engine/src/mc-variants/`).
   Fabric and Forge APIs changed a lot in 26.x (Forge: events have a static `BUS`, a `Predicate` listener returns true to cancel; the mod
   constructor takes `FMLJavaModLoadingContext`). Read the real API with `javap` from the Gradle cache, do not guess.
 * Real-server test of the Bukkit/Purpur jars has never been done. Try to get a Paper or Purpur server jar for 26.x and add
   `2-plugin-bukkit-purpur/test-on-real-server.sh` plus a bot run; if you cannot download a server, say so in your report.
+
+## 3b. State after session 2 (read this too)
+
+Session 2 is done: the engine exists in `5-shared-engine/` (API overview in `5-shared-engine/README.md`), the plugin's pure classes and all
+unit tests moved there (`cd 5-shared-engine && mvn test`; the plugin folder has no tests of its own any more), and the plugin and the mods are
+thin adapters. **It was written without access to the Spigot, Minecraft, Fabric and Forge artifacts**, so the adapters were never compiled
+against the real APIs or run on a server. `handoffs/BUILD-VERIFICATION-TODO.md` lists exactly what still has to be compiled, run and fixed;
+append to it when you leave something unverified, and tick things off when you verify them.
 
 ## 4. Architecture contracts (the sessions build on these names)
 

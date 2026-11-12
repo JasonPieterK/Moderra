@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Builds Antibadwords-RELEASE[Bukkit] and [Purpur] jars (version 1) for each supported Minecraft release into ../1-download-jars
 #
-#   ./build-all.sh                 build every version below
-#   ./build-all.sh 26.2 26.3       build only the listed versions
+#   ./build-all-versions.sh                 build every version below
+#   ./build-all-versions.sh 26.2 26.3       build only the listed versions
 #
 # Requirements: Maven 3.9+, JDK 21 (for 1.21.x) and JDK 25 (for 26.x, which needs Java 25).
 # Point JAVA21_HOME / JAVA25_HOME at the JDKs; if unset, the JDK on PATH is used for both.
