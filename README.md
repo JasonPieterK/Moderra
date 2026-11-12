@@ -63,7 +63,8 @@ AntiBadWordsPlugin/
 ├── 3-mod-fabric/                <- source code of the Fabric mod
 ├── 4-mod-forge/                 <- source code of the Forge mod
 ├── 5-shared-mod-code/           <- the "brain" Fabric and Forge both use (so they behave the same)
-└── 6-guides/                    <- explanations: every config option, project notes, Modrinth page text
+├── 6-guides/                    <- explanations: every config option, project notes, Modrinth page text
+└── handoffs/                    <- the plan for the next features, split into 5 ready-to-paste session prompts
 ```
 
 Rule of thumb: **1 = use it, 2-4 = the code for each server type, 5 = shared brain, 6 = reading material.**
