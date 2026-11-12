@@ -1,0 +1,14 @@
+# structured format:
+#   sound-name: entity.villager.no     (any sound from /playsound)
+#   volume: 1.0
+#   pitch: 1.0
+villager_no:
+  enabled: true
+  sound-name: "entity.villager.no"
+  volume: 1.0
+  pitch: 1.0
+anvil_land:
+  enabled: false
+  sound-name: "block.anvil.land"
+  volume: 1.0
+  pitch: 0.8

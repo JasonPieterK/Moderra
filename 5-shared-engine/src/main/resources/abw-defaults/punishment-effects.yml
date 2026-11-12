@@ -1,0 +1,34 @@
+# structured format:
+#   effect-name: minecraft:blindness
+#   amplifier: 0       (0 = level I)
+#   duration: 3        (seconds)
+blindness:
+  enabled: false
+  effect-name: "minecraft:blindness"
+  amplifier: 0
+  duration: 3
+slowness:
+  enabled: false
+  effect-name: "minecraft:slowness"
+  amplifier: 2
+  duration: 3
+weakness:
+  enabled: false
+  effect-name: "minecraft:weakness"
+  amplifier: 1
+  duration: 3
+nausea:
+  enabled: false
+  effect-name: "minecraft:nausea"
+  amplifier: 0
+  duration: 5
+mining_fatigue:
+  enabled: false
+  effect-name: "minecraft:mining_fatigue"
+  amplifier: 1
+  duration: 6
+glow:
+  enabled: false
+  effect-name: "minecraft:glowing"
+  amplifier: 0
+  duration: 10

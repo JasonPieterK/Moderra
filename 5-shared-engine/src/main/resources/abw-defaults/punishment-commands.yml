@@ -1,0 +1,8 @@
+# Console commands run for the punished player. {player} is replaced by their name.
+# Examples (all disabled):
+kick:
+  enabled: false
+  command: "kick {player} Please watch your language!"
+mute:
+  enabled: false
+  command: "mute {player} 5m Bad language"

@@ -8,7 +8,7 @@ build-logs/
 run/
 run-*/
 
-# Node packages of the scripted test player (5-shared-mod-code/live-player-test)
+# Node packages of the scripted test player (5-shared-engine/live-player-test)
 node_modules/
 
 # IDE
