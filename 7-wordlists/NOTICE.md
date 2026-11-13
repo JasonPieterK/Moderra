@@ -25,6 +25,25 @@ No third-party list was copied into these files.
   and the copied entries must be marked in the file. CC BY 4.0 material may be combined with MIT code, but the copied data keeps its
   CC BY 4.0 terms.
 
+## Look-alike letter table (not a word list)
+
+`5-shared-engine/src/main/resources/abw-defaults/look-alikes.yml` (copied into every jar and, as the `look-alikes:` part
+of `filters/confusables.yml`, into every config folder) is **derived from Unicode data**:
+
+* Source: `confusables.txt`, version 18.0.0 (dated 2026-08-06), the data file of Unicode Technical Standard #39
+  "Unicode Security Mechanisms", (c) Unicode, Inc. Official location: <https://www.unicode.org/Public/security/latest/confusables.txt>.
+  It was downloaded from the copy in the ICU repository (`unicode-org/icu`, `icu4c/source/data/unidata/confusables.txt`),
+  because unicode.org could not be reached from where this was built.
+* Licence: **Unicode License v3** (<https://www.unicode.org/license.txt>), a permissive licence that allows use, copying,
+  modification and distribution of the data files provided the copyright and permission notice is kept with the data or
+  its documentation. This section is that notice: *Copyright (c) 1991-2026 Unicode, Inc. All rights reserved.
+  Distributed under the Terms of Use in https://www.unicode.org/copyright.html.*
+* What was changed: only lines "one letter of another alphabet -> one plain Latin letter" were kept (Cyrillic, Greek,
+  Armenian, Coptic, Cherokee, Lisu, Georgian, Hebrew, Arabic; 221 entries), lower-cased, with capital look-alikes of "I"
+  written as `i`. The script that does this is `5-shared-engine/generate-confusables.py`.
+* Added by hand (not from Unicode): the four Cyrillic letters version 1 of the plugin already treated as look-alikes
+  (`к м н т`) and the group `always` (26 Latin small-capital and phonetic letters).
+
 ## What this means
 
 * Quality: the lists are first drafts. Tier assignment, spelling variants and dialect coverage can be wrong.

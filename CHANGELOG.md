@@ -2,7 +2,7 @@
 
 ## Unreleased (source code only - no new jars yet)
 
-**Honest status:** everything below is in the source code and covered by the engine's 88 unit tests. The plugin and mod
+**Honest status:** everything below is in the source code and covered by the engine's 130 unit tests. The plugin and mod
 code that connects the engine to a real server could not be compiled against Spigot, Minecraft, Fabric or Forge where it
 was written, and has never run on a server. The jars in `1-download-jars/` are still version 1. To-do list:
 `handoffs/BUILD-VERIFICATION-TODO.md`.
@@ -27,6 +27,33 @@ was written, and has never run on a server. The jars in `1-download-jars/` are s
 * Programmatic edits (custom words, whitelist, languages) change only the lines they must: comments and order stay.
 * `6-guides/CONFIGURATION.md` is now generated from the code, so it cannot drift from the real options.
 
+### New filters (second step of this round) - all off or silent until you switch them on
+* **Bypass tricks** (`filters/evasion.yml`, `filters/confusables.yml`). Before a message is compared with the word lists
+  it is cleaned up: invisible characters removed, full-width and other special letter forms folded, accents ignored,
+  look-alike letters of other alphabets read as Latin (and the other way round), small capitals and leetspeak read as
+  letters. Every step has its own switch; accents can be kept per writing system. The look-alike table comes from the
+  Unicode confusables data and can be extended. Normal text gives the same result as before (tested per language family).
+  The trick itself can also be noted, cleaned or blocked (`detect.action`, default `log-only`).
+* **Spam and flood control** (`filters/spam.yml`, default off): too many messages, repeated or nearly identical
+  messages, capital letters, character and symbol floods, repeated words, too many commands. Each rule: on/off, limits,
+  action (block / censor / log-only), message, strike weight (default 0 = never punishes), sources.
+  Permission `antibadwords.bypass.spam`.
+* **Link filter** (`filters/links.yml`, default off): URLs, bare domains, IPv4/IPv6, invite links and hidden forms
+  (`example dot com`, `example(dot)com`, `example[.]com`, `example .com`, Unicode dots). Modes `block-all`,
+  `allow-list`, `block-list`; own switches for IP addresses and invites. Permission `antibadwords.bypass.links`.
+* **More places are scanned**: player names on join (`log`, `warn` or `kick`; off by default), the back side of signs
+  (own switch on Bukkit), command blocks (Bukkit only, off by default), and new installs scan more commands
+  (`team`, `title`, `tellraw`, `bossbar`, `scoreboard`, `rename`). An updated server keeps its old command list.
+* **Check order** is a setting (`filters.check-order`, default `evasion, badword, link, spam`).
+* **`/abw check <text>`** now names the check that fired and why; `/abw info` lists the filters and the check order.
+* **Faster with big word lists**: masked (`f*ck`) and partial matching use an index instead of scanning every word.
+  Measured with 10 000 words and 256-character messages (4-core test machine, JDK 21): 99 of 100 messages take under
+  0.1 ms in the word matcher (the old code: about 3 ms with partial-match on) and under 0.3 ms with every filter on.
+  The budget (under 1 ms) is a unit test.
+* Limits: "censor" changes the text only in chat on Bukkit/Spigot/Paper/Purpur and blocks everywhere else. On Fabric
+  and Forge command blocks are not scanned and the sign-back switch has no effect (both sides are always scanned).
+  None of this has run on a real server yet.
+
 ### For developers
 * Settings registry (`SettingsRegistry`, `Setting`), pipeline of checks (`TextCheck`, `Hit`, `Verdict`), event stream
   (`ModerationEvent`), replaceable strike counter (`StrikeService`), one-class sub-commands (`SubCommand`),
@@ -36,6 +63,11 @@ was written, and has never run on a server. The jars in `1-download-jars/` are s
   in the Fabric/Forge `test-on-real-server.sh` (`OLD_CONFIG=1` tests the migration), more checks in the scripted player.
 
 ### Things that behave differently on purpose
+* New installs scan six more commands by default; migrated installs keep the old list (it is written into their config).
+* The console gets a line for hits of the new checks (for example `Bob triggered evasion (invisible characters) in chat:
+  noted only`) when `logging.console` is on. The `evasion` check is the only new check that is active by default.
+* `/abw check` prints a second line naming the check; `/abw info` prints two more lines.
+* Long comments in the generated config files wrap a little differently.
 * `/abw` with no arguments lists two more sub-commands (`lang`, `whitelist`).
 * `/abw reload` also prints config problems, if there are any.
 * `/abw listwords <language>` uses the new codes (`en`, `de` ...); the old names (`english`, `german` ...) still work.

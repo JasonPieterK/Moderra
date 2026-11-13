@@ -3,7 +3,7 @@
 > **Read this first (state after the "shared engine" round).** This page has two parts. Everything from
 > "What was tested, honestly" downwards describes the **version-1 jars** in `1-download-jars/` and is unchanged. Since
 > then the source code was rebuilt around a shared engine (config folder, migration, `/abw lang`, `/abw whitelist`,
-> world profiles). That newer code is covered by **88 unit tests of the engine**, but the Fabric and Forge code that
+> world profiles). That newer code (now also spam, link and bypass-trick filters) is covered by **130 unit tests of the engine**, but the Fabric and Forge code that
 > connects the engine to the game - and the Bukkit plugin code too - has **not been compiled against Minecraft, Fabric,
 > Forge or Spigot and has never run on a server**, because the place it was written in could not download them. No new
 > jars were built. The jars in `1-download-jars/` are the old ones.
@@ -17,6 +17,14 @@
 > | `/abw whitelist add / remove / list` | pass | not run | not run | not run |
 > | World profiles (`worlds.yml`): by permission | pass | not run | not run (needs the Fabric Permissions API) | not run (nodes are registered at server start) |
 > | World profiles: by world name | pass | not run | **not implemented** (the mod does not pass the world name yet) | **not implemented** |
+> | Bypass-trick clean-up before word matching (invisible characters, look-alikes, full-width, leetspeak) | pass | not run | not run | not run |
+> | Spam and flood rules, link filter, bypass-trick detection: action `block` and `log-only` | pass | not run | not run | not run |
+> | The same with action `censor` (deliver a cleaned text) | pass | not run; chat only, other places block | **blocks instead** (the mods cannot change chat text yet) | **blocks instead** |
+> | Player-name check on join (log / warn / kick) | pass | not run | not run (kick through the `/kick` command) | not run (same) |
+> | Sign back side with its own switch | pass | not run (uses `SignChangeEvent#getSide`, Bukkit 1.20+) | **switch has no effect**: both sides are scanned with `scan.signs` | **switch has no effect** |
+> | Command blocks | pass | not run; checked when the block runs the command (assumes the server fires `ServerCommandEvent` for command blocks) | **not implemented** | **not implemented** |
+> | New permissions `antibadwords.bypass.spam` / `.links` / `.evasion` | pass | in `plugin.yml`, not run | default nobody; needs the Fabric Permissions API to grant | registered as Forge nodes, not run |
+> | Scripted player `bot.js ... filters` (14 checks) | - | never run | never run | never run |
 >
 > "Not compiled" means: only compiled against a small hand-written stand-in for the API classes, which proves that the
 > code fits the engine but not that it fits the real game. The exact to-do list for someone with network access is

@@ -50,11 +50,14 @@ That is 24 jars, all in [`1-download-jars/`](1-download-jars/). Minecraft 26.x n
 * The Bukkit and Purpur jars have **not** been started on a real Spigot, Paper or Purpur server.
 
 **2. The source code in this repository** (the shared engine, the config folder, `/abw lang`, `/abw whitelist`, world
-profiles - newer than the jars):
+profiles, and the new spam, link and bypass-trick filters - newer than the jars):
 
 | Part | How it was checked |
 |---|---|
-| Shared engine (`5-shared-engine`: all rules, config folder, migration, commands) | **88 automatic unit tests pass** (`cd 5-shared-engine && mvn test`) |
+| Shared engine (`5-shared-engine`: all rules, config folder, migration, commands) | **130 automatic unit tests pass** (`cd 5-shared-engine && mvn test`) |
+| New filters: spam and flood control, link filter, bypass-trick clean-up and detection, join-name check, check order | part of those 130 tests, including a speed test (10 000 words, 256-character message: 99 of 100 checks under 0.3 ms with every filter on) |
+| Join-name check, sign back side, command blocks, "censor" in chat: the wiring into the server | Bukkit: written, compiled only against a hand-written stand-in, **never run**. Fabric/Forge: join-name check written the same way; **command blocks are not scanned and the sign-back switch does nothing there yet** |
+| Scripted player for the new filters (`bot.js ... filters`) | written, syntax-checked only, **never run** |
 | Bukkit / Purpur plugin code that connects the engine to the server | **not compiled** against the real Spigot API, **never run** on a server (only compiled against a hand-written stand-in) |
 | Fabric and Forge code that connects the engine to the game | **not compiled** against Minecraft, Fabric or Forge, **never run** on a server (only compiled against a hand-written stand-in) |
 | New jars | **not built**. The place this round was written in could not download Minecraft, Spigot, Fabric or Forge. |
@@ -101,14 +104,15 @@ Everything needs the permission `antibadwords.admin` (operators have it by defau
 | `/abw reload` | read the config folder again (and show what is wrong in it) |
 | `/abw addword <word>` / `removeword <word>` | add or remove your own blocked word |
 | `/abw listwords [list]` | show a word list |
-| `/abw check <text>` | would this text be blocked? |
+| `/abw check <text>` | would this text be blocked, and by which check (bad word, link, spam rule ...)? |
 | `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
 | `/abw info` | short status |
 | `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off (new, not in the version-1 jars) |
 | `/abw whitelist add <word>` / `remove <word>` / `list [page]` | words that are never blocked (new, not in the version-1 jars) |
 
 Other permissions: `antibadwords.notify` (staff see who got blocked, default: operators) and
-`antibadwords.bypass` (never blocked, default: nobody). New: `antibadwords.profile.<name>` puts a player on a rule profile from `worlds.yml`.
+`antibadwords.bypass` (never blocked, default: nobody). New: `antibadwords.profile.<name>` puts a player on a rule profile from `worlds.yml`;
+`antibadwords.bypass.spam`, `.bypass.links` and `.bypass.evasion` exempt a player from one of the new filters (default: nobody).
 
 ## I want to change how it behaves
 
@@ -121,6 +125,10 @@ Other permissions: `antibadwords.notify` (staff see who got blocked, default: op
 config.yml               general: languages on/off, how strict, where to look, messages
 wordlists/<code>.yml     one file per language, plus custom.yml for your own words
 moderation/ladder.yml    punishments
+filters/spam.yml         spam and flood control          (off until you switch it on)
+filters/links.yml        links, IP addresses, invites    (off until you choose a mode)
+filters/evasion.yml      invisible characters, look-alike letters, leetspeak
+filters/confusables.yml  the look-alike and leetspeak tables
 worlds.yml               different rules per world or per group of players
 ```
 

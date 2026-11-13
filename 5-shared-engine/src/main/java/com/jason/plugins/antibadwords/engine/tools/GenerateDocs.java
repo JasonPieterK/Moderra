@@ -72,6 +72,10 @@ public final class GenerateDocs {
             config.yml               general: languages on/off, how strict, where to look, messages
             wordlists/<code>.yml     one file per language (en.yml, de.yml ...) and custom.yml for your own words
             moderation/ladder.yml    what happens to players who keep swearing (punishments)
+            filters/spam.yml         spam and flood control (off until you switch it on)
+            filters/links.yml        links, IP addresses and invites (off until you choose a mode)
+            filters/evasion.yml      bypass tricks: invisible characters, look-alike letters, leetspeak
+            filters/confusables.yml  the tables for look-alike letters and leetspeak
             worlds.yml               different rules per world or per group of players
             data/                    the plugin's own memory - do not edit
             ```
@@ -106,6 +110,36 @@ public final class GenerateDocs {
             }
         }
         md.append("""
+            ## The extra filters in plain words
+
+            A message goes through the checks in the order of `filters.check-order` (config.yml):
+            `evasion`, `badword`, `link`, `spam`. The first check that **blocks** ends the search. A check that **cleans**
+            (action `censor`) hands the cleaned text to the next check. `log-only` only notes it.
+
+            | Check | What it catches | Default |
+            |-------|-----------------|---------|
+            | `badword` | words from the word lists - also when written with invisible characters, look-alike letters, full-width letters, accents or leetspeak (the "normalise" part of `filters/evasion.yml`) | on, as always |
+            | `evasion` | the trick itself: an invisible character inside a word, or a word that mixes two alphabets | `log-only` |
+            | `link` | links, hidden links (`example dot com`, `example[.]com`), IP addresses, invite links | off (`mode: off`) |
+            | `spam-rate`, `spam-repeat`, `spam-caps`, `spam-flood`, `spam-words`, `spam-commands` | too many messages, repeated messages, CAPITALS, floods, repeated words, too many commands | off (`filters.spam.enabled: false`) |
+
+            * Each of them has its own action, message, strike weight (0 = never punishes) and list of sources.
+            * **"censor" needs a server that can change the text.** That is chat on Bukkit, Spigot, Paper and Purpur.
+              Everywhere else (signs, books, anvils, commands, and everything on Fabric and Forge) a message that would be
+              cleaned is blocked instead, and the player gets the rule's message.
+            * `/abw check <text>` shows which check would fire and why. The three rules that count messages over time
+              cannot be tested that way.
+            * Updating from an older version changes nothing by itself: spam and links are off, `evasion` only notes, and
+              your `scanned-commands` list is kept exactly as it was (new installs scan a few more commands).
+
+            More places that can be scanned (switches under `filters.scan` in config.yml):
+
+            | Source | Switch | Bukkit / Spigot / Paper / Purpur | Fabric / Forge |
+            |--------|--------|----------------------------------|----------------|
+            | Player name on join | `join-names` (off) + `filters.join-names.action` log / warn / kick | yes | yes (a kick uses the `/kick` command) |
+            | Back side of signs | `sign-back` (on) | yes, own switch | both sides are always scanned with `signs`; the extra switch does nothing yet |
+            | Command blocks | `command-blocks` (off) | yes: checked when the block **runs** the command (Bukkit has no event for editing one); nobody gets strikes | **not available yet** |
+
             ## Punishment actions (`moderation/ladder.yml`)
 
             Each entry under `punishment.effects`, `.attributes`, `.sounds` and `.commands` has `enabled: true/false`.
@@ -183,7 +217,7 @@ public final class GenerateDocs {
             | `/abw reload` | read the config folder again; shows config problems |
             | `/abw addword <word>` / `removeword <word>` | add or remove your own blocked word |
             | `/abw listwords [code\\|custom\\|active]` | show a word list |
-            | `/abw check <text>` | would this text be blocked? |
+            | `/abw check <text>` | would this text be blocked? Names the check that fires (badword, link, spam-caps ...) and why |
             | `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
             | `/abw info` | short status |
             | `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off |
@@ -196,6 +230,9 @@ public final class GenerateDocs {
             | `antibadwords.admin` | op | All `/abw` sub-commands |
             | `antibadwords.notify` | op | Staff alert for every blocked word |
             | `antibadwords.bypass` | nobody | Exempt from all checks |
+            | `antibadwords.bypass.spam` | nobody | Exempt from the spam and flood rules |
+            | `antibadwords.bypass.links` | nobody | Exempt from the link filter |
+            | `antibadwords.bypass.evasion` | nobody | Exempt from the bypass-trick detection (blocked words are still found) |
             | `antibadwords.profile.<name>` | nobody | Puts the player on that `worlds.yml` profile |
             """);
         return md.toString();

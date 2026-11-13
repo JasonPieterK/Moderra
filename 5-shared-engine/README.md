@@ -39,10 +39,33 @@ effects/attributes/sounds). Sign lines and book pages go through `engine.inspect
 | a setting | `Setting.bool("filters.spam.enabled", true).file("filters/spam.yml").category("Spam").title(..).description(..).overridable().build()` as a constant, register it in a `static void register(SettingsRegistry r)` method, and call that method in `Engine.registerSettings`. The file, its comments, validation and `CONFIGURATION.md` follow automatically (run `./generate-docs.sh`). |
 | a check (spam, links ...) | implement `TextCheck` (`id()`, `enabled(settings)`, `check(message, settings)` returning a `Hit`) and call `engine.registerCheck(order, check)` in `Engine.registerBuiltIns`. Read settings with `settings.get(MY_SETTING)`; cache compiled things with `settings.derived("id.what", s -> ...)`. |
 | a `/abw` sub-command | one class implementing `SubCommand`, registered with `commands.register(new MyCommand())` in `CoreCommands.register` |
-| a reaction to events (history, Discord) | `engine.events().subscribe(event -> ...)`; kinds so far: `violation`, `punishment`, `admin-command` |
+| a reaction to events (history, Discord) | `engine.events().subscribe(event -> ...)`; kinds so far: `violation`, `punishment`, `admin-command`, `spam`, `link`, `evasion` |
 | another strike counter | `engine.setStrikeService(new MyStrikeService())` |
 | a new text source (join name ...) | `engine.registerSource("join", SCAN_SWITCH_SETTING)` and send `Message`s with that source |
 | a programmatic config change | `engine.set(setting, value)`, `engine.addToList(...)`, `engine.removeFromList(...)` or `engine.config().edit(file, editor -> ...)` - they use `YamlEditor`, which keeps comments |
+
+## The filters (package `engine.filters`)
+
+| Class | What it does |
+|-------|--------------|
+| `EvasionNormalizer`, `Confusables` | turn text into canonical tokens for `WordMatcher` (invisible characters, compatibility forms, accents, look-alikes, leetspeak); settings in `EvasionSettings`; default table `abw-defaults/look-alikes.yml`, rebuilt with `generate-confusables.py` from Unicode's `confusables.txt` |
+| `WordIndex` | trie + bit sets so masked and partial matching do not scan every word (`PerformanceTest` holds the 1 ms budget) |
+| `EvasionCheck` (`evasion`), `LinkCheck` + `LinkParser` (`link`), `SpamCheck` (`spam-rate`, `spam-repeat`, `spam-caps`, `spam-flood`, `spam-words`, `spam-commands`) + `SpamState` | the pipeline stages; settings in `EvasionSettings`, `LinkSettings`, `SpamSettings` |
+
+Things later features can use:
+
+* `Hit.strikeWeight` of these checks is a setting (default 0). `ViolationHandler` adds the weights of all hits of a
+  message and gives them to the `StrikeService`.
+* Events: one `violation` per message as before, **plus** one event of kind `spam`, `link` or `evasion` per hit of such
+  a check (data: `check`, `detail`, `action`, `verdict`, `weight`, `profile`, `text`, `player`). A bad player name is a
+  `violation` with source `join` and `action` = `log` / `warn` / `kick`. Command blocks publish with `playerId == null`.
+* `TextCheck.feedback(hit, settings)`: the line a player gets when that check stopped the message.
+  `TextCheck.seesEveryCommand()`: the check gets every command line, not only scanned ones.
+* `Message.asProbe()` / `engine.explain(text)`: judge without counting (used by `/abw check`).
+* `Platform.canRewrite(source)`: where the loader can deliver a cleaned text; elsewhere the engine turns "censor" into "block".
+* `engine.onJoin(uuid, name)`, `engine.blockCommandBlock(world, where, commandLine)`, `engine.registerSource(source, switch...)`,
+  `engine.scans(source, settings)`, `engine.check(id)`, `engine.checkIds()`, `engine.spamState()`.
+* `filters.check-order` accepts a check id or a group name (`spam` = every id starting with `spam-`).
 
 Rules: no Bukkit or Minecraft imports in `src/main`; only SnakeYAML (and Gson) as libraries; every new behaviour gets a
 setting and a unit test.

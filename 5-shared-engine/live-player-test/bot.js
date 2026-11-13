@@ -2,11 +2,16 @@
 // Usage: node bot.js <host> <port> <minecraft version> [extras]
 // With "extras" the bot also tries books and anvil renames. It needs operator rights and items for that, which only the
 // server console can give: it prints lines starting with "CONSOLE> " and the launcher script types them into the console.
+// With "filters" (instead of, or as "extras,filters") it tests the spam, link and bypass-trick filters. They are off by
+// default, so the server must have been started with the settings listed in README.md ("filters mode").
+// The player name can be changed with the environment variable BOT_NAME (for the join-name check).
 // Works for Minecraft versions that the "mineflayer" library knows (26.1 and 1.21.11 at the time of writing).
 const mineflayer = require('mineflayer');
 const [, , host = 'localhost', port = '25565', version = '26.1', mode = ''] = process.argv;
 
-const bot = mineflayer.createBot({ host, port: +port, username: 'Tester', version, auth: 'offline' });
+const NAME = process.env.BOT_NAME || 'Tester';
+const modes = mode.split(',');
+const bot = mineflayer.createBot({ host, port: +port, username: NAME, version, auth: 'offline' });
 const lines = [];
 bot.on('message', (m) => { const t = m.toString(); lines.push(t); console.log('SERVER> ' + t); });
 bot.on('error', (e) => { console.log('BOT ERROR: ' + e.message); process.exit(2); });
@@ -119,11 +124,92 @@ async function runExtras() {
   }
 }
 
+// Spam, link and bypass-trick filters. Needs the prepared config from README.md ("filters mode").
+// On Bukkit-family servers a "censor" action rewrites the chat line; on Fabric and Forge it blocks it. Both are accepted.
+async function runFilters() {
+  const said = (re) => seen(new RegExp('<' + NAME + '> ' + re.source, re.flags));
+  // let the rate window of the earlier checks run out
+  await sleep(11000);
+
+  // ---- bypass tricks ----
+  bot.chat('you fu\u200bck off');
+  await sleep(2500);
+  check('zero-width character inside a swear word: NOT delivered', !said(/you fu/));
+  await sleep(2500);
+  bot.chat('what a fu\u0441k'); // Cyrillic "с"
+  await sleep(2500);
+  check('look-alike (Cyrillic) letter inside a swear word: NOT delivered', !said(/what a fu/));
+  await sleep(2500);
+  bot.chat('he\u200bllo there');
+  await sleep(2500);
+  check('invisible character without a swear word: stopped by the evasion check (detect.action: block)',
+    !said(/he.?llo there/) && seen(/invisible or look-alike/i));
+
+  // ---- links ----
+  await sleep(2500);
+  bot.chat('come to example.com now');
+  await sleep(2500);
+  check('plain link: NOT delivered', !said(/come to example\.com/));
+  check('plain link: the player is told why', seen(/Links are not allowed/i));
+  await sleep(2500);
+  const linkNotes = () => lines.filter((l) => /Links are not allowed/i.test(l)).length;
+  let before = linkNotes();
+  bot.chat('come to example dot com now');
+  await sleep(2500);
+  check('hidden link ("example dot com"): NOT delivered', !said(/come to example dot com/) && linkNotes() === before + 1);
+  await sleep(2500);
+  before = linkNotes();
+  bot.chat('come to example[.]com now');
+  await sleep(2500);
+  check('hidden link ("example[.]com"): NOT delivered', !said(/come to example\[/) && linkNotes() === before + 1);
+  await sleep(2500);
+  bot.chat('this sentence has no link. really');
+  await sleep(2500);
+  check('normal sentence with a full stop is delivered', said(/this sentence has no link\. really/));
+
+  // ---- spam: capitals and character flood (censor on Bukkit, block on mods) ----
+  await sleep(2500);
+  bot.chat('THIS IS A VERY LOUD MESSAGE FOR EVERYONE');
+  await sleep(2500);
+  check('capital letters: not delivered as typed (lower-cased or blocked)', !said(/THIS IS A VERY LOUD/)
+    && (seen(/this is a very loud message for everyone/) || seen(/capital letters/i)));
+  await sleep(2500);
+  bot.chat('heeeeeeeeeeeeello everybody');
+  await sleep(2500);
+  check('character flood: not delivered as typed (shortened or blocked)', !said(/he{10,}llo/)
+    && (seen(/heeello everybody/) || seen(/repeated characters/i)));
+
+  // ---- spam: fast repeats, then too many messages ----
+  await sleep(11000);
+  for (let i = 0; i < 4; i++) {
+    bot.chat('buy my diamonds cheap');
+    await sleep(1200);
+  }
+  await sleep(1500);
+  check('same message again and again: stopped (repeat rule)', seen(/do not repeat the same message/i));
+  check('the first copies of that message were delivered', said(/buy my diamonds cheap/));
+  await sleep(11000);
+  for (let i = 0; i < 8; i++) {
+    bot.chat('quick message number ' + i);
+    await sleep(250);
+  }
+  await sleep(2500);
+  check('many messages in a few seconds: stopped (rate rule)', seen(/sending messages too fast/i) && !said(/quick message number 7/));
+  check('the first quick messages were delivered', said(/quick message number 0/));
+
+  // ---- join-name check (only when the bot was started with a name that contains a blocked word) ----
+  if (NAME === 'Tester') {
+    skipped('join-name check', 'start the bot with BOT_NAME=xXshitXx and filters.join-names.action: warn to test it');
+  } else {
+    check('join-name check: the player was warned about the name', seen(/player name contains a word/i));
+  }
+}
+
 bot.once('spawn', async () => {
   await sleep(4000);
   bot.chat('hello everyone');
   await sleep(2000);
-  check('clean chat is delivered', seen(/<Tester> hello everyone/));
+  check('clean chat is delivered', seen(new RegExp('<' + NAME + '> hello everyone')));
 
   bot.chat('you are a fucking idiot');
   await sleep(2500);
@@ -145,8 +231,11 @@ bot.once('spawn', async () => {
   await sleep(2000);
   check('clean /msg still works', seen(/nice weather today/));
 
-  if (mode === 'extras') {
+  if (modes.includes('extras')) {
     await runExtras();
+  }
+  if (modes.includes('filters')) {
+    await runFilters();
   }
 
   const bad = results.filter(([, ok]) => !ok).length;
@@ -154,4 +243,4 @@ bot.once('spawn', async () => {
   bot.quit();
   setTimeout(() => process.exit(bad === 0 ? 0 : 1), 500);
 });
-setTimeout(() => { console.log('TIMEOUT: never spawned'); process.exit(3); }, 120000);
+setTimeout(() => { console.log('TIMEOUT: never spawned'); process.exit(3); }, modes.includes('filters') ? 300000 : 120000);
