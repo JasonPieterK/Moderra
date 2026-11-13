@@ -25,3 +25,13 @@ start. The unit tests moved to the engine too (`cd ../5-shared-engine && mvn tes
 compiled only against a hand-written stand-in for the Bukkit classes it uses, and it has never run on a server. The jars
 in `../1-download-jars/` are older builds from before this change. See
 [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
+
+## What is new in this round
+
+The listener now also hands the engine: the player name when somebody joins (`filters.scan.join-names`), the side of a
+sign that was edited (`SignChangeEvent#getSide`, so `filters.scan.sign-back` works), and the command a command block or
+command-block minecart is about to run (`ServerCommandEvent`, `filters.scan.command-blocks`). Chat is the one place
+where a "censor" action really rewrites the text; everywhere else such a message is blocked.
+New permission nodes in `plugin.yml`: `antibadwords.bypass.spam`, `.bypass.links`, `.bypass.evasion` (default: nobody).
+None of this has been compiled against the real Spigot API or run on a server, see
+[`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
