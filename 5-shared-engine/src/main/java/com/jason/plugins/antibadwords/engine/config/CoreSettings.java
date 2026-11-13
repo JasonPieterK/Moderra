@@ -91,7 +91,8 @@ public final class CoreSettings {
     public static final Setting<Boolean> JOIN_MATCH_INSIDE = Setting.bool("filters.join-names.match-inside-names", true)
         .file(CONFIG).category(JOIN).title("Bad player name: look inside the name").overridable()
         .description("Player names have no spaces, so a blocked word is also found INSIDE a name (\"xXbadwordXx\").\n"
-            + "The whitelist still applies to the whole name. false = only when the whole name (or a part between _) is the word.").build();
+            + "Whitelisted words inside a name are skipped (\"Dickens99\" is fine while \"dickens\" is on the whitelist).\n"
+            + "false = only when the whole name (or a part between _) is the word.").build();
     public static final Setting<Integer> JOIN_MIN_LENGTH = Setting.integer("filters.join-names.min-word-length", 4).range(3, 32)
         .file(CONFIG).category(JOIN).title("Bad player name: shortest word").overridable()
         .description("Blocked words shorter than this are not searched inside names (short words are part of many innocent names).").build();
