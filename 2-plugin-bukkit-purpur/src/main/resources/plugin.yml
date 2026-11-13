@@ -20,3 +20,12 @@ permissions:
   antibadwords.bypass:
     description: Exempt from all AntiBadWords checks.
     default: false
+  antibadwords.bypass.spam:
+    description: Exempt from the spam and flood rules (filters/spam.yml).
+    default: false
+  antibadwords.bypass.links:
+    description: Exempt from the link filter (filters/links.yml).
+    default: false
+  antibadwords.bypass.evasion:
+    description: Exempt from the bypass-trick detection (filters/evasion.yml, part "detect").
+    default: false

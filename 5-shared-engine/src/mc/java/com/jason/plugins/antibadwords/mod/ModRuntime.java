@@ -109,7 +109,10 @@ public final class ModRuntime {
         return Message.of(player.getUUID(), player.getName().getString(), "", source, text, node -> has(player, node));
     }
 
-    /** A mod cannot rewrite the text at these places, so a censoring verdict cancels like a blocking one. */
+    /**
+     * A mod cannot rewrite the text anywhere yet, so the engine already turns "censor" into "block" for us
+     * ({@code Platform.canRewrite} is false everywhere); the second test is only a safety net.
+     */
     private static boolean apply(Message message, Verdict verdict) {
         engine.onViolation(message, verdict);
         return verdict.blocked() || verdict.censored();
@@ -129,6 +132,11 @@ public final class ModRuntime {
         return apply(message, engine.inspect(message));
     }
 
+    /**
+     * Signs: the packet carries the lines of the side that was edited, so both sides are scanned under
+     * filters.scan.signs. The packet's front/back flag is not read yet, so filters.scan.sign-back has no effect on mods.
+     * Command blocks are not scanned on mods yet. Both are listed in handoffs/BUILD-VERIFICATION-TODO.md.
+     */
     public static boolean blockSign(ServerPlayer player, String[] lines) {
         Message template = message(player, Message.SIGN, "");
         return apply(template, engine.inspectFirst(template, Arrays.asList(lines)));
@@ -435,6 +443,15 @@ public final class ModRuntime {
     public static void restoreLeftovers(ServerPlayer player) {
         remember(serverOf(player));
         ledger.takeLeftovers(player.getUUID()).forEach((key, original) -> setBase(player, key, original));
+    }
+
+    /**
+     * Join: repairs leftovers, then lets the engine check the player's name (filters.scan.join-names: log, warn or
+     * kick; a kick goes through the vanilla /kick command, see {@code ModPlatform.kick}).
+     */
+    public static void onJoin(ServerPlayer player) {
+        restoreLeftovers(player);
+        engine.onJoin(player.getUUID(), player.getName().getString());
     }
 
     public static void onQuit(ServerPlayer player) {

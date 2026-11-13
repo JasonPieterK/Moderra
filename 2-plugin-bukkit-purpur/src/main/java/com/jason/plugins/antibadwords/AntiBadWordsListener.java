@@ -7,7 +7,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.sign.Side;
+import org.bukkit.command.BlockCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.minecart.CommandMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -20,6 +25,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.server.ServerCommandEvent;
 import org.bukkit.inventory.AnvilInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -79,7 +85,10 @@ public final class AntiBadWordsListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSignWrite(SignChangeEvent event) {
-        Message template = message(event.getPlayer(), Message.SIGN, "");
+        // The event fires for the side that was edited (SignChangeEvent#getSide, Bukkit 1.20+); the back side has its
+        // own switch (filters.scan.sign-back).
+        String source = event.getSide() == Side.BACK ? Message.SIGN_BACK : Message.SIGN;
+        Message template = message(event.getPlayer(), source, "");
         Verdict verdict = engine().inspectFirst(template, Arrays.asList(event.getLines()));
         if (verdict.blocked() || verdict.censored()) {
             event.setCancelled(true);
@@ -100,6 +109,30 @@ public final class AntiBadWordsListener implements Listener {
             event.setCancelled(true);
         }
         engine().onViolation(template, verdict);
+    }
+
+    /**
+     * Command blocks and command-block minecarts (filters.scan.command-blocks). Bukkit has no event for a player
+     * <em>editing</em> a command block, so the command is checked when the block runs it; a command with a blocked
+     * word is not run. The console itself is never checked.
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void onServerCommand(ServerCommandEvent event) {
+        World world;
+        String where;
+        if (event.getSender() instanceof BlockCommandSender blockSender) {
+            Block block = blockSender.getBlock();
+            world = block.getWorld();
+            where = world.getName() + " " + block.getX() + "," + block.getY() + "," + block.getZ();
+        } else if (event.getSender() instanceof CommandMinecart minecart) {
+            world = minecart.getWorld();
+            where = world.getName() + " minecart " + minecart.getUniqueId();
+        } else {
+            return;
+        }
+        if (engine().blockCommandBlock(world.getName(), where, event.getCommand())) {
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -146,6 +179,8 @@ public final class AntiBadWordsListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         // Repairs attributes left modified by a crash during an attribute punishment.
         plugin.getPunishmentExecutor().restoreLeftovers(event.getPlayer());
+        // Player-name check (filters.scan.join-names): the engine logs, warns or kicks as configured.
+        engine().onJoin(event.getPlayer().getUniqueId(), event.getPlayer().getName());
     }
 
     @EventHandler

@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.EngineLog;
+import com.jason.plugins.antibadwords.engine.Message;
 import com.jason.plugins.antibadwords.engine.Platform;
 import com.jason.plugins.antibadwords.engine.PlayerRef;
 import java.nio.file.Path;
@@ -139,6 +140,12 @@ public final class BukkitPlatform implements Platform {
         } else {
             Bukkit.getScheduler().runTask(plugin, task);
         }
+    }
+
+    /** Chat is the one place where Bukkit lets a plugin change the text (AsyncPlayerChatEvent#setMessage). */
+    @Override
+    public boolean canRewrite(String source) {
+        return Message.CHAT.equals(source);
     }
 
     @Override

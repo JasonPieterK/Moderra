@@ -38,7 +38,7 @@ public final class AntiBadWordsForge {
         ServerChatEvent.BUS.addListener((ServerChatEvent event) -> ModRuntime.blockChat(event.getPlayer(), event.getRawText()));
         PlayerEvent.PlayerLoggedInEvent.BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
             if (event.getEntity() instanceof ServerPlayer player) {
-                ModRuntime.restoreLeftovers(player);
+                ModRuntime.onJoin(player);
             }
         });
         PlayerEvent.PlayerLoggedOutEvent.BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {

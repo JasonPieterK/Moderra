@@ -34,7 +34,7 @@ public final class AntiBadWordsFabric implements ModInitializer {
 
         // Returning false from ALLOW_CHAT_MESSAGE cancels the message.
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> !ModRuntime.blockChat(sender, message.signedContent()));
-        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ModRuntime.restoreLeftovers(handler.getPlayer()));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ModRuntime.onJoin(handler.getPlayer()));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ModRuntime.onQuit(handler.getPlayer()));
         ServerLifecycleEvents.SERVER_STOPPING.register(ModRuntime::restoreEverything);
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
