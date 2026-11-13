@@ -115,6 +115,16 @@ public final class EvasionNormalizer {
                 }
                 continue;
             }
+            if (cp >= 128 && o.lookAlikes() && !invisible) {
+                String plain = o.table().always(cp); // small capitals and the like: a plain letter wherever they stand
+                if (plain != null) {
+                    for (int k = 0; k < plain.length(); k++) {
+                        raw = append(raw, length++, plain.charAt(k));
+                    }
+                    baseScript = Character.UnicodeScript.LATIN;
+                    continue;
+                }
+            }
             boolean wordChar = !invisible && (Character.isLetterOrDigit(cp) || cp == WILDCARD
                 || (o.leet() && cp < 128 && o.leetSymbols().containsKey((char) cp)));
             if (wordChar) {

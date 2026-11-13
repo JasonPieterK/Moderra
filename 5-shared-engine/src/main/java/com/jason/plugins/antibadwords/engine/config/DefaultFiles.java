@@ -86,10 +86,18 @@ public final class DefaultFiles {
         if (text == null || text.isBlank()) {
             return;
         }
-        for (String paragraph : text.split("\n", -1)) {
-            String rest = paragraph.stripTrailing();
+        String[] paragraphs = text.split("\n", -1);
+        String carried = "";
+        for (int p = 0; p < paragraphs.length; p++) {
+            String rest = (carried.isEmpty() ? "" : carried + " ") + paragraphs[p].stripTrailing();
+            carried = "";
             int width = Math.max(40, WIDTH - pad.length() - 2);
             String leading = rest.substring(0, rest.length() - rest.stripLeading().length());
+            // A too long line that stops in the middle of a sentence flows on into the next line of the text (unless
+            // that one is indented - a list or an example - or empty), so descriptions wrap cleanly at every indent.
+            boolean flowsOn = leading.isEmpty() && p + 1 < paragraphs.length && !paragraphs[p + 1].isBlank()
+                && !Character.isWhitespace(paragraphs[p + 1].charAt(0)) && !rest.isEmpty()
+                && ".:!?})".indexOf(rest.charAt(rest.length() - 1)) < 0;
             while (rest.length() > width) {
                 int cut = rest.lastIndexOf(' ', width);
                 if (cut <= leading.length()) {
@@ -97,8 +105,15 @@ public final class DefaultFiles {
                 }
                 out.add(pad + "# " + rest.substring(0, cut));
                 rest = leading + rest.substring(cut + 1);
+                if (flowsOn && rest.length() <= width) {
+                    carried = rest;
+                    rest = null;
+                    break;
+                }
             }
-            out.add(rest.isEmpty() ? pad + "#" : pad + "# " + rest);
+            if (rest != null) {
+                out.add(rest.isEmpty() ? pad + "#" : pad + "# " + rest);
+            }
         }
     }
 }

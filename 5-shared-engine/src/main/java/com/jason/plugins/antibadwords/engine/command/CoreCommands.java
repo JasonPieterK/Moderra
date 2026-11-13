@@ -211,7 +211,7 @@ public final class CoreCommands {
         List<String> on = new ArrayList<>();
         if (s.scanChat()) on.add("chat");
         if (s.scanCommands()) on.add("commands");
-        if (s.scanSigns()) on.add(e.get(CoreSettings.SCAN_SIGN_BACK) ? "signs (both sides)" : "signs (front only)");
+        if (s.scanSigns()) on.add(e.get(CoreSettings.SCAN_SIGN_BACK) ? "signs" : "signs (front side only)");
         if (s.scanBooks()) on.add("books");
         if (s.scanAnvil()) on.add("anvil");
         if (e.get(CoreSettings.SCAN_JOIN)) on.add("player names on join (" + e.get(CoreSettings.JOIN_ACTION) + ")");

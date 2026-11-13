@@ -38,8 +38,12 @@ public final class LinkParser {
      * @param endings          domain endings (without dot) that make a bare {@code name.ending} a link
      * @param dotWords         words that stand for a dot ({@code dot})
      * @param detectObfuscated whether hidden dots are undone
+     * @param knownHosts       domains that are links whatever their ending (the hosts named in the admin's lists)
      */
-    public record Options(Set<String> endings, List<String> dotWords, boolean detectObfuscated) {
+    public record Options(Set<String> endings, List<String> dotWords, boolean detectObfuscated, Set<String> knownHosts) {
+        public Options(Set<String> endings, List<String> dotWords, boolean detectObfuscated) {
+            this(endings, dotWords, detectObfuscated, Set.of());
+        }
     }
 
     private static final String DOT_LIKE = "。｡‧∙•·⋅●◦⸱・܁܂";
@@ -152,6 +156,10 @@ public final class LinkParser {
 
     /** @return index after the hidden dot that starts at {@code i} (the next character belongs to the address), or -1 */
     private static int hiddenDot(Mapped in, int i, Options options) {
+        return hiddenDot(in, i, options, 0);
+    }
+
+    private static int hiddenDot(Mapped in, int i, Options options, int depth) {
         int j = skipSpaces(in, i);
         boolean spaceBefore = j > i;
         if (j >= in.length) {
@@ -175,12 +183,12 @@ public final class LinkParser {
         int word = startsDotWord(in, j, options);
         if (word > 0 && spaceBefore) {
             int k = skipSpaces(in, j + word);
-            return k > j + word && endingFollows(in, k, options) ? k : -1;
+            return k > j + word && endingFollows(in, k, options, depth) ? k : -1;
         }
         // " .com" and " . com" (a space before the dot; "end of sentence. com" is left alone)
         if (in.chars[j] == '.' && spaceBefore) {
             int k = skipSpaces(in, j + 1);
-            return endingFollows(in, k, options) ? k : -1;
+            return endingFollows(in, k, options, depth) ? k : -1;
         }
         return -1;
     }
@@ -210,13 +218,29 @@ public final class LinkParser {
         return 0;
     }
 
-    /** Whether the word that starts at {@code i} is a known domain ending. */
-    private static boolean endingFollows(Mapped in, int i, Options options) {
+    /**
+     * Whether the word that starts at {@code i} is a known domain ending, or is followed by one after one or two more
+     * (plain or hidden) dots: "play dot example dot com".
+     */
+    private static boolean endingFollows(Mapped in, int i, Options options, int depth) {
         int end = i;
-        while (end < in.length && Character.isLetterOrDigit(in.chars[end])) {
+        while (end < in.length && (Character.isLetterOrDigit(in.chars[end]) || (in.chars[end] == '-' && end > i))) {
             end++;
         }
-        return end > i && end - i <= 24 && options.endings().contains(new String(in.chars, i, end - i));
+        if (end == i || end - i > 63) {
+            return false;
+        }
+        if (options.endings().contains(new String(in.chars, i, end - i))) {
+            return true;
+        }
+        if (depth >= 2 || end >= in.length) {
+            return false;
+        }
+        if (in.chars[end] == '.') {
+            return endingFollows(in, end + 1, options, depth + 1);
+        }
+        int resume = hiddenDot(in, end, options, depth + 1);
+        return resume > 0;
     }
 
     // ------------------------------------------------------------------------------------------
@@ -262,7 +286,7 @@ public final class LinkParser {
                 kind = Kind.DOMAIN;
             } else if (host.startsWith("www.") && validLabels(host, 2) && host.length() > 5) {
                 kind = Kind.DOMAIN;
-            } else if (validLabels(host, 2) && options.endings().contains(host.substring(host.lastIndexOf('.') + 1))) {
+            } else if (validLabels(host, 2) && (options.endings().contains(host.substring(host.lastIndexOf('.') + 1)) || knownHost(host, options))) {
                 kind = Kind.DOMAIN;
             }
             if (kind == null) {
@@ -295,6 +319,24 @@ public final class LinkParser {
             }
             int start = scheme > 0 ? a - scheme : a;
             out.add(new Link(m.from[start], m.to[end - 1], kind, host.startsWith("www.") ? host.substring(4) : host, path, hidden));
+        }
+    }
+
+    /** Whether the host, or a domain it lies under, is named in the admin's lists ("t.me" although "me" is no known ending). */
+    private static boolean knownHost(String host, Options options) {
+        if (options.knownHosts().isEmpty()) {
+            return false;
+        }
+        String candidate = host.startsWith("www.") ? host.substring(4) : host;
+        while (true) {
+            if (options.knownHosts().contains(candidate)) {
+                return true;
+            }
+            int dot = candidate.indexOf('.');
+            if (dot < 0) {
+                return false;
+            }
+            candidate = candidate.substring(dot + 1);
         }
     }
 

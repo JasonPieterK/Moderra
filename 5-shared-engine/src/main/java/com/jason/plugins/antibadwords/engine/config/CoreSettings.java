@@ -49,8 +49,8 @@ public final class CoreSettings {
             + "sides apart; on Fabric and Forge both sides are always covered by scan.signs and this switch changes nothing.");
     public static final Setting<Boolean> SCAN_COMMAND_BLOCKS = Setting.bool("filters.scan.command-blocks", false)
         .file(CONFIG).category(SCANNING).title("Scan command blocks").overridable()
-        .description("Look at the commands that command blocks (and command-block minecarts) run, using scanned-commands below.\n"
-            + "A command with a blocked word is not run. Bukkit/Spigot/Paper/Purpur only; not available on Fabric and Forge yet.\n"
+        .description("Look at the commands that command blocks (and command-block minecarts) run, using scanned-commands below. "
+            + "A command with a blocked word is not run. Bukkit/Spigot/Paper/Purpur only; not available on Fabric and Forge yet. "
             + "Nobody gets strikes for it (the game does not say who wrote the command).").build();
     public static final Setting<Boolean> SCAN_JOIN = Setting.bool("filters.scan.join-names", false)
         .file(CONFIG).category(SCANNING).title("Scan player names on join").overridable()
@@ -111,7 +111,7 @@ public final class CoreSettings {
     public static final Setting<java.time.Duration> COMMAND_BLOCK_REPORT_INTERVAL = Setting.duration("filters.command-blocks.report-interval",
             java.time.Duration.ofSeconds(60)).range(0, 86_400)
         .file(CONFIG).category(SCANNING).title("Command blocks: report at most every")
-        .description("A repeating command block can run 20 times per second. The same blocked command is reported (console, events)\n"
+        .description("A repeating command block can run 20 times per second. The same blocked command is reported (console, events) "
             + "only once in this time; it is stopped every time.").build();
 
     public static final Setting<Boolean> COLLAPSE_REPEATS = Setting.bool("filters.matching.collapse-repeated-letters", true)

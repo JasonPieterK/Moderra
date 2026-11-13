@@ -17,10 +17,11 @@ public final class LinkSettings {
 
     public static final Setting<String> MODE = s(Setting.choice(P + "mode", MODE_OFF, MODE_OFF, MODE_BLOCK_ALL, MODE_ALLOW_LIST, MODE_BLOCK_LIST)
         .title("Link filter mode")
-        .description("off        = links are not checked (default)\n"
-            + "block-all  = every link is caught\n"
-            + "allow-list = every link is caught, except the domains in allowed-domains\n"
-            + "block-list = only the domains in blocked-domains are caught"));
+        .description("What the link filter does:\n"
+            + "  off        = links are not checked (default)\n"
+            + "  block-all  = every link is caught\n"
+            + "  allow-list = every link is caught, except the domains in allowed-domains\n"
+            + "  block-list = only the domains in blocked-domains are caught"));
     public static final Setting<List<String>> ALLOWED = s(Setting.list(P + "allowed-domains", List.of()).title("Allowed domains")
         .description("Used by mode allow-list (and for IP addresses you want to allow). One entry per domain:\n"
             + "  example.com     = that domain and everything under it (www.example.com, shop.example.com)\n"
@@ -49,14 +50,16 @@ public final class LinkSettings {
         .title("Words that mean \"dot\"").description("Used by detect-hidden-dots. Lower case."));
     public static final Setting<List<String>> ENDINGS = s(Setting.list(P + "domain-endings",
             List.of("com", "net", "org", "gg", "io", "co", "xyz", "info", "biz", "dev", "app", "tv", "cc", "ly", "gl", "link", "online", "site",
-                "store", "shop", "club", "fun", "pro", "live", "top", "vip", "games", "host", "cloud", "tech", "space", "website", "world",
+                "store", "shop", "club", "fun", "pro", "live", "top", "vip", "games", "host", "cloud", "tech", "space", "website",
                 "network", "edu", "gov", "tk", "ml", "ga", "cf", "gq", "uk", "ru", "fr", "nl", "pl", "br", "cz", "dk", "fi", "jp", "cn",
                 "kr", "ua", "hu", "gr", "mx", "tr", "ch", "ro", "pt", "su"))
         .title("Domain endings")
         .description("A word.ending without http:// or www. only counts as a link when the ending is in this list. Endings that\n"
             + "are also everyday words in some language (de, es, it, me, in, at, to, is, us, no, se, eu, ca, au, id ...) are left\n"
             + "out on purpose, because \"casa.de\" or \"trust.me\" would be caught; add them if your players abuse them.\n"
-            + "Links with http://, https:// or www. are always found."));
+            + "Some endings in the list are normal words too (fun, live, top ...): \"that was.fun\" without a space is then read\n"
+            + "as a link; remove them if that bothers you. Links with http://, https:// or www. and the domains named in your\n"
+            + "own lists are always found."));
     public static final Setting<String> ACTION = s(Setting.choice(P + "action", FilterAction.BLOCK, FilterAction.BLOCK, FilterAction.CENSOR,
             FilterAction.LOG_ONLY)
         .title("Action")

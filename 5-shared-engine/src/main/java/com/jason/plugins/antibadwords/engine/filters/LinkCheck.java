@@ -129,9 +129,21 @@ public final class LinkCheck implements TextCheck {
             }
         }
         List<String> dotWords = s.get(LinkSettings.DOT_WORDS).stream().map(w -> w.trim().toLowerCase(Locale.ROOT)).filter(w -> !w.isEmpty()).toList();
-        return new Policy(s.get(LinkSettings.MODE), rules(s.get(LinkSettings.ALLOWED)), rules(s.get(LinkSettings.BLOCKED)),
-            s.get(LinkSettings.BLOCK_IPS), s.get(LinkSettings.BLOCK_INVITES), rules(s.get(LinkSettings.INVITE_LINKS)),
-            rules(s.get(LinkSettings.ALLOWED_INVITES)), new LinkParser.Options(endings, dotWords, s.get(LinkSettings.DETECT_OBFUSCATED)));
+        List<Rule> allowed = rules(s.get(LinkSettings.ALLOWED));
+        List<Rule> blocked = rules(s.get(LinkSettings.BLOCKED));
+        List<Rule> invites = rules(s.get(LinkSettings.INVITE_LINKS));
+        // domains the admin named are links even when their ending is not in domain-endings ("t.me")
+        Set<String> known = new HashSet<>();
+        for (List<Rule> list : List.of(allowed, blocked, invites)) {
+            for (Rule rule : list) {
+                if (rule.glob() == null && !rule.suffix() && rule.host().indexOf('.') > 0) {
+                    known.add(rule.host());
+                }
+            }
+        }
+        return new Policy(s.get(LinkSettings.MODE), allowed, blocked, s.get(LinkSettings.BLOCK_IPS), s.get(LinkSettings.BLOCK_INVITES),
+            invites, rules(s.get(LinkSettings.ALLOWED_INVITES)),
+            new LinkParser.Options(endings, dotWords, s.get(LinkSettings.DETECT_OBFUSCATED), known));
     }
 
     private static List<Rule> rules(List<String> entries) {

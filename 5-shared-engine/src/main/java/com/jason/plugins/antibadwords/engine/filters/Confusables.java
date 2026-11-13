@@ -16,20 +16,26 @@ import java.util.function.Consumer;
  * admins extend it in {@code filters/confusables.yml}. Immutable.
  *
  * <p>Text format of one group: items separated by spaces, each {@code <one character>=<plain letters>}, for example
- * {@code "а=a е=e о=o"}.
+ * {@code "а=a е=e о=o"}. Letters of a group are read as Latin only inside a word that also has Latin letters; the group
+ * named {@code always} is read as Latin everywhere (small capitals, which no language writes words with).
  */
 public final class Confusables {
     /** The 12 Cyrillic letters version 1 of the plugin knew. Used when no table can be read at all. */
-    public static final Confusables LEGACY = new Confusables(parsePairs("а=a с=c е=e о=o р=p х=x у=y к=k м=m н=h т=t і=i", null, null));
+    public static final Confusables LEGACY =
+        new Confusables(parsePairs("а=a с=c е=e о=o р=p х=x у=y к=k м=m н=h т=t і=i", null, null), Map.of());
+    /** Name of the group whose letters are read as plain letters everywhere, not only inside mixed words. */
+    public static final String ALWAYS = "always";
 
     private static volatile Confusables bundled;
 
     private final Map<Integer, String> toLatin;
+    private final Map<Integer, String> always;
     /** script -> (Latin letter -> the letter of that script that looks like it). */
     private final Map<Character.UnicodeScript, Map<Character, Integer>> fromLatin = new HashMap<>();
 
-    private Confusables(Map<Integer, String> toLatin) {
+    private Confusables(Map<Integer, String> toLatin, Map<Integer, String> always) {
         this.toLatin = Map.copyOf(toLatin);
+        this.always = Map.copyOf(always);
         // Reverse direction ("xуй" written with a Latin x): prefer a lower-case look-alike, keep the first one listed.
         for (int pass = 0; pass < 2; pass++) {
             for (Map.Entry<Integer, String> e : toLatin.entrySet()) {
@@ -50,8 +56,9 @@ public final class Confusables {
         if (table == null) {
             try {
                 String text = Resources.text("/abw-defaults/look-alikes.yml");
-                Map<Integer, String> pairs = text == null ? Map.of() : read(YamlTree.parse(text).root(), w -> { });
-                table = pairs.isEmpty() ? LEGACY : new Confusables(pairs);
+                Map<Integer, String> everywhere = new LinkedHashMap<>();
+                Map<Integer, String> pairs = text == null ? Map.of() : read(YamlTree.parse(text).root(), everywhere, w -> { });
+                table = pairs.isEmpty() ? LEGACY : new Confusables(pairs, everywhere);
             } catch (RuntimeException ex) {
                 table = LEGACY;
             }
@@ -65,11 +72,12 @@ public final class Confusables {
      * Wrong items are skipped with a warning. A section without any usable item gives the bundled table.
      */
     public static Confusables parse(Map<String, Object> section, Consumer<String> warn) {
-        Map<Integer, String> table = read(section, warn);
-        return table.isEmpty() ? bundled() : new Confusables(table);
+        Map<Integer, String> everywhere = new LinkedHashMap<>();
+        Map<Integer, String> table = read(section, everywhere, warn);
+        return table.isEmpty() && everywhere.isEmpty() ? bundled() : new Confusables(table, everywhere);
     }
 
-    private static Map<Integer, String> read(Map<String, Object> section, Consumer<String> warn) {
+    private static Map<Integer, String> read(Map<String, Object> section, Map<Integer, String> everywhere, Consumer<String> warn) {
         Map<Integer, String> table = new LinkedHashMap<>();
         for (Map.Entry<String, Object> group : section.entrySet()) {
             List<Object> texts = new ArrayList<>();
@@ -83,7 +91,8 @@ public final class Confusables {
                     warn.accept("look-alikes." + group.getKey() + " must be text such as \"а=a е=e\"; this part is ignored.");
                     continue;
                 }
-                table.putAll(parsePairs(String.valueOf(text), "look-alikes." + group.getKey(), warn));
+                (group.getKey().equalsIgnoreCase(ALWAYS) ? everywhere : table)
+                    .putAll(parsePairs(String.valueOf(text), "look-alikes." + group.getKey(), warn));
             }
         }
         return table;
@@ -116,6 +125,11 @@ public final class Confusables {
         return hit != null ? hit : toLatin.get(Character.toLowerCase(codePoint));
     }
 
+    /** For a letter of the {@code always} group (small capitals ...): the plain letters it stands for, else {@code null}. */
+    public String always(int codePoint) {
+        return always.isEmpty() ? null : always.get(codePoint);
+    }
+
     /** The lower-case letter of {@code script} that looks like this plain Latin letter, or -1. */
     public int fromLatin(Character.UnicodeScript script, char latinLetter) {
         Map<Character, Integer> map = fromLatin.get(script);
@@ -124,6 +138,6 @@ public final class Confusables {
     }
 
     public int size() {
-        return toLatin.size();
+        return toLatin.size() + always.size();
     }
 }

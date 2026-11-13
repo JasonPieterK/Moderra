@@ -10,11 +10,17 @@ also mirrored in the ICU repository). It is (c) Unicode, Inc. and used under the
 What is kept: lines "one character -> one plain Latin letter", where the character is a letter that is not already
 turned into a plain letter by Unicode compatibility folding plus removing accents (the plugin does that itself).
 A capital look-alike of "I" is written as i (Unicode folds I to l); everything else is lower-cased.
+Only letters of other alphabets are taken (Latin letters with a special shape are real letters in some language).
+The group "always" (small capitals) is written by hand, see below.
 """
 import sys
 import unicodedata
 
-SCRIPTS = ["CYRILLIC", "GREEK", "ARMENIAN", "COPTIC", "CHEROKEE", "LATIN", "LISU", "GEORGIAN", "HEBREW", "ARABIC"]
+SCRIPTS = ["CYRILLIC", "GREEK", "ARMENIAN", "COPTIC", "CHEROKEE", "LISU", "GEORGIAN", "HEBREW", "ARABIC"]
+# Not taken from Unicode's file: Latin "small capital" and phonetic letters that no language writes words with but
+# that chat players use as a second alphabet. The group name "always" means: read as the plain letter everywhere.
+# (Latin letters that real languages use, such as the Turkish dotless i, are deliberately not in any group.)
+ALWAYS = "ᴀ=a ʙ=b ᴄ=c ᴅ=d ᴇ=e ꜰ=f ɢ=g ʜ=h ɪ=i ᴊ=j ᴋ=k ʟ=l ᴍ=m ɴ=n ᴏ=o ᴘ=p ʀ=r ꜱ=s ᴛ=t ᴜ=u ᴠ=v ᴡ=w ʏ=y ᴢ=z ɑ=a ɡ=g"
 # Kept from version 1 of the plugin (lower-case Cyrillic letters that Unicode does not list as look-alikes).
 EXTRA = {"cyrillic": [("к", "k"), ("м", "m"), ("н", "h"), ("т", "t")]}
 
@@ -48,6 +54,10 @@ def main(path):
     for script, pairs in EXTRA.items():
         known = {s for s, _ in table.get(script, [])}
         table.setdefault(script, []).extend(p for p in pairs if p[0] not in known)
+    print("always:")
+    items = ALWAYS.split()
+    for i in range(0, len(items), 12):
+        print('  - "' + " ".join(items[i:i + 12]) + '"')
     for script in [s.lower() for s in SCRIPTS]:
         pairs = sorted(table.get(script, []), key=lambda p: (p[1], ord(p[0])))
         if not pairs:

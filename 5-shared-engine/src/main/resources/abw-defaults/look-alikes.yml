@@ -1,3 +1,7 @@
+always:
+  - "ᴀ=a ʙ=b ᴄ=c ᴅ=d ᴇ=e ꜰ=f ɢ=g ʜ=h ɪ=i ᴊ=j ᴋ=k ʟ=l"
+  - "ᴍ=m ɴ=n ᴏ=o ᴘ=p ʀ=r ꜱ=s ᴛ=t ᴜ=u ᴠ=v ᴡ=w ʏ=y ᴢ=z"
+  - "ɑ=a ɡ=g"
 cyrillic:
   - "А=a а=a В=b Ь=b С=c с=c ᲃ=c ԁ=d Е=e е=e ҽ=e Ԍ=g"
   - "Н=h н=h Һ=h һ=h І=i і=i Ӏ=i ꙇ=i Ј=j ј=j К=k к=k"
@@ -19,12 +23,6 @@ cherokee:
   - "Ꭺ=a Ꮟ=b Ᏼ=b Ꮯ=c ꮯ=c Ꭰ=d Ꮷ=d Ꭼ=e Ꮐ=g Ᏻ=g Ꮋ=h Ꮒ=h"
   - "Ꭵ=i ꭵ=i Ꭻ=j Ꮶ=k Ꮮ=l Ꮇ=m Ꮲ=p Ꭱ=r Ꮢ=r ꮁ=r Ꮥ=s Ꮪ=s"
   - "ꮪ=s Ꭲ=t Ꮩ=v ꮩ=v Ꮃ=w Ꮤ=w ꮃ=w ꮤ=w Ꭹ=y Ꮍ=y Ꮓ=z ꮓ=z"
-latin:
-  - "ɑ=a ꭤ=a Ƅ=b Ꞵ=b ᴄ=c ꬲ=e ƒ=f ʄ=f ẝ=f Ꞙ=f ꞙ=f ꬵ=f"
-  - "ƍ=g ɡ=g ᶃ=g ı=i Ɩ=i ɩ=i ɪ=i Ɪ=i ȷ=j Ʝ=j ǀ=l ꞁ=l"
-  - "ꟾ=l ᴏ=o ᴑ=o ꬽ=o þ=p ƿ=p Ʀ=r Ɍ=r ꭇ=r ꭈ=r ƽ=s ꜱ=s"
-  - "ʋ=u ᴜ=u ꞟ=u ꭎ=u ꭒ=u ᴠ=v ɯ=w ᴡ=w ꟺ=w Ꭓ=x ɣ=y ʏ=y"
-  - "ᶌ=y ỿ=y ꭚ=y ᴢ=z Ⱬ=z ⱬ=z"
 lisu:
   - "ꓮ=a ꓐ=b ꓚ=c ꓒ=d ꓓ=d ꓰ=e ꓝ=f ꓖ=g ꓧ=h ꓙ=j ꓗ=k ꓡ=l"
   - "ꓲ=l ꓟ=m ꓠ=n ꓳ=o ꓑ=p ꓣ=r ꓢ=s ꓔ=t ꓴ=u ꓦ=v ꓪ=w ꓫ=x"

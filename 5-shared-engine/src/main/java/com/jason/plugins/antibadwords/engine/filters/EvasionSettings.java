@@ -91,6 +91,8 @@ public final class EvasionSettings {
     public static final Section LOOK_ALIKE_TABLE = new Section("look-alikes", TABLES, TABLE_CATEGORY, "Look-alike letters",
         "Letters that look like a plain Latin letter. Each line holds items of the form <letter>=<what it looks like>,\n"
             + "separated by spaces. The group names (cyrillic, greek ...) are only for you; add your own lines or groups.\n"
+            + "Letters are read as the Latin letter only inside a word that also has Latin letters. One group is special:\n"
+            + "the letters under \"always\" (small capitals) are read as the plain letter everywhere.\n"
             + "The default table was made from the Unicode confusables data (Unicode License v3, see NOTICE).\n"
             + "If this part is empty or cannot be read, the built-in table is used.\n"
             + "This part cannot be edited in the in-game menu; edit the file.",
