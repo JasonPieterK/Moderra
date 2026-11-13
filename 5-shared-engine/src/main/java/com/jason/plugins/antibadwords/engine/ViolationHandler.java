@@ -65,6 +65,7 @@ final class ViolationHandler {
             return;
         }
 
+        engine.players().learn(playerId, playerName);
         int count = engine.strikes().add(playerId, weight);
         int remaining = Math.max(0, limit - count);
         boolean punish = count >= limit && s.punishmentEnabled();

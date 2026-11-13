@@ -41,6 +41,8 @@ effects/attributes/sounds). Sign lines and book pages go through `engine.inspect
 | a `/abw` sub-command | one class implementing `SubCommand`, registered with `commands.register(new MyCommand())` in `CoreCommands.register` |
 | a reaction to events (history, Discord) | `engine.events().subscribe(event -> ...)`; kinds so far: `violation`, `punishment`, `admin-command`, `spam`, `link`, `evasion` |
 | another strike counter | `engine.setStrikeService(new MyStrikeService())` |
+| state file in `data/` | `engine/moderation/DataFile` (JSON, temp file + move, debounced save, `.corrupt-<date>` copy of a damaged file) |
+| find a player who is offline | `engine.resolvePlayer(name)` / `engine.players()` (`data/players.json`) |
 | a new text source (join name ...) | `engine.registerSource("join", SCAN_SWITCH_SETTING)` and send `Message`s with that source |
 | a programmatic config change | `engine.set(setting, value)`, `engine.addToList(...)`, `engine.removeFromList(...)` or `engine.config().edit(file, editor -> ...)` - they use `YamlEditor`, which keeps comments |
 

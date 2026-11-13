@@ -3,8 +3,10 @@ package com.jason.plugins.antibadwords.engine;
 import java.util.UUID;
 
 /**
- * Counts strikes (violations) per player. The core ships {@link InMemoryStrikeService}, which behaves exactly like the
- * old plugin (counts in memory, optional expiry, forgotten on restart). Swap in another implementation with
+ * Counts strikes (violations) per player. The engine uses
+ * {@link com.jason.plugins.antibadwords.engine.moderation.PersistentStrikeService} (points per UUID, expiry, decay, cap,
+ * saved in {@code data/strikes.json}); with the default settings it behaves exactly like the old plugin.
+ * {@link InMemoryStrikeService} is the plain old counter. Swap in another implementation with
  * {@link Engine#setStrikeService(StrikeService)}. Implementations must be thread-safe.
  */
 public interface StrikeService {

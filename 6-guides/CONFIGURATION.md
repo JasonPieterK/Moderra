@@ -122,6 +122,17 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `punishment.sounds` | section (your own keys) | see the file | yes | Sounds played to the punished player.<br>This part cannot be edited in the in-game menu; edit the file. |
 | `punishment.commands` | section (your own keys) | see the file | yes | Console commands run for the punished player.<br>This part cannot be edited in the in-game menu; edit the file. |
 
+### Strikes
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `strikes.save-to-disk` | true or false | `true` | no | Save every player's strikes (violations) in data/strikes.json so they are still there after a server restart.<br>This only has an effect when punishment.clear-violations-on-quit is false: while that is true (the default),<br>a player's strikes are forgotten as soon as they leave, so there is nothing to keep.<br>false = strikes live in memory only and are gone after a restart (how old versions worked). |
+| `strikes.decay.every` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 365d | `0s` | no | Strikes can fade away slowly: every time this much time has passed, the player loses some strikes (see<br>points below). The time counts from the player's first strike and also while the player or the server is offline.<br>0s = off. Example: 1h = one strike less every hour.<br>This works next to punishment.violations-expire-minutes, which forgets ALL strikes at once when the last one<br>is old enough. |
+| `strikes.decay.points` | whole number from 1 to 1000 | `1` | no | How many strikes are taken away each time. |
+| `strikes.max-points` | whole number from 0 to 1000000 | `0` | no | A player never has more strikes than this. 0 = no limit. |
+| `strikes.save-delay` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 1h | `5s` | no | After a change the data files (strikes, known players) are written once this much time has passed, so many<br>changes in a row cause one write. They are always written when the server stops. |
+| `known-players.forget-after-days` | whole number from 0 to 36500 | `0` | no | The plugin remembers the name of every player who joined (data/players.json), so commands such as<br>/abw violations also work for players who are offline. Players who were not seen for this many days<br>are removed from that list. 0 = never. |
+
 ## `worlds.yml`
 
 ### Worlds

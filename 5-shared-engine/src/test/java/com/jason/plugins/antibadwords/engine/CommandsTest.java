@@ -113,7 +113,7 @@ class CommandsTest {
         assertEquals(List.of("§eBob violations: 1/2"), run("violations Bob"));
         assertEquals(List.of("§aViolations reset for Bob."), run("resetviolations Bob"));
         assertEquals(0, engine.strikes().get(bob));
-        assertEquals(List.of("§cPlayer not online."), run("violations Nobody"));
+        assertEquals(List.of("§cPlayer not found (not online and never seen on this server)."), run("violations Nobody"));
         assertEquals(List.of("§eUsage: /abw violations <player>"), run("violations"));
 
         List<String> info = run("info");

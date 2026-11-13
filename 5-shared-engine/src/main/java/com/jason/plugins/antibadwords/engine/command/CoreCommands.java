@@ -29,6 +29,9 @@ import java.util.function.Function;
 
 /** The sub-commands the plugin always had (same words, same answers), plus {@code lang} and {@code whitelist}. */
 public final class CoreCommands {
+    /** Tab completion offers at most this many offline names (the list of known players can be long). */
+    private static final int MAX_OFFLINE_SUGGESTIONS = 50;
+
     private CoreCommands() {
     }
 
@@ -156,18 +159,18 @@ public final class CoreCommands {
     }
 
     private static void violations(CommandContext c) {
-        PlayerRef target = requireOnlinePlayer(c);
+        PlayerRef target = requireKnownPlayer(c);
         if (target != null) {
             c.send(YELLOW + target.name() + " violations: " + c.engine().strikes().get(target.id()) + "/"
-                + c.engine().settings().legacy().violationsBeforePunish());
+                + c.engine().settings().legacy().violationsBeforePunish() + offlineNote(c, target));
         }
     }
 
     private static void resetViolations(CommandContext c) {
-        PlayerRef target = requireOnlinePlayer(c);
+        PlayerRef target = requireKnownPlayer(c);
         if (target != null) {
             c.engine().strikes().reset(target.id());
-            c.send(GREEN + "Violations reset for " + target.name() + ".");
+            c.send(GREEN + "Violations reset for " + target.name() + "." + offlineNote(c, target));
             c.audit();
         }
     }
@@ -187,23 +190,36 @@ public final class CoreCommands {
         c.send(GRAY + "Check order: " + WHITE + engine.checks(e).stream().map(TextCheck::id).collect(java.util.stream.Collectors.joining(", ")));
     }
 
-    private static PlayerRef requireOnlinePlayer(CommandContext c) {
+    /** The player named by the first argument: online, or offline but seen before (data/players.json). */
+    private static PlayerRef requireKnownPlayer(CommandContext c) {
         if (c.args().length < 1) {
             c.usage("<player>");
             return null;
         }
-        PlayerRef target = c.engine().platform().findPlayer(c.args()[0]).orElse(null);
+        PlayerRef target = c.engine().resolvePlayer(c.args()[0]).orElse(null);
         if (target == null) {
-            c.send(RED + "Player not online.");
+            c.send(RED + "Player not found (not online and never seen on this server).");
         }
         return target;
     }
 
+    private static String offlineNote(CommandContext c, PlayerRef target) {
+        return c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)";
+    }
+
+    /** Online players first, then known offline players. */
     private static List<String> playerNames(CommandContext c) {
         if (c.args().length != 1) {
             return List.of();
         }
-        return CommandRegistry.prefix(c.engine().platform().onlinePlayers().stream().map(PlayerRef::name).toList(), c.args()[0]);
+        List<String> names = new ArrayList<>(
+            CommandRegistry.prefix(c.engine().platform().onlinePlayers().stream().map(PlayerRef::name).toList(), c.args()[0]));
+        for (String known : c.engine().players().names(c.args()[0], MAX_OFFLINE_SUGGESTIONS)) {
+            if (names.stream().noneMatch(known::equalsIgnoreCase)) {
+                names.add(known);
+            }
+        }
+        return names;
     }
 
     static String scanSummary(EffectiveSettings e) {

@@ -20,6 +20,10 @@ import com.jason.plugins.antibadwords.engine.filters.LinkSettings;
 import com.jason.plugins.antibadwords.engine.filters.SpamCheck;
 import com.jason.plugins.antibadwords.engine.filters.SpamSettings;
 import com.jason.plugins.antibadwords.engine.filters.SpamState;
+import com.jason.plugins.antibadwords.engine.moderation.DataFile;
+import com.jason.plugins.antibadwords.engine.moderation.ModerationSettings;
+import com.jason.plugins.antibadwords.engine.moderation.PersistentStrikeService;
+import com.jason.plugins.antibadwords.engine.moderation.PlayerDirectory;
 import com.jason.plugins.antibadwords.Placeholders;
 import com.jason.plugins.antibadwords.WordMatcher;
 import com.jason.plugins.antibadwords.mod.Names;
@@ -34,6 +38,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -90,6 +95,8 @@ public final class Engine {
     private final Map<String, Long> recentReports = new java.util.LinkedHashMap<>();
     private final List<Runnable> reloadListeners = new CopyOnWriteArrayList<>();
     private final Set<UUID> anvilFlagged = ConcurrentHashMap.newKeySet();
+    private final PersistentStrikeService persistentStrikes;
+    private final PlayerDirectory players;
     private volatile StrikeService strikes;
     private volatile State state;
 
@@ -100,7 +107,15 @@ public final class Engine {
         this.store = new ConfigStore(folder, registry);
         this.events = new EventBus(platform.logger());
         this.commands = new CommandRegistry(this);
-        this.strikes = new InMemoryStrikeService(clock, () -> settings().legacy().violationExpireMinutes() * 60_000L);
+        // data files are written off the server thread, a moment after the change
+        DataFile.Scheduler saver = (task, delay) -> platform.runSync(() -> platform.runSyncLater(() -> platform.runAsync(task), delay));
+        Path data = folder.resolve(DATA_FOLDER);
+        this.players = new PlayerDirectory(data.resolve(ModerationSettings.PLAYERS_FILE), clock,
+            () -> value(ModerationSettings.SAVE_DELAY).toMillis(), () -> value(ModerationSettings.FORGET_PLAYERS_DAYS) * 86_400_000L,
+            platform.logger(), saver);
+        this.persistentStrikes = new PersistentStrikeService(data.resolve(ModerationSettings.STRIKES_FILE), clock, this::strikeOptions,
+            platform.logger(), saver);
+        this.strikes = persistentStrikes;
         registerBuiltIns();
     }
 
@@ -113,6 +128,7 @@ public final class Engine {
     public static Engine load(Platform platform, Path configDir, LongSupplier clock) {
         Engine engine = new Engine(platform, configDir, clock);
         engine.reload();
+        engine.loadData();
         return engine;
     }
 
@@ -149,6 +165,32 @@ public final class Engine {
         SpamSettings.register(registry);
         LinkSettings.register(registry);
         EvasionSettings.register(registry);
+        ModerationSettings.register(registry);
+    }
+
+    /** Reads the state files in {@code data/} (server start). */
+    private void loadData() {
+        players.load();
+        if (keepsStrikes()) {
+            int loaded = persistentStrikes.load();
+            if (loaded > 0) {
+                platform.logger().info("Loaded the strikes of " + loaded + " players from " + DATA_FOLDER + "/" + ModerationSettings.STRIKES_FILE + ".");
+            }
+        }
+    }
+
+    /**
+     * Whether strikes are written to disk and read back: the admin wants it and strikes are not forgotten on quit
+     * anyway (with clear-on-quit nobody who is offline has strikes, so there is nothing to keep).
+     */
+    private boolean keepsStrikes() {
+        return value(ModerationSettings.SAVE_TO_DISK) && !settings().legacy().clearViolationsOnQuit();
+    }
+
+    private PersistentStrikeService.Options strikeOptions() {
+        return new PersistentStrikeService.Options(settings().legacy().violationExpireMinutes() * 60_000L,
+            value(ModerationSettings.DECAY_EVERY).toMillis(), value(ModerationSettings.DECAY_POINTS), value(ModerationSettings.MAX_POINTS),
+            value(ModerationSettings.SAVE_DELAY).toMillis(), keepsStrikes());
     }
 
     // ------------------------------------------------------------------------------------------
@@ -565,6 +607,7 @@ public final class Engine {
      * @return the verdict about the name (plain "allow" when the check is off or the name is fine)
      */
     public Verdict onJoin(UUID playerId, String playerName) {
+        players.seen(playerId, playerName);
         Message message = message(playerId, playerName, Message.JOIN, playerName);
         Verdict verdict = judge(message, true, false);
         Hit hit = verdict.primary();
@@ -680,7 +723,32 @@ public final class Engine {
         return strikes;
     }
 
-    /** Replaces the strike counter (for example with a persistent one). */
+    /** Everybody who was ever seen on the server ({@code data/players.json}); finds offline players by name. */
+    public PlayerDirectory players() {
+        return players;
+    }
+
+    /**
+     * Finds a player by name: first among the online players (exact name), then among everybody who was seen before.
+     * Empty when the name is unknown.
+     */
+    public Optional<PlayerRef> resolvePlayer(String name) {
+        Optional<PlayerRef> online = platform.findPlayer(name);
+        if (online.isPresent()) {
+            return online;
+        }
+        return players.find(name).map(known -> new PlayerRef(known.id(), known.name()));
+    }
+
+    /** Whether that player is on the server right now. */
+    public boolean isOnline(UUID player) {
+        return platform.onlinePlayers().stream().anyMatch(p -> p.id().equals(player));
+    }
+
+    /**
+     * Replaces the strike counter. The built-in one is a {@link PersistentStrikeService} (points per UUID, expiry,
+     * decay, cap, {@code data/strikes.json}).
+     */
     public void setStrikeService(StrikeService service) {
         this.strikes = service;
     }
@@ -720,6 +788,7 @@ public final class Engine {
     public void onQuit(UUID player) {
         anvilFlagged.remove(player);
         spamState.forget(player);
+        players.touch(player);
         if (settings().legacy().clearViolationsOnQuit()) {
             strikes.reset(player);
         }
@@ -727,7 +796,12 @@ public final class Engine {
 
     /** Call when the server stops. */
     public void shutdown() {
-        strikes.clear();
+        // strikes that are kept across restarts are written first; memory is emptied either way
+        persistentStrikes.shutdown(keepsStrikes());
+        if (strikes != persistentStrikes) {
+            strikes.clear();
+        }
+        players.flush();
         anvilFlagged.clear();
         spamState.clear();
     }
