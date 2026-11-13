@@ -93,12 +93,12 @@ class CommandsTest {
     @Test
     void existingSubcommandsAnswerAsBefore() {
         assertEquals(List.of("§eUsage: /abw <reload|addword|removeword|listwords|check|violations|resetviolations|info|lang|whitelist>"), run(""));
-        assertEquals(List.of("§cBlocked: matches 'fuck'."), run("check what the fuck"));
+        assertEquals(List.of("§cBlocked: matches 'fuck'.", "§7Check: §fbadword§7 (word list entry 'fuck', level 3)"), run("check what the fuck"));
         assertEquals(List.of("§aClean: no blocked word found."), run("check hello"));
         assertEquals(List.of("§aAdded custom blocked word."), run("addword zorblax two"));
         assertEquals(List.of("§cWord already exists."), run("addword zorblax two"));
         assertEquals(List.of("§cThat is not a valid word (use at least 2 letters or digits)."), run("addword x"));
-        assertEquals(List.of("§cBlocked: matches 'zorblax two'."), run("check a zorblax two b"));
+        assertEquals(List.of("§cBlocked: matches 'zorblax two'.", "§7Check: §fbadword§7 (word list entry 'zorblax two', level 3)"), run("check a zorblax two b"));
         assertEquals(List.of("zorblax two"), complete("removeword zo"));
         assertEquals(List.of("§aRemoved custom blocked word."), run("removeword zorblax two"));
         assertEquals(List.of("§cWord not found in the custom list."), run("removeword nothing"));

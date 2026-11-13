@@ -37,6 +37,13 @@ public final class LegacyMigration {
     public record Result(boolean migrated, Path backup, List<String> log) {
     }
 
+    /**
+     * Settings whose default is different now than in version 1. A migrated install that did not set them gets the old
+     * default written into its new file ("behaves the same after the update").
+     */
+    private static final Map<String, Object> LEGACY_DEFAULTS = Map.of(
+        CoreSettings.SCANNED_COMMANDS.key(), CoreSettings.LEGACY_SCANNED_COMMANDS);
+
     private static final DateTimeFormatter STAMP = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 
     private LegacyMigration() {
@@ -98,6 +105,12 @@ public final class LegacyMigration {
             }
             Object raw = old.get(setting.key());
             if (raw == null) {
+                // A default that changed since version 1: write the old default, so the server behaves as before.
+                Object legacy = LEGACY_DEFAULTS.get(setting.key());
+                if (legacy != null && !legacy.equals(setting.defaultValue())) {
+                    editor(editors, registry, setting.file()).set(setting.key(), legacy);
+                    changed++;
+                }
                 continue;
             }
             Setting.Parsed<?> parsed = setting.parse(raw);

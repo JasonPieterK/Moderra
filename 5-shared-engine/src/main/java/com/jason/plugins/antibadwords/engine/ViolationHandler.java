@@ -41,11 +41,26 @@ final class ViolationHandler {
         values.put("source", message.source());
         values.put("limit", Integer.toString(limit));
 
+        boolean badWord = BadWordCheck.ID.equals(primary.check());
+        if (verdict.blocked() && !badWord && playerId != null) {
+            // "your message was not sent because ...": the line the check's own settings give
+            TextCheck check = engine.check(primary.check());
+            String feedback = check == null ? null : check.feedback(primary, effective);
+            if (feedback != null && !feedback.isBlank()) {
+                platform.sendMessage(playerId, Placeholders.apply(feedback, values));
+            }
+        }
+        publishFilterEvents(message, verdict);
+
         if (weight <= 0 || playerId == null) {
-            // Nothing to count (for example a spam hit with strike weight 0): only tell the subscribers.
+            // Nothing to count (for example a spam hit with strike weight 0): only the console and the subscribers.
             int count = playerId == null ? 0 : engine.strikes().get(playerId);
             values.put("count", Integer.toString(count));
             values.put("remaining", Integer.toString(Math.max(0, limit - count)));
+            if (s.logToConsole()) {
+                platform.logger().info(playerName + " triggered " + primary.check() + " (" + primary.detail() + ") in " + message.source()
+                    + ": " + outcome(verdict));
+            }
             publishViolation(message, verdict, primary, weight, values);
             return;
         }
@@ -66,8 +81,10 @@ final class ViolationHandler {
             }
         }
         if (s.logToConsole()) {
-            platform.logger().info(playerName + " said blocked word '" + primary.detail() + "' in " + message.source()
-                + " (violation " + count + "/" + limit + ")");
+            platform.logger().info(badWord
+                ? playerName + " said blocked word '" + primary.detail() + "' in " + message.source() + " (violation " + count + "/" + limit + ")"
+                : playerName + " triggered " + primary.check() + " (" + primary.detail() + ") in " + message.source() + ": "
+                    + outcome(verdict) + " (violation " + count + "/" + limit + ")");
         }
         publishViolation(message, verdict, primary, weight, values);
 
@@ -105,6 +122,31 @@ final class ViolationHandler {
         data.put("profile", effective.profile());
         engine.events().publish(new ModerationEvent(ModerationEvent.PUNISHMENT, engine.now(), playerId, playerName, message.world(),
             message.source(), data));
+    }
+
+    private static String outcome(Verdict verdict) {
+        return verdict.blocked() ? "blocked" : verdict.censored() ? "cleaned" : "noted only";
+    }
+
+    /** One {@code spam} / {@code link} / {@code evasion} event per hit of such a check (the kind is the id up to the first "-"). */
+    private void publishFilterEvents(Message message, Verdict verdict) {
+        for (Hit hit : verdict.hits()) {
+            if (BadWordCheck.ID.equals(hit.check())) {
+                continue;
+            }
+            int dash = hit.check().indexOf('-');
+            Map<String, String> data = new HashMap<>();
+            data.put("check", hit.check());
+            data.put("detail", hit.detail() == null ? "" : hit.detail());
+            data.put("action", hit.action().name().toLowerCase(java.util.Locale.ROOT).replace('_', '-'));
+            data.put("verdict", verdict.type().name().toLowerCase(java.util.Locale.ROOT));
+            data.put("weight", Integer.toString(hit.strikeWeight()));
+            data.put("profile", verdict.settings().profile());
+            data.put("text", message.rawText() == null ? "" : message.rawText());
+            data.put("player", message.playerName());
+            engine.events().publish(new ModerationEvent(dash < 0 ? hit.check() : hit.check().substring(0, dash), engine.now(),
+                message.playerId(), message.playerName(), message.world(), message.source(), data));
+        }
     }
 
     private void publishViolation(Message message, Verdict verdict, Hit primary, int weight, Map<String, String> values) {

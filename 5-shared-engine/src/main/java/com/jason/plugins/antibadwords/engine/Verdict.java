@@ -63,11 +63,21 @@ public final class Verdict {
         return !hits.isEmpty();
     }
 
-    /** The hit that decided the verdict: the blocking one, else the first. {@code null} when there are none. */
+    /**
+     * The hit that decided the verdict: the blocking one; else, when the text was changed (or blocked because this
+     * place cannot deliver a changed text), the first censoring one; else the first. {@code null} when there are none.
+     */
     public Hit primary() {
         for (Hit hit : hits) {
             if (hit.action() == Hit.Action.BLOCK) {
                 return hit;
+            }
+        }
+        if (type != Type.ALLOW) {
+            for (Hit hit : hits) {
+                if (hit.action() == Hit.Action.CENSOR) {
+                    return hit;
+                }
             }
         }
         return hits.isEmpty() ? null : hits.get(0);

@@ -28,6 +28,8 @@ public final class FakePlatform implements Platform {
     public final List<String> appliedActions = new ArrayList<>();
     public final List<String> infos = new ArrayList<>();
     public final List<String> warnings = new ArrayList<>();
+    /** Sources where this pretend server can deliver a changed text (a real Bukkit server: chat). */
+    public final Set<String> rewritable = new HashSet<>();
 
     public FakePlatform(Path folder) {
         this.folder = folder;
@@ -118,6 +120,11 @@ public final class FakePlatform implements Platform {
     @Override
     public String dimensionName(UUID player) {
         return dimensions.getOrDefault(player, "");
+    }
+
+    @Override
+    public boolean canRewrite(String source) {
+        return rewritable.contains(source);
     }
 
     @Override

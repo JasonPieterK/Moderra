@@ -42,7 +42,11 @@ class SettingsRegistryTest {
         // and the defaults are the old defaults (except the language list, which uses the new codes)
         for (Setting<?> s : r.settings()) {
             Object oldValue = old.get(s.key());
-            if (oldValue != null && s != CoreSettings.ENABLED_LANGUAGES) {
+            if (s == CoreSettings.SCANNED_COMMANDS) {
+                // new installs scan more commands; migrated installs keep the old list (LegacyMigrationTest)
+                assertEquals(s.parse(oldValue).value(), CoreSettings.LEGACY_SCANNED_COMMANDS);
+                assertTrue(CoreSettings.SCANNED_COMMANDS.defaultValue().containsAll(CoreSettings.LEGACY_SCANNED_COMMANDS));
+            } else if (oldValue != null && s != CoreSettings.ENABLED_LANGUAGES) {
                 assertEquals(s.parse(oldValue).value(), s.defaultValue(), s.key());
                 assertNull(s.parse(oldValue).problem(), s.key());
             }
@@ -69,8 +73,10 @@ class SettingsRegistryTest {
     @Test
     void everyEntryIsDescribedAndOwnedByAFile() {
         SettingsRegistry r = registry();
-        assertEquals(List.of("config.yml", "moderation/ladder.yml", "worlds.yml"), r.files());
-        assertEquals(List.of("General", "Languages", "Scanning", "Matching", "Whitelist", "Messages", "Punishment", "Worlds"), r.categories());
+        assertEquals(List.of("config.yml", "moderation/ladder.yml", "worlds.yml", "filters/spam.yml", "filters/links.yml", "filters/evasion.yml",
+            "filters/confusables.yml"), r.files());
+        assertEquals(List.of("General", "Languages", "Scanning", "Player names", "Matching", "Whitelist", "Messages", "Punishment", "Worlds",
+            "Spam", "Links", "Evasion", "Look-alike tables"), r.categories());
         for (ConfigEntry e : r.entries()) {
             assertFalse(e.title().isBlank(), e.key());
             assertFalse(e.description().isBlank(), e.key());

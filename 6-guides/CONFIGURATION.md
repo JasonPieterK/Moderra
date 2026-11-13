@@ -52,9 +52,24 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `filters.scan.signs` | true or false | `true` | yes | Look for bad words on signs. |
 | `filters.scan.books` | true or false | `true` | yes | Look for bad words in books (pages and title). |
 | `filters.scan.anvil` | true or false | `true` | yes | Look for bad words in item names typed in an anvil. |
-| `filters.scanned-commands` | list of texts | `msg`, `tell`, `w`, `whisper`, `r`, `reply`, `me`, `say`, `teammsg`, `tm`, `mail`, `nick`, `broadcast` | yes | Commands whose arguments are scanned (only used when scan.commands is true).<br>Use "*" to scan the arguments of every command. |
+| `filters.scan.sign-back` | true or false | `true` | yes | Look at the back side of signs too (only used when scan.signs is true). Bukkit/Spigot/Paper/Purpur can tell the two<br>sides apart; on Fabric and Forge both sides are always covered by scan.signs and this switch changes nothing. |
+| `filters.scan.command-blocks` | true or false | `false` | yes | Look at the commands that command blocks (and command-block minecarts) run, using scanned-commands below.<br>A command with a blocked word is not run. Bukkit/Spigot/Paper/Purpur only; not available on Fabric and Forge yet.<br>Nobody gets strikes for it (the game does not say who wrote the command). |
+| `filters.scan.join-names` | true or false | `false` | yes | Check the name of every player who joins against the word lists (see join-names below for what happens). |
+| `filters.scanned-commands` | list of texts | `msg`, `tell`, `w`, `whisper`, `r`, `reply`, `me`, `say`, `teammsg`, `tm`, `mail`, `nick`, `broadcast`, `team`, `title`, `tellraw`, `bossbar`, `scoreboard`, `rename` | yes | Commands whose arguments are scanned (only used when scan.commands is true).<br>Use "*" to scan the arguments of every command. |
 | `filters.ignored-commands` | list of texts | `antibadwords`, `abw`, `antiwords` | yes | Commands that are never scanned (so admins can still manage the word list). |
-| `filters.check-order` | list of texts | `badword` | yes | The order in which the checks look at a message. Checks that are not listed run afterwards.<br>The first check that blocks a message ends the search. |
+| `filters.check-order` | list of texts | `evasion`, `badword`, `link`, `spam` | yes | The order in which the checks look at a message. Checks that are not listed run afterwards.<br>The first check that blocks a message ends the search; a check that cleans a message hands the cleaned text on.<br>Names: evasion (bypass tricks, filters/evasion.yml), badword (the word lists), link (filters/links.yml),<br>spam (all rules of filters/spam.yml) or single spam rules: spam-commands, spam-rate, spam-repeat, spam-caps,<br>spam-flood, spam-words. |
+| `filters.command-blocks.report-interval` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 1d | `1m` | no | A repeating command block can run 20 times per second. The same blocked command is reported (console, events)<br>only once in this time; it is stopped every time. |
+
+### Player names
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `filters.join-names.action` | one of: log, warn, kick | `log` | yes | What happens when a joining player's name contains a blocked word (only used when scan.join-names is true):<br>  log  = a line in the console (and an event for the history / Discord features)<br>  warn = also tell the player and the staff<br>  kick = remove the player from the server with kick-message, and tell the staff<br>Players with the permission antibadwords.bypass are never checked. Nobody gets strikes for a name. |
+| `filters.join-names.match-inside-names` | true or false | `true` | yes | Player names have no spaces, so a blocked word is also found INSIDE a name ("xXbadwordXx").<br>The whitelist still applies to the whole name. false = only when the whole name (or a part between _) is the word. |
+| `filters.join-names.min-word-length` | whole number from 3 to 32 | `4` | yes | Blocked words shorter than this are not searched inside names (short words are part of many innocent names). |
+| `filters.join-names.kick-message` | text | `&cYour player name is not allowed on this server.` | yes | Shown to the kicked player. Placeholders: {player} {word}. Colours: & codes. |
+| `filters.join-names.warn-message` | text | `&eYour player name contains a word that is not welcome here.` | yes | Sent to the player when the action is warn. Placeholders: {player} {word}. Empty = no message. |
+| `filters.join-names.staff-message` | text | `&8[&cAntiBadWords&8] &7The name of &f{player}&7 contains '&f{word}&7'.` | yes | Sent to staff (permission antibadwords.notify) for warn and kick, when messages.notify-staff is true. |
 
 ### Matching
 
@@ -113,6 +128,120 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `use-permission-profiles` | true or false | `true` | no | When true, a player with the permission antibadwords.profile.<name> always gets that profile,<br>whatever world they are in. Nobody has these permissions unless you give them. |
 | `profiles` | section (your own keys) | see the file | no | Named sets of rules. A profile lists only what is DIFFERENT from the normal files; everything else stays the same.<br>You can override every setting that CONFIGURATION.md marks with "per world: yes", written with its full key.<br>Example:<br>  profiles:<br>    default: {}<br>    relaxed:<br>      filters.protection-level: 1<br>      punishment.enabled: false<br>    german-lobby:<br>      filters.enabled-word-lists: [de, en]<br>This part cannot be edited in the in-game menu; edit the file. |
 | `worlds` | section (your own keys) | see the file | no | Which world uses which profile: world name (or pattern) on the left, profile name on the right. The first match wins.<br>* means "any text". On Bukkit/Spigot/Paper/Purpur use the world folder name (world, world_nether ...) or the<br>dimension name (minecraft:overworld, minecraft:the_nether, minecraft:the_end).<br>Example:<br>  worlds:<br>    "creative_*": relaxed<br>    "minecraft:the_nether": relaxed<br>This part cannot be edited in the in-game menu; edit the file. |
+
+## `filters/spam.yml`
+
+### Spam
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `filters.spam.enabled` | true or false | `false` | yes | Master switch for everything in this file. Off by default: switch it on, then switch off the rules you do not want. |
+| `filters.spam.max-tracked-players` | whole number from 10 to 1000000 | `5000` | no | For how many players message times are remembered at the same time (memory limit). When more players are<br>active, the ones who were quiet the longest are forgotten first. |
+| `filters.spam.forget-after` | time such as 30s, 10m, 2h or 1d, at least 10s, at most 1d | `10m` | no | A player who sent nothing for this long is forgotten (players are also forgotten when they leave). |
+| `filters.spam.rate.enabled` | true or false | `true` | yes | TOO MANY MESSAGES: A player sends messages faster than allowed.<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.rate.action` | one of: block, log-only | `block` | yes | block = the message is not delivered; log-only = it goes through and is only noted. |
+| `filters.spam.rate.message` | text | `&cYou are sending messages too fast. Please slow down.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.rate.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.rate.sources` | list of texts | `chat` | yes | Text sources this rule looks at: chat, command, sign, book, anvil (or "*" for all). |
+| `filters.spam.rate.max-messages` | whole number from 1 to 1000 | `5` | yes | How many messages a player may send within the time window. The next one is caught. |
+| `filters.spam.rate.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `5s` | yes | Length of the time window for the line above. |
+| `filters.spam.repeat.enabled` | true or false | `true` | yes | REPEATED MESSAGES: A player sends the same (or nearly the same) message again and again.<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.repeat.action` | one of: block, log-only | `block` | yes | block = the message is not delivered; log-only = it goes through and is only noted. |
+| `filters.spam.repeat.message` | text | `&cPlease do not repeat the same message.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.repeat.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.repeat.sources` | list of texts | `chat` | yes | Text sources this rule looks at: chat, command, sign, book, anvil (or "*" for all). |
+| `filters.spam.repeat.max-repeats` | whole number from 1 to 100 | `2` | yes | How many times the same message may be sent within the time window. The next one is caught. |
+| `filters.spam.repeat.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1d | `30s` | yes | How long a message is remembered for this comparison. |
+| `filters.spam.repeat.similarity` | number from 0.5 to 1 | `0.85` | yes | 1.0 = only exactly the same text counts. 0.85 = messages that differ in up to 15% of their characters also count<br>("hello!!" and "hello!!!"). Upper and lower case and extra spaces never matter. |
+| `filters.spam.repeat.min-length` | whole number from 1 to 256 | `4` | yes | Shorter messages ("ok", "gg") are never counted as repeats. |
+| `filters.spam.repeat.history-size` | whole number from 1 to 50 | `5` | yes | How many of a player's last messages are kept for the comparison. |
+| `filters.spam.caps.enabled` | true or false | `true` | yes | TOO MANY CAPITAL LETTERS: A message is written mostly IN CAPITAL LETTERS.<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.caps.action` | one of: block, censor, log-only | `censor` | yes | block = the message is not delivered; censor = a cleaned-up text is delivered instead (chat on Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked); log-only = it goes through and is only noted. |
+| `filters.spam.caps.message` | text | `&cPlease do not write in capital letters.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.caps.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.caps.sources` | list of texts | `chat` | yes | Text sources this rule looks at: chat, command, sign, book, anvil (or "*" for all). |
+| `filters.spam.caps.max-percent` | whole number from 1 to 100 | `70` | yes | A message is caught when more than this share of its letters are capitals. |
+| `filters.spam.caps.min-length` | whole number from 1 to 256 | `8` | yes | Messages with fewer letters than this are never caught ("LOL", "GG"). |
+| `filters.spam.flood.enabled` | true or false | `true` | yes | CHARACTER FLOOD: The same character many times in a row ("heeeeeeello", "!!!!!!!!"), or a message that is mostly symbols or emoji.<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.flood.action` | one of: block, censor, log-only | `censor` | yes | block = the message is not delivered; censor = a cleaned-up text is delivered instead (chat on Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked); log-only = it goes through and is only noted. |
+| `filters.spam.flood.message` | text | `&cPlease do not flood the chat with repeated characters.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.flood.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.flood.sources` | list of texts | `chat` | yes | Text sources this rule looks at: chat, command, sign, book, anvil (or "*" for all). |
+| `filters.spam.flood.max-repeated-characters` | whole number from 2 to 256 | `6` | yes | A message is caught when one character (not a digit) is repeated more often than this in a row. |
+| `filters.spam.flood.collapse-to` | whole number from 1 to 256 | `3` | yes | With action censor, a too long run is shortened to this many characters. |
+| `filters.spam.flood.max-symbol-percent` | whole number from 1 to 100 | `70` | yes | A message is caught when more than this share of its characters (spaces not counted) are symbols, punctuation<br>or emoji. 100 = never. With action censor such a message is blocked, because there is nothing sensible to keep. |
+| `filters.spam.flood.symbol-min-length` | whole number from 1 to 256 | `10` | yes | Shorter messages (":)", "???") are never caught by the symbol rule. |
+| `filters.spam.words.enabled` | true or false | `true` | yes | REPEATED WORDS: The same word many times in one message ("buy buy buy buy buy").<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.words.action` | one of: block, censor, log-only | `block` | yes | block = the message is not delivered; censor = a cleaned-up text is delivered instead (chat on Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked); log-only = it goes through and is only noted. |
+| `filters.spam.words.message` | text | `&cPlease do not repeat the same word so often.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.words.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.words.sources` | list of texts | `chat` | yes | Text sources this rule looks at: chat, command, sign, book, anvil (or "*" for all). |
+| `filters.spam.words.max-identical-words` | whole number from 1 to 256 | `4` | yes | A message is caught when one word appears more often than this. With action censor the extra copies are removed. |
+| `filters.spam.words.min-word-length` | whole number from 1 to 64 | `2` | yes | Shorter words ("a", "I") are not counted. |
+| `filters.spam.commands.enabled` | true or false | `true` | yes | TOO MANY COMMANDS: A player runs commands faster than allowed. Every command counts, also the ones that are not scanned for bad words.<br>Only used while filters.spam.enabled is true. |
+| `filters.spam.commands.action` | one of: block, log-only | `block` | yes | block = the message is not delivered; log-only = it goes through and is only noted. |
+| `filters.spam.commands.message` | text | `&cYou are using commands too fast. Please slow down.` | yes | Sent to the player when the message was blocked by this rule. Empty = no message. Colours: & codes. |
+| `filters.spam.commands.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes this adds. 0 = none (spam never leads to a punishment unless you raise this). |
+| `filters.spam.commands.max-commands` | whole number from 1 to 1000 | `8` | yes | How many commands a player may run within the time window. The next one is caught. |
+| `filters.spam.commands.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `5s` | yes | Length of the time window for the line above. |
+| `filters.spam.commands.exempt-commands` | list of texts | (empty) | yes | Command names (without /) that are not counted, for example commands a client mod sends automatically. |
+
+## `filters/links.yml`
+
+### Links
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `filters.links.mode` | one of: off, block-all, allow-list, block-list | `off` | yes | off        = links are not checked (default)<br>block-all  = every link is caught<br>allow-list = every link is caught, except the domains in allowed-domains<br>block-list = only the domains in blocked-domains are caught |
+| `filters.links.allowed-domains` | list of texts | (empty) | yes | Used by mode allow-list (and for IP addresses you want to allow). One entry per domain:<br>  example.com     = that domain and everything under it (www.example.com, shop.example.com)<br>  *.example.com   = only the names under it<br>  .org            = every domain that ends like this<br>  203.0.113.5     = that address |
+| `filters.links.blocked-domains` | list of texts | (empty) | yes | Used by mode block-list. Same forms as allowed-domains. |
+| `filters.links.block-ip-addresses` | true or false | `true` | yes | While the filter is on (any mode): catch IPv4 and IPv6 addresses such as 203.0.113.5 (server advertising),<br>unless the address is listed in allowed-domains. false = addresses are ignored. |
+| `filters.links.block-invites` | true or false | `true` | yes | While the filter is on (any mode): catch invite links (see invite-links below), even when their domain is<br>allowed, unless the invite is listed in allowed-invites. false = invites are treated like any other link. |
+| `filters.links.invite-links` | list of texts | `discord.gg`, `discord.com/invite`, `discordapp.com/invite`, `discord.me`, `discord.io`, `dsc.gg`, `invite.gg`, `t.me`, `telegram.me`, `chat.whatsapp.com`, `guilded.gg` | yes | A domain, or a domain with the start of the path. Everything that begins like one of these is an invite. |
+| `filters.links.allowed-invites` | list of texts | (empty) | yes | Invites that are fine, for example your own server: discord.gg/yourcode |
+| `filters.links.detect-hidden-dots` | true or false | `true` | yes | Also find links whose dot is hidden: "example dot com", "example(dot)com", "example[.]com",<br>"example .com", "example . com". (Unicode dots and invisible characters are always handled.) |
+| `filters.links.dot-words` | list of texts | `dot`, `d0t`, `punkt`, `punto`, `ponto`, `точка` | yes | Used by detect-hidden-dots. Lower case. |
+| `filters.links.domain-endings` | list of texts | `com`, `net`, `org`, `gg`, `io`, `co`, `xyz`, `info`, `biz`, `dev`, `app`, `tv`, `cc`, `ly`, `gl`, `link`, `online`, `site`, `store`, `shop`, `club`, `fun`, `pro`, `live`, `top`, `vip`, `games`, `host`, `cloud`, `tech`, `space`, `website`, `world`, `network`, `edu`, `gov`, `tk`, `ml`, `ga`, `cf`, `gq`, `uk`, `ru`, `fr`, `nl`, `pl`, `br`, `cz`, `dk`, `fi`, `jp`, `cn`, `kr`, `ua`, `hu`, `gr`, `mx`, `tr`, `ch`, `ro`, `pt`, `su` | yes | A word.ending without http:// or www. only counts as a link when the ending is in this list. Endings that<br>are also everyday words in some language (de, es, it, me, in, at, to, is, us, no, se, eu, ca, au, id ...) are left<br>out on purpose, because "casa.de" or "trust.me" would be caught; add them if your players abuse them.<br>Links with http://, https:// or www. are always found. |
+| `filters.links.action` | one of: block, censor, log-only | `block` | yes | block = the message is not delivered; censor = the link is replaced by censor-replacement (chat on<br>Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked); log-only = it goes through and is only noted. |
+| `filters.links.censor-replacement` | text | `[link]` | yes | What a caught link is replaced with when the action is censor. |
+| `filters.links.message` | text | `&cLinks are not allowed here.` | yes | Sent to the player when the message was blocked for a link. Empty = no message. Colours: & codes. |
+| `filters.links.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes a caught link adds. 0 = none. |
+| `filters.links.sources` | list of texts | `chat`, `command`, `sign`, `book`, `anvil` | yes | Text sources: chat, command, sign, book, anvil, join, command-block (or "*" for all). |
+
+## `filters/evasion.yml`
+
+### Evasion
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `filters.evasion.normalise.strip-invisible-characters` | true or false | `true` | yes | Invisible characters (zero-width spaces and joiners, direction marks, soft hyphens, variation selectors, empty<br>filler letters) are removed before words are compared, so a word with a hidden character inside is still found.<br>When false they split the word in two. |
+| `filters.evasion.normalise.fold-compatibility-forms` | true or false | `true` | yes | Full-width letters, circled letters, mathematical bold/italic letters and similar special forms are read as the<br>plain letter (Unicode NFKC folding). |
+| `filters.evasion.normalise.fold-diacritics` | true or false | `true` | yes | Accents and other marks on letters are ignored, so "fück" is read as "fuck" and "cabron" matches "cabrón". |
+| `filters.evasion.normalise.keep-diacritics-in-scripts` | list of texts | (empty) | yes | Writing systems in which marks are NOT ignored, because there they change the word. Empty = ignore them<br>everywhere (this is how the plugin always worked). Names as in Unicode, for example: latin, cyrillic, greek,<br>arabic, hebrew, devanagari, bengali, thai. Example: [devanagari, arabic] keeps Hindi vowel signs and Arabic vowel marks;<br>[latin] makes "ano" and "año" different words. |
+| `filters.evasion.normalise.look-alike-letters` | true or false | `true` | yes | Letters from other alphabets that look like a Latin letter (Cyrillic "с", Greek "ο" ...) are read as that Latin<br>letter when they stand inside a word that also has Latin letters ("fuсk"). The table is in filters/confusables.yml. |
+| `filters.evasion.normalise.look-alike-letters-reverse` | true or false | `true` | yes | Also catch the opposite trick: Latin letters inside a word of another alphabet (a Russian word written with a Latin "x").<br>Only words that mix two alphabets are affected. |
+| `filters.evasion.normalise.look-alike-whole-words` | true or false | `false` | yes | Also read words that are written COMPLETELY in look-alike letters of another alphabet as Latin words.<br>Off by default: on servers with Russian or Greek players a normal word can then look like a blocked Latin word. |
+| `filters.evasion.normalise.leetspeak` | true or false | `true` | yes | Symbols and digits that stand for letters are read as letters ("sh1t", "@ss", "$hit"). The table is in filters/confusables.yml. |
+| `filters.evasion.normalise.ignored-separators` | text | (empty) | yes | Characters that are skipped when they stand between two letters, so "fu.ck" or "fu-ck" is read as one word.<br>Example: ".-_". Empty by default because it also glues together things like "e.g" or "well-known".<br>Related settings in config.yml: filters.matching.collapse-repeated-letters, detect-spaced-letters, join-adjacent-words. |
+| `filters.evasion.detect.action` | one of: off, log-only, censor, block | `log-only` | yes | What happens with a message that uses a bypass trick (see the two switches below), even when no blocked word<br>was found in it:<br>  off      = nothing<br>  log-only = the message goes through; the console and the event log note it<br>  censor   = the hidden characters are removed and look-alike letters are replaced by normal ones<br>             (chat on Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked instead)<br>  block    = the message is not delivered |
+| `filters.evasion.detect.invisible-characters` | true or false | `true` | yes | Notice an invisible character between two letters of a word. |
+| `filters.evasion.detect.mixed-alphabets` | true or false | `true` | yes | Notice a word that mixes Latin letters with look-alike letters of another alphabet. |
+| `filters.evasion.detect.scripts` | list of texts | `latin`, `cyrillic`, `greek` | yes | An invisible character only counts as a trick between two letters of these writing systems. Languages such as<br>Persian, Arabic and Hindi (and emoji) need invisible joiners for correct spelling, so they are not in the list. |
+| `filters.evasion.detect.sources` | list of texts | `chat`, `command`, `sign`, `book`, `anvil` | yes | Text sources this applies to: chat, command, sign, book, anvil, join, command-block (or "*" for all). |
+| `filters.evasion.detect.strike-weight` | whole number from 0 to 100 | `0` | yes | How many strikes a noticed trick adds. 0 = none (the player is never punished for it). |
+| `filters.evasion.detect.message` | text | `&cPlease write without invisible or look-alike letters.` | yes | Sent to the player when the message was blocked for a bypass trick. Empty = no message. Colours: & codes. |
+
+## `filters/confusables.yml`
+
+### Look-alike tables
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `leet-symbols` | text | `@=a $=s !=i \|=i +=t` | no | Symbols that stand for a letter and may appear inside a word. Form: <symbol>=<letter>, separated by spaces. |
+| `leet-symbols-not-at-word-start` | text | `@!\|+` | no | Leetspeak symbols that are NOT read as a letter at the very start of a word ("+1", "!help", "@Steve"). |
+| `leet-symbols-not-at-word-end` | text | `!\|+` | no | Leetspeak symbols that are NOT read as a letter at the very end of a word ("wow!"). |
+| `leet-digits` | text | `0=o 1=i 3=e 4=a 5=s 7=t 8=b 9=g` | no | Digits that stand for a letter. They are only read as letters inside a word that also has Latin letters. |
+| `look-alikes` | section (your own keys) | see the file | no | Letters that look like a plain Latin letter. Each line holds items of the form <letter>=<what it looks like>,<br>separated by spaces. The group names (cyrillic, greek ...) are only for you; add your own lines or groups.<br>The default table was made from the Unicode confusables data (Unicode License v3, see NOTICE).<br>If this part is empty or cannot be read, the built-in table is used.<br>This part cannot be edited in the in-game menu; edit the file. |
 
 ## Punishment actions (`moderation/ladder.yml`)
 

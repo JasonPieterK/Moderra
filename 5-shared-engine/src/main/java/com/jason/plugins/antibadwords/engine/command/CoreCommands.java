@@ -9,7 +9,16 @@ import static com.jason.plugins.antibadwords.engine.command.Chat.YELLOW;
 
 import com.jason.plugins.antibadwords.AntiBadWordsSettings;
 import com.jason.plugins.antibadwords.WordMatcher;
+import com.jason.plugins.antibadwords.engine.BadWordCheck;
+import com.jason.plugins.antibadwords.engine.EffectiveSettings;
 import com.jason.plugins.antibadwords.engine.Engine;
+import com.jason.plugins.antibadwords.engine.Hit;
+import com.jason.plugins.antibadwords.engine.TextCheck;
+import com.jason.plugins.antibadwords.engine.Verdict;
+import com.jason.plugins.antibadwords.engine.config.CoreSettings;
+import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
+import com.jason.plugins.antibadwords.engine.filters.LinkSettings;
+import com.jason.plugins.antibadwords.engine.filters.SpamSettings;
 import com.jason.plugins.antibadwords.engine.PlayerRef;
 import com.jason.plugins.antibadwords.engine.config.ConfigProblem;
 import java.util.ArrayList;
@@ -117,8 +126,33 @@ public final class CoreCommands {
             c.usage("<text>");
             return;
         }
-        String matched = c.engine().find(c.joined(0));
-        c.send(matched == null ? GREEN + "Clean: no blocked word found." : RED + "Blocked: matches '" + matched + "'.");
+        Engine engine = c.engine();
+        Verdict verdict = engine.explain(c.joined(0));
+        if (!verdict.hasHits()) {
+            c.send(GREEN + "Clean: no blocked word found.");
+        }
+        for (Hit hit : verdict.hits()) {
+            if (BadWordCheck.ID.equals(hit.check())) {
+                c.send(RED + "Blocked: matches '" + hit.detail() + "'.");
+                c.send(GRAY + "Check: " + WHITE + hit.check() + GRAY + " (word list entry '" + hit.detail() + "', level "
+                    + verdict.settings().tierOf(hit.detail()) + ")");
+                continue;
+            }
+            switch (hit.action()) {
+                case BLOCK -> c.send(RED + "Blocked by check " + WHITE + hit.check() + RED + ": " + hit.detail() + ".");
+                case CENSOR -> {
+                    c.send(YELLOW + "Cleaned by check " + WHITE + hit.check() + YELLOW + ": " + hit.detail() + ".");
+                    c.send(GRAY + "Text after cleaning: " + WHITE + hit.replacement());
+                }
+                default -> c.send(YELLOW + "Noted (not stopped) by check " + WHITE + hit.check() + YELLOW + ": " + hit.detail() + ".");
+            }
+        }
+        List<String> skipped = engine.checks(verdict.settings()).stream()
+            .filter(check -> check.id().startsWith("spam-") && check.enabled(verdict.settings()))
+            .map(TextCheck::id).filter(id -> id.equals("spam-rate") || id.equals("spam-repeat") || id.equals("spam-commands")).toList();
+        if (!skipped.isEmpty()) {
+            c.send(GRAY + "Not tested here (they count real messages over time): " + String.join(", ", skipped) + ".");
+        }
     }
 
     private static void violations(CommandContext c) {
@@ -144,7 +178,13 @@ public final class CoreCommands {
         c.send(GOLD + "AntiBadWords " + engine.version());
         c.send(GRAY + "Blocked words: " + WHITE + engine.settings().matcher().size() + GRAY + " | Punishment: " + WHITE
             + (s.punishmentEnabled() ? "on" : "off") + GRAY + " after " + WHITE + s.violationsBeforePunish() + GRAY + " violations");
-        c.send(GRAY + "Scanning: " + WHITE + scanSummary(s));
+        c.send(GRAY + "Scanning: " + WHITE + scanSummary(engine.settings()));
+        EffectiveSettings e = engine.settings();
+        String spam = !e.get(SpamSettings.ENABLED) ? "off" : "on (" + engine.checkIds().stream().filter(id -> id.startsWith("spam-"))
+            .filter(id -> engine.check(id).enabled(e)).map(id -> id.substring(5)).collect(java.util.stream.Collectors.joining(", ")) + ")";
+        c.send(GRAY + "Filters: spam " + WHITE + spam + GRAY + " | links " + WHITE + e.get(LinkSettings.MODE) + GRAY + " | bypass tricks "
+            + WHITE + e.get(EvasionSettings.DETECT_ACTION));
+        c.send(GRAY + "Check order: " + WHITE + engine.checks(e).stream().map(TextCheck::id).collect(java.util.stream.Collectors.joining(", ")));
     }
 
     private static PlayerRef requireOnlinePlayer(CommandContext c) {
@@ -166,13 +206,16 @@ public final class CoreCommands {
         return CommandRegistry.prefix(c.engine().platform().onlinePlayers().stream().map(PlayerRef::name).toList(), c.args()[0]);
     }
 
-    static String scanSummary(AntiBadWordsSettings s) {
+    static String scanSummary(EffectiveSettings e) {
+        AntiBadWordsSettings s = e.legacy();
         List<String> on = new ArrayList<>();
         if (s.scanChat()) on.add("chat");
         if (s.scanCommands()) on.add("commands");
-        if (s.scanSigns()) on.add("signs");
+        if (s.scanSigns()) on.add(e.get(CoreSettings.SCAN_SIGN_BACK) ? "signs (both sides)" : "signs (front only)");
         if (s.scanBooks()) on.add("books");
         if (s.scanAnvil()) on.add("anvil");
+        if (e.get(CoreSettings.SCAN_JOIN)) on.add("player names on join (" + e.get(CoreSettings.JOIN_ACTION) + ")");
+        if (e.get(CoreSettings.SCAN_COMMAND_BLOCKS)) on.add("command blocks");
         return on.isEmpty() ? "nothing" : String.join(", ", on);
     }
 }

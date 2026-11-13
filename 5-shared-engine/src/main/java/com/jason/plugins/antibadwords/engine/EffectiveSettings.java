@@ -9,6 +9,7 @@ import com.jason.plugins.antibadwords.engine.config.Setting;
 import com.jason.plugins.antibadwords.engine.config.PunishmentParser;
 import com.jason.plugins.antibadwords.engine.config.WordList;
 import com.jason.plugins.antibadwords.engine.config.WordLists;
+import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
 import com.jason.plugins.antibadwords.mod.Names;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,10 +72,11 @@ public final class EffectiveSettings {
         }
         this.enabledLanguages = List.copyOf(enabled);
         this.activeWords = List.copyOf(active);
+        // the evasion settings (filters/evasion.yml) decide how text and words are normalised before they are compared
         this.matcher = new WordMatcher(active, new WordMatcher.Options(
             get(CoreSettings.COLLAPSE_REPEATS), get(CoreSettings.REPEAT_THRESHOLD), get(CoreSettings.DETECT_SPACED),
             get(CoreSettings.JOIN_ADJACENT), get(CoreSettings.PARTIAL_MATCH), get(CoreSettings.PARTIAL_MIN_LENGTH),
-            get(CoreSettings.WHITELIST)));
+            get(CoreSettings.WHITELIST)), EvasionSettings.normalizer(this, warn));
 
         List<PunishmentAction> actions = PunishmentParser.parse(section(CoreSettings.EFFECTS), section(CoreSettings.ATTRIBUTES),
             section(CoreSettings.SOUNDS), section(CoreSettings.COMMANDS), warn);
@@ -130,6 +132,19 @@ public final class EffectiveSettings {
     /** The bad-word matcher for this profile (its languages, protection level, matching options and whitelist). */
     public WordMatcher matcher() {
         return matcher;
+    }
+
+    /**
+     * The matcher for player names: like {@link #matcher()}, but a blocked word is also found inside a longer name
+     * when {@code filters.join-names.match-inside-names} is on. Built the first time it is needed.
+     */
+    public WordMatcher nameMatcher() {
+        if (!get(CoreSettings.JOIN_MATCH_INSIDE)) {
+            return matcher;
+        }
+        return derived("badword.name-matcher", s -> new WordMatcher(activeWords, new WordMatcher.Options(
+            get(CoreSettings.COLLAPSE_REPEATS), get(CoreSettings.REPEAT_THRESHOLD), get(CoreSettings.DETECT_SPACED),
+            get(CoreSettings.JOIN_ADJACENT), true, get(CoreSettings.JOIN_MIN_LENGTH), get(CoreSettings.WHITELIST)), matcher.normalizer()));
     }
 
     /** Language codes that are on for this profile; {@code custom} is always the last one. */

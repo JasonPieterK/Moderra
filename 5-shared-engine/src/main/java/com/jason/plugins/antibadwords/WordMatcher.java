@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords;
 
-import java.text.Normalizer;
+import com.jason.plugins.antibadwords.engine.filters.EvasionNormalizer;
+import com.jason.plugins.antibadwords.engine.filters.WordIndex;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -19,7 +20,8 @@ import java.util.Set;
  * <h2>How text is matched</h2>
  * <ol>
  *   <li>The input is Unicode-normalised (accents and zero-width characters are removed) and split into
- *       <em>tokens</em> (runs of letters/digits).</li>
+ *       <em>tokens</em> (runs of letters/digits) by the {@link EvasionNormalizer}; its steps are switched in
+ *       {@code filters/evasion.yml}.</li>
  *   <li>Each token is canonicalised: leetspeak symbols ({@code @ $ ! | +}) and digits are mapped back to
  *       letters, Cyrillic look-alikes inside Latin words are mapped to Latin, and long runs of the same
  *       letter ({@code fuuuuck}) are collapsed.</li>
@@ -33,13 +35,8 @@ import java.util.Set;
  */
 public final class WordMatcher {
 
-    /** Characters that may appear inside a token and are translated to a letter ({@code f@ck}). */
-    private static final String LEET_SYMBOLS = "@$!|+";
     /** Masking character: matches any single character of a blocked word ({@code f*ck}). */
-    private static final char WILDCARD = '*';
-    /** Characters that are only meaningful inside a word (stripped when they lead or trail a token). */
-    private static final String LEADING_STRIP = "@!|+*";
-    private static final String TRAILING_STRIP = "!|+*";
+    private static final char WILDCARD = EvasionNormalizer.WILDCARD;
 
     /** Tunable matching behaviour, read from {@code filters.matching.*} in config.yml. */
     public record Options(
@@ -64,12 +61,26 @@ public final class WordMatcher {
     private final Map<String, String> unspaced = new LinkedHashMap<>();
     private final Set<String> whitelist = new HashSet<>();
     private final Options options;
+    private final EvasionNormalizer normalizer;
+    /** Index over {@link #exact} for masked ({@code f*ck}) and partial matching. */
+    private final WordIndex exactIndex = new WordIndex();
+    /** Index over {@link #unspaced}. */
+    private final WordIndex unspacedIndex = new WordIndex();
     private int maxWordsPerEntry = 1;
 
+    /** A matcher that normalises text exactly like version 1 of the plugin did. */
     public WordMatcher(Collection<String> words, Options options) {
+        this(words, options, EvasionNormalizer.LEGACY);
+    }
+
+    /**
+     * @param normalizer how text and blocked words are turned into canonical tokens (the evasion settings)
+     */
+    public WordMatcher(Collection<String> words, Options options, EvasionNormalizer normalizer) {
         this.options = options;
+        this.normalizer = normalizer;
         for (String safe : options.whitelist()) {
-            String canonical = canonicalEntry(safe);
+            String canonical = String.join("", normalizer.tokenize(safe));
             if (!canonical.isEmpty()) {
                 whitelist.add(canonical);
             }
@@ -106,28 +117,26 @@ public final class WordMatcher {
         if (text == null || text.isBlank()) {
             return null;
         }
-        List<String> tokens = tokenize(text);
+        List<String> alternates = new ArrayList<>();
+        List<String> tokens = normalizer.tokenize(text, alternates);
         if (tokens.isEmpty()) {
             return null;
         }
 
         // 1) single tokens (plus masked tokens, plus optional partial matching)
-        for (String token : tokens) {
+        for (int t = 0; t < tokens.size(); t++) {
+            String token = tokens.get(t);
             if (token.length() < 2 || whitelist.contains(token)) {
                 continue;
             }
-            String hit = lookup(token);
+            String hit = lookupSingle(token);
             if (hit != null) {
                 return hit;
             }
-            if (token.indexOf(WILDCARD) >= 0) {
-                hit = lookupMasked(token);
-                if (hit != null) {
-                    return hit;
-                }
-            }
-            if (options.partialMatch()) {
-                hit = lookupPartial(token);
+            // the same word with its look-alike letters read the other way round ("xуй" with a Latin x)
+            String alternate = alternates.get(t);
+            if (alternate != null && !whitelist.contains(alternate)) {
+                hit = lookupSingle(alternate);
                 if (hit != null) {
                     return hit;
                 }
@@ -176,14 +185,21 @@ public final class WordMatcher {
 
         // 4) scripts written without spaces (Chinese, Japanese, Thai, ...)
         if (!unspaced.isEmpty()) {
-            String all = String.join("", tokens);
-            for (Map.Entry<String, String> entry : unspaced.entrySet()) {
-                if (all.contains(entry.getKey())) {
-                    return entry.getValue();
-                }
-            }
+            return unspacedIndex.firstContained(String.join("", tokens), 1);
         }
         return null;
+    }
+
+    /** Everything that is tried for one token: exact, masked ({@code f*ck}) and, when switched on, partial. */
+    private String lookupSingle(String token) {
+        String hit = lookup(token);
+        if (hit == null && token.indexOf(WILDCARD) >= 0) {
+            hit = lookupMasked(token);
+        }
+        if (hit == null && options.partialMatch()) {
+            hit = lookupPartial(token);
+        }
+        return hit;
     }
 
     // ------------------------------------------------------------------------------------------
@@ -194,17 +210,21 @@ public final class WordMatcher {
         if (raw == null) {
             return;
         }
-        List<String> tokens = tokenize(raw);
+        List<String> tokens = normalizer.tokenize(raw);
         String joined = String.join("", tokens);
         if (joined.codePointCount(0, joined.length()) < 2) {
             return;
         }
         String display = cleanEntry(raw);
         if (containsUnspacedScript(joined)) {
-            unspaced.putIfAbsent(joined, display);
+            if (unspaced.putIfAbsent(joined, display) == null) {
+                unspacedIndex.add(joined, display);
+            }
             return;
         }
-        exact.putIfAbsent(joined, display);
+        if (exact.putIfAbsent(joined, display) == null) {
+            exactIndex.add(joined, display);
+        }
         if (tokens.size() >= 2) {
             multiWord.putIfAbsent(joined, display);
             maxWordsPerEntry = Math.max(maxWordsPerEntry, Math.min(tokens.size(), 5));
@@ -243,29 +263,7 @@ public final class WordMatcher {
 
     /** {@code f*ck}: the masking character stands for exactly one arbitrary character. */
     private String lookupMasked(String token) {
-        if (token.length() < 3) {
-            return null;
-        }
-        for (Map.Entry<String, String> entry : exact.entrySet()) {
-            String word = entry.getKey();
-            if (word.length() != token.length() || word.length() < 3) {
-                continue;
-            }
-            boolean same = true;
-            boolean hasRealLetter = false;
-            for (int i = 0; i < word.length() && same; i++) {
-                char t = token.charAt(i);
-                if (t == WILDCARD) {
-                    continue;
-                }
-                hasRealLetter = true;
-                same = t == word.charAt(i);
-            }
-            if (same && hasRealLetter) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return exactIndex.firstMasked(token, WILDCARD);
     }
 
     /**
@@ -293,14 +291,7 @@ public final class WordMatcher {
     }
 
     private String lookupPartialExact(String token) {
-        int minLength = Math.max(3, options.partialMinLength());
-        for (Map.Entry<String, String> entry : exact.entrySet()) {
-            String word = entry.getKey();
-            if (word.length() >= minLength && token.contains(word)) {
-                return entry.getValue();
-            }
-        }
-        return null;
+        return exactIndex.firstContained(token, Math.max(3, options.partialMinLength()));
     }
 
     // ------------------------------------------------------------------------------------------
@@ -334,125 +325,16 @@ public final class WordMatcher {
     }
 
     /**
-     * Splits text into canonical tokens. Public for tests; entries from the config go through the exact
-     * same pipeline so that both sides of a comparison are always normalised identically.
+     * Splits text into canonical tokens the way version 1 did (no configuration). Entries from the word lists go
+     * through the same normaliser as the text, so both sides of a comparison are always normalised identically.
      */
     static List<String> tokenize(String input) {
-        List<String> tokens = new ArrayList<>();
-        if (input == null) {
-            return tokens;
-        }
-        String text = Normalizer.normalize(input, Normalizer.Form.NFKD);
-        StringBuilder raw = new StringBuilder();
-        for (int i = 0; i < text.length(); ) {
-            int cp = text.codePointAt(i);
-            i += Character.charCount(cp);
-            int type = Character.getType(cp);
-            if (type == Character.NON_SPACING_MARK
-                || type == Character.ENCLOSING_MARK
-                || type == Character.COMBINING_SPACING_MARK
-                || type == Character.FORMAT) {
-                continue; // accents and zero-width characters are simply dropped
-            }
-            if (Character.isLetterOrDigit(cp) || cp == WILDCARD || (cp < 128 && LEET_SYMBOLS.indexOf(cp) >= 0)) {
-                raw.appendCodePoint(Character.toLowerCase(cp));
-            } else {
-                flush(raw, tokens);
-            }
-        }
-        flush(raw, tokens);
-        return tokens;
+        return EvasionNormalizer.LEGACY.tokenize(input);
     }
 
-    private static void flush(StringBuilder raw, List<String> tokens) {
-        if (raw.length() == 0) {
-            return;
-        }
-        String token = finishToken(raw.toString());
-        raw.setLength(0);
-        if (!token.isEmpty()) {
-            tokens.add(token);
-        }
-    }
-
-    private static String finishToken(String token) {
-        int start = 0;
-        int end = token.length();
-        while (start < end && LEADING_STRIP.indexOf(token.charAt(start)) >= 0) {
-            start++;
-        }
-        while (end > start && TRAILING_STRIP.indexOf(token.charAt(end - 1)) >= 0) {
-            end--;
-        }
-        if (start >= end) {
-            return "";
-        }
-
-        StringBuilder out = new StringBuilder(end - start);
-        boolean hasLatin = false;
-        boolean hasCyrillic = false;
-        for (int i = start; i < end; i++) {
-            char c = token.charAt(i);
-            switch (c) {
-                case '@' -> c = 'a';
-                case '$' -> c = 's';
-                case '!', '|' -> c = 'i';
-                case '+' -> c = 't';
-                default -> { }
-            }
-            if (c >= 'a' && c <= 'z') {
-                hasLatin = true;
-            } else if (c >= 'Ѐ' && c <= 'ӿ') {
-                hasCyrillic = true;
-            }
-            out.append(c);
-        }
-
-        // Cyrillic letters that look like Latin ones, but only inside mixed-script words ("fuсk").
-        if (hasLatin && hasCyrillic) {
-            for (int i = 0; i < out.length(); i++) {
-                out.setCharAt(i, homoglyph(out.charAt(i)));
-            }
-        }
-        // Digits are only treated as leetspeak inside words that already contain letters ("sh1t").
-        if (hasLatin) {
-            for (int i = 0; i < out.length(); i++) {
-                out.setCharAt(i, leetDigit(out.charAt(i)));
-            }
-        }
-        return out.toString();
-    }
-
-    private static char leetDigit(char c) {
-        return switch (c) {
-            case '0' -> 'o';
-            case '1' -> 'i';
-            case '3' -> 'e';
-            case '4' -> 'a';
-            case '5' -> 's';
-            case '7' -> 't';
-            case '8' -> 'b';
-            case '9' -> 'g';
-            default -> c;
-        };
-    }
-
-    private static char homoglyph(char c) {
-        return switch (c) {
-            case 'а' -> 'a'; // а
-            case 'с' -> 'c'; // с
-            case 'е' -> 'e'; // е
-            case 'о' -> 'o'; // о
-            case 'р' -> 'p'; // р
-            case 'х' -> 'x'; // х
-            case 'у' -> 'y'; // у
-            case 'к' -> 'k'; // к
-            case 'м' -> 'm'; // м
-            case 'н' -> 'h'; // н
-            case 'т' -> 't'; // т
-            case 'і' -> 'i'; // і
-            default -> c;
-        };
+    /** The normaliser this matcher uses for text and for its blocked words. */
+    public EvasionNormalizer normalizer() {
+        return normalizer;
     }
 
     private static boolean containsUnspacedScript(String text) {

@@ -52,6 +52,16 @@ public interface Platform {
         return "";
     }
 
+    /**
+     * Whether the loader can deliver a changed text for this source (a "censor" verdict). Where it cannot, the engine
+     * turns a censoring verdict into a blocking one. Default: nowhere.
+     *
+     * @param source {@link Message#CHAT}, {@link Message#SIGN} ...
+     */
+    default boolean canRewrite(String source) {
+        return false;
+    }
+
     /** Runs the task on the server's main thread: at once when already there, otherwise as soon as possible. */
     void runSync(Runnable task);
 

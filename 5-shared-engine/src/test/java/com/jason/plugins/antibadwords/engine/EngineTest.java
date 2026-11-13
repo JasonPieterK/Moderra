@@ -207,7 +207,7 @@ class EngineTest {
             engine.reload();
             assertTrue(engine.inspect(engine.message(bob, "Bob", pair[1], text)).allowed(), pair[1] + " switched off");
         }
-        assertTrue(engine.inspect(engine.message(bob, "Bob", "join", "fuck")).blocked(), "a source without a switch is scanned");
+        assertTrue(engine.inspect(engine.message(bob, "Bob", "some-new-source", "fuck")).blocked(), "a source without a switch is scanned");
 
         // several texts that belong together: first hit wins
         Engine again = new Fixture(dir.resolve("b")).start();
@@ -371,11 +371,14 @@ class EngineTest {
         Engine engine = f.start();
         DemoCheck demo = new DemoCheck();
         engine.registerCheck(50, demo);
-        assertEquals(List.of("badword", "demo"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList(),
-            "filters.check-order lists badword, so it runs first");
+        assertEquals(List.of("evasion", "badword", "link", "spam-commands", "spam-rate", "spam-repeat", "spam-caps", "spam-flood", "spam-words",
+            "demo"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList(),
+            "the checks named in filters.check-order run first (spam = all spam rules), the others afterwards");
         UUID bob = f.platform.join("Bob");
         List<ModerationEvent> events = new ArrayList<>();
-        engine.events().subscribe(events::add);
+        List<ModerationEvent> ownKind = new ArrayList<>();
+        engine.events().subscribe(e -> (e.kind().equals(ModerationEvent.VIOLATION) ? events : ownKind).add(e));
+        f.platform.rewritable.add(Message.CHAT);
 
         Verdict censored = f.say(bob, Message.CHAT, "oh darn it");
         assertTrue(censored.censored());
@@ -388,6 +391,8 @@ class EngineTest {
         Verdict logged = f.say(bob, Message.CHAT, "meh");
         assertTrue(logged.allowed() && logged.hasHits());
         assertEquals(2, events.size());
+        assertEquals(List.of("demo", "demo"), ownKind.stream().map(ModerationEvent::kind).toList(), "plus one event of the check's own kind per hit");
+        assertEquals("log-only", ownKind.get(1).data().get("action"));
 
         assertTrue(f.say(bob, Message.CHAT, "darn fuck").blocked(), "badword runs first and blocks");
         assertFalse(demo.seen.contains("darn fuck"), "a block ends the pipeline");
@@ -396,9 +401,9 @@ class EngineTest {
         assertTrue(f.platform.warnings.stream().anyMatch(w -> w.contains("Check 'demo' failed")));
 
         // order from config: demo first -> badword sees the censored text
-        TestFiles.edit(f.file("config.yml"), "  check-order:\n    - badword\n", "  check-order:\n    - demo\n    - badword\n");
-        engine.reload();
-        assertEquals(List.of("demo", "badword"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList());
+        TestFiles.edit(f.file("config.yml"), "  check-order:\n    - evasion\n    - badword\n    - link\n    - spam\n", "  check-order:\n    - demo\n    - badword\n");
+        assertTrue(engine.reload().isEmpty());
+        assertEquals(List.of("demo", "badword"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList().subList(0, 2));
         Verdict both = engine.inspect(engine.message(bob, "Bob", Message.CHAT, "darn fuck"));
         assertTrue(both.blocked());
         assertEquals(List.of("demo", "badword"), both.hits().stream().map(Hit::check).toList());
@@ -407,7 +412,8 @@ class EngineTest {
         // without an entry in check-order the registered number decides
         TestFiles.edit(f.file("config.yml"), "  check-order:\n    - demo\n    - badword\n", "  check-order: []\n");
         engine.reload();
-        assertEquals(List.of("demo", "badword"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList(), "50 before 100");
+        assertEquals(List.of("evasion", "demo", "badword", "link"), engine.checks(engine.settings()).stream().map(TextCheck::id).toList().subList(0, 4),
+            "same number: the one registered first; 50 before 100");
 
         // enabled-state comes from config
         TestFiles.edit(f.file("config.yml"), "books: true", "books: false");

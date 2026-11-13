@@ -44,8 +44,25 @@ public final class CoreSettings {
     public static final Setting<Boolean> SCAN_BOOKS = scan("books", "Scan books", "Look for bad words in books (pages and title).");
     public static final Setting<Boolean> SCAN_ANVIL = scan("anvil", "Scan anvil renames", "Look for bad words in item names typed in an anvil.");
 
+    public static final Setting<Boolean> SCAN_SIGN_BACK = scan("sign-back", "Scan the back of signs",
+        "Look at the back side of signs too (only used when scan.signs is true). Bukkit/Spigot/Paper/Purpur can tell the two\n"
+            + "sides apart; on Fabric and Forge both sides are always covered by scan.signs and this switch changes nothing.");
+    public static final Setting<Boolean> SCAN_COMMAND_BLOCKS = Setting.bool("filters.scan.command-blocks", false)
+        .file(CONFIG).category(SCANNING).title("Scan command blocks").overridable()
+        .description("Look at the commands that command blocks (and command-block minecarts) run, using scanned-commands below.\n"
+            + "A command with a blocked word is not run. Bukkit/Spigot/Paper/Purpur only; not available on Fabric and Forge yet.\n"
+            + "Nobody gets strikes for it (the game does not say who wrote the command).").build();
+    public static final Setting<Boolean> SCAN_JOIN = Setting.bool("filters.scan.join-names", false)
+        .file(CONFIG).category(SCANNING).title("Scan player names on join").overridable()
+        .description("Check the name of every player who joins against the word lists (see join-names below for what happens).").build();
+
+    /** The list version 1 shipped. Old installs keep exactly this list when they are migrated. */
+    public static final List<String> LEGACY_SCANNED_COMMANDS =
+        List.of("msg", "tell", "w", "whisper", "r", "reply", "me", "say", "teammsg", "tm", "mail", "nick", "broadcast");
+
     public static final Setting<List<String>> SCANNED_COMMANDS = Setting.list("filters.scanned-commands",
-            List.of("msg", "tell", "w", "whisper", "r", "reply", "me", "say", "teammsg", "tm", "mail", "nick", "broadcast"))
+            List.of("msg", "tell", "w", "whisper", "r", "reply", "me", "say", "teammsg", "tm", "mail", "nick", "broadcast",
+                "team", "title", "tellraw", "bossbar", "scoreboard", "rename"))
         .file(CONFIG).category(SCANNING).title("Scanned commands").overridable()
         .description("Commands whose arguments are scanned (only used when scan.commands is true).\n"
             + "Use \"*\" to scan the arguments of every command.").build();
@@ -55,10 +72,47 @@ public final class CoreSettings {
         .file(CONFIG).category(SCANNING).title("Ignored commands").overridable()
         .description("Commands that are never scanned (so admins can still manage the word list).").build();
 
-    public static final Setting<List<String>> CHECK_ORDER = Setting.list("filters.check-order", List.of("badword"))
+    public static final Setting<List<String>> CHECK_ORDER = Setting.list("filters.check-order", List.of("evasion", "badword", "link", "spam"))
         .file(CONFIG).category(SCANNING).title("Check order").overridable()
         .description("The order in which the checks look at a message. Checks that are not listed run afterwards.\n"
-            + "The first check that blocks a message ends the search.").build();
+            + "The first check that blocks a message ends the search; a check that cleans a message hands the cleaned text on.\n"
+            + "Names: evasion (bypass tricks, filters/evasion.yml), badword (the word lists), link (filters/links.yml),\n"
+            + "spam (all rules of filters/spam.yml) or single spam rules: spam-commands, spam-rate, spam-repeat, spam-caps,\n"
+            + "spam-flood, spam-words.").build();
+
+    private static final String JOIN = "Player names";
+    public static final Setting<String> JOIN_ACTION = Setting.choice("filters.join-names.action", "log", "log", "warn", "kick")
+        .file(CONFIG).category(JOIN).title("Bad player name: action").overridable()
+        .description("What happens when a joining player's name contains a blocked word (only used when scan.join-names is true):\n"
+            + "  log  = a line in the console (and an event for the history / Discord features)\n"
+            + "  warn = also tell the player and the staff\n"
+            + "  kick = remove the player from the server with kick-message, and tell the staff\n"
+            + "Players with the permission antibadwords.bypass are never checked. Nobody gets strikes for a name.").build();
+    public static final Setting<Boolean> JOIN_MATCH_INSIDE = Setting.bool("filters.join-names.match-inside-names", true)
+        .file(CONFIG).category(JOIN).title("Bad player name: look inside the name").overridable()
+        .description("Player names have no spaces, so a blocked word is also found INSIDE a name (\"xXbadwordXx\").\n"
+            + "The whitelist still applies to the whole name. false = only when the whole name (or a part between _) is the word.").build();
+    public static final Setting<Integer> JOIN_MIN_LENGTH = Setting.integer("filters.join-names.min-word-length", 4).range(3, 32)
+        .file(CONFIG).category(JOIN).title("Bad player name: shortest word").overridable()
+        .description("Blocked words shorter than this are not searched inside names (short words are part of many innocent names).").build();
+    public static final Setting<String> JOIN_KICK_MESSAGE = Setting.string("filters.join-names.kick-message",
+            "&cYour player name is not allowed on this server.")
+        .file(CONFIG).category(JOIN).title("Bad player name: kick message").overridable()
+        .description("Shown to the kicked player. Placeholders: {player} {word}. Colours: & codes.").build();
+    public static final Setting<String> JOIN_WARN_MESSAGE = Setting.string("filters.join-names.warn-message",
+            "&eYour player name contains a word that is not welcome here.")
+        .file(CONFIG).category(JOIN).title("Bad player name: warning").overridable()
+        .description("Sent to the player when the action is warn. Placeholders: {player} {word}. Empty = no message.").build();
+    public static final Setting<String> JOIN_STAFF_MESSAGE = Setting.string("filters.join-names.staff-message",
+            "&8[&cAntiBadWords&8] &7The name of &f{player}&7 contains '&f{word}&7'.")
+        .file(CONFIG).category(JOIN).title("Bad player name: staff message").overridable()
+        .description("Sent to staff (permission antibadwords.notify) for warn and kick, when messages.notify-staff is true.").build();
+
+    public static final Setting<java.time.Duration> COMMAND_BLOCK_REPORT_INTERVAL = Setting.duration("filters.command-blocks.report-interval",
+            java.time.Duration.ofSeconds(60)).range(0, 86_400)
+        .file(CONFIG).category(SCANNING).title("Command blocks: report at most every")
+        .description("A repeating command block can run 20 times per second. The same blocked command is reported (console, events)\n"
+            + "only once in this time; it is stopped every time.").build();
 
     public static final Setting<Boolean> COLLAPSE_REPEATS = Setting.bool("filters.matching.collapse-repeated-letters", true)
         .file(CONFIG).category(MATCHING).title("Collapse repeated letters").overridable()
@@ -173,7 +227,8 @@ public final class CoreSettings {
             + "Reload with /abw reload (no restart needed).\n"
             + "Text may use & colour codes (&c = red, &e = yellow, &f = white, ...).\n"
             + "Other files in this folder: wordlists/ (one file per language), moderation/ladder.yml (punishments),\n"
-            + "worlds.yml (different rules per world). Every option is explained in 6-guides/CONFIGURATION.md.");
+            + "filters/spam.yml, filters/links.yml, filters/evasion.yml (extra filters), worlds.yml (different rules per world).\n"
+            + "Every option is explained in 6-guides/CONFIGURATION.md.");
         r.fileHeader(LADDER, "AntiBadWords - punishments\n"
             + "What happens to a player who keeps using blocked words. Reload with /abw reload.");
         r.register(CONFIG_VERSION);
@@ -184,9 +239,19 @@ public final class CoreSettings {
         r.register(SCAN_SIGNS);
         r.register(SCAN_BOOKS);
         r.register(SCAN_ANVIL);
+        r.register(SCAN_SIGN_BACK);
+        r.register(SCAN_COMMAND_BLOCKS);
+        r.register(SCAN_JOIN);
         r.register(SCANNED_COMMANDS);
         r.register(IGNORED_COMMANDS);
         r.register(CHECK_ORDER);
+        r.register(JOIN_ACTION);
+        r.register(JOIN_MATCH_INSIDE);
+        r.register(JOIN_MIN_LENGTH);
+        r.register(JOIN_KICK_MESSAGE);
+        r.register(JOIN_WARN_MESSAGE);
+        r.register(JOIN_STAFF_MESSAGE);
+        r.register(COMMAND_BLOCK_REPORT_INTERVAL);
         r.register(COLLAPSE_REPEATS);
         r.register(REPEAT_THRESHOLD);
         r.register(DETECT_SPACED);

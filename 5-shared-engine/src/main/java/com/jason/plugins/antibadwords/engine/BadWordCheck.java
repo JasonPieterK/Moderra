@@ -13,7 +13,8 @@ public final class BadWordCheck implements TextCheck {
 
     @Override
     public Optional<Hit> check(Message message, EffectiveSettings settings) {
-        String word = settings.matcher().find(message.text());
+        // player names have no spaces: they use the matcher that (if switched on) also looks inside the name
+        String word = (Message.JOIN.equals(message.source()) ? settings.nameMatcher() : settings.matcher()).find(message.text());
         return word == null ? Optional.empty() : Optional.of(Hit.block(ID, word, settings.tierOf(word), 1));
     }
 }

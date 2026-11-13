@@ -1,0 +1,38 @@
+cyrillic:
+  - "А=a а=a В=b Ь=b С=c с=c ᲃ=c ԁ=d Е=e е=e ҽ=e Ԍ=g"
+  - "Н=h н=h Һ=h һ=h І=i і=i Ӏ=i ꙇ=i Ј=j ј=j К=k к=k"
+  - "ӏ=l М=m м=m О=o о=o ᲂ=o Р=p р=p Ԛ=q ԛ=q г=r Ѕ=s"
+  - "ѕ=s Т=t т=t Ѵ=v ѵ=v ш=w ѡ=w Ԝ=w ԝ=w Х=x х=x У=y"
+  - "у=y Ү=y ү=y"
+greek:
+  - "Α=a α=a Β=b ϲ=c Ϲ=c Ε=e Ϝ=f Η=h Ι=i ι=i Ϳ=j ϳ=j"
+  - "Κ=k Μ=m Ϻ=m Ν=n Ο=o ο=o σ=o Ρ=p ρ=p ϱ=p ϸ=p ᴦ=r"
+  - "Τ=t υ=u ν=v Χ=x Υ=y γ=y ϒ=y Ζ=z"
+armenian:
+  - "ք=f ց=g հ=h ւ=i յ=j ո=n ռ=n Օ=o օ=o գ=q զ=q Տ=s"
+  - "Ս=u ս=u ա=w"
+coptic:
+  - "Ⲃ=b Ⲥ=c ⲥ=c Ⲏ=h Ⲓ=i ⲓ=i Ⲕ=k Ⳑ=l Ⲙ=m Ⲛ=n ϭ=o Ⲟ=o"
+  - "ⲟ=o Ⲣ=p ⲣ=p Ⳏ=p ⳏ=p ⲅ=r Ⲧ=t ⲽ=w Ⲭ=x Ⲩ=y ⲩ=y Ⲍ=z"
+  - "ⲍ=z"
+cherokee:
+  - "Ꭺ=a Ꮟ=b Ᏼ=b Ꮯ=c ꮯ=c Ꭰ=d Ꮷ=d Ꭼ=e Ꮐ=g Ᏻ=g Ꮋ=h Ꮒ=h"
+  - "Ꭵ=i ꭵ=i Ꭻ=j Ꮶ=k Ꮮ=l Ꮇ=m Ꮲ=p Ꭱ=r Ꮢ=r ꮁ=r Ꮥ=s Ꮪ=s"
+  - "ꮪ=s Ꭲ=t Ꮩ=v ꮩ=v Ꮃ=w Ꮤ=w ꮃ=w ꮤ=w Ꭹ=y Ꮍ=y Ꮓ=z ꮓ=z"
+latin:
+  - "ɑ=a ꭤ=a Ƅ=b Ꞵ=b ᴄ=c ꬲ=e ƒ=f ʄ=f ẝ=f Ꞙ=f ꞙ=f ꬵ=f"
+  - "ƍ=g ɡ=g ᶃ=g ı=i Ɩ=i ɩ=i ɪ=i Ɪ=i ȷ=j Ʝ=j ǀ=l ꞁ=l"
+  - "ꟾ=l ᴏ=o ᴑ=o ꬽ=o þ=p ƿ=p Ʀ=r Ɍ=r ꭇ=r ꭈ=r ƽ=s ꜱ=s"
+  - "ʋ=u ᴜ=u ꞟ=u ꭎ=u ꭒ=u ᴠ=v ɯ=w ᴡ=w ꟺ=w Ꭓ=x ɣ=y ʏ=y"
+  - "ᶌ=y ỿ=y ꭚ=y ᴢ=z Ⱬ=z ⱬ=z"
+lisu:
+  - "ꓮ=a ꓐ=b ꓚ=c ꓒ=d ꓓ=d ꓰ=e ꓝ=f ꓖ=g ꓧ=h ꓙ=j ꓗ=k ꓡ=l"
+  - "ꓲ=l ꓟ=m ꓠ=n ꓳ=o ꓑ=p ꓣ=r ꓢ=s ꓔ=t ꓴ=u ꓦ=v ꓪ=w ꓫ=x"
+  - "ꓬ=y ꓜ=z"
+georgian:
+  - "Ⴙ=h ჿ=o Ჿ=o Ⴝ=s ჽ=s Ჽ=s ყ=y Ⴭ=z ⴭ=z"
+hebrew:
+  - "ו=l ן=l ס=o ט=v"
+arabic:
+  - "ا=l ﺍ=l ﺎ=l 𞸀=l 𞺀=l ه=o ھ=o ہ=o ە=o ﮦ=o ﮧ=o ﮨ=o"
+  - "ﮩ=o ﮪ=o ﮫ=o ﮬ=o ﮭ=o ﻩ=o ﻪ=o ﻫ=o ﻬ=o 𞸤=o 𞺄=o"

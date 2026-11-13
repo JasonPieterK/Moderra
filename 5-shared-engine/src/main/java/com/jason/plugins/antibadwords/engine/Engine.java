@@ -13,6 +13,14 @@ import com.jason.plugins.antibadwords.engine.config.WordList;
 import com.jason.plugins.antibadwords.engine.config.WordLists;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.engine.config.YamlEditor;
+import com.jason.plugins.antibadwords.engine.filters.EvasionCheck;
+import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
+import com.jason.plugins.antibadwords.engine.filters.LinkCheck;
+import com.jason.plugins.antibadwords.engine.filters.LinkSettings;
+import com.jason.plugins.antibadwords.engine.filters.SpamCheck;
+import com.jason.plugins.antibadwords.engine.filters.SpamSettings;
+import com.jason.plugins.antibadwords.engine.filters.SpamState;
+import com.jason.plugins.antibadwords.Placeholders;
 import com.jason.plugins.antibadwords.WordMatcher;
 import com.jason.plugins.antibadwords.mod.Names;
 import java.io.IOException;
@@ -74,7 +82,12 @@ public final class Engine {
     private final CommandRegistry commands;
     private final ViolationHandler violations = new ViolationHandler(this);
     private final List<RegisteredCheck> checks = new CopyOnWriteArrayList<>();
-    private final Map<String, Setting<Boolean>> sourceSwitches = new ConcurrentHashMap<>();
+    private final Map<String, List<Setting<Boolean>>> sourceSwitches = new ConcurrentHashMap<>();
+    private final SpamState spamState = new SpamState();
+    /** Bumped whenever a check is registered, so the cached per-profile order is rebuilt. */
+    private volatile int checksVersion;
+    /** "This was reported at ..." for things that would otherwise be reported many times per second (command blocks). */
+    private final Map<String, Long> recentReports = new java.util.LinkedHashMap<>();
     private final List<Runnable> reloadListeners = new CopyOnWriteArrayList<>();
     private final Set<UUID> anvilFlagged = ConcurrentHashMap.newKeySet();
     private volatile StrikeService strikes;
@@ -111,7 +124,18 @@ public final class Engine {
         registerSource(Message.SIGN, CoreSettings.SCAN_SIGNS);
         registerSource(Message.BOOK, CoreSettings.SCAN_BOOKS);
         registerSource(Message.ANVIL, CoreSettings.SCAN_ANVIL);
+        registerSource(Message.SIGN_BACK, CoreSettings.SCAN_SIGNS, CoreSettings.SCAN_SIGN_BACK);
+        registerSource(Message.COMMAND_BLOCK, CoreSettings.SCAN_COMMAND_BLOCKS);
+        registerSource(Message.JOIN, CoreSettings.SCAN_JOIN);
+        registerCheck(50, new EvasionCheck());
         registerCheck(100, new BadWordCheck());
+        registerCheck(200, new LinkCheck());
+        registerCheck(300, new SpamCheck(SpamCheck.Kind.COMMANDS, spamState, clock));
+        registerCheck(310, new SpamCheck(SpamCheck.Kind.RATE, spamState, clock));
+        registerCheck(320, new SpamCheck(SpamCheck.Kind.REPEAT, spamState, clock));
+        registerCheck(330, new SpamCheck(SpamCheck.Kind.CAPS, spamState, clock));
+        registerCheck(340, new SpamCheck(SpamCheck.Kind.FLOOD, spamState, clock));
+        registerCheck(350, new SpamCheck(SpamCheck.Kind.WORDS, spamState, clock));
         CoreCommands.register(commands);
     }
 
@@ -122,6 +146,9 @@ public final class Engine {
     public static void registerSettings(SettingsRegistry registry) {
         CoreSettings.register(registry);
         WorldProfiles.register(registry);
+        SpamSettings.register(registry);
+        LinkSettings.register(registry);
+        EvasionSettings.register(registry);
     }
 
     // ------------------------------------------------------------------------------------------
@@ -167,6 +194,14 @@ public final class Engine {
         WordLists lists = WordLists.load(folder.resolve(WordLists.FOLDER), previous == null ? null : previous.wordLists(), problems);
         WorldProfiles profiles = WorldProfiles.parse(snapshot.section(WorldProfiles.PROFILES), snapshot.section(WorldProfiles.WORLDS),
             snapshot.get(WorldProfiles.DEFAULT_PROFILE), snapshot.get(WorldProfiles.USE_PERMISSIONS), registry, problems);
+
+        for (String name : snapshot.get(CoreSettings.CHECK_ORDER)) {
+            String wanted = name.trim().toLowerCase(Locale.ROOT);
+            if (checks.stream().noneMatch(c -> inOrderEntry(c.check().id(), wanted))) {
+                problems.add(new ConfigProblem(CoreSettings.CONFIG, CoreSettings.CHECK_ORDER.key(), "'" + name
+                    + "' is not the name of a check; it is ignored. Known: " + String.join(", ", checkIds()) + "."));
+            }
+        }
 
         Map<String, EffectiveSettings> byProfile = new LinkedHashMap<>();
         for (String name : profiles.names()) {
@@ -315,28 +350,70 @@ public final class Engine {
     // ------------------------------------------------------------------------------------------
 
     /**
-     * Adds a pipeline stage. The running order is: the ids listed in {@code filters.check-order}, then every other
-     * check by ascending {@code order} (the built-in {@code badword} check has order 100).
+     * Adds a pipeline stage. The running order is: the names listed in {@code filters.check-order} (a name is a check
+     * id, or a group: {@code spam} stands for every id that starts with {@code spam-}), then every other check by
+     * ascending {@code order}. Built-in orders: evasion 50, badword 100, link 200, spam-* 300 to 350.
      */
     public void registerCheck(int order, TextCheck check) {
         checks.removeIf(c -> c.check().id().equals(check.id()));
         checks.add(new RegisteredCheck(order, check));
+        checksVersion++;
     }
 
-    /** Tells the engine which on/off setting belongs to a text source ({@code chat} -> {@code filters.scan.chat}). */
-    public void registerSource(String source, Setting<Boolean> scanSwitch) {
-        sourceSwitches.put(source, scanSwitch);
+    /**
+     * Tells the engine which on/off setting belongs to a text source ({@code chat} -> {@code filters.scan.chat}).
+     * With several settings all of them must be on ({@code sign-back} needs scan.signs and scan.sign-back).
+     */
+    @SafeVarargs
+    public final void registerSource(String source, Setting<Boolean>... scanSwitches) {
+        sourceSwitches.put(source, List.of(scanSwitches));
+    }
+
+    /** Whether text from this source is looked at with these settings (sources without a switch always are). */
+    public boolean scans(String source, EffectiveSettings settings) {
+        for (Setting<Boolean> scanSwitch : sourceSwitches.getOrDefault(source, List.of())) {
+            if (!settings.get(scanSwitch)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /** Ids of all registered checks, in built-in order. */
+    public List<String> checkIds() {
+        return checks.stream().sorted(Comparator.comparingInt(RegisteredCheck::order)).map(c -> c.check().id()).toList();
+    }
+
+    /** The registered check with this id, or {@code null}. */
+    public TextCheck check(String id) {
+        for (RegisteredCheck c : checks) {
+            if (c.check().id().equals(id)) {
+                return c.check();
+            }
+        }
+        return null;
+    }
+
+    private static boolean inOrderEntry(String checkId, String entry) {
+        String id = checkId.toLowerCase(Locale.ROOT);
+        return id.equals(entry) || id.startsWith(entry + "-");
     }
 
     /** The registered checks in the order they run for these settings. */
     public List<TextCheck> checks(EffectiveSettings settings) {
-        List<String> configured = settings.get(CoreSettings.CHECK_ORDER).stream().map(s -> s.trim().toLowerCase(Locale.ROOT)).toList();
-        List<RegisteredCheck> sorted = new ArrayList<>(checks);
-        sorted.sort(Comparator.comparingInt((RegisteredCheck c) -> {
-            int index = configured.indexOf(c.check().id().toLowerCase(Locale.ROOT));
-            return index < 0 ? Integer.MAX_VALUE : index;
-        }).thenComparingInt(RegisteredCheck::order));
-        return sorted.stream().map(RegisteredCheck::check).toList();
+        return settings.derived("engine.checks." + checksVersion, s -> {
+            List<String> configured = s.get(CoreSettings.CHECK_ORDER).stream().map(e -> e.trim().toLowerCase(Locale.ROOT)).toList();
+            List<RegisteredCheck> sorted = new ArrayList<>(checks);
+            sorted.sort(Comparator.comparingInt((RegisteredCheck c) -> {
+                for (int i = 0; i < configured.size(); i++) {
+                    if (inOrderEntry(c.check().id(), configured.get(i))) {
+                        return i;
+                    }
+                }
+                return Integer.MAX_VALUE;
+            }).thenComparingInt(RegisteredCheck::order));
+            return sorted.stream().map(RegisteredCheck::check).toList();
+        });
     }
 
     /** Builds a message for an online player, asking the platform for the world and the permissions. */
@@ -346,36 +423,60 @@ public final class Engine {
     }
 
     /**
-     * Judges one message. Has no side effects and may be called from any thread. When the verdict has hits, call
+     * Judges one message. May be called from any thread. It changes nothing a player can see; the only thing it
+     * remembers are the spam counters (so call it once per message). When the verdict has hits, call
      * {@link #onViolation(Message, Verdict)} afterwards.
+     *
+     * <p>A "censor" result is turned into "block" where the loader cannot deliver a changed text
+     * ({@link Platform#canRewrite(String)}).
      */
     public Verdict inspect(Message message) {
+        return judge(message, true, true);
+    }
+
+    /**
+     * What the checks would say about a text, for {@code /abw check}: default profile, as a chat message, no player.
+     * Nothing is counted or remembered; the rules that need a history of earlier messages are skipped.
+     */
+    public Verdict explain(String text) {
+        return judge(Message.of(null, "", "", Message.CHAT, text, null).asProbe(), false, false);
+    }
+
+    /**
+     * @param useScanSwitch whether a source that is switched off in {@code filters.scan} is skipped
+     * @param forDelivery   whether "censor" becomes "block" where the text cannot be changed
+     */
+    private Verdict judge(Message message, boolean useScanSwitch, boolean forDelivery) {
         EffectiveSettings settings = settings(message.world(), message.dimension(), message.permissions());
         if (message.text() == null || message.has(PERMISSION_BYPASS)) {
             return Verdict.allow(settings);
         }
-        Setting<Boolean> scanSwitch = sourceSwitches.get(message.source());
-        if (scanSwitch != null && !settings.get(scanSwitch)) {
+        boolean scanned = !useScanSwitch || scans(message.source(), settings);
+        boolean playerCommand = Message.COMMAND.equals(message.source());
+        // "current" is what the text checks look at; null = nothing for them (a command that is not scanned)
+        Message current = scanned ? message : null;
+        if (scanned && (playerCommand || Message.COMMAND_BLOCK.equals(message.source()))) {
+            String arguments = commandTextToScan(settings, message.text());
+            current = arguments == null ? null : message.withText(arguments);
+        }
+        if (current == null && !playerCommand) {
             return Verdict.allow(settings);
         }
-        Message current = message;
-        if (Message.COMMAND.equals(message.source())) {
-            String arguments = commandTextToScan(settings, message.text());
-            if (arguments == null) {
-                return Verdict.allow(settings);
-            }
-            current = message.withText(arguments);
-        }
-        List<Hit> hits = new ArrayList<>();
+        List<Hit> hits = null;
         boolean blocked = false;
         String censored = null;
         for (TextCheck check : checks(settings)) {
+            // a check that counts commands sees every command line, whatever the scan settings say
+            Message input = playerCommand && check.seesEveryCommand() ? message : current;
+            if (input == null) {
+                continue;
+            }
             Hit hit;
             try {
                 if (!check.enabled(settings)) {
                     continue;
                 }
-                hit = check.check(current, settings).orElse(null);
+                hit = check.check(input, settings).orElse(null);
             } catch (RuntimeException ex) {
                 platform.logger().warn("Check '" + check.id() + "' failed and was skipped for this message: " + ex);
                 continue;
@@ -383,17 +484,26 @@ public final class Engine {
             if (hit == null) {
                 continue;
             }
+            if (hits == null) {
+                hits = new ArrayList<>();
+            }
             hits.add(hit);
             if (hit.action() == Hit.Action.BLOCK) {
                 blocked = true;
                 break;
             }
-            if (hit.action() == Hit.Action.CENSOR && hit.replacement() != null) {
+            if (hit.action() == Hit.Action.CENSOR && hit.replacement() != null && input == current) {
                 censored = hit.replacement();
                 current = current.withText(censored);
             }
         }
+        if (hits == null) {
+            return Verdict.allow(settings);
+        }
         Verdict.Type type = blocked ? Verdict.Type.BLOCK : censored != null ? Verdict.Type.CENSOR : Verdict.Type.ALLOW;
+        if (type == Verdict.Type.CENSOR && forDelivery && (playerCommand || !platform.canRewrite(message.source()))) {
+            type = Verdict.Type.BLOCK; // nobody can deliver the cleaned text here, so the message is stopped
+        }
         return new Verdict(type, type == Verdict.Type.CENSOR ? censored : null, hits, settings);
     }
 
@@ -442,6 +552,107 @@ public final class Engine {
         if (verdict.hasHits()) {
             platform.runSync(() -> violations.handle(message, verdict));
         }
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Sources that are not "a player typed text": join names and command blocks
+    // ------------------------------------------------------------------------------------------
+
+    /**
+     * Call when a player has joined (main thread): checks the player's name when {@code filters.scan.join-names} is
+     * on and does what {@code filters.join-names.action} says (log, warn or kick). No strikes are counted.
+     *
+     * @return the verdict about the name (plain "allow" when the check is off or the name is fine)
+     */
+    public Verdict onJoin(UUID playerId, String playerName) {
+        Message message = message(playerId, playerName, Message.JOIN, playerName);
+        Verdict verdict = judge(message, true, false);
+        Hit hit = verdict.primary();
+        if (hit == null || verdict.allowed()) {
+            return verdict; // fine, or only noted by a log-only check
+        }
+        EffectiveSettings settings = verdict.settings();
+        String action = settings.get(CoreSettings.JOIN_ACTION);
+        Map<String, String> values = new HashMap<>();
+        values.put("player", playerName);
+        values.put("word", hit.detail() == null ? "" : hit.detail());
+        values.put("source", Message.JOIN);
+        if (settings.legacy().logToConsole()) {
+            platform.logger().info(playerName + " joined with a player name that is not allowed (" + hit.check() + ": '" + hit.detail()
+                + "'), action: " + action);
+        }
+        Map<String, String> data = new HashMap<>(values);
+        data.put("check", hit.check());
+        data.put("detail", values.get("word"));
+        data.put("severity", Integer.toString(hit.severity()));
+        data.put("action", action);
+        data.put("weight", "0");
+        data.put("profile", settings.profile());
+        data.put("text", playerName);
+        events.publish(new ModerationEvent(ModerationEvent.VIOLATION, now(), playerId, playerName, message.world(), Message.JOIN, data));
+        if (action.equals("log")) {
+            return verdict;
+        }
+        if (settings.legacy().notifyStaff()) {
+            String staff = Placeholders.apply(Names.colour(settings.get(CoreSettings.JOIN_STAFF_MESSAGE)), values);
+            for (PlayerRef other : platform.onlinePlayers()) {
+                if (!other.id().equals(playerId) && !staff.isBlank() && platform.has(other.id(), PERMISSION_NOTIFY)) {
+                    platform.sendMessage(other.id(), staff);
+                }
+            }
+        }
+        if (action.equals("kick")) {
+            String reason = Placeholders.apply(Names.colour(settings.get(CoreSettings.JOIN_KICK_MESSAGE)), values);
+            // a moment later: some servers do not like a kick in the middle of the join
+            platform.runSyncLater(() -> platform.kick(playerId, reason), 100L);
+        } else {
+            String warning = Placeholders.apply(Names.colour(settings.get(CoreSettings.JOIN_WARN_MESSAGE)), values);
+            if (!warning.isBlank()) {
+                platform.sendMessage(playerId, warning);
+            }
+        }
+        return verdict;
+    }
+
+    /**
+     * Call when a command block (or command-block minecart) is about to run a command. Uses
+     * {@code filters.scan.command-blocks} and {@code scanned-commands}. Nobody gets strikes; the same command is
+     * reported at most once per {@code filters.command-blocks.report-interval}.
+     *
+     * @param world where the block is (for worlds.yml profiles), may be ""
+     * @param where short description for the log, for example {@code world 10,64,-3}
+     * @return true when the command must not run
+     */
+    public boolean blockCommandBlock(String world, String where, String commandLine) {
+        Message message = Message.of(null, "CommandBlock(" + where + ")", world, Message.COMMAND_BLOCK, commandLine, null);
+        Verdict verdict = inspect(message);
+        if (verdict.hasHits() && firstReport(Message.COMMAND_BLOCK + "|" + where + "|" + commandLine,
+            verdict.settings().get(CoreSettings.COMMAND_BLOCK_REPORT_INTERVAL).toMillis())) {
+            onViolation(message, verdict);
+        }
+        return verdict.blocked() || verdict.censored();
+    }
+
+    /** True when {@code key} was not reported within the last {@code quietMillis} (and notes that it is reported now). */
+    private boolean firstReport(String key, long quietMillis) {
+        long now = now();
+        synchronized (recentReports) {
+            Long last = recentReports.get(key);
+            if (last != null && now >= last && now - last < quietMillis) {
+                return false;
+            }
+            recentReports.remove(key);
+            recentReports.put(key, now);
+            while (recentReports.size() > 256) {
+                recentReports.remove(recentReports.keySet().iterator().next());
+            }
+            return true;
+        }
+    }
+
+    /** What the spam checks remember about players (for tests and status displays). */
+    public SpamState spamState() {
+        return spamState;
     }
 
     /** First blocked word in the text for the default profile, or {@code null} ({@code /abw check}). */
@@ -508,6 +719,7 @@ public final class Engine {
     /** Call when a player leaves. */
     public void onQuit(UUID player) {
         anvilFlagged.remove(player);
+        spamState.forget(player);
         if (settings().legacy().clearViolationsOnQuit()) {
             strikes.reset(player);
         }
@@ -517,6 +729,7 @@ public final class Engine {
     public void shutdown() {
         strikes.clear();
         anvilFlagged.clear();
+        spamState.clear();
     }
 
     // ------------------------------------------------------------------------------------------

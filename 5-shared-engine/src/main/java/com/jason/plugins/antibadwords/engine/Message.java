@@ -14,6 +14,10 @@ public final class Message {
     public static final String BOOK = "book";
     public static final String ANVIL = "anvil";
     public static final String JOIN = "join";
+    /** The back side of a sign (where the platform can tell the sides apart). */
+    public static final String SIGN_BACK = "sign-back";
+    /** A command stored in or run by a command block (text = the whole command line; there may be no player). */
+    public static final String COMMAND_BLOCK = "command-block";
 
     private final UUID playerId;
     private final String playerName;
@@ -23,9 +27,16 @@ public final class Message {
     private final String text;
     private final String rawText;
     private final Predicate<String> permissions;
+    private final boolean probe;
 
     private Message(UUID playerId, String playerName, String world, String dimension, String source, String text, String rawText,
                     Predicate<String> permissions) {
+        this(playerId, playerName, world, dimension, source, text, rawText, permissions, false);
+    }
+
+    private Message(UUID playerId, String playerName, String world, String dimension, String source, String text, String rawText,
+                    Predicate<String> permissions, boolean probe) {
+        this.probe = probe;
         this.playerId = playerId;
         this.playerName = playerName == null ? "" : playerName;
         this.world = world == null ? "" : world;
@@ -46,12 +57,29 @@ public final class Message {
     }
 
     public Message withDimension(String dimensionName) {
-        return new Message(playerId, playerName, world, dimensionName, source, text, rawText, permissions);
+        return new Message(playerId, playerName, world, dimensionName, source, text, rawText, permissions, probe);
     }
 
     /** Same message with other text to judge; {@link #rawText()} keeps what the player really sent. */
     public Message withText(String newText) {
-        return new Message(playerId, playerName, world, dimension, source, newText, rawText, permissions);
+        return new Message(playerId, playerName, world, dimension, source, newText, rawText, permissions, probe);
+    }
+
+    /**
+     * Same message marked as a test ({@code /abw check}): checks must not remember it (no spam counters) and checks
+     * that need a history of earlier messages skip it.
+     */
+    public Message asProbe() {
+        return new Message(playerId, playerName, world, dimension, source, text, rawText, permissions, true);
+    }
+
+    public boolean probe() {
+        return probe;
+    }
+
+    /** The source a variant belongs to: {@code sign-back} -> {@code sign}; every other source is its own base. */
+    public static String baseSource(String source) {
+        return SIGN_BACK.equals(source) ? SIGN : source;
     }
 
     public UUID playerId() {
