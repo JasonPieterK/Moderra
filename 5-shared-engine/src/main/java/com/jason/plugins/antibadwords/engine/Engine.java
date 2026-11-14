@@ -187,6 +187,7 @@ public final class Engine {
         LadderCommands.register(commands);
         commands.register(new com.jason.plugins.antibadwords.engine.command.HistoryCommand());
         MuteCommands.register(commands);
+        commands.register(new com.jason.plugins.antibadwords.engine.command.GuiCommand());
         discord.install();
     }
 

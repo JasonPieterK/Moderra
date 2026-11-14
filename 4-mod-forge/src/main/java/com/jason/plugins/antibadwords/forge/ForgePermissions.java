@@ -25,6 +25,7 @@ import net.minecraftforge.server.permission.nodes.PermissionTypes;
 final class ForgePermissions implements ModPermissions {
     private static final PermissionNode<Boolean> ADMIN = node("admin");
     private static final PermissionNode<Boolean> NOTIFY = node("notify");
+    private static final PermissionNode<Boolean> GUI = node("gui");
     private static final PermissionNode<Boolean> BYPASS = node("bypass");
     private static final PermissionNode<Boolean> BYPASS_SPAM = node("bypass.spam");
     private static final PermissionNode<Boolean> BYPASS_LINKS = node("bypass.links");
@@ -33,7 +34,6 @@ final class ForgePermissions implements ModPermissions {
     private static final PermissionNode<Boolean> MUTE = node("mute");
     private static final PermissionNode<Boolean> HISTORY = node("history");
     private static final PermissionNode<Boolean> DISCORD = node("discord");
-    private static final PermissionNode<Boolean> GUI = node("gui");
     /** full node name -> registered profile node; filled when Forge gathers the nodes. */
     private static final Map<String, PermissionNode<Boolean>> PROFILES = new ConcurrentHashMap<>();
 
@@ -62,6 +62,7 @@ final class ForgePermissions implements ModPermissions {
         return switch (node) {
             case "antibadwords.admin" -> PermissionAPI.getPermission(player, ADMIN);
             case "antibadwords.notify" -> PermissionAPI.getPermission(player, NOTIFY);
+            case "antibadwords.gui" -> PermissionAPI.getPermission(player, GUI);
             case "antibadwords.bypass" -> PermissionAPI.getPermission(player, BYPASS);
             case "antibadwords.bypass.spam" -> PermissionAPI.getPermission(player, BYPASS_SPAM);
             case "antibadwords.bypass.links" -> PermissionAPI.getPermission(player, BYPASS_LINKS);

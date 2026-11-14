@@ -94,6 +94,12 @@ public final class ModRuntime {
         }
     }
 
+    /** The online player with this id, or {@code null}. */
+    public static ServerPlayer onlinePlayer(UUID id) {
+        MinecraftServer running = server;
+        return running == null ? null : running.getPlayerList().getPlayer(id);
+    }
+
     public static boolean has(ServerPlayer player, String node) {
         return permissions.has(player, node);
     }
@@ -120,7 +126,12 @@ public final class ModRuntime {
 
     public static boolean blockChat(ServerPlayer player, String text) {
         Message message = message(player, Message.CHAT, text);
-        return apply(message, engine.inspect(message));
+        Verdict verdict = engine.inspect(message);
+        if (verdict.captured()) {
+            // The text was the answer to a GUI text prompt: cancel it silently (not broadcast, not scanned, no strike).
+            return true;
+        }
+        return apply(message, verdict);
     }
 
     public static boolean blockCommand(CommandSourceStack source, String commandLine) {
@@ -276,6 +287,17 @@ public final class ModRuntime {
         public boolean has(UUID playerId, String node) {
             ServerPlayer p = player(playerId);
             return p != null && ModRuntime.has(p, node);
+        }
+
+        @Override
+        public boolean supportsMenu() {
+            return com.jason.plugins.antibadwords.mod.gui.ModGui.available();
+        }
+
+        @Override
+        public boolean openMenu(UUID playerId) {
+            ServerPlayer p = player(playerId);
+            return p != null && com.jason.plugins.antibadwords.mod.gui.ModGui.open(p);
         }
 
         @Override
@@ -455,6 +477,7 @@ public final class ModRuntime {
     }
 
     public static void onQuit(ServerPlayer player) {
+        com.jason.plugins.antibadwords.mod.gui.ModGui.onQuit(player.getUUID());
         restoreAll(player);
         engine.onQuit(player.getUUID());
     }
