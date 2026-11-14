@@ -5,7 +5,7 @@ script: han
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
 notes: "Han words are matched as substrings (no word spaces in Chinese), so very short entries are risky: 你妈 can appear inside harmless sentences. Pinyin spellings are included because players type them. Left out: 垃圾, 靠, 逼 (too common or too short). short-ok: Related languages share cognate words on purpose. collisions-ok: zh-tw"
 level-1: [

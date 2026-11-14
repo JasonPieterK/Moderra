@@ -5,7 +5,7 @@ script: latin
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
 notes: "Chat spellings (kntl, mmk, gblk) are included on purpose. Risky: 'asu' and 'tai' are also words in other languages; 'cuk' is mild in Surabaya slang; 'babi' (pig) and 'monyet' (monkey) are insults but also real animals in Minecraft talk. Left out: suka, loh, gila, sampah (too common). collisions-ok: ms Related languages share cognate words on purpose. collisions-ok: ms"
 level-1: [
   "bodoh", "bodo", "bego", "goblok", "gblk", "tolol", "bacot", "bacod", "sialan", "kampret", "dungu",

@@ -5,7 +5,7 @@ script: cyrillic
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, MIT), kept as a superset"
+  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
 notes: "Cyrillic plus the Latin transliteration people type (blyat, nahuy). Legacy entries are kept: idiot and noob overlap with English, suka overlaps with Indonesian/Polish 'suka' (a harmless word in Indonesian: 'like'), hui overlaps pinyin. Risky: хер and хрен (horseradish) were left out of tier 1. collisions-ok: en idiot noob uk id pl suka Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil duren idiot noob pizda suka Related languages share cognate words on purpose. collisions-ok: uk"
 level-1: [
