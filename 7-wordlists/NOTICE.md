@@ -5,7 +5,7 @@ Retrieval and check date for everything below: **2026-11-12**.
 ## Summary
 
 All 37 language files were **written by an AI from its own general knowledge**, plus the old word lists of AntiBadWords 1.x
-(the `word-lists:` section of the plugin's `config.yml`, which is part of this project and under the project's MIT licence).
+(the `word-lists:` section of the plugin's `config.yml`, which is part of this project and under the project's licence (all rights reserved, see LICENSE)).
 Every file is marked `review-status: unreviewed`: no human has checked any of them.
 
 No third-party list was copied into these files.
@@ -22,7 +22,7 @@ No third-party list was copied into these files.
   **No entry was copied** into this repository, and the temporary files were not committed. The files of the languages that LDNOOBW
   covers mention it in their `sources` only as the reference that was checked for its licence.
 * If a later change copies words from it, the attribution required by CC BY 4.0 (name, link to the licence, note of changes) goes here
-  and the copied entries must be marked in the file. CC BY 4.0 material may be combined with MIT code, but the copied data keeps its
+  and the copied entries must be marked in the file. CC BY 4.0 material may be combined with this project, but the copied data keeps its
   CC BY 4.0 terms.
 
 ## Look-alike letter table (not a word list)

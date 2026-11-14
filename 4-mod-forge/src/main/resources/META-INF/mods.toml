@@ -1,6 +1,6 @@
 modLoader = "javafml"
 loaderVersion = "[${forge_major},)"
-license = "MIT"
+license = "All Rights Reserved"
 
 [[mods]]
 modId = "antibadwords"

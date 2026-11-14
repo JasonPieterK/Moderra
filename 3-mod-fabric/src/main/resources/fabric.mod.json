@@ -5,7 +5,7 @@
   "name": "AntiBadWords",
   "description": "Blocks profanity in chat, commands, signs, books and anvils and punishes repeat offenders.",
   "authors": ["Jason"],
-  "license": "MIT",
+  "license": "All-Rights-Reserved",
   "environment": "server",
   "entrypoints": { "main": ["com.jason.plugins.antibadwords.fabric.AntiBadWordsFabric"] },
   "mixins": ["antibadwords.mixins.json"],

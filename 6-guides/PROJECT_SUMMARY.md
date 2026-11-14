@@ -5,7 +5,7 @@
 > [`FABRIC-AND-FORGE-STATUS.md`](FABRIC-AND-FORGE-STATUS.md) for what that changed and how far it is tested.
 
 **AntiBadWords** is a Spigot/Paper server **plugin** (not a mod) that blocks profanity and punishes repeat offenders.
-Current version: **1.10**. Licence: MIT. Author: Jason P.
+Current version: **1.10**. Licence: All rights reserved (proprietary). Author: Jason P.
 
 ## What was done (by Bram, with Jason)
 
