@@ -223,6 +223,7 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -670,6 +671,10 @@ public final class Engine {
             String arguments = commandTextToScan(settings, message.text());
             if (arguments == null) {
                 arguments = essentials.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
+            if (arguments == null) {
+                arguments = com.jason.plugins.antibadwords.engine.integrations.PluginCommandScan.extraCommandText(this,
+                    settings.legacy().ignoredCommands(), message.text());
             }
             current = arguments == null ? null : message.withText(arguments);
         }

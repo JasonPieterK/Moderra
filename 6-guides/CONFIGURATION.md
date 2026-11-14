@@ -415,6 +415,12 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `integrations.bedrock.prefix` | text | `.` | no | The prefix in front of Bedrock names; must be the same as username-prefix in Floodgate's config.yml. |
 | `integrations.bedrock.strip-prefix-before-filter` | true or false | `true` | no | Check the name of a Bedrock player when player names are scanned on join without the prefix, so ".Steve" is judged as "Steve". |
 | `integrations.bedrock.space-replacement` | text | `_` | no | A Bedrock name can contain spaces, which would split a console command. In {player} every space is replaced by this<br>text (Floodgate itself uses _). Empty = keep spaces. Looking up a player by name also accepts _ for a space and a missing prefix. |
+| `integrations.vault.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY. Use Vault (and the permission plugin behind it) for the player's group and chat prefix when LuckPerms is not<br>connected: rule profiles by group (the map integrations.luckperms.group-profiles is used) and the {prefix} / {group}<br>placeholders below. Meta values and offline permission checks need LuckPerms. Needs a restart. |
+| `integrations.vault.message-placeholders` | true or false | `true` | no | The lines people read (warnings, broadcasts, staff notices) may use {prefix} (the chat prefix from Vault or LuckPerms)<br>and {group} (the primary group). Both are empty when no permission plugin is connected. Never used in commands. |
+| `integrations.tab.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY. While the TAB plugin is installed, the arguments of the commands below are checked like chat (a blocked command never<br>runs). Only its commands are scanned: no TAB event for player-set text is used. |
+| `integrations.tab.scan-commands` | list of texts | `tab` | no | BUKKIT FAMILY ONLY. Command labels (without /), for example /tab player Bob tabprefix <text>. commands.ignored-commands still wins. |
+| `integrations.nametagedit.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY. While NametagEdit is installed, the arguments of the commands below are checked like chat (prefix and suffix texts). |
+| `integrations.nametagedit.scan-commands` | list of texts | `nte`, `nametagedit` | no | BUKKIT FAMILY ONLY. Command labels (without /), for example /nte player Bob prefix <text>. commands.ignored-commands still wins. |
 
 ## The extra filters in plain words
 

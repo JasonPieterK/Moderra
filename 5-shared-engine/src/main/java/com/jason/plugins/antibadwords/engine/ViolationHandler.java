@@ -31,11 +31,11 @@ final class ViolationHandler {
     /** The placeholder values for lines that people read: {@code {player}} may be the Essentials nickname. Never used for commands. */
     private Map<String, String> shown(UUID playerId, String playerName, Map<String, String> values) {
         String display = engine.essentials().displayName(playerId, playerName);
-        if (display == null || display.equals(playerName)) {
-            return values;
-        }
         Map<String, String> copy = new HashMap<>(values);
-        copy.put("player", display);
+        if (display != null && !display.equals(playerName)) {
+            copy.put("player", display);
+        }
+        com.jason.plugins.antibadwords.engine.integrations.PluginCommandScan.addGroupValues(engine, playerId, copy);
         return copy;
     }
 

@@ -50,6 +50,12 @@ final class LuckPermsHook implements PermissionSource {
     }
 
     @Override
+    public Optional<String> prefix(UUID player) {
+        User user = online(player);
+        return user == null ? Optional.empty() : Optional.ofNullable(user.getCachedData().getMetaData().getPrefix());
+    }
+
+    @Override
     public boolean inGroup(UUID player, String group) {
         User user = online(player);
         if (user == null || group == null || group.isBlank()) {
