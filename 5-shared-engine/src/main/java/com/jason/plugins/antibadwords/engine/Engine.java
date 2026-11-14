@@ -887,8 +887,14 @@ public final class Engine {
         }
     }
 
+    private volatile boolean shutDown;
+
     /** Call when the server stops. */
     public void shutdown() {
+        if (shutDown) {
+            return;
+        }
+        shutDown = true;
         discord.shutdown();
         // strikes that are kept across restarts are written first; memory is emptied either way
         persistentStrikes.shutdown(keepsStrikes());

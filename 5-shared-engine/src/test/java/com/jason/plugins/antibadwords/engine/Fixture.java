@@ -17,7 +17,7 @@ final class Fixture {
 
     /** Starts (or restarts) the engine, like a server start. */
     Engine start() {
-        engine = Engine.load(platform, dir, now::get);
+        engine = TestEngines.track(Engine.load(platform, dir, now::get));
         return engine;
     }
 

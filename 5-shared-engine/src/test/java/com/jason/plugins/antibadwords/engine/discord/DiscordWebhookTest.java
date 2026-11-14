@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jason.plugins.antibadwords.engine.Engine;
+import com.jason.plugins.antibadwords.engine.TestEngines;
 import com.jason.plugins.antibadwords.engine.FakePlatform;
 import com.jason.plugins.antibadwords.engine.ModerationEvent;
 import com.jason.plugins.antibadwords.engine.command.CommandSender;
@@ -83,7 +84,7 @@ class DiscordWebhookTest {
         server.start();
         url = "http://127.0.0.1:" + server.getAddress().getPort() + PATH;
         platform = new FakePlatform(dir);
-        engine = Engine.load(platform, dir);
+        engine = TestEngines.track(Engine.load(platform, dir));
     }
 
     @AfterEach

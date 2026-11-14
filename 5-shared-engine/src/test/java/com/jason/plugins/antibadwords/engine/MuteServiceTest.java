@@ -183,7 +183,7 @@ class MuteServiceTest {
                 }
                 return method.invoke(fake, args);
             });
-        Engine engine = Engine.load(platform, other, f.now::get);
+        Engine engine = TestEngines.track(Engine.load(platform, other, f.now::get));
         engine.mutes().mute(UUID.randomUUID(), "A", 100_000, "", "system");
         assertTrue(delays.contains(30_000L), delays.toString());
     }
