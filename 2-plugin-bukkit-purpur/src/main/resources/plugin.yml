@@ -4,7 +4,7 @@ main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
 api-version: '${mc.api.version}'
 authors:
   - Jason
-softdepend: [DiscordSRV, Essentials, PlaceholderAPI, LuckPerms, LiteBans, AdvancedBan, LibertyBans, floodgate, Geyser-Spigot]
+softdepend: [DiscordSRV, Essentials, PlaceholderAPI, LuckPerms, LiteBans, ProtocolLib, packetevents, CoreProtect, Plan, AdvancedBan, LibertyBans, floodgate, Geyser-Spigot]
 loadbefore: [EssentialsChat]
 description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:

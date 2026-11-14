@@ -60,6 +60,11 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         startDiscordSrv();
         startLuckPerms();
         startPlaceholderApi();
+        try {
+            com.jason.plugins.antibadwords.integrations.ExtraHooks.start(engine);
+        } catch (Throwable ex) {
+            getLogger().warning("The CoreProtect/packet hooks could not start (" + ex.getClass().getSimpleName() + ").");
+        }
         logStartupBanner();
     }
 
