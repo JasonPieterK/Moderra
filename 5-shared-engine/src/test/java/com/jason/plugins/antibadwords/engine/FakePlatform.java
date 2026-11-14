@@ -57,14 +57,6 @@ public final class FakePlatform implements Platform {
         return openMenu(player);
     }
 
-    /** Names of "installed plugins" for hasPlugin. */
-    public final Set<String> plugins = new HashSet<>();
-
-    @Override
-    public boolean hasPlugin(String name) {
-        return plugins.contains(name);
-    }
-
     public boolean signPrompts;
     public final List<String> signOpened = new ArrayList<>();
 

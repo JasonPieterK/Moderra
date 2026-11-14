@@ -87,11 +87,6 @@ public interface Platform {
      */
     String applyAction(UUID player, PunishmentAction action);
 
-    /** Whether another plugin with this name is installed and enabled (Bukkit only; mods have none). Default: no. */
-    default boolean hasPlugin(String name) {
-        return false;
-    }
-
     /** Whether {@link #openSignPrompt} works here (a sign editor can be opened for a text input). Default: no, the chat is used. */
     default boolean supportsSignPrompt() {
         return false;

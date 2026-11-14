@@ -24,6 +24,12 @@ if [ -z "$SNAKEYAML" ] || [ ! -f "$SNAKEYAML" ]; then
   exit 2
 fi
 
+LUCKPERMS="${LUCKPERMS:-$(find "${HOME}/.m2" -path '*net/luckperms/api/*' -name 'api-*.jar' 2>/dev/null | sort | tail -n 1)}"
+if [ -z "$LUCKPERMS" ]; then
+  echo "LuckPerms API jar not found (it is on Maven Central): mvn -q dependency:get -Dartifact=net.luckperms:api:5.4" >&2
+  exit 2
+fi
+
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 FAILED=0
@@ -44,8 +50,9 @@ compile() { # name classpath source-roots...
 
 if [ "$WHAT" = all ] || [ "$WHAT" = plugin ]; then
   # the plugin sources, the engine, and the name-only DiscordSRV shim (the pom compiles it but keeps it out of the jar)
-  compile plugin "$SNAKEYAML" "$STUBS/bukkit" "$ENGINE/main/java" \
-    "$ROOT/2-plugin-bukkit-purpur/src/main/java" "$ROOT/2-plugin-bukkit-purpur/src/discordsrv-shim/java"
+  compile plugin "$SNAKEYAML:$LUCKPERMS" "$STUBS/bukkit" "$ENGINE/main/java" \
+    "$ROOT/2-plugin-bukkit-purpur/src/main/java" "$ROOT/2-plugin-bukkit-purpur/src/discordsrv-shim/java" \
+    "$ROOT/2-plugin-bukkit-purpur/src/papi-shim/java"
 fi
 
 if [ "$WHAT" = all ] || [ "$WHAT" = mods ]; then
