@@ -27,7 +27,10 @@ import com.jason.plugins.antibadwords.engine.moderation.LadderSettings;
 import com.jason.plugins.antibadwords.engine.moderation.HistorySettings;
 import com.jason.plugins.antibadwords.engine.moderation.HistoryStore;
 import com.jason.plugins.antibadwords.engine.moderation.ModerationSettings;
+import com.jason.plugins.antibadwords.engine.moderation.MuteCommands;
 import com.jason.plugins.antibadwords.engine.moderation.MuteHandler;
+import com.jason.plugins.antibadwords.engine.moderation.MuteService;
+import com.jason.plugins.antibadwords.engine.moderation.MuteSettings;
 import com.jason.plugins.antibadwords.engine.moderation.PersistentStrikeService;
 import com.jason.plugins.antibadwords.engine.moderation.PlayerDirectory;
 import com.jason.plugins.antibadwords.Placeholders;
@@ -104,6 +107,7 @@ public final class Engine {
     private final PersistentStrikeService persistentStrikes;
     private final PlayerDirectory players;
     private final HistoryStore history;
+    private final MuteService mutes;
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -127,13 +131,14 @@ public final class Engine {
         this.strikes = persistentStrikes;
         this.history = new HistoryStore(data, clock, platform.logger(), this::historyOptions);
         events.subscribe(history::record);
+        this.mutes = new MuteService(this, data.resolve(MuteSettings.DATA_FILE), saver);
         // stand-in until the mute feature installs itself with setMuteHandler
         this.noMutes = (player, name, millis, reason, actor) -> {
             platform.logger().warn("Cannot mute " + name + " (" + DurationParser.format(millis) + "): the built-in mute is not available. "
                 + "Use a command action with the mute command of another plugin instead.");
             return false;
         };
-        this.muteHandler = noMutes;
+        this.muteHandler = mutes;
         registerBuiltIns();
     }
 
@@ -173,6 +178,7 @@ public final class Engine {
         CoreCommands.register(commands);
         LadderCommands.register(commands);
         commands.register(new com.jason.plugins.antibadwords.engine.command.HistoryCommand());
+        MuteCommands.register(commands);
     }
 
     /**
@@ -188,11 +194,13 @@ public final class Engine {
         ModerationSettings.register(registry);
         LadderSettings.register(registry);
         HistorySettings.register(registry);
+        MuteSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
     private void loadData() {
         players.load();
+        mutes.load();
         if (keepsStrikes()) {
             int loaded = persistentStrikes.load();
             if (loaded > 0) {
@@ -501,6 +509,10 @@ public final class Engine {
      * ({@link Platform#canRewrite(String)}).
      */
     public Verdict inspect(Message message) {
+        if (mutes.enforce(message)) {
+            // a muted player: stopped without hits, so no strikes are counted; the service has told the player
+            return new Verdict(Verdict.Type.BLOCK, null, List.of(), settings(message.world(), message.dimension(), message.permissions()));
+        }
         return judge(message, true, true);
     }
 
@@ -636,6 +648,7 @@ public final class Engine {
      */
     public Verdict onJoin(UUID playerId, String playerName) {
         players.seen(playerId, playerName);
+        mutes.onJoin(playerId, playerName);
         Message message = message(playerId, playerName, Message.JOIN, playerName);
         Verdict verdict = judge(message, true, false);
         Hit hit = verdict.primary();
@@ -764,6 +777,11 @@ public final class Engine {
             value(HistorySettings.PAGE_SIZE));
     }
 
+    /** The built-in mute (state in {@code data/mutes.json}); also installed as {@link #muteHandler()}. */
+    public MuteService mutes() {
+        return mutes;
+    }
+
     /** Everybody who was ever seen on the server ({@code data/players.json}); finds offline players by name. */
     public PlayerDirectory players() {
         return players;
@@ -854,6 +872,7 @@ public final class Engine {
         }
         players.flush();
         history.shutdown();
+        mutes.flush();
         anvilFlagged.clear();
         spamState.clear();
     }

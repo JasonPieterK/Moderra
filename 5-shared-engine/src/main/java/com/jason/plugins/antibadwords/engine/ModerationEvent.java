@@ -32,6 +32,10 @@ public record ModerationEvent(String kind, long time, UUID playerId, String play
     public static final String SPAM = "spam";
     public static final String LINK = "link";
     public static final String EVASION = "evasion";
+    /** Data: reason, by, duration, until, permanent. */
+    public static final String MUTE = "mute";
+    public static final String UNMUTE = "unmute";
+    public static final String MUTE_EXPIRED = "mute-expired";
 
     public ModerationEvent {
         data = Map.copyOf(data);
