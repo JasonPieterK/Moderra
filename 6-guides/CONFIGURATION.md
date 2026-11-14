@@ -98,7 +98,7 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 
 | Key | Type | Default | Per world | What it does |
 |-----|------|---------|:---------:|--------------|
-| `filters.whitelist` | list of texts | `class`, `classic`, `assassin`, `assume`, `assist`, `bass`, `glass`, `grass`, `pass`, `mass`, `closer`, `scrap`, `cockpit`, `cocktail`, `peacock`, `computer`, `computing`, `dickens`, `analysis`, `therapist` | yes | Words that must never be blocked (mainly useful together with partial-match).<br>In game: /abw whitelist add <word>, /abw whitelist remove <word>, /abw whitelist list. |
+| `filters.whitelist` | list of texts | `class`, `classic`, `assassin`, `assume`, `assist`, `bass`, `glass`, `grass`, `pass`, `mass`, `closer`, `scrap`, `cockpit`, `cocktail`, `peacock`, `computer`, `computing`, `dickens`, `analysis`, `therapist`, `suka`, `hui`, `burro`, `tai`, `lixo` | yes | Words that must never be blocked (mainly useful together with partial-match).<br>In game: /abw whitelist add <word>, /abw whitelist remove <word>, /abw whitelist list. |
 
 ### Messages
 

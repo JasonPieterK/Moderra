@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Persian script (with Persian ک and ی) plus Finglish chat spelling. Left out on purpose: تخم (egg / testicle), الاغ and گوساله (animals), خر alone (2 letters), کس and کص alone (2 letters). 'khar' means both donkey and thorn. Needs native review. Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: haramzade siktir Related languages share cognate words on purpose. collisions-ok: ar ur"
+notes: "Persian script (with Persian ک and ی) plus Finglish chat spelling. Left out on purpose: تخم (egg / testicle), الاغ and گوساله (animals), خر alone (2 letters), کس and کص alone (2 letters). 'khar' means both donkey and thorn. Needs native review. Words shared with unrelated languages are cognates or borrowings with the same meaning. False-positive review 2026-11-14: 'kuni' was removed (Japanese 'kuni', country). collisions-ok: haramzade siktir Related languages share cognate words on purpose. collisions-ok: ar ur"
 level-1: [
   "احمق", "گاگول", "کودن", "بی شعور", "بیشعور", "نفهم", "ابله", "خنگ", "عنتر", "ahmagh", "gagool", "kuden",
   "bi shoor", "bishoor", "bi shor", "nafahm", "ableh", "khang", "bi sharaf"
@@ -19,7 +19,7 @@ level-2: [
 level-3: [
   "حرامزاده", "حروم زاده", "جاکش", "کونی", "کیر", "کسکش", "کسشر", "جنده", "فاحشه", "قحبه", "مادرجنده",
   "مادر جنده", "مادرقحبه", "مادر قحبه", "گاییدن", "گایید", "گاییدم", "بگایم", "سیکتیر", "کیرم", "کس ننت",
-  "کسننت", "کون ننت", "کونت", "haramzade", "haroomzade", "jakesh", "kooni", "kuni", "koskesh", "kos kesh",
+  "کسننت", "کون ننت", "کونت", "haramzade", "haroomzade", "jakesh", "kooni", "koskesh", "kos kesh",
   "kosshar", "kosnanat", "kose nanat", "kose nane", "jende", "jendeh", "fahesheh", "ghahbeh", "madar jende",
   "madarjende", "madar ghahbe", "gaidan", "gaiidam", "siktir", "kiram dahanet"
 ]

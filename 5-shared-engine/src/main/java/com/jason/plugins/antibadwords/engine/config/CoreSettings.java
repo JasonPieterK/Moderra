@@ -139,7 +139,8 @@ public final class CoreSettings {
 
     public static final Setting<List<String>> WHITELIST = Setting.list("filters.whitelist",
             List.of("class", "classic", "assassin", "assume", "assist", "bass", "glass", "grass", "pass", "mass", "closer", "scrap",
-                "cockpit", "cocktail", "peacock", "computer", "computing", "dickens", "analysis", "therapist"))
+                "cockpit", "cocktail", "peacock", "computer", "computing", "dickens", "analysis", "therapist",
+                "suka", "hui", "burro", "tai", "lixo"))
         .file(CONFIG).category(WHITELIST_CATEGORY).title("Whitelist").overridable()
         .description("Words that must never be blocked (mainly useful together with partial-match).\n"
             + "In game: /abw whitelist add <word>, /abw whitelist remove <word>, /abw whitelist list.").build();

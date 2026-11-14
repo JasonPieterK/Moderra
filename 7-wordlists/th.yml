@@ -6,20 +6,21 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Thai has no spaces between words, so entries are matched as substrings and short words can hide inside harmless words. Because of this these common short words were left out on purpose: หี (inside หีบ 'box'), สัด (inside สัดส่วน 'proportion'), ห่า (inside ห่าง 'far'), ชั่ว (inside ชั่วโมง 'hour'), เลว, บ้า. Insults with the prefix ไอ้ or อี are kept in full. Romanised spellings are included. sat (English word) was left out. Needs native review."
+notes: "Thai has no spaces between words, so entries are matched as substrings and short words can hide inside harmless words. Because of this these common short words were left out on purpose: หี (inside หีบ 'box'), สัด (inside สัดส่วน 'proportion'), ห่า (inside ห่าง 'far'), ชั่ว (inside ชั่วโมง 'hour'), เลว, บ้า. Insults with the prefix ไอ้ or อี are kept in full. Romanised spellings are included. sat (English word) was left out. Needs native review. False-positive review 2026-11-14: accents and tone marks are removed before matching, so a Thai word is compared without its tone marks and vowel signs. Removed for that reason: ร่าน and อีร่าน (inside ร้าน, shop, as in ชื่อร้าน), เหี้ย alone (inside เหยียบ), แม่ง alone (inside แมงมุม spider and แม่งาน), กะหรี่ alone (curry), อีหี (inside ซื้อหนังสือ), ควาย alone (buffalo). Only longer forms of these stay."
 level-1: [
-  "โง่", "งี่เง่า", "ควาย", "ปัญญาอ่อน", "ไอ้โง่", "ไอ้ควาย", "ไอ้เลว", "ไอ้งี่เง่า", "โง่เง่า", "อีโง่",
+  "โง่", "งี่เง่า", "ปัญญาอ่อน", "ไอ้โง่", "ไอ้ควาย", "ไอ้เลว", "ไอ้งี่เง่า", "โง่เง่า", "อีโง่",
   "ไอ้หน้าโง่", "หน้าโง่", "ngi nga", "ai kwai", "kwai"
 ]
 level-2: [
-  "เหี้ย", "ไอ้เหี้ย", "ไอ้สัตว์", "ตอแหล", "อีตอแหล", "ร่าน", "อีร่าน", "แม่ง", "แม่งเอ๊ย", "ไอ้ห่า",
+  "ไอ้เหี้ย", "ไอ้สัตว์", "ตอแหล", "อีตอแหล", "แม่งเอ๊ย", "ไอ้ห่า",
   "ระยำ", "ชาติหมา", "สันดานหมา", "เฮงซวย", "ชิบหาย", "แม่มึง", "ไอ้ระยำ", "ไอ้เฮงซวย", "ไอ้หน้าหมา",
   "หน้าหมา", "ไอ้ชาติหมา", "ไอ้สันดานหมา", "ไอ้ชิบหาย", "ไอ้แม่ง", "แม่งเอ้ย", "ไอ้ตอแหล", "hia", "ai hia",
-  "rayam", "ai rayam", "hengsuay", "chibhai", "mae ng"
+  "rayam", "ai rayam", "hengsuay", "chibhai", "mae ng",
+  "อีเหี้ย", "ตัวเหี้ย", "เหี้ยมาก", "เหี้ยไร", "ไอเหี้ย", "แม่งโคตร", "โคตรแม่ง"
 ]
 level-3: [
-  "เย็ด", "เย็ดแม่", "ควย", "ไอ้ควย", "อีหี", "ดอกทอง", "อีดอกทอง", "แตด", "ส้นตีน", "ไอ้สัด", "ไอ้สัส",
-  "กะหรี่", "อีกะหรี่", "อีสัด", "อีสัส", "เย็ดแม่มึง", "เย็ดพ่อ", "พ่อมึงตาย", "ไอ้ส้นตีน", "ไอ้เย็ด",
+  "เย็ด", "เย็ดแม่", "ควย", "ไอ้ควย", "ดอกทอง", "อีดอกทอง", "แตด", "ส้นตีน", "ไอ้สัด", "ไอ้สัส",
+  "อีกะหรี่", "อีสัด", "อีสัส", "เย็ดแม่มึง", "เย็ดพ่อ", "พ่อมึงตาย", "ไอ้ส้นตีน", "ไอ้เย็ด",
   "ควยมึง", "ควยพ่อมึง", "ไอ้ดอกทอง", "ไอ้กะหรี่", "kuay", "ai kuay", "yed", "ai yed", "dok thong",
   "ai dok thong"
 ]

@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Diacritics are stripped by the matcher (chuj, kurwa, pierdolić fold to ASCII). Left out on purpose: zajebisty (positive slang), pedał (also pedal), murzyn, cholera is tier 1 only, burdel kept in tier 2. 'suka' is shared with the Russian and Ukrainian transliteration lists. 'dupa' is mild. collisions-ok: ru uk cs hu ro Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa duren idiota pizda pojeb pojebany suka zasrany"
+notes: "Diacritics are stripped by the matcher (chuj, kurwa, pierdolić fold to ASCII). Left out on purpose: zajebisty (positive slang), pedał (also pedal), murzyn, cholera is tier 1 only, burdel kept in tier 2. 'suka' is shared with the Russian and Ukrainian transliteration lists. 'dupa' is mild. False-positive review 2026-11-14: 'jeb' was removed (also the Minecraft developer name). 'suka' is also Indonesian 'to like'; the bundled default whitelist lets new installs write it. collisions-ok: ru uk cs hu ro Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa duren idiota pizda pojeb pojebany suka zasrany"
 level-1: [
   "głupi", "glupi", "głupek", "glupek", "idiota", "debil", "kretyn", "cymbał", "cymbal", "matoł", "matol",
   "ćwok", "cwok", "dureń", "duren", "pacan", "gamoń", "gamon", "oferma", "frajer", "gówniarz", "gowniarz",
@@ -20,7 +20,7 @@ level-2: [
 ]
 level-3: [
   "chuj", "chuja", "chuju", "chujowy", "chujnia", "pierdolić", "pierdolic", "pierdolę", "pierdole",
-  "pierdolony", "pierdolona", "pierdol", "jebać", "jebac", "jebany", "jebana", "jebie", "jeb", "kurwa",
+  "pierdolony", "pierdolona", "pierdol", "jebać", "jebac", "jebany", "jebana", "jebie", "kurwa",
   "kurwy", "kurwiszon", "kurewski", "kurewska", "kurewskie", "pizda", "pizdy", "pizdo", "cipa", "cipka",
   "fiut", "kutas", "skurwysyn", "skurwysyny", "skurwiel", "sukinsyn", "ruchać", "ruchac", "rucha",
   "spierdalaj", "wypierdalaj", "zajebać", "zajebac", "pojeb", "zjeb", "ciota", "cwel", "cwele", "szmata",

@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Hangul plus the romanisation players type (ssibal, jonna). Hangul words are matched as substrings, so keep short entries rare: 씹 and 좆 as single characters are not included, only longer forms. 'jonna' is very common mild slang and may annoy players; move it to a higher tier in your own copy if needed. Left out: 한남, 일베 and other political terms. 'babo' is also a Tagalog word with similar meaning, no conflict expected."
+notes: "Hangul plus the romanisation players type (ssibal, jonna). Hangul words are matched as substrings, so keep short entries rare: 씹 and 좆 as single characters are not included, only longer forms. 'jonna' is very common mild slang and may annoy players; move it to a higher tier in your own copy if needed. Left out: 한남, 일베 and other political terms. 'babo' is also a Tagalog word with similar meaning, no conflict expected. False-positive review 2026-11-14: '보지' and '자지' were removed because they are also the everyday verb forms 'do not see' and 'do not sleep' (the Latin spellings boji and jaji stay). Known risk kept on purpose: '새끼' alone also means 'baby animal' ('새끼 고양이')."
 level-1: [
   "바보", "멍청이", "멍청", "찌질이", "쓰레기 같은", "못난이", "등신", "얼간이", "머저리", "쪼다", "띨빵", "맹추", "babo", "meongcheongi",
   "meongcheong", "jjijiri", "jjijil", "deungsin", "eolganee", "meojeori", "jjoda", "ddilppang",
@@ -22,7 +22,7 @@ level-2: [
   "agari dakchyeo", "nodap", "kkoltong", "yeombyeong", "michin", "michin nom"
 ]
 level-3: [
-  "씨발", "시발", "씹새끼", "씹창", "씹년", "좆같은", "좆까", "존나", "졸라", "개년", "창녀", "보지", "자지", "느금마", "니미", "니애미", "니기미",
+  "씨발", "시발", "씹새끼", "씹창", "씹년", "좆같은", "좆까", "존나", "졸라", "개년", "창녀", "느금마", "니미", "니애미", "니기미",
   "씨부랄", "씨팔", "시팔", "십팔", "씨벌", "쉬발", "쌍년", "섹스", "개씹", "걸레년", "화냥년", "년놈", "병신새끼", "씹쌔끼", "씨바", "시바",
   "지랄새끼", "니엄마", "니애비", "느그엄마", "애미", "애비", "후장", "딸딸이", "빨아", "개보지", "보지년", "자지새끼", "창놈", "변태새끼", "ssibal",
   "sibal", "ssipal", "sipal", "ssibar", "ssiba", "siba", "ssibba", "shibal", "shibar", "ssibalnom",
