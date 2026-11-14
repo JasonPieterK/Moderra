@@ -153,3 +153,24 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
 - [ ] **Unicode confusables data**: unicode.org was unreachable, so the table was built from the ICU repository's copy of
       `confusables.txt` 18.0.0 (see `7-wordlists/NOTICE.md`). Re-run `5-shared-engine/generate-confusables.py` against
       the official file when the network allows, and check the diff is empty.
+
+## Mini task 18 (Fabric/Forge GUI glue, chat prompt capture, /abw gui)
+
+Read/stub-compiled only (javac against the scratchpad stub, both sign variants, no stub additions needed; never run).
+Done and safe: `ModRuntime.blockChat` returns true without `onViolation` when `verdict.captured()`; `mod/gui/ModGui` (sessions,
+click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, close/quit); `Platform.supportsMenu/openMenu` on
+`ModPlatform`; Forge node `antibadwords.gui` in `ForgePermissions`. `ModGui.available()` is false until a loader calls
+`ModGui.install(GuiBackend)`, so `/abw` behaves as before on mods.
+
+**NOT done: the `GuiBackend` implementation (the vanilla chest menu).** Needs, to verify with `javap` on 1.21.11 AND 26.x (Mojang names):
+
+- [ ] `net.minecraft.world.inventory.ChestMenu`: static `sixRows(int containerId, Inventory playerInventory, Container container)` or the constructor with `MenuType.GENERIC_9x6`; the `clicked(int slotId, int button, ClickType, Player)` method (override to do nothing except call `ModGui.onClick(serverPlayer, slotId, clickType.name(), button)` when `0 <= slotId < 54`, then resync the carried stack); `quickMoveStack(Player, int)` must return `ItemStack.EMPTY`; `removed(Player)` -> `ModGui.onClosed`; `stillValid`.
+- [ ] `net.minecraft.world.inventory.ClickType` enum names (PICKUP, QUICK_MOVE, SWAP, CLONE, THROW, QUICK_CRAFT, PICKUP_ALL): `ModGui.mapClick` matches on those names. Check that drag (QUICK_CRAFT) and double click (PICKUP_ALL) cannot move items.
+- [ ] `net.minecraft.world.SimpleContainer(int)`, `setItem(int, ItemStack)`; `net.minecraft.world.SimpleMenuProvider(MenuConstructor, Component)`; `ServerPlayer.openMenu(MenuProvider)` (return type differs between versions); `closeContainer()`; `containerMenu`, `broadcastChanges()` / `sendAllDataToRemote()` for `update`.
+- [ ] Item building: `new ItemStack(ItemLike)`, `Items.*` constants for each `Icons` name (data-driven mapping table icon name -> item id via the item registry lookup with `Identifier`, which replaced `ResourceLocation` on 26.x), custom name `DataComponents.CUSTOM_NAME`, lore `DataComponents.LORE` with `ItemLore(List<Component>)`, glint `DataComponents.ENCHANTMENT_GLINT_OVERRIDE`; optionally hide vanilla tooltip lines (`DataComponents.TOOLTIP_DISPLAY`, 1.21.5+).
+- [ ] Title change: `update` cannot change the title of an open menu; either reopen the menu (cursor resets) or only update items.
+- [ ] Colour codes: engine texts use `§`; `Component.literal` renders them on chat (as `ModPlatform.sendMessage` relies on); check item name and lore too.
+- [ ] Hook: Fabric and Forge must call `ModGui.install(new ChestBackend())` at startup. Disconnect already calls `ModRuntime.onQuit`, which calls `ModGui.onQuit`.
+- [ ] Run: open `/abw`, try every click type, shift-click from the inventory, number keys, drag, drop; confirm nothing can be taken or inserted; Esc with unsaved changes; disconnect while the menu is open; chat prompt (the answer must not appear in chat, a swear word as answer gives no strike) and `cancel`.
+- [ ] Sign-editor prompt (B2 sign path) on mods: `supportsSignPrompt` is false on mods; needs the open-sign-editor and block update packets, not designed here.
+- [ ] `plugin.yml` permission `antibadwords.gui` (default op) is a Bukkit-side item, not done here.

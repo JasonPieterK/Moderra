@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords.engine.command;
 
 import com.jason.plugins.antibadwords.engine.Engine;
+import com.jason.plugins.antibadwords.engine.gui.Menu;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -50,6 +51,10 @@ public final class CommandRegistry {
      * @param args the words after the root command (empty array for a bare {@code /abw})
      */
     public void execute(CommandSender sender, String label, String[] args) {
+        if (args.length == 0 && sender.id() != null && sender.has(Menu.PERMISSION) && engine.platform().supportsMenu()) {
+            GuiCommand.open(engine, sender);
+            return;
+        }
         List<String> allowed = allowedNames(sender);
         if (allowed.isEmpty()) {
             sender.send(Chat.RED + "No permission.");

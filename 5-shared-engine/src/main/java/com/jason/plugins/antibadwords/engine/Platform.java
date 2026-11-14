@@ -91,4 +91,19 @@ public interface Platform {
      */
     default void openSignPrompt(UUID player, String title, String hint) {
     }
+
+    /** Whether {@link #openMenu} can show the settings menu here. Default: no ({@code /abw} then prints its usage line). */
+    default boolean supportsMenu() {
+        return false;
+    }
+
+    /**
+     * Opens the settings menu ({@code engine.gui.Menu}) for the player. Only called on the main thread, for a player
+     * that has {@code antibadwords.gui}, and only when {@link #supportsMenu()} is true.
+     *
+     * @return false when the menu could not be opened
+     */
+    default boolean openMenu(UUID player) {
+        return false;
+    }
 }

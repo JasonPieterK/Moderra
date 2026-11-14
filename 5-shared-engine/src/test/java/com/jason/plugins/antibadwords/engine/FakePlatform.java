@@ -28,6 +28,20 @@ public final class FakePlatform implements Platform {
     public final List<String> appliedActions = new ArrayList<>();
     public final List<String> infos = new ArrayList<>();
     public final List<String> warnings = new ArrayList<>();
+    public boolean menus;
+    public final List<UUID> menusOpened = new ArrayList<>();
+
+    @Override
+    public boolean supportsMenu() {
+        return menus;
+    }
+
+    @Override
+    public boolean openMenu(UUID player) {
+        menusOpened.add(player);
+        return true;
+    }
+
     public boolean signPrompts;
     public final List<String> signOpened = new ArrayList<>();
 

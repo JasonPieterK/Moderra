@@ -13,7 +13,7 @@ import net.minecraftforge.server.permission.nodes.PermissionNode;
 import net.minecraftforge.server.permission.nodes.PermissionTypes;
 
 /**
- * Registers {@code antibadwords.admin}, {@code antibadwords.notify}, {@code antibadwords.bypass} (and
+ * Registers {@code antibadwords.admin}, {@code antibadwords.notify}, {@code antibadwords.gui}, {@code antibadwords.bypass} (and
  * {@code .bypass.spam}, {@code .bypass.links}, {@code .bypass.evasion}) and one
  * {@code antibadwords.profile.<name>} node per worlds.yml profile with Forge's permission API so permission mods
  * (LuckPerms etc.) can grant them, with the plugin's defaults (admin and notify: operators, bypass and profiles: nobody).
@@ -24,6 +24,7 @@ import net.minecraftforge.server.permission.nodes.PermissionTypes;
 final class ForgePermissions implements ModPermissions {
     private static final PermissionNode<Boolean> ADMIN = node("admin");
     private static final PermissionNode<Boolean> NOTIFY = node("notify");
+    private static final PermissionNode<Boolean> GUI = node("gui");
     private static final PermissionNode<Boolean> BYPASS = node("bypass");
     private static final PermissionNode<Boolean> BYPASS_SPAM = node("bypass.spam");
     private static final PermissionNode<Boolean> BYPASS_LINKS = node("bypass.links");
@@ -38,7 +39,7 @@ final class ForgePermissions implements ModPermissions {
 
     static void register() {
         PermissionGatherEvent.Nodes.BUS.addListener((PermissionGatherEvent.Nodes event) -> {
-            List<PermissionNode<?>> nodes = new ArrayList<>(List.of(ADMIN, NOTIFY, BYPASS, BYPASS_SPAM, BYPASS_LINKS, BYPASS_EVASION));
+            List<PermissionNode<?>> nodes = new ArrayList<>(List.of(ADMIN, NOTIFY, GUI, BYPASS, BYPASS_SPAM, BYPASS_LINKS, BYPASS_EVASION));
             if (ModRuntime.engine != null) {
                 for (String profile : ModRuntime.engine.profileNames()) {
                     PermissionNode<Boolean> node = node("profile." + profile);
@@ -55,6 +56,7 @@ final class ForgePermissions implements ModPermissions {
         return switch (node) {
             case "antibadwords.admin" -> PermissionAPI.getPermission(player, ADMIN);
             case "antibadwords.notify" -> PermissionAPI.getPermission(player, NOTIFY);
+            case "antibadwords.gui" -> PermissionAPI.getPermission(player, GUI);
             case "antibadwords.bypass" -> PermissionAPI.getPermission(player, BYPASS);
             case "antibadwords.bypass.spam" -> PermissionAPI.getPermission(player, BYPASS_SPAM);
             case "antibadwords.bypass.links" -> PermissionAPI.getPermission(player, BYPASS_LINKS);
