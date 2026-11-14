@@ -122,6 +122,7 @@ public final class Engine {
     private final com.jason.plugins.antibadwords.engine.integrations.BanService bans = new com.jason.plugins.antibadwords.engine.integrations.BanService(this);
     private final com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock = new com.jason.plugins.antibadwords.engine.integrations.BedrockNames(this);
     private final com.jason.plugins.antibadwords.engine.integrations.EssentialsLink essentials;
+    private final com.jason.plugins.antibadwords.engine.integrations.PluginCommands pluginCommands = new com.jason.plugins.antibadwords.engine.integrations.PluginCommands(this);
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -223,6 +224,7 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.PluginCommandSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -345,6 +347,7 @@ public final class Engine {
         log.info("Integrations: ban provider " + bans.provider() + ", Bedrock names " + (bedrock.enabled()
             ? "on (prefix '" + value(com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.BEDROCK_PREFIX) + "'"
                 + (bedrock.detectedPlugin() == null ? "" : ", found " + bedrock.detectedPlugin()) + ")" : "off") + ".");
+        pluginCommands.logFound();
         log.info("Protection level: " + main.get(CoreSettings.PROTECTION_LEVEL) + " (1=LOW, 2=MEDIUM, 3=HIGH)");
         if (profiles.names().size() > 1) {
             log.info("World profiles: " + String.join(", ", profiles.names()) + " (default: " + profiles.defaultProfile() + ")");
@@ -671,6 +674,9 @@ public final class Engine {
             if (arguments == null) {
                 arguments = essentials.extraCommandText(settings.legacy().ignoredCommands(), message.text());
             }
+            if (arguments == null) {
+                arguments = pluginCommands.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
             current = arguments == null ? null : message.withText(arguments);
         }
         if (current == null && !playerCommand) {
@@ -898,6 +904,11 @@ public final class Engine {
     /** Bedrock (Geyser / Floodgate) name handling (settings {@code integrations.bedrock.*}). */
     public com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock() {
         return bedrock;
+    }
+
+    /** Text commands of mcMMO, Towny, Factions, Citizens, DecentHolograms (settings {@code integrations.<plugin>.*}). */
+    public com.jason.plugins.antibadwords.engine.integrations.PluginCommands pluginCommands() {
+        return pluginCommands;
     }
 
     /** EssentialsX hook (Bukkit family; settings in {@code integrations.yml}). Does nothing until the plugin attaches a bridge. */
