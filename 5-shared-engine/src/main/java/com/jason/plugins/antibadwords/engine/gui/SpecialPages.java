@@ -21,13 +21,13 @@ import java.util.Map;
 import java.util.TreeMap;
 
 /**
- * The pages that are not generated from one category: main-menu status, languages, word browser, ladder (read-only),
- * mutes, world profiles and search results. They need an engine ({@link ConfigAccess#engine()}); without one the main
+ * The pages that are not generated from one category: main-menu status, languages, word browser,
+ * mutes and search results (ladder, world profiles and world rules are in {@link EditorPages}). They need an engine ({@link ConfigAccess#engine()}); without one the main
  * menu only shows the categories.
  *
  * <p>Staged (written on Done): language switches and the whitelist (both are settings). Applied at once, because they
  * are not settings: custom words (wordlists/custom.yml, removal needs shift-click) and unmuting a player.
- * Read-only: bundled language word lists, the ladder (a free-form section; edit it in config.yml or with /abw ladder)
+ * Read-only: bundled language word lists (the ladder, profiles and world rules are edited in {@link EditorPages})
  * and the world profiles.
  */
 final class SpecialPages {
@@ -62,12 +62,14 @@ final class SpecialPages {
             "Click to switch languages on or off"), false, (s, t) -> open(s, MenuState.Kind.LANGUAGES, "")));
         out.add(new Entry(Icons.WORD, "Word browser", List.of("Look at the words of a list, edit the custom list", "and the whitelist"), false,
             (s, t) -> open(s, MenuState.Kind.SOURCES, "")));
-        out.add(new Entry(Icons.LADDER, "Punishment ladder", List.of(engine.settings().ladder().steps().size() + " steps (read-only)"), false,
-            (s, t) -> open(s, MenuState.Kind.LADDER, "")));
+        out.add(new Entry(Icons.LADDER, "Punishment ladder", List.of(state.sectionValue(com.jason.plugins.antibadwords.engine.moderation.LadderSettings.STEPS).size()
+            + " steps", "Click to add, change and remove steps"), false, (s, t) -> open(s, MenuState.Kind.LADDER, "")));
         out.add(new Entry(Icons.MUTE, "Muted players", List.of(engine.mutes().list().size() + " muted now"), false,
             (s, t) -> open(s, MenuState.Kind.MUTES, "")));
-        out.add(new Entry(Icons.PROFILE, "World profiles", List.of(engine.profileNames().size() + " profiles"), false,
+        out.add(new Entry(Icons.PROFILE, "World profiles", List.of(engine.profileNames().size() + " profiles", "Click to edit which settings differ"), false,
             (s, t) -> open(s, MenuState.Kind.PROFILES, "")));
+        out.add(new Entry(Icons.RULE, "World rules", List.of(state.sectionValue(WorldProfiles.WORLDS).size() + " rules", "Which world uses which profile"), false,
+            (s, t) -> open(s, MenuState.Kind.RULES, "")));
 
         Object level = state.value(CoreSettings.PROTECTION_LEVEL);
         out.add(info(Icons.STATUS, "Protection level: " + level, List.of("1 = mild words only, 3 = everything",
@@ -152,6 +154,10 @@ final class SpecialPages {
     }
 
     private static MenuAction toggleLanguage(MenuState state, String code) {
+        MenuAction denied = Menu.guard(state, CoreSettings.ENABLED_LANGUAGES.category());
+        if (denied != null) {
+            return denied;
+        }
         List<String> next = new ArrayList<>();
         boolean was = false;
         for (String name : Menu.listValue(state, CoreSettings.ENABLED_LANGUAGES)) {
@@ -252,30 +258,8 @@ final class SpecialPages {
     }
 
     // ------------------------------------------------------------------------------------------
-    // Ladder (read-only), mutes, profiles
+    // Mutes
     // ------------------------------------------------------------------------------------------
-
-    static Page ladder(MenuState state, MenuState.View view) {
-        Ladder ladder = engine(state).settings().ladder();
-        List<Entry> entries = new ArrayList<>();
-        if (ladder.isEmpty()) {
-            entries.add(info(Icons.LADDER, "No ladder steps", List.of("The classic flat punishment is used.",
-                "Read-only here: edit the punishments section", "of config.yml or use /abw ladder")));
-        }
-        for (Ladder.Step step : ladder.steps()) {
-            List<String> lore = new ArrayList<>();
-            lore.add("At " + step.threshold() + " strikes" + (step.repeats() ? ", again every " + step.repeatEvery() : ""));
-            for (Ladder.Action action : step.actions()) {
-                lore.add("- " + Menu.shorten(action.text(), 50));
-            }
-            if (!step.message().isEmpty()) {
-                lore.add("Message: " + Menu.shorten(step.message(), 45));
-            }
-            lore.add("Read-only (edit config.yml or /abw ladder)");
-            entries.add(info(Icons.LADDER, step.name(), lore));
-        }
-        return Menu.paged(state, view, "Punishment ladder", entries, false);
-    }
 
     static Page mutes(MenuState state, MenuState.View view) {
         Engine engine = engine(state);
@@ -305,29 +289,6 @@ final class SpecialPages {
             entries.add(info(Icons.INFO, "Nobody is muted", List.of("Mutes appear here")));
         }
         return Menu.paged(state, view, "Muted players", entries, false);
-    }
-
-    static Page profiles(MenuState state, MenuState.View view) {
-        Engine engine = engine(state);
-        String def = String.valueOf(state.value(WorldProfiles.DEFAULT_PROFILE));
-        List<Entry> entries = new ArrayList<>();
-        for (String name : engine.profileNames()) {
-            Map<String, Object> overrides = engine.profileOverrides(name);
-            List<String> lore = new ArrayList<>();
-            lore.add(name.equals(def) ? "Default profile (used when no rule matches)" : "Used by world rules and permissions");
-            lore.add(overrides.isEmpty() ? "No differences from the normal files" : overrides.size() + " settings differ:");
-            int shown = 0;
-            for (Map.Entry<String, Object> e : overrides.entrySet()) {
-                if (shown++ >= 8) {
-                    lore.add("...");
-                    break;
-                }
-                lore.add(Menu.shorten(e.getKey() + ": " + e.getValue(), 50));
-            }
-            lore.add("Read-only (edit worlds.yml)");
-            entries.add(new Entry(Icons.PROFILE, name, lore, name.equals(def), (s, t) -> MenuAction.none()));
-        }
-        return Menu.paged(state, view, "World profiles", entries, false);
     }
 
     // ------------------------------------------------------------------------------------------

@@ -1,0 +1,1 @@
+package com.mojang.brigadier.suggestion; public class SuggestionsBuilder { public String getRemaining(){return null;} public int getStart(){return 0;} public SuggestionsBuilder createOffset(int s){return null;} public SuggestionsBuilder suggest(String t){return null;} public java.util.concurrent.CompletableFuture<Suggestions> buildFuture(){return null;} }

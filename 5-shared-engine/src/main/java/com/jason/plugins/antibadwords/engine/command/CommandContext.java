@@ -29,6 +29,9 @@ public record CommandContext(Engine engine, CommandSender sender, String label, 
 
     /** Records that this command changed something (publishes an {@code admin-command} event). */
     public void audit() {
+        if (sender.suppressAudit()) {
+            return;
+        }
         engine.publishAdminCommand(sender.id(), sender.name(), label + " " + sub + (args.length == 0 ? "" : " " + joined(0)));
     }
 }

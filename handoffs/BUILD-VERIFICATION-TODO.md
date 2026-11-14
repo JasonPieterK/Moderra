@@ -189,3 +189,8 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 - [ ] `2-plugin-bukkit-purpur/pom.xml`: new build-helper execution `add-discordsrv-shim` and `maven-jar-plugin` excludes `github/**`. Run `mvn package` and check
       with `unzip -l` that no `github/scarsz` class is inside the jar and that the jar loads without DiscordSRV.
 - [ ] Reflection names that could differ per DiscordSRV version are listed in the `DiscordSrvHook` class comment.
+
+## Mini task 24 (GUI editors, edit rights, stubs)
+- [ ] Bukkit: `antibadwords.gui.edit.<category>` nodes are registered with default TRUE after every reload (`AntiBadWordsPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/abw gui ladder`, `/abw gui spam` open the right page.
+- [ ] Fabric/Forge: edit nodes use `ModPermissions.fallback` (true); Forge does not register them (unregistered nodes use the fallback). `ModGui.open(player, page)` is stub-compiled only; mods still have no chest backend.
+- [ ] Run `tools/stub-compile.sh` (hand-written stubs, see `tools/api-stubs/README.md`): passing it proves nothing about the real APIs. It found a duplicate `case` in `ForgePermissions` (fixed).

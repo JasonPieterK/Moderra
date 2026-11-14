@@ -269,6 +269,10 @@ class DiscordLinkTest {
         assertEquals("5", audit.data().get("discord-user"));
         cmd("42", Set.of(), "!abw unmute Bob");
         assertFalse(engine.mutes().isMuted(bob));
+        // mute and unmute audit themselves, but through Discord exactly ONE admin-command event is published per command
+        List<ModerationEvent> audits = events.stream().filter(e -> e.kind().equals("admin-command")).toList();
+        assertEquals(2, audits.size(), audits.toString());
+        assertTrue(audits.stream().allMatch(e -> e.source().equals("discord")), audits.toString());
     }
 
     @Test

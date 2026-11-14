@@ -1,0 +1,1 @@
+package net.minecraftforge.server.permission.nodes; public class PermissionNode<T> { public interface R<T> { T resolve(net.minecraft.server.level.ServerPlayer p, java.util.UUID u, Object... c); } public PermissionNode(String m,String n,PermissionType<T> t,R<T> r){} }

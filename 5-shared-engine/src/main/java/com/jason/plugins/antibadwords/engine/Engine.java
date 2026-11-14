@@ -219,6 +219,8 @@ public final class Engine {
             if (loaded > 0) {
                 platform.logger().info("Loaded the strikes of " + loaded + " players from " + DATA_FOLDER + "/" + ModerationSettings.STRIKES_FILE + ".");
             }
+        } else {
+            persistentStrikes.discardFile(notKeepingReason());
         }
     }
 
@@ -228,6 +230,11 @@ public final class Engine {
      */
     private boolean keepsStrikes() {
         return value(ModerationSettings.SAVE_TO_DISK) && !settings().legacy().clearViolationsOnQuit();
+    }
+
+    private String notKeepingReason() {
+        return settings().legacy().clearViolationsOnQuit() ? "punishment.clear-violations-on-quit is true"
+            : ModerationSettings.SAVE_TO_DISK.key() + " is false";
     }
 
     private PersistentStrikeService.Options strikeOptions() {
@@ -381,6 +388,31 @@ public final class Engine {
 
     public WordLists wordLists() {
         return state.wordLists();
+    }
+
+    /** A deep copy of the raw content of a free-form section as written in the files (without profile overrides). */
+    public Map<String, Object> rawSection(Section section) {
+        return deepCopy(state.snapshot().section(section));
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<String, Object> deepCopy(Map<String, Object> map) {
+        Map<String, Object> out = new LinkedHashMap<>();
+        map.forEach((k, v) -> out.put(k, copyValue(v)));
+        return out;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Object copyValue(Object v) {
+        if (v instanceof Map<?, ?> m) {
+            return deepCopy((Map<String, Object>) m);
+        }
+        if (v instanceof List<?> l) {
+            List<Object> out = new ArrayList<>();
+            l.forEach(i -> out.add(copyValue(i)));
+            return out;
+        }
+        return v;
     }
 
     /** The value of a setting as written in the files (without profile overrides). */
@@ -904,7 +936,11 @@ public final class Engine {
         shutDown = true;
         discord.shutdown();
         // strikes that are kept across restarts are written first; memory is emptied either way
-        persistentStrikes.shutdown(keepsStrikes());
+        boolean keep = keepsStrikes();
+        persistentStrikes.shutdown(keep);
+        if (!keep) {
+            persistentStrikes.discardFile(notKeepingReason()); // a file from an earlier run must not come back after a later switch
+        }
         if (strikes != persistentStrikes) {
             strikes.clear();
         }

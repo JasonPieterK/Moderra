@@ -27,3 +27,4 @@ icons:
   cancel: RED_CONCRETE
   reset: BARRIER
   warning: ORANGE_CONCRETE
+  rule: COMPASS

@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords.engine.gui;
 
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.command.CommandSender;
+import com.jason.plugins.antibadwords.engine.config.CoreSettings;
 import com.jason.plugins.antibadwords.engine.config.DurationText;
 import com.jason.plugins.antibadwords.engine.config.Setting;
 import com.jason.plugins.antibadwords.engine.config.SettingType;
@@ -29,6 +30,14 @@ import java.util.TreeMap;
  */
 public final class Menu {
     public static final String PERMISSION = "antibadwords.gui";
+    /**
+     * Prefix of the per-category edit permissions: {@code antibadwords.gui.edit.<category>} where the category is the
+     * lower-case name with every run of other characters turned into "-" (see {@link #editNode}). Checked on every click
+     * that changes something. The platform must answer TRUE for a node nobody configured (Bukkit: the plugin registers
+     * them with default true; mods: the fallback is true), so holders of {@value #PERMISSION} may edit everything until
+     * an admin takes a node away.
+     */
+    public static final String EDIT_PREFIX = "antibadwords.gui.edit.";
 
     private Menu() {
     }
@@ -43,6 +52,149 @@ public final class Menu {
 
     public static MenuState open(Engine engine) {
         return new MenuState(new EngineConfigAccess(engine));
+    }
+
+    /** Opens at a page, see {@link #open(ConfigAccess, String)}. */
+    public static MenuState open(Engine engine, String page) {
+        return open(new EngineConfigAccess(engine), page);
+    }
+
+    /**
+     * Opens the menu at the page the player asked for with {@code /abw gui <page>}. {@code page} may be:
+     * <ul>
+     *   <li>empty: the main menu;</li>
+     *   <li>a number: that page of the main menu (1 = first);</li>
+     *   <li>a category name ({@code spam}, {@code "Spam filter"}; case and "-" or spaces do not matter; a unique start or
+     *       part of the name is enough), optionally followed by a page number;</li>
+     *   <li>a special page: {@code languages}, {@code words}, {@code ladder}, {@code mutes}, {@code profiles},
+     *       {@code rules} (world rules), {@code search <text>};</li>
+     *   <li>a setting key ({@code filters.protection-level}): the page of its category that shows it.</li>
+     * </ul>
+     * An unknown page gives the main menu (use {@link #opensPage} to tell the player).
+     */
+    public static MenuState open(ConfigAccess access, String page) {
+        MenuState state = new MenuState(access);
+        goTo(state, page);
+        return state;
+    }
+
+    /** Whether {@link #open(ConfigAccess, String)} understands the page (an empty page counts as understood). */
+    public static boolean opensPage(ConfigAccess access, String page) {
+        return goTo(new MenuState(access), page);
+    }
+
+    private static String normalise(String text) {
+        return text.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]+", "");
+    }
+
+    /** @return false when a non-empty page was not understood (the state is then the main menu) */
+    private static boolean goTo(MenuState state, String page) {
+        String text = page == null ? "" : page.trim();
+        if (text.isEmpty()) {
+            return true;
+        }
+        String[] words = text.split("\\s+");
+        int number = 1;
+        int end = words.length;
+        if (words[end - 1].matches("\\d{1,6}")) {
+            number = Math.max(1, Integer.parseInt(words[end - 1]));
+            end--;
+        }
+        if (end == 0) {
+            state.setPage(number - 1);
+            return true;
+        }
+        String first = words[0].toLowerCase(java.util.Locale.ROOT);
+        boolean engine = state.access().engine() != null;
+        if (first.equals("search") && end > 1) {
+            String query = String.join(" ", java.util.Arrays.copyOfRange(words, 1, end));
+            if (!SpecialPages.find(state, query).isEmpty()) {
+                state.push(new MenuState.View(MenuState.Kind.SEARCH, query, number - 1));
+                return true;
+            }
+            return false;
+        }
+        String joined = normalise(String.join(" ", java.util.Arrays.copyOfRange(words, 0, end)));
+        if (engine) {
+            MenuState.Kind special = switch (joined) {
+                case "languages", "language", "lang" -> MenuState.Kind.LANGUAGES;
+                case "words", "wordbrowser", "sources" -> MenuState.Kind.SOURCES;
+                case "ladder", "punishmentladder" -> MenuState.Kind.LADDER;
+                case "mutes", "muted" -> MenuState.Kind.MUTES;
+                case "profiles", "worldprofiles" -> MenuState.Kind.PROFILES;
+                case "rules", "worldrules" -> MenuState.Kind.RULES;
+                default -> null;
+            };
+            if (special != null) {
+                state.push(new MenuState.View(special, "", number - 1));
+                return true;
+            }
+        }
+        // a setting key
+        Setting<?> bySetting = state.access().registry().get(String.join(" ", java.util.Arrays.copyOfRange(words, 0, end)));
+        if (bySetting != null && !settingsOf(state, bySetting.category()).isEmpty()) {
+            int at = settingsOf(state, bySetting.category()).indexOf(bySetting);
+            state.push(new MenuState.View(MenuState.Kind.CATEGORY, bySetting.category(), Math.max(0, at) / Page.CONTENT_SLOTS));
+            return true;
+        }
+        List<String> categories = new ArrayList<>();
+        for (String category : state.access().registry().categories()) {
+            if (!settingsOf(state, category).isEmpty()) {
+                categories.add(category);
+            }
+        }
+        String match = unique(categories, joined);
+        if (match == null) {
+            return false;
+        }
+        state.push(new MenuState.View(MenuState.Kind.CATEGORY, match, number - 1));
+        return true;
+    }
+
+    /** The one name that equals, else starts with, else contains the wanted text (ignoring case and punctuation). */
+    private static String unique(List<String> names, String wanted) {
+        for (java.util.function.BiPredicate<String, String> test : List.<java.util.function.BiPredicate<String, String>>of(
+            String::equals, String::startsWith, String::contains)) {
+            List<String> found = names.stream().filter(n -> test.test(normalise(n), wanted)).toList();
+            if (found.size() == 1) {
+                return found.get(0);
+            }
+            if (found.size() > 1) {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // Edit rights
+    // ------------------------------------------------------------------------------------------
+
+    /** The permission needed to change settings of a category, for example {@code antibadwords.gui.edit.spam-filter}. */
+    public static String editNode(String category) {
+        String slug = category.toLowerCase(java.util.Locale.ROOT).replaceAll("[^a-z0-9]+", "-").replaceAll("^-+|-+$", "");
+        return EDIT_PREFIX + (slug.isEmpty() ? "other" : slug);
+    }
+
+    /** Whether the viewer of the call being handled may change settings of the category (fails closed without a viewer). */
+    static boolean mayEdit(MenuState state, String category) {
+        CommandSender viewer = state.viewer();
+        return viewer != null && viewer.has(editNode(category));
+    }
+
+    /** {@code null} when the viewer may edit the category, else the action that tells them they may not. */
+    static MenuAction guard(MenuState state, String category) {
+        return mayEdit(state, category) ? null
+            : MenuAction.error("You may not change settings in \"" + category + "\" (permission " + editNode(category) + ").");
+    }
+
+    /** All nodes the platform should know (default true): one per category that has anything the menu can change. */
+    public static List<String> editNodes(ConfigAccess access) {
+        List<String> out = new ArrayList<>();
+        for (String category : access.registry().categories()) {
+            out.add(editNode(category));
+        }
+        return out;
     }
 
     public static String title(MenuState state) {
@@ -105,12 +257,20 @@ public final class Menu {
             return SpecialPages.submitSearch(state, text);
         }
         if (request.purpose() == TextRequest.Purpose.ADD_CUSTOM_WORD) {
-            return SpecialPages.submitCustomWord(state, text);
+            MenuAction denied = guard(state, CoreSettings.ENABLED_LANGUAGES.category());
+            return denied != null ? denied : SpecialPages.submitCustomWord(state, text);
+        }
+        if (request.purpose().ordinal() >= TextRequest.Purpose.ADD_STEP.ordinal()) {
+            return EditorPages.submit(state, request, text);
         }
         Setting<?> setting = state.access().registry().get(request.key());
         if (setting == null) {
             state.setPending(null);
             return MenuAction.error("That setting no longer exists.");
+        }
+        MenuAction notAllowed = guard(state, setting.category());
+        if (notAllowed != null) {
+            return notAllowed;
         }
         String value = text == null ? "" : text;
         if (request.purpose() == TextRequest.Purpose.ADD_ITEM) {
@@ -161,6 +321,8 @@ public final class Menu {
             case ADD_CUSTOM_WORD:
                 return com.jason.plugins.antibadwords.WordMatcher.isValidEntry(value) ? null
                     : "That is not a valid word (use at least 2 letters or digits).";
+            case ADD_STEP, SET_STEP_TEXT, ADD_ACTION, EDIT_ACTION, ADD_PROFILE, ADD_OVERRIDE, SET_OVERRIDE, ADD_RULE:
+                return EditorPages.validate(state, request, text);
             default:
                 Setting<?> setting = state.access().registry().get(request.key());
                 if (setting == null) {
@@ -206,10 +368,13 @@ public final class Menu {
             case LANGUAGES -> SpecialPages.languages(state, view);
             case SOURCES -> SpecialPages.sources(state, view);
             case WORDS -> SpecialPages.words(state, view);
-            case LADDER -> SpecialPages.ladder(state, view);
+            case LADDER -> EditorPages.ladder(state, view);
             case MUTES -> SpecialPages.mutes(state, view);
-            case PROFILES -> SpecialPages.profiles(state, view);
+            case PROFILES -> EditorPages.profiles(state, view);
             case SEARCH -> SpecialPages.search(state, view);
+            case STEP -> EditorPages.step(state, view);
+            case PROFILE -> EditorPages.profile(state, view);
+            case RULES -> EditorPages.rules(state, view);
         };
     }
 
@@ -269,6 +434,10 @@ public final class Menu {
             int index = i;
             String item = items.get(i);
             entries.add(new Entry(Icons.LIST_ITEM, shorten(item, 60), List.of("Click to remove this item"), false, (s, t) -> {
+                MenuAction denied = guard(s, setting.category());
+                if (denied != null) {
+                    return denied;
+                }
                 List<String> now = new ArrayList<>(listValue(s, setting));
                 if (index >= now.size() || !now.get(index).equals(item)) {
                     return MenuAction.refresh();
@@ -434,7 +603,22 @@ public final class Menu {
             default -> throw new IllegalStateException("unknown type " + setting.type());
         }
         lore.add("Middle click or drop key: reset to default");
-        return new Entry(icon, setting.title(), lore, staged, handler);
+        if (state.viewer() != null && !mayEdit(state, setting.category())) {
+            lore.add("You may not change this (permission " + editNode(setting.category()) + ")");
+        }
+        Entry.Handler inner = handler;
+        boolean opensList = setting.type() == SettingType.STRING_LIST;
+        Entry.Handler guarded = (s, t) -> {
+            if (opensList && (t.isLeft() || t.isRight())) {
+                return inner.click(s, t); // looking at a list is allowed; every change inside it is checked
+            }
+            if (t == ClickType.OTHER) {
+                return MenuAction.none();
+            }
+            MenuAction denied = guard(s, setting.category());
+            return denied != null ? denied : inner.click(s, t);
+        };
+        return new Entry(icon, setting.title(), lore, staged, guarded);
     }
 
     private static MenuAction changed(boolean changed) {
@@ -446,6 +630,10 @@ public final class Menu {
     }
 
     private static MenuAction reset(MenuState state, Setting<?> setting) {
+        MenuAction denied = guard(state, setting.category());
+        if (denied != null) {
+            return denied;
+        }
         return changed(state.stage(setting, setting.defaultValue()));
     }
 
@@ -457,6 +645,10 @@ public final class Menu {
     }
 
     private static MenuAction askText(MenuState state, Setting<?> setting, TextRequest.Purpose purpose) {
+        MenuAction denied = guard(state, setting.category());
+        if (denied != null) {
+            return denied;
+        }
         boolean secret = setting.type() == SettingType.SECRET;
         String prompt = purpose == TextRequest.Purpose.ADD_ITEM ? "Type the new item for " + setting.title() + "."
             : "Type the new value for " + setting.title() + (secret ? " (it will not be shown)." : ".");
@@ -466,10 +658,28 @@ public final class Menu {
     }
 
     static MenuAction save(MenuState state) {
-        if (state.staged().isEmpty()) {
+        if (!state.hasUnsavedChanges()) {
             return MenuAction.close(null);
         }
         Map<Setting<?>, Object> changes = new LinkedHashMap<>(state.staged());
+        Map<com.jason.plugins.antibadwords.engine.config.Section, Map<String, Object>> sections = state.stagedSections();
+        // last line of defence: the viewer may only save what they may edit (rights can change while the menu is open)
+        for (Setting<?> setting : changes.keySet()) {
+            MenuAction denied = guard(state, setting.category());
+            if (denied != null) {
+                return denied;
+            }
+        }
+        for (com.jason.plugins.antibadwords.engine.config.Section section : sections.keySet()) {
+            MenuAction denied = guard(state, section.category());
+            if (denied != null) {
+                return denied;
+            }
+        }
+        String sectionProblem = EditorPages.problem(state);
+        if (sectionProblem != null) {
+            return MenuAction.error("Not saved: " + sectionProblem + " (your changes are kept)");
+        }
         for (Map.Entry<Setting<?>, Object> e : changes.entrySet()) {
             Setting<?> setting = e.getKey();
             try {
@@ -479,12 +689,16 @@ public final class Menu {
             }
         }
         try {
-            state.access().save(changes);
+            if (sections.isEmpty()) {
+                state.access().save(changes);
+            } else {
+                state.access().save(changes, sections);
+            }
         } catch (IOException | RuntimeException ex) {
             return MenuAction.error("Not saved: " + (ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage())
                 + " (your changes are kept)");
         }
-        int n = changes.size();
+        int n = changes.size() + sections.size();
         state.discard();
         return MenuAction.saved("Saved " + n + " setting" + (n == 1 ? "" : "s") + " and reloaded.");
     }
@@ -544,7 +758,7 @@ public final class Menu {
         return lines;
     }
 
-    private static String cycle(Setting<?> setting, String current, int dir) {
+    static String cycle(Setting<?> setting, String current, int dir) {
         List<String> options = setting.allowedValues();
         int at = -1;
         for (int i = 0; i < options.size(); i++) {

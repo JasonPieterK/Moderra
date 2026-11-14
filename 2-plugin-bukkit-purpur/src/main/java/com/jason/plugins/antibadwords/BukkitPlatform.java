@@ -137,6 +137,11 @@ public final class BukkitPlatform implements Platform {
     }
 
     @Override
+    public boolean hasPlugin(String name) {
+        return Bukkit.getPluginManager().isPluginEnabled(name);
+    }
+
+    @Override
     public void runSync(Runnable task) {
         if (Bukkit.isPrimaryThread()) {
             task.run();

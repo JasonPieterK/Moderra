@@ -174,6 +174,36 @@ public final class PersistentStrikeService implements StrikeService {
         return out;
     }
 
+    /**
+     * Sets a strikes file aside that must not be read any more because strikes are not kept right now (clear-on-quit is
+     * on, or saving is off): otherwise a later switch of the setting would silently bring back strikes from long ago.
+     * The file is renamed to {@code strikes.json.discarded} (a previous one is replaced), so nothing is lost for good.
+     *
+     * @param reason what to tell the admin ("clear-violations-on-quit is true")
+     * @return true when there was a file and it was moved
+     */
+    public boolean discardFile(String reason) {
+        Path path = file.file();
+        if (!java.nio.file.Files.isRegularFile(path)) {
+            return false;
+        }
+        Path aside = path.resolveSibling(path.getFileName() + ".discarded");
+        try {
+            try {
+                java.nio.file.Files.move(path, aside, java.nio.file.StandardCopyOption.REPLACE_EXISTING,
+                    java.nio.file.StandardCopyOption.ATOMIC_MOVE);
+            } catch (java.io.IOException ex) {
+                java.nio.file.Files.move(path, aside, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            }
+            log.info("Ignoring the saved strikes in " + path.getFileName() + " because " + reason
+                + ". The file was renamed to " + aside.getFileName() + " so old strikes do not come back later.");
+            return true;
+        } catch (java.io.IOException | RuntimeException ex) {
+            log.warn("Could not set " + path + " aside (" + ex + "); it is ignored while " + reason + ".");
+            return false;
+        }
+    }
+
     /** Writes the file now when something changed (server stop). */
     public boolean flush() {
         return file.flush();

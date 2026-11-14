@@ -1,0 +1,1 @@
+package org.bukkit.event.inventory; public class InventoryDragEvent { public org.bukkit.inventory.InventoryView getView(){return null;} public java.util.Set<Integer> getRawSlots(){return null;} public org.bukkit.entity.HumanEntity getWhoClicked(){return null;} public void setCancelled(boolean c){} }

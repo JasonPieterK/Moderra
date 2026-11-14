@@ -76,37 +76,33 @@ public final class GuiManager {
     // Opening
     // ------------------------------------------------------------------------------------------
 
-    /** Opens the main menu for the player; {@code page} (1-based) jumps ahead on the main menu. */
+    /** Opens the main menu for the player; {@code page} (1-based) is that page of the main menu. */
     public void open(Player player, int page) {
+        open(player, page <= 1 ? "" : String.valueOf(page));
+    }
+
+    /**
+     * Opens the menu at {@code page}: what the player typed after {@code /abw gui} (a category name, ladder, profiles,
+     * rules, languages, words, mutes, a setting key or a number; see {@link Menu#open(Engine, String)}). The engine does
+     * the work; an unknown page opens the main menu with a hint.
+     */
+    public void open(Player player, String page) {
         if (!player.hasPermission(Menu.PERMISSION)) {
-            player.sendMessage("§cNo permission.");
+            player.sendMessage("\u00a7cNo permission.");
             return;
         }
         reloadIcons();
         if (sessions.remove(player.getUniqueId()) != null) {
             engine().prompts().cancel(player.getUniqueId());
         }
-        Session session = new Session(Menu.open(engine()), player.getUniqueId());
+        String wanted = page == null ? "" : page.trim();
+        if (!wanted.isEmpty() && !Menu.opensPage(new com.jason.plugins.antibadwords.engine.gui.EngineConfigAccess(engine()), wanted)) {
+            player.sendMessage("\u00a7eUnknown menu page \"" + wanted + "\"; opening the main menu. Pages: a category name, languages, words, "
+                + "ladder, mutes, profiles, rules, a setting key or a number.");
+        }
+        Session session = new Session(Menu.open(engine(), wanted), player.getUniqueId());
         sessions.put(player.getUniqueId(), session);
-        CommandSender viewer = viewer(player);
-        // The model has no "go to page" call: click its own next-page button until the page is reached.
-        for (int i = 1; i < page && i < 100; i++) {
-            Integer next = slotWithIcon(session, Icons.NEXT_PAGE);
-            if (next == null) {
-                break;
-            }
-            Menu.click(session.state, next, ClickType.LEFT, viewer);
-        }
         show(player, session, true);
-    }
-
-    private static Integer slotWithIcon(Session session, String icon) {
-        for (Slot slot : Menu.render(session.state)) {
-            if (icon.equals(slot.icon())) {
-                return slot.index();
-            }
-        }
-        return null;
     }
 
     /** Draws the current page. A new inventory is opened when there is none yet or the title changed. */
@@ -258,20 +254,8 @@ public final class GuiManager {
     private void startPrompt(Player player, Session session, TextRequest request) {
         Setting<?> setting = engine().registry().get(request.key());
         boolean secret = request.masked() || (setting != null && setting.type() == SettingType.SECRET);
-        TextPrompt prompt = TextPrompt.of(request.prompt(), request.hint(), secret, text -> {
-            if (request.purpose() == TextRequest.Purpose.ADD_ITEM) {
-                return text.isBlank() ? "Nothing typed." : null;
-            }
-            if (setting == null) {
-                return "That setting no longer exists.";
-            }
-            try {
-                setting.require(secret ? text.trim() : text);
-                return null;
-            } catch (IllegalArgumentException ex) {
-                return secret ? "That value is not valid." : ex.getMessage();
-            }
-        }, text -> resume(session, menu -> Menu.submitText(session.state, text, viewer(menu))),
+        TextPrompt prompt = TextPrompt.of(request.prompt(), request.hint(), secret, text -> Menu.validateText(session.state, text),
+            text -> resume(session, menu -> Menu.submitText(session.state, text, viewer(menu))),
             () -> resume(session, menu -> Menu.cancelText(session.state, viewer(menu))));
         session.prompting = true;
         session.internal = true;

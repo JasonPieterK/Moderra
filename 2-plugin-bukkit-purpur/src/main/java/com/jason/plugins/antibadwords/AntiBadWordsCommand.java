@@ -29,7 +29,7 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
             boolean bare = args.length == 0;
             boolean gui = args.length >= 1 && args[0].equalsIgnoreCase("gui");
             if ((bare || gui) && player.hasPermission(Menu.PERMISSION)) {
-                plugin.getGui().open(player, gui && args.length >= 2 ? parsePage(args[1]) : 1);
+                plugin.getGui().open(player, gui && args.length >= 2 ? String.join(" ", java.util.Arrays.copyOfRange(args, 1, args.length)) : "");
                 return true;
             }
             if (gui) {
@@ -52,14 +52,6 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
             out.add("gui");
         }
         return out;
-    }
-
-    private static int parsePage(String text) {
-        try {
-            return Math.max(1, Integer.parseInt(text.trim()));
-        } catch (NumberFormatException ex) {
-            return 1;
-        }
     }
 
     public static com.jason.plugins.antibadwords.engine.command.CommandSender wrap(CommandSender sender) {

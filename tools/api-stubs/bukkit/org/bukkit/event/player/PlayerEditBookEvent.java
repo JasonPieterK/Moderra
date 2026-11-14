@@ -1,0 +1,1 @@
+package org.bukkit.event.player; public class PlayerEditBookEvent { public org.bukkit.entity.Player getPlayer(){return null;} public org.bukkit.inventory.meta.BookMeta getNewBookMeta(){return null;} public void setCancelled(boolean c){} }

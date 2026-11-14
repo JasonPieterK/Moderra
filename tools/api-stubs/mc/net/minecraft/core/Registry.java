@@ -1,0 +1,1 @@
+package net.minecraft.core; public interface Registry<T> extends Iterable<T> { net.minecraft.resources.Identifier getKey(T t); Holder<T> wrapAsHolder(T t); java.util.Set<net.minecraft.resources.Identifier> keySet(); }

@@ -1,0 +1,1 @@
+package net.minecraft.server; public abstract class MinecraftServer { public net.minecraft.server.players.PlayerList getPlayerList(){return null;} public net.minecraft.commands.Commands getCommands(){return null;} public net.minecraft.commands.CommandSourceStack createCommandSourceStack(){return null;} public void execute(Runnable r){} }

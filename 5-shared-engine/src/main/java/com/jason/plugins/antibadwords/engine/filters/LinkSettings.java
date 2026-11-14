@@ -71,9 +71,13 @@ public final class LinkSettings {
         .description("Sent to the player when the message was blocked for a link. Empty = no message. Colours: & codes."));
     public static final Setting<Integer> WEIGHT = s(Setting.integer(P + "strike-weight", 0).range(0, 100).title("Strikes for a link")
         .description("How many strikes a caught link adds. 0 = none."));
-    public static final Setting<List<String>> SOURCES = s(Setting.list(P + "sources", List.of("chat", "command", "sign", "book", "anvil"))
+    /** The list of earlier versions (no Discord). Migrated installs keep it. */
+    public static final List<String> LEGACY_SOURCES = List.of("chat", "command", "sign", "book", "anvil");
+    public static final Setting<List<String>> SOURCES = s(Setting.list(P + "sources", List.of("chat", "command", "sign", "book", "anvil", "discord-in"))
         .title("Where links are checked")
-        .description("Text sources: chat, command, sign, book, anvil, join, command-block (or \"*\" for all)."));
+        .description("Text sources: chat, command, sign, book, anvil, join, command-block, discord-in (messages typed in Discord and\n"
+            + "relayed by DiscordSRV; Bukkit only) or \"*\" for all. New installs include discord-in; installs upgraded from\n"
+            + "version 1 keep their old list."));
 
     private LinkSettings() {
     }

@@ -79,6 +79,11 @@ public interface Platform {
      */
     String applyAction(UUID player, PunishmentAction action);
 
+    /** Whether another plugin with this name is installed and enabled (Bukkit only; mods have none). Default: no. */
+    default boolean hasPlugin(String name) {
+        return false;
+    }
+
     /** Whether {@link #openSignPrompt} works here (a sign editor can be opened for a text input). Default: no, the chat is used. */
     default boolean supportsSignPrompt() {
         return false;
@@ -105,5 +110,14 @@ public interface Platform {
      */
     default boolean openMenu(UUID player) {
         return false;
+    }
+
+    /**
+     * Opens the menu at a page: {@code page} is what the player typed after {@code /abw gui} (a category name, a special
+     * page such as {@code ladder} or {@code profiles}, a setting key, or a page number; see
+     * {@code engine.gui.Menu#open(Engine, String)}). The platform builds the state with that method. Default: ignore the page.
+     */
+    default boolean openMenu(UUID player, String page) {
+        return openMenu(player);
     }
 }

@@ -71,7 +71,6 @@ final class ForgePermissions implements ModPermissions {
             case "antibadwords.mute" -> PermissionAPI.getPermission(player, MUTE);
             case "antibadwords.history" -> PermissionAPI.getPermission(player, HISTORY);
             case "antibadwords.discord" -> PermissionAPI.getPermission(player, DISCORD);
-            case "antibadwords.gui" -> PermissionAPI.getPermission(player, GUI);
             default -> {
                 PermissionNode<Boolean> profile = PROFILES.get(node);
                 // nodes Forge does not know (not registered yet) use the same defaults as on the other loaders

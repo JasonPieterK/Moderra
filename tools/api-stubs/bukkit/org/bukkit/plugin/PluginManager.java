@@ -1,0 +1,1 @@
+package org.bukkit.plugin; import org.bukkit.permissions.Permission; public interface PluginManager { void registerEvents(org.bukkit.event.Listener l,Plugin p); Permission getPermission(String n); void addPermission(Permission p); Plugin getPlugin(String n); boolean isPluginEnabled(String n); }

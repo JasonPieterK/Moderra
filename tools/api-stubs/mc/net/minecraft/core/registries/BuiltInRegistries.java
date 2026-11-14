@@ -1,0 +1,1 @@
+package net.minecraft.core.registries; import net.minecraft.core.Registry; public class BuiltInRegistries { public static final Registry<net.minecraft.world.entity.ai.attributes.Attribute> ATTRIBUTE=null; public static final Registry<Object> SOUND_EVENT=null; }

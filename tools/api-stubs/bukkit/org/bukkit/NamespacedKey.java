@@ -1,0 +1,1 @@
+package org.bukkit; public final class NamespacedKey { public NamespacedKey(org.bukkit.plugin.Plugin p,String k){} public static NamespacedKey minecraft(String k){return null;} public String getNamespace(){return null;} public String getKey(){return null;} }

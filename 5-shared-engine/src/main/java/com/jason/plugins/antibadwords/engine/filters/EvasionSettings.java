@@ -78,9 +78,12 @@ public final class EvasionSettings {
         .file(FILE).category(CATEGORY).title("Alphabets watched for invisible characters").overridable()
         .description("An invisible character only counts as a trick between two letters of these writing systems. Languages such as\n"
             + "Persian, Arabic and Hindi (and emoji) need invisible joiners for correct spelling, so they are not in the list.").build();
-    public static final Setting<List<String>> DETECT_SOURCES = Setting.list(D + "sources", List.of("chat", "command", "sign", "book", "anvil"))
+    /** The list of earlier versions (no Discord). Migrated installs keep it. */
+    public static final List<String> LEGACY_DETECT_SOURCES = List.of("chat", "command", "sign", "book", "anvil");
+    public static final Setting<List<String>> DETECT_SOURCES = Setting.list(D + "sources", List.of("chat", "command", "sign", "book", "anvil", "discord-in"))
         .file(FILE).category(CATEGORY).title("Where bypass tricks are noticed").overridable()
-        .description("Text sources this applies to: chat, command, sign, book, anvil, join, command-block (or \"*\" for all).").build();
+        .description("Text sources this applies to: chat, command, sign, book, anvil, join, command-block, discord-in (Discord messages relayed\n"
+            + "by DiscordSRV; Bukkit only) or \"*\" for all. New installs include discord-in; upgraded installs keep their old list.").build();
     public static final Setting<Integer> DETECT_WEIGHT = Setting.integer(D + "strike-weight", 0).range(0, 100)
         .file(FILE).category(CATEGORY).title("Strikes for a bypass trick").overridable()
         .description("How many strikes a noticed trick adds. 0 = none (the player is never punished for it).").build();

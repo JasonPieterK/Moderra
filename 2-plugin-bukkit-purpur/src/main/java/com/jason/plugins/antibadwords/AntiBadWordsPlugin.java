@@ -96,6 +96,15 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
      */
     private void registerProfilePermissions() {
         PluginManager manager = getServer().getPluginManager();
+        // menu edit rights: antibadwords.gui.edit.<category>, default TRUE (holders of antibadwords.gui may edit everything
+        // until an admin negates a node). Without this Bukkit would give an unknown node to operators only.
+        for (String node : com.jason.plugins.antibadwords.engine.gui.Menu.editNodes(
+            new com.jason.plugins.antibadwords.engine.gui.EngineConfigAccess(engine))) {
+            if (manager.getPermission(node) == null) {
+                manager.addPermission(new Permission(node, "Change the settings of this category in the /abw menu (needs antibadwords.gui too).",
+                    PermissionDefault.TRUE));
+            }
+        }
         for (String profile : engine.profileNames()) {
             String node = WorldProfiles.PERMISSION_PREFIX + profile;
             if (manager.getPermission(node) == null) {

@@ -42,7 +42,11 @@ public final class LegacyMigration {
      * default written into its new file ("behaves the same after the update").
      */
     private static final Map<String, Object> LEGACY_DEFAULTS = Map.of(
-        CoreSettings.SCANNED_COMMANDS.key(), CoreSettings.LEGACY_SCANNED_COMMANDS);
+        CoreSettings.SCANNED_COMMANDS.key(), CoreSettings.LEGACY_SCANNED_COMMANDS,
+        com.jason.plugins.antibadwords.engine.filters.LinkSettings.SOURCES.key(),
+        com.jason.plugins.antibadwords.engine.filters.LinkSettings.LEGACY_SOURCES,
+        com.jason.plugins.antibadwords.engine.filters.EvasionSettings.DETECT_SOURCES.key(),
+        com.jason.plugins.antibadwords.engine.filters.EvasionSettings.LEGACY_DETECT_SOURCES);
 
     private static final DateTimeFormatter STAMP = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
 

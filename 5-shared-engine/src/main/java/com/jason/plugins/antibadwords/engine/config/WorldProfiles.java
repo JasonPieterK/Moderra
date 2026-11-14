@@ -48,7 +48,7 @@ public final class WorldProfiles {
             + "      punishment.enabled: false\n"
             + "    german-lobby:\n"
             + "      filters.enabled-word-lists: [de, en]\n"
-            + "This part cannot be edited in the in-game menu; edit the file.",
+            + "It can also be edited in the in-game menu (/abw gui profiles).",
         "default: {}\n", false);
 
     public static final Section WORLDS = new Section("worlds", FILE, CATEGORY, "World rules",
@@ -59,7 +59,7 @@ public final class WorldProfiles {
             + "  worlds:\n"
             + "    \"creative_*\": relaxed\n"
             + "    \"minecraft:the_nether\": relaxed\n"
-            + "This part cannot be edited in the in-game menu; edit the file.",
+            + "It can also be edited in the in-game menu (/abw gui rules).",
         "{}", false);
 
     public static void register(SettingsRegistry r) {
@@ -155,7 +155,7 @@ public final class WorldProfiles {
     }
 
     /** Turns nested maps into dotted keys, but stops at registered settings and sections (their value is kept whole). */
-    private static void flatten(String prefix, Map<String, Object> map, SettingsRegistry registry, Map<String, Object> out) {
+    public static void flatten(String prefix, Map<String, Object> map, SettingsRegistry registry, Map<String, Object> out) {
         for (Map.Entry<String, Object> e : map.entrySet()) {
             String key = prefix.isEmpty() ? e.getKey() : prefix + "." + e.getKey();
             if (registry.entry(key) == null && e.getValue() instanceof Map<?, ?> child) {

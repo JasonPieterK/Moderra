@@ -1,0 +1,1 @@
+package org.bukkit.event.block; public class SignChangeEvent { public org.bukkit.entity.Player getPlayer(){return null;} public String[] getLines(){return null;} public org.bukkit.block.sign.Side getSide(){return null;} public void setCancelled(boolean c){} }

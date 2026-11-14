@@ -1,0 +1,1 @@
+package org.bukkit; public enum Material { AIR, PAPER, STONE; public static Material matchMaterial(String n){return null;} public boolean isItem(){return true;} public boolean isAir(){return false;} }

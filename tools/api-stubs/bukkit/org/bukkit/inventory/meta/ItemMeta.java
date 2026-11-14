@@ -1,0 +1,1 @@
+package org.bukkit.inventory.meta; public interface ItemMeta { void setDisplayName(String s); void setLore(java.util.List<String> l); boolean addEnchant(org.bukkit.enchantments.Enchantment e,int l,boolean i); void addItemFlags(org.bukkit.inventory.ItemFlag... f); }

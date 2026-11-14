@@ -416,6 +416,11 @@ public final class DiscordLink {
         }
 
         @Override
+        public boolean suppressAudit() {
+            return true; // DiscordLink publishes the one admin-command event itself (with the Discord user and channel)
+        }
+
+        @Override
         public void send(String message) {
             if (out.length() > 0) {
                 out.append('\n');
