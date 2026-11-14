@@ -182,3 +182,10 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 - [ ] Run: open `/abw`, try every click type, shift-click from the inventory, number keys, drag, drop; confirm nothing can be taken or inserted; Esc with unsaved changes; disconnect while the menu is open; chat prompt (the answer must not appear in chat, a swear word as answer gives no strike) and `cancel`.
 - [ ] Sign-editor prompt (B2 sign path) on mods: `supportsSignPrompt` is false on mods; needs the open-sign-editor and block update packets, not designed here.
 - [ ] `plugin.yml` permission `antibadwords.gui` (default op) is a Bukkit-side item, not done here.
+## Mini tasks 11/12 (DiscordSRV hook)
+- [ ] `2-plugin-bukkit-purpur` `DiscordSrvHook` / `DiscordSrvListener`: compiled only against the hand-written Bukkit stub and two name-only DiscordSRV shim
+      classes. Test on a real server WITH DiscordSRV 1.x and a bot: alerts reach the channel, a blocked word typed in Discord is not shown in game, `!abw` commands
+      (all off by default), no stack traces when DiscordSRV is missing.
+- [ ] `2-plugin-bukkit-purpur/pom.xml`: new build-helper execution `add-discordsrv-shim` and `maven-jar-plugin` excludes `github/**`. Run `mvn package` and check
+      with `unzip -l` that no `github/scarsz` class is inside the jar and that the jar loads without DiscordSRV.
+- [ ] Reflection names that could differ per DiscordSRV version are listed in the `DiscordSrvHook` class comment.

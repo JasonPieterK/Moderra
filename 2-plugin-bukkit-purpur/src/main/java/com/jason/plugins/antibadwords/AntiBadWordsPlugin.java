@@ -24,6 +24,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     private Engine engine;
     private PunishmentExecutor punishmentExecutor;
     private GuiManager gui;
+    private DiscordSrvHook discordSrv;
 
     @Override
     public void onEnable() {
@@ -45,11 +46,16 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
         // Players who were already online during a /reload: repair leftovers from earlier sessions.
         getServer().getOnlinePlayers().forEach(punishmentExecutor::restoreLeftovers);
+        startDiscordSrv();
         logStartupBanner();
     }
 
     @Override
     public void onDisable() {
+        if (discordSrv != null) {
+            discordSrv.stop();
+            discordSrv = null;
+        }
         if (gui != null) {
             gui.closeAll();
         }
@@ -59,6 +65,15 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         }
         if (engine != null) {
             engine.shutdown();
+        }
+    }
+
+    /** DiscordSRV is an optional soft dependency: any problem with it (missing, other version) must never stop this plugin. */
+    private void startDiscordSrv() {
+        try {
+            discordSrv = DiscordSrvHook.start(this, engine);
+        } catch (Throwable ex) { // NoClassDefFoundError and friends included on purpose
+            getLogger().warning("The DiscordSRV hook could not start (" + ex.getClass().getSimpleName() + "); webhooks still work.");
         }
     }
 

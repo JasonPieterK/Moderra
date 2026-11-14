@@ -116,6 +116,14 @@
                         <goals><goal>add-source</goal></goals>
                         <configuration><sources><source>../5-shared-engine/src/main/java</source></sources></configuration>
                     </execution>
+                    <!-- Two empty-ish DiscordSRV class names (Subscribe, the pre-process event) so DiscordSrvListener compiles without DiscordSRV's
+                         repository. They are NOT packaged (see maven-jar-plugin below): at runtime DiscordSRV's own classes are used. -->
+                    <execution>
+                        <id>add-discordsrv-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/discordsrv-shim/java</source></sources></configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -127,6 +135,16 @@
                     <compilerArgs>
                         <arg>-Xlint:all,-processing,-deprecation</arg>
                     </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>github/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

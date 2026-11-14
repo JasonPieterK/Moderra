@@ -4,6 +4,7 @@ main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
 api-version: '${mc.api.version}'
 authors:
   - Jason
+softdepend: [DiscordSRV]
 description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:
   antibadwords:
@@ -13,9 +14,6 @@ commands:
 permissions:
   antibadwords.admin:
     description: Access to the AntiBadWords admin commands (reload, addword, removeword, check, ...).
-    default: op
-  antibadwords.gui:
-    description: Open the settings menu (/abw or /abw gui). Changing settings there is as powerful as editing the config files.
     default: op
   antibadwords.notify:
     description: Receive a staff notification whenever a bad word is blocked.
@@ -45,5 +43,5 @@ permissions:
     description: Use /abw discord (test and status of the Discord alerts).
     default: op
   antibadwords.gui:
-    description: Open the settings menu (/abw gui).
+    description: Open the settings menu (/abw or /abw gui). Changing settings there is as powerful as editing the config files.
     default: op
