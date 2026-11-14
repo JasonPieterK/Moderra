@@ -7,7 +7,8 @@ import net.minecraft.server.level.ServerPlayer;
 /**
  * Asks the Fabric Permissions API (lucko's fabric-permissions-api, used by LuckPerms and others) when it is
  * installed, so {@code antibadwords.*} nodes can be granted like on a Bukkit server. Without it the plugin's
- * defaults apply (admin/notify: operators, bypass: nobody). Accessed by reflection so it is an optional dependency.
+ * defaults apply (admin, notify, mute, history, discord, gui: operators; every bypass node: nobody). New nodes need no code
+ * here: every node is passed through to the API with the fallback from {@link ModPermissions#fallback}. Accessed by reflection so it is an optional dependency.
  */
 final class FabricPermissions implements ModPermissions {
     private static final Method CHECK = find();

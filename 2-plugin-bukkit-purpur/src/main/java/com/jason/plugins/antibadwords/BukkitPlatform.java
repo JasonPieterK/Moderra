@@ -94,10 +94,13 @@ public final class BukkitPlatform implements Platform {
 
     @Override
     public void kick(UUID playerId, String reason) {
-        Player player = Bukkit.getPlayer(playerId);
-        if (player != null) {
-            player.kickPlayer(reason);
-        }
+        // ladder kicks can be requested from an async chat thread; Bukkit wants kicks on the main thread
+        runSync(() -> {
+            Player player = Bukkit.getPlayer(playerId);
+            if (player != null) {
+                player.kickPlayer(reason);
+            }
+        });
     }
 
     @Override

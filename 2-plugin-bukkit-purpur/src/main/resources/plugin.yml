@@ -29,3 +29,18 @@ permissions:
   antibadwords.bypass.evasion:
     description: Exempt from the bypass-trick detection (filters/evasion.yml, part "detect").
     default: false
+  antibadwords.bypass.mute:
+    description: Exempt from the built-in mute (moderation/mute.yml); also lets the player talk while muted by the ladder.
+    default: false
+  antibadwords.mute:
+    description: Use /abw mute, /abw unmute and /abw mutes.
+    default: op
+  antibadwords.history:
+    description: Read the violation history (/abw history). Deleting it also needs antibadwords.admin.
+    default: op
+  antibadwords.discord:
+    description: Use /abw discord (test and status of the Discord alerts).
+    default: op
+  antibadwords.gui:
+    description: Open the settings menu (/abw gui).
+    default: op

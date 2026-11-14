@@ -4,6 +4,9 @@
 // server console can give: it prints lines starting with "CONSOLE> " and the launcher script types them into the console.
 // With "filters" (instead of, or as "extras,filters") it tests the spam, link and bypass-trick filters. They are off by
 // default, so the server must have been started with the settings listed in README.md ("filters mode").
+// With "moderation" it tests strikes, the ladder, the mute and the history (see "moderation mode" in README.md for the
+// config the server needs). Run "moderation-again" afterwards (after a reconnect, or after a server restart) to prove that
+// strikes and the mute survived.
 // The player name can be changed with the environment variable BOT_NAME (for the join-name check).
 // Works for Minecraft versions that the "mineflayer" library knows (26.1 and 1.21.11 at the time of writing).
 const mineflayer = require('mineflayer');
@@ -205,8 +208,112 @@ async function runFilters() {
   }
 }
 
+// Strikes, ladder, mute, history. Needs the prepared config from README.md ("moderation mode"): a ladder with
+// at 2: warn, at 3: mute 20s "bot test", at 5: kick; clear-violations-on-quit false; violations decay off.
+// NOT RUN YET: written without a server to try it on, see handoffs/BUILD-VERIFICATION-TODO.md (session 4).
+async function runModeration() {
+  const said = (re) => seen(new RegExp('<' + NAME + '> ' + re.source, re.flags));
+  const muteNotes = () => lines.filter((l) => /You are muted|You have been muted/i.test(l)).length;
+  console_('op ' + NAME);
+  await sleep(2000);
+
+  // ---- strikes and the ladder ----
+  bot.chat('/abw resetviolations ' + NAME);
+  await sleep(1500);
+  bot.chat('/abw mute ' + NAME + ' 1s clear'); // make sure an old mute from an earlier run cannot disturb: ends after 1s
+  await sleep(2500);
+  bot.chat('/abw unmute ' + NAME);
+  await sleep(1000);
+  bot.chat('you are a shit head');
+  await sleep(2500);
+  bot.chat('/abw strikes ' + NAME);
+  await sleep(1500);
+  check('/abw strikes shows 1 strike and the next step', seen(new RegExp(NAME + ': 1 strike')) && seen(/Next step: .* at 2/));
+  bot.chat('what the fuck');
+  await sleep(2500);
+  check('ladder step at 2 strikes (warn) ran', seen(/WATCH YOUR WORDS|warn/i));
+  await sleep(2500);
+  bot.chat('damn shit again');
+  await sleep(3000);
+  check('ladder step at 3 strikes: the player is told about the mute', seen(/You have been muted for/i));
+  bot.chat('/abw mutes');
+  await sleep(1500);
+  check('/abw mutes lists the player', seen(new RegExp(NAME, 'i')) && seen(/mute/i));
+
+  // ---- mute enforcement ----
+  await sleep(2500);
+  let before = muteNotes();
+  bot.chat('hello, can anybody hear me');
+  await sleep(2000);
+  check('muted: clean chat is NOT delivered', !said(/hello, can anybody hear me/));
+  check('muted: the player is told how long the mute lasts', muteNotes() > before && seen(/Time left: /i));
+  before = muteNotes();
+  await sleep(1200);
+  bot.chat('/msg ' + NAME + ' private words');
+  await sleep(2000);
+  check('muted: /msg is blocked', !seen(/private words/) && muteNotes() > before);
+  const signBlock = bot.findBlock({ matching: (b) => b && /_sign$/.test(b.name), maxDistance: 6 });
+  if (signBlock) {
+    before = muteNotes();
+    try { bot.updateSign(signBlock, 'muted\nsign\ntext'); } catch (e) { /* ignore */ }
+    await sleep(2000);
+    check('muted: a clean sign is blocked', muteNotes() > before);
+  } else {
+    skipped('muted sign', 'no sign block near the bot (use "extras" setup)');
+  }
+  bot.chat('/abw history ' + NAME);
+  await sleep(2000);
+  check('/abw history lists violation and mute entries', seen(/History of /i) && seen(/mute/i));
+
+  // ---- the mute ends by itself (20s in the prepared ladder) ----
+  await sleep(21000);
+  bot.chat('I can talk again');
+  await sleep(2500);
+  check('the mute expired by itself and chat works again', said(/I can talk again/) && seen(/no longer muted|run out/i));
+
+  // ---- a manual mute and unmute ----
+  bot.chat('/abw mute ' + NAME + ' 5m testing the mute');
+  await sleep(2000);
+  check('/abw mute works (player is told)', seen(/You have been muted for 5m/i));
+  bot.chat('anyone there');
+  await sleep(2000);
+  check('manual mute blocks chat', !said(/anyone there/));
+  console.log('NOTE: now reconnect (or restart the server) and run: node bot.js <host> <port> <version> moderation-again');
+}
+
+// Second half: run after a reconnect or a server restart. The manual 5-minute mute from "moderation" must still be on.
+async function runModerationAgain() {
+  const said = (re) => seen(new RegExp('<' + NAME + '> ' + re.source, re.flags));
+  console_('op ' + NAME);
+  await sleep(2000);
+  check('the mute is announced on join', seen(/You are still muted/i));
+  bot.chat('am I still muted');
+  await sleep(2000);
+  check('after reconnect: still muted, chat not delivered', !said(/am I still muted/));
+  bot.chat('/abw strikes ' + NAME);
+  await sleep(1500);
+  check('after reconnect: the strikes are still there (clear-violations-on-quit: false)', seen(new RegExp(NAME + ': [1-9]\\d* strike')));
+  bot.chat('/abw unmute ' + NAME);
+  await sleep(2000);
+  check('/abw unmute works (player is told)', seen(/no longer muted/i));
+  bot.chat('free again');
+  await sleep(2000);
+  check('after unmute: chat is delivered', said(/free again/));
+  bot.chat('/abw history ' + NAME);
+  await sleep(2000);
+  check('the history still has the entries from before the reconnect', seen(/History of /i) && seen(/unmute/i));
+}
+
 bot.once('spawn', async () => {
   await sleep(4000);
+  if (modes.includes('moderation-again')) {
+    await runModerationAgain();
+    return finish();
+  }
+  if (modes.length === 1 && modes[0] === 'moderation') {
+    await runModeration();
+    return finish();
+  }
   bot.chat('hello everyone');
   await sleep(2000);
   check('clean chat is delivered', seen(new RegExp('<' + NAME + '> hello everyone')));
@@ -238,9 +345,13 @@ bot.once('spawn', async () => {
     await runFilters();
   }
 
+  return finish();
+});
+
+function finish() {
   const bad = results.filter(([, ok]) => !ok).length;
   console.log(bad === 0 ? 'LIVE PLAYER TEST PASSED' : `LIVE PLAYER TEST FAILED (${bad} checks)`);
   bot.quit();
   setTimeout(() => process.exit(bad === 0 ? 0 : 1), 500);
-});
-setTimeout(() => { console.log('TIMEOUT: never spawned'); process.exit(3); }, modes.includes('filters') ? 300000 : 120000);
+}
+setTimeout(() => { console.log('TIMEOUT: never spawned'); process.exit(3); }, modes.includes('filters') || modes.includes('moderation') ? 300000 : 120000);

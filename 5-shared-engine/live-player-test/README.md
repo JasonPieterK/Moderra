@@ -45,3 +45,24 @@ The new filters are **off** by default, so before the server starts put this int
 On Bukkit, Spigot, Paper and Purpur a "censor" action rewrites the chat line; on Fabric and Forge it blocks the line.
 The bot accepts both. With `BOT_NAME` the basic checks that look for the name "Tester" in broadcasts may fail; look only
 at the join-name line of that run.
+
+## moderation mode (strikes, ladder, mute, history) - written, **never run**
+
+```bash
+node bot.js localhost 25565 26.1 moderation          # part 1; needs operator rights (the console op line is printed)
+# reconnect, or stop and start the server, then:
+node bot.js localhost 25565 26.1 moderation-again    # part 2: still muted? strikes still there? history kept?
+```
+
+Part 1 checks `/abw strikes`, the ladder steps (warn, mute), the mute blocking chat, `/msg` and a sign, the notice with the
+time left, `/abw mutes`, `/abw history`, the mute ending by itself and a manual `/abw mute`. Part 2 checks the notice on
+join, that the mute and the strikes survive the reconnect or restart, `/abw unmute` and that the history is kept.
+Prepare the server before it starts (config folder as above):
+
+| File | Change |
+|------|--------|
+| `config.yml` | `punishment.clear-violations-on-quit: false` (otherwise strikes are not kept) |
+| `moderation/ladder.yml` | `ladder.steps`: `warn-step` at 2 with `warn`, `mute-step` at 3 with `mute 20s bot test`, `kick-step` at 50 with `kick` (so the bot is not kicked half-way); `strikes.decay.every: 0s` |
+| `moderation/mute.yml` | `mute.messages.blocked` and `.join` left at their defaults (the bot matches "You are muted" / "You are still muted") |
+
+Written without a server: texts and timings may need small adjustments. Checked with `node --check` only.

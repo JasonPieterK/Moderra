@@ -4,7 +4,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.server.level.ServerPlayer;
 
 /**
- * Permission nodes {@code antibadwords.admin} / {@code .notify} / {@code .bypass} / {@code .profile.<name>}, defaults
+ * Permission nodes {@code antibadwords.admin} / {@code .notify} / {@code .mute} / {@code .history} / {@code .discord} / {@code .gui} / {@code .bypass(.*)} / {@code .profile.<name>}, defaults
  * identical to the plugin (admin, notify and other nodes: operators; bypass and profile nodes: nobody). Each loader supplies an implementation
  * that asks the permission mod (LuckPerms etc.) and falls back to {@link #fallback}.
  */
