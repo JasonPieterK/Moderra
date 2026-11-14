@@ -267,6 +267,27 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `leet-digits` | text | `0=o 1=i 3=e 4=a 5=s 7=t 8=b 9=g` | no | Digits that stand for a letter. They are only read as letters inside a word that also has Latin letters. |
 | `look-alikes` | section (your own keys) | see the file | no | Letters that look like a plain Latin letter. Each line holds items of the form <letter>=<what it looks like>,<br>separated by spaces. The group names (cyrillic, greek ...) are only for you; add your own lines or groups.<br>Letters are read as the Latin letter only inside a word that also has Latin letters. One group is special:<br>the letters under "always" (small capitals) are read as the plain letter everywhere.<br>The default table was made from the Unicode confusables data (Unicode License v3, see NOTICE).<br>If this part is empty or cannot be read, the built-in table is used.<br>This part cannot be edited in the in-game menu; edit the file. |
 
+## `moderation/mute.yml`
+
+### Mute
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `mute.enabled` | true or false | `true` | no | Switches the built-in mute on. When off, /abw mute and the ladder action mute do nothing and nobody is held back.<br>Players who are already muted stay in data/mutes.json and are muted again when you switch this back on. |
+| `mute.default-duration` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 365d | `1h` | no | How long /abw mute <player> lasts when no time is given. (Use the word perm for a permanent mute.) |
+| `mute.block.chat` | true or false | `true` | no | A muted player's chat messages are stopped. |
+| `mute.block.commands` | list of texts | `msg`, `tell`, `w`, `whisper`, `r`, `reply`, `t`, `pm`, `m`, `say`, `me`, `teammsg`, `tm` | no | Commands a muted player may not use (without the slash, upper/lower case does not matter, a prefix such as minecraft: is ignored).<br>A * is a wildcard: "*" = every command, "msg*" = everything that starts with msg. [] = none. |
+| `mute.block.signs` | true or false | `false` | no | A muted player cannot write text on signs. |
+| `mute.block.books` | true or false | `false` | no | A muted player cannot sign or edit books. |
+| `mute.check-every` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `30s` | no | How often the server looks for mutes that have run out (to tell the player and publish the mute-expired event).<br>A muted player is never held back longer than the mute lasts, whatever this is set to. |
+| `mute.notify-on-join` | true or false | `true` | no | A player who is still muted gets the message mute.messages.join when they join. |
+| `mute.no-reason-text` | text | `no reason given` | no | Used for {reason} when a mute has no reason. |
+| `mute.messages.blocked` | text | `&cYou are muted. Time left: {remaining}. Reason: {reason}` | no | Sent when a muted player tries to chat or use a blocked command. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
+| `mute.messages.join` | text | `&cYou are still muted. Time left: {remaining}. Reason: {reason}` | no | Sent when a muted player joins. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
+| `mute.messages.muted` | text | `&cYou have been muted for {remaining}. Reason: {reason}` | no | Sent to the player (when online) at the moment they are muted. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
+| `mute.messages.unmuted` | text | `&aYou are no longer muted.` | no | Sent to the player (when online) when a staff member lifts the mute. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
+| `mute.messages.expired` | text | `&aYour mute has run out. You can chat again.` | no | Sent to the player (when online) when the mute runs out. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
+
 ## The extra filters in plain words
 
 A message goes through the checks in the order of `filters.check-order` (config.yml):
