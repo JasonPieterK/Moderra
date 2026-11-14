@@ -6,20 +6,22 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Kana and kanji plus romaji. Kana words are matched as substrings, so short entries can appear inside normal words; 2-character kana entries were chosen carefully. Left out: romaji 'shine' (English word) and 'baka' variants that are mild in anime talk are kept in tier 1 only. Also left out: ゴミ, ボケ, 変 (too common). 'baka' and 'aho' are mild. 'hentai' is tier 2 although it is also an English word."
+notes: "Kana and kanji plus romaji. Kana words are matched as substrings, so short entries can appear inside normal words; 2-character kana entries were chosen carefully. Left out: romaji 'shine' (English word) and 'baka' variants that are mild in anime talk are kept in tier 1 only. Also left out: ゴミ, ボケ, 変 (too common). 'baka' and 'aho' are mild. 'hentai' is tier 2 although it is also an English word. False-positive review 2026-11-14: hiragana ばか was removed because it sits inside ばかり (only, just) and ぐず inside ぐずぐず; くそ was removed because it sits inside ふくそう. Katakana バカ and 馬鹿 stay. Known risk: kana entries are also found across a comma ('さあ、ほら' contains あほ) because punctuation is dropped before matching."
 level-1: [
-  "ばか", "バカ", "馬鹿", "あほ", "アホ", "阿呆", "まぬけ", "マヌケ", "間抜け", "とんま", "おたんこなす", "のろま", "ろくでなし", "ばーか", "バーカ",
-  "へたくそ", "ヘタクソ", "下手くそ", "あんぽんたん", "とんちんかん", "愚図", "ぐず", "うすのろ", "baka", "aho", "manuke", "tonma", "noroma",
-  "rokudenashi", "heta", "hetakuso", "bakayarou", "bakamono", "aho ka", "baka da", "baka janai"
+  "バカ", "馬鹿", "あほ", "アホ", "阿呆", "まぬけ", "マヌケ", "間抜け", "とんま", "おたんこなす", "のろま", "ろくでなし", "ばーか", "バーカ",
+  "へたくそ", "ヘタクソ", "下手くそ", "あんぽんたん", "とんちんかん", "愚図", "うすのろ", "baka", "aho", "manuke", "tonma", "noroma",
+  "rokudenashi", "heta", "hetakuso", "bakayarou", "bakamono", "aho ka", "baka da", "baka janai",
+  "ばかめ", "ばかじゃない", "ばかじゃねえ", "ばかみたい", "ばかもの", "ばかだなあ"
 ]
 level-2: [
-  "くそ", "クソ", "くたばれ", "死ね", "しね", "シネ", "消えろ", "うざい", "ウザい", "ウザイ", "きもい", "キモい", "キモイ", "気持ち悪い", "馬鹿野郎",
+  "クソ", "くたばれ", "死ね", "しね", "シネ", "消えろ", "うざい", "ウザい", "ウザイ", "きもい", "キモい", "キモイ", "気持ち悪い", "馬鹿野郎",
   "ばかやろう", "バカ野郎", "てめえ", "テメェ", "てめー", "きさま", "貴様", "ちくしょう", "畜生", "チクショー", "ブス", "ぶす", "野郎", "うんこ", "ウンコ",
   "死ねよ", "死んで", "しねよ", "殺すぞ", "ころすぞ", "糞野郎", "くそやろう", "クソ野郎", "くそったれ", "クソッタレ", "ふざけるな", "黙れ", "だまれ", "うるせえ",
   "うるせー", "頭おかしい", "池沼", "低脳", "無能", "役立たず", "ばばあ", "じじい", "カマ野郎", "kuso", "kutabare", "kisama", "temee",
   "teme", "chikusho", "busu", "kimoi", "uzai", "unko", "bakayaro", "kusoyaro", "kusoyarou", "kuso yaro",
   "kusottare", "urusee", "damare", "damarero", "urusai yo", "korosu zo", "korosuzo", "shinero", "shine yo",
-  "kimoi yo", "kimoi na", "uzai yo", "uzee", "kuso ga"
+  "kimoi yo", "kimoi na", "uzai yo", "uzee", "kuso ga",
+  "くそっ", "くそが", "くそみたい", "くそだ"
 ]
 level-3: [
   "ちんこ", "チンコ", "ちんぽ", "チンポ", "まんこ", "マンコ", "おまんこ", "オマンコ", "ちんちん", "セックス", "ファック", "ふぁっく", "売女", "ビッチ",

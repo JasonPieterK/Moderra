@@ -1,0 +1,226 @@
+# Part 2: hi hu id it ja ko ms nl no pl pt-br pt-pt ro. Every line must pass the real matcher untouched.
+hi|नमस्ते दोस्तों आज आप कैसे हैं
+hi|मैं बाजार जा रहा हूँ रोटी और दूध लेने
+hi|आज मौसम बहुत अच्छा है
+hi|मैंने नदी के किनारे एक बड़ा घर बनाया
+hi|हमें पहाड़ के नीचे गुफा में हीरे मिले
+hi|क्या तुम आज रात मेरे साथ सर्वर पर खेलोगे
+hi|मेरी माँ हर दिन स्वादिष्ट खाना बनाती हैं
+hi|शिक्षक ने पाठ बहुत साफ समझाया
+hi|पिछली गर्मियों में हम दिल्ली और जयपुर गए थे
+hi|कृपया मुझे कुल्हाड़ी और फावड़ा दे दो
+hi|यह किताब बहुत रोचक है
+hi|मुझे सर्दी और बर्फ पसंद है
+hi|सबसे नज़दीकी बस स्टॉप कहाँ है
+hi|आपकी मदद के लिए बहुत धन्यवाद
+hi|रविवार को हम पहाड़ों पर जाएंगे
+hi|aaj mausam bahut accha hai
+hi|main bazaar ja raha hoon doodh lene
+hu|Jó napot mindenkinek, hogy vagytok ma
+hu|Elmegyek a boltba kenyeret és tejet venni
+hu|Ma nagyon szép idő van
+hu|Építettem egy nagy házat a folyó mellett
+hu|Gyémántokat találtunk a hegy alatti barlangban
+hu|Szeretnél ma este velem játszani a szerveren
+hu|Anyukám minden nap finom ételt főz
+hu|A tanár nagyon világosan elmagyarázta a leckét
+hu|Tavaly nyáron Budapesten voltunk
+hu|Add ide kérlek a fejszét és az ásót
+hu|Az a könyv nagyon izgalmas
+hu|Szeretem a telet és a havat
+hu|Hol van a legközelebbi buszmegálló
+hu|Köszönöm szépen a segítségedet
+hu|Vasárnap a hegyekbe megyünk
+id|Halo semuanya, apa kabar hari ini
+id|Saya pergi ke toko untuk membeli roti dan susu
+id|Cuaca hari ini sangat bagus
+id|Aku membangun rumah besar di dekat sungai
+id|Kami menemukan berlian di gua di bawah gunung
+id|Mau main bareng di server malam ini
+id|Ibuku memasak makanan enak setiap hari
+id|Guru menjelaskan pelajaran dengan sangat jelas
+id|Musim panas lalu kami pergi ke Bandung dan Jogja
+id|Tolong berikan kapak dan sekopnya
+id|Buku itu sangat menarik
+id|Aku suka musim hujan dan makan bakso
+id|Di mana halte bus terdekat
+id|Terima kasih banyak atas bantuanmu
+id|Hari Minggu kita pergi ke gunung
+id|Suka sekali sama nasi goreng buatan ibu
+id|Babi hutan tinggal di hutan dan kucing tidur di rumah
+id|Dia suka bermain bola dan kami makan sate bersama
+id|Kita naik kereta ke Surabaya lalu makan soto
+id|Anak itu pandai dan rajin belajar setiap malam
+id|Pak guru menaruh buku di atas meja dan membuka jendela
+id|Aku mau beli ikan, ayam, tempe dan tahu di pasar
+it|Buongiorno a tutti, come state oggi
+it|Vado al negozio a comprare il pane e il latte
+it|Oggi il tempo è davvero bello
+it|Ho costruito una casa enorme vicino al fiume
+it|Abbiamo trovato diamanti nella grotta sotto la montagna
+it|Vuoi giocare con me sul server stasera
+it|Mia madre cucina cibo delizioso ogni giorno
+it|L'insegnante ha spiegato la lezione molto chiaramente
+it|L'estate scorsa siamo andati a Roma e a Firenze
+it|Dammi l'ascia e la pala per favore
+it|Quel libro è davvero appassionante
+it|Mi piacciono l'inverno e la neve
+it|Dov'è la fermata dell'autobus più vicina
+it|Grazie mille per il tuo aiuto
+it|Domenica andiamo in montagna
+it|Il cappone e la gallina mangiano il mais nella cascina
+ja|こんにちは皆さん、今日はお元気ですか
+ja|パンと牛乳を買いにお店に行きます
+ja|今日は本当にいい天気ですね
+ja|川のそばに大きな家を建てました
+ja|山の下の洞窟でダイヤモンドを見つけました
+ja|今夜一緒にサーバーで遊びませんか
+ja|母は毎日おいしい料理を作ってくれます
+ja|先生は授業をとても分かりやすく説明しました
+ja|去年の夏は東京と京都に行きました
+ja|斧とシャベルを貸してください
+ja|あの本は本当に面白いです
+ja|私は冬と雪が好きです
+ja|一番近いバス停はどこですか
+ja|手伝ってくれて本当にありがとう
+ja|日曜日に山へ行きます
+ja|今日の宿題は数学と英語です
+ja|図書館で本を借りてから公園で友達と遊びました
+ja|おはようございます、いい朝ですね
+ja|私の猫は黒くて、犬は白いです
+ja|新しいゲームを買ったので週末に遊びます
+ja|ありがとうございます、また明日会いましょう
+ja|kyou wa ii tenki desu ne
+ja|arigatou gozaimasu mata ashita
+ko|안녕하세요 여러분 오늘 어떻게 지내세요
+ko|빵과 우유를 사러 가게에 가요
+ko|오늘 날씨가 정말 좋네요
+ko|강 옆에 큰 집을 지었어요
+ko|산 아래 동굴에서 다이아몬드를 찾았어요
+ko|오늘 밤에 저랑 서버에서 같이 놀래요
+ko|우리 어머니는 매일 맛있는 음식을 만드세요
+ko|선생님이 수업을 아주 쉽게 설명해 주셨어요
+ko|작년 여름에 서울과 부산에 갔어요
+ko|도끼와 삽 좀 주세요
+ko|그 책은 정말 재미있어요
+ko|저는 겨울과 눈을 좋아해요
+ko|가장 가까운 버스 정류장이 어디예요
+ko|도와주셔서 정말 감사합니다
+ko|일요일에 산에 갈 거예요
+ko|내일 학교에서 시험이 있어서 공부해야 해요
+ko|김치찌개와 비빔밥을 먹고 싶어요
+ko|동생이 강아지랑 공원에서 놀고 있어요
+ko|annyeonghaseyo oneul nalssi joayo
+ko|gamsahamnida naeil bwayo
+ms|Helo semua, apa khabar hari ini
+ms|Saya pergi ke kedai untuk membeli roti dan susu
+ms|Cuaca hari ini sangat cantik
+ms|Saya membina rumah besar di tepi sungai
+ms|Kami menjumpai berlian di dalam gua di bawah gunung
+ms|Mahu main bersama di pelayan malam ini
+ms|Ibu saya memasak makanan sedap setiap hari
+ms|Cikgu menerangkan pelajaran dengan jelas sekali
+ms|Musim panas lalu kami pergi ke Kuala Lumpur dan Penang
+ms|Tolong beri saya kapak dan penyodok itu
+ms|Buku itu sangat menarik
+ms|Saya suka musim hujan dan makan nasi lemak
+ms|Di mana perhentian bas yang paling dekat
+ms|Terima kasih banyak atas bantuan anda
+ms|Hari Ahad kita pergi ke gunung
+ms|Kucing itu tidur di atas kerusi sambil budak itu membaca buku
+ms|Pergi ke pasar untuk beli ikan, sayur dan buah
+ms|Babi hutan jarang kelihatan di kampung kami
+ms|Mari kita makan roti canai dan teh tarik
+nl|Goedendag allemaal, hoe gaat het vandaag
+nl|Ik ga naar de winkel om brood en melk te kopen
+nl|Het weer is vandaag echt mooi
+nl|Ik heb een groot huis naast de rivier gebouwd
+nl|We hebben diamanten gevonden in de grot onder de berg
+nl|Wil je vanavond met mij op de server spelen
+nl|Mijn moeder kookt elke dag lekker eten
+nl|De leraar legde de les heel duidelijk uit
+nl|Afgelopen zomer waren we in Amsterdam en Rotterdam
+nl|Geef me alsjeblieft de bijl en de schep
+nl|Dat boek is echt spannend
+nl|Ik hou van de winter en de sneeuw
+nl|Waar is de dichtstbijzijnde bushalte
+nl|Hartelijk dank voor je hulp
+nl|Zondag gaan we naar de bergen
+no|God dag alle sammen, hvordan har dere det i dag
+no|Jeg skal til butikken og kjøpe brød og melk
+no|Været er veldig fint i dag
+no|Jeg har bygget et stort hus ved elven
+no|Vi fant diamanter i hulen under fjellet
+no|Vil du spille med meg på serveren i kveld
+no|Moren min lager deilig mat hver dag
+no|Læreren forklarte leksjonen veldig tydelig
+no|I sommer var vi i Oslo og Bergen
+no|Kan du gi meg øksa og spaden
+no|Den boka er veldig spennende
+no|Jeg liker vinter og snø
+no|Hvor er nærmeste busstopp
+no|Tusen takk for hjelpen
+no|På søndag drar vi til fjells
+pl|Dzień dobry wszystkim, jak się dziś macie
+pl|Idę do sklepu kupić chleb i mleko
+pl|Dzisiaj jest naprawdę ładna pogoda
+pl|Zbudowałem duży dom nad rzeką
+pl|Znaleźliśmy diamenty w jaskini pod górą
+pl|Chcesz zagrać ze mną dziś wieczorem na serwerze
+pl|Moja mama codziennie gotuje pyszne jedzenie
+pl|Nauczyciel bardzo jasno wyjaśnił lekcję
+pl|Zeszłego lata byliśmy w Krakowie i Gdańsku
+pl|Podaj mi proszę siekierę i łopatę
+pl|Ta książka jest naprawdę ciekawa
+pl|Lubię zimę i śnieg
+pl|Gdzie jest najbliższy przystanek autobusowy
+pl|Bardzo dziękuję za pomoc
+pl|W niedzielę jedziemy w góry
+pt-br|Olá pessoal, como vocês estão hoje
+pt-br|Vou ao mercado comprar pão e leite
+pt-br|O tempo está muito bonito hoje
+pt-br|Construí uma casa enorme perto do rio
+pt-br|Encontramos diamantes na caverna debaixo da montanha
+pt-br|Quer jogar comigo no servidor hoje à noite
+pt-br|Minha mãe cozinha comida deliciosa todos os dias
+pt-br|A professora explicou a lição com muita clareza
+pt-br|No verão passado fomos para o Rio de Janeiro e Salvador
+pt-br|Me dá o machado e a pá por favor
+pt-br|Esse livro é muito emocionante
+pt-br|Eu gosto do inverno e da neve
+pt-br|Onde fica o ponto de ônibus mais próximo
+pt-br|Muito obrigado pela sua ajuda
+pt-br|No domingo vamos para a serra
+pt-br|O burro come capim e o macaco come banana no zoológico
+pt-br|A cadela e o cachorro dormem no quintal
+pt-pt|Olá a todos, como estão hoje
+pt-pt|Vou ao supermercado comprar pão e leite
+pt-pt|O tempo está muito bonito hoje
+pt-pt|Construí uma casa enorme junto ao rio
+pt-pt|Encontrámos diamantes na gruta debaixo da montanha
+pt-pt|Queres jogar comigo no servidor esta noite
+pt-pt|A minha mãe cozinha comida deliciosa todos os dias
+pt-pt|A professora explicou a lição com muita clareza
+pt-pt|No verão passado fomos a Lisboa e ao Porto
+pt-pt|Dá-me o machado e a pá por favor
+pt-pt|Esse livro é muito emocionante
+pt-pt|Eu gosto do inverno e da neve
+pt-pt|Onde fica a paragem de autocarro mais próxima
+pt-pt|Muito obrigado pela tua ajuda
+pt-pt|No domingo vamos para a serra
+pt-pt|O pastor leva as ovelhas e o burro até à aldeia
+ro|Bună ziua tuturor, ce mai faceți astăzi
+ro|Merg la magazin să cumpăr pâine și lapte
+ro|Astăzi este vreme foarte frumoasă
+ro|Am construit o casă mare lângă râu
+ro|Am găsit diamante în peștera de sub munte
+ro|Vrei să joci cu mine pe server diseară
+ro|Mama mea gătește mâncare delicioasă în fiecare zi
+ro|Profesorul a explicat lecția foarte clar
+ro|Vara trecută am fost la București și la Cluj
+ro|Dă-mi te rog toporul și lopata
+ro|Cartea aceea este foarte interesantă
+ro|Îmi place iarna și zăpada
+ro|Unde este cea mai apropiată stație de autobuz
+ro|Mulțumesc mult pentru ajutor
+ro|Duminică mergem la munte

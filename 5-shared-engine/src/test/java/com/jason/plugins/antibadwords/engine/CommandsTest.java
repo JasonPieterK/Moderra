@@ -191,20 +191,20 @@ class CommandsTest {
 
         assertEquals(List.of("§aAdded to the whitelist: mishits"), run("whitelist add MisHits"));
         assertNull(engine.find("some Mishits happen"), "applies at once, whatever the capital letters");
-        assertEquals(before.replace("    - therapist\n", "    - therapist\n    - mishits\n"), TestFiles.read(f.file("config.yml")));
+        assertEquals(before.replace("    - lixo\n", "    - lixo\n    - mishits\n"), TestFiles.read(f.file("config.yml")));
         assertEquals(List.of("§cAlready on the whitelist: mishits"), run("whitelist add MISHITS"));
         assertEquals(List.of("§aAdded to the whitelist: two words"), run("whitelist add Two   Words"));
         assertEquals(List.of("§cThat is not a valid word (use at least 2 letters or digits)."), run("whitelist add !"));
         assertEquals(List.of("§eUsage: /abw whitelist add <word or phrase>"), run("whitelist add"));
         assertEquals(List.of("§eUsage: /abw whitelist <add|remove|list> [word or page]"), run("whitelist"));
 
-        // 22 words, 10 per page (commands.list-page-size)
+        // 27 words, 10 per page (commands.list-page-size)
         List<String> page1 = run("whitelist list");
-        assertEquals("§6Whitelist (22 words) - page 1/3:", page1.get(0));
+        assertEquals("§6Whitelist (27 words) - page 1/3:", page1.get(0));
         assertEquals("§7class, classic, assassin, assume, assist, bass, glass, grass, pass, mass", page1.get(1));
         assertEquals("§7Next page: /abw whitelist list 2", page1.get(2));
         List<String> page3 = run("whitelist list 3");
-        assertEquals(List.of("§6Whitelist (22 words) - page 3/3:", "§7mishits, two words"), page3);
+        assertEquals(List.of("§6Whitelist (27 words) - page 3/3:", "§7suka, hui, burro, tai, lixo, mishits, two words"), page3);
         assertEquals(page3, run("whitelist list 99"));
         assertEquals(page1, run("whitelist list 0"));
         assertEquals(List.of("§eUsage: /abw whitelist list [page number]"), run("whitelist list abc"));

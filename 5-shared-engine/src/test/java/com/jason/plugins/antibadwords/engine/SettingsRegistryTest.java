@@ -46,6 +46,11 @@ class SettingsRegistryTest {
                 // new installs scan more commands; migrated installs keep the old list (LegacyMigrationTest)
                 assertEquals(s.parse(oldValue).value(), CoreSettings.LEGACY_SCANNED_COMMANDS);
                 assertTrue(CoreSettings.SCANNED_COMMANDS.defaultValue().containsAll(CoreSettings.LEGACY_SCANNED_COMMANDS));
+            } else if (s == CoreSettings.WHITELIST) {
+                // new installs also whitelist the legacy words that are everyday words elsewhere (WordListFalsePositiveTest);
+                // migrated installs keep the whitelist they had
+                assertTrue(CoreSettings.WHITELIST.defaultValue().containsAll((List<?>) s.parse(oldValue).value()));
+                assertTrue(CoreSettings.WHITELIST.defaultValue().containsAll(List.of("suka", "hui", "burro", "tai", "lixo")));
             } else if (oldValue != null && s != CoreSettings.ENABLED_LANGUAGES) {
                 assertEquals(s.parse(oldValue).value(), s.defaultValue(), s.key());
                 assertNull(s.parse(oldValue).problem(), s.key());

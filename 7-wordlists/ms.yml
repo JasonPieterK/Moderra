@@ -5,14 +5,14 @@ script: latin
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-notes: "Shares many words with Indonesian (bodoh, babi, anjing, bangsat, sial); the overlap is intentional because both are cross-listed for chat spellings. 'babi' means pig and may appear in animal talk. Left out: gila, sampah, konek (too common or means 'connected'). collisions-ok: id Related languages share cognate words on purpose. collisions-ok: id"
+notes: "Shares many words with Indonesian (bodoh, babi, anjing, bangsat, sial); the overlap is intentional because both are cross-listed for chat spellings. Standalone 'babi' (pig) was removed on purpose because it is a real animal in everyday and Minecraft talk; 'babi kau', 'dasar babi' and 'anak babi' stay. Left out: gila, sampah, konek (too common or means 'connected'). collisions-ok: id Related languages share cognate words on purpose. collisions-ok: id"
 level-1: [
   "bodoh", "bengap", "bangang", "bebal", "lembab", "dungu", "bahlol", "bahlul", "sial", "celaka",
   "kurang ajar", "biadab", "tak guna", "bongok", "sengal", "bodoh sombong", "otak udang", "sial punya",
   "bodoh betul", "bodoh la", "bengong", "kepala bapak", "mangkuk"
 ]
 level-2: [
-  "bangsat", "babi", "anjing", "bedebah", "keparat", "jalang", "sundal", "pelacur", "pondan", "bapuk",
+  "bangsat", "anjing", "bedebah", "keparat", "jalang", "sundal", "pelacur", "pondan", "bapuk",
   "bapok", "lahanat", "tahi", "bohsia", "mampus", "haram jadah", "anak haram", "anak anjing", "anak babi",
   "sial kau", "kepala hotak kau", "babi kau", "anjing kau", "bangsat kau", "tak malu", "tak sedar diri",
   "perempuan jalang", "celaka kau", "lahanat kau", "jahanam", "jahanam kau", "sial punya orang",

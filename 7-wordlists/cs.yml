@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Diacritics are stripped, so píča folds to pica (a rare English/medical word) and čurák to curak. Left out: cikán, negr alone is kept as a slur, krávo. Shared words with Polish/Slovak (kurva, jebat, zmrd) are on purpose. collisions-ok: pl ro hu ru uk Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard debil idiot jebat kreten kurva pica pojeb pojebany zasrany"
+notes: "Diacritics are stripped, so píča folds to pica (a rare English/medical word) and čurák to curak. Left out: cikán, negr alone is kept as a slur, krávo. Shared words with Polish/Slovak (kurva, jebat, zmrd) are on purpose. False-positive review 2026-11-14: the bare forms of 'pica' (with and without accents) were removed because Spanish 'pica' (it stings, it itches) is an everyday word; longer forms stay. collisions-ok: pl ro hu ru uk Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard debil idiot jebat kreten kurva pica pojeb pojebany zasrany"
 level-1: [
   "blbec", "blbá", "blbý", "blb", "debil", "idiot", "hlupák", "hlupak", "hloupý", "hloupy", "kretén",
   "kreten", "ťulpas", "tulpas", "pitomec", "pitomý", "pitomy"
@@ -18,8 +18,9 @@ level-2: [
   "zkurvené", "zkurvene"
 ]
 level-3: [
-  "kokot", "kokotina", "čurák", "curak", "píča", "piča", "pica", "kurva", "kurevsky", "jebat", "jebe",
+  "kokot", "kokotina", "čurák", "curak", "kurva", "kurevsky", "jebat", "jebe",
   "jebu", "jebem", "pojeb", "pojebaný", "pojebany", "pojebanej", "zmrd", "zmrde", "mrdat", "mrdá", "mrda",
   "do píči", "do pici", "do prdele", "jdi do píči", "jdi do pici", "jdi do prdele", "buzerant", "buzna",
-  "teplouš", "teplous", "negr", "šulin", "sulin", "šulina", "sulina", "vyšukat", "vysukat", "šukat", "sukat"
+  "teplouš", "teplous", "negr", "šulin", "sulin", "šulina", "sulina", "vyšukat", "vysukat", "šukat", "sukat",
+  "píčus", "pičus", "píčovina", "pičovina"
 ]

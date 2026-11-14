@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Left out on purpose: finocchio (also fennel), pene, incazzato (very common), negro (also Spanish/Portuguese 'black'). Accents are stripped so 'merdà' style typos are fine. 'cazzata' is mild. 'ostia' is left out (means wafer). collisions-ok: es Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretina cretino idiota merda merdosa merdoso mongoloide"
+notes: "Left out on purpose: finocchio (also fennel), pene, incazzato (very common), negro (also Spanish/Portuguese 'black'). Accents are stripped so 'merdà' style typos are fine. 'cazzata' is mild. 'ostia' is left out (means wafer). False-positive review 2026-11-14: 'fica' was removed (Portuguese 'stays', very common). collisions-ok: es Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretina cretino idiota merda merdosa merdoso mongoloide"
 level-1: [
   "stupido", "stupida", "scemo", "scema", "cretino", "cretina", "idiota", "imbecille", "babbeo",
   "deficiente", "fesso", "fessa", "pirla", "sciocco", "sciocca", "citrullo", "rimbambito", "zuccone",
@@ -23,7 +23,7 @@ level-2: [
   "sporco negro", "vai a cagare", "vai a farti fottere"
 ]
 level-3: [
-  "cazzo", "cazzi", "minchia", "minchione", "fica", "fiche", "figa", "sborra", "sborrata", "pompino",
+  "cazzo", "cazzi", "minchia", "minchione", "fiche", "figa", "sborra", "sborrata", "pompino",
   "pompini", "inculare", "inculata", "incula", "inculato", "scopare", "scopata", "scopate", "trombare",
   "trombata", "segaiolo", "segaiola", "bocchino", "vaffanculo", "porco dio", "porca madonna", "dio cane",
   "dio bestia", "madonna puttana", "porcodio", "dio porco", "porco giuda", "porca troia", "porca puttana",

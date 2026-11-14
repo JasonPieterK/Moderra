@@ -6,7 +6,7 @@ review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
-notes: "Left out on purpose: 'con' (also Spanish 'with' and English 'con'), baiser (means 'kiss'), negro, andouille, nul. 'fdp' is shared with pt-br. 'idiot' is shared with English. 'merde' appears in other languages as a borrowed word. collisions-ok: en pt-br de Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretin fdp idiot imbecile travelo"
+notes: "Left out on purpose: 'con' (also Spanish 'with' and English 'con'), baiser (means 'kiss'), negro, andouille, nul. 'fdp' is shared with pt-br. 'idiot' is shared with English. 'merde' appears in other languages as a borrowed word. False-positive review 2026-11-14: 'bite' was removed because it is an everyday English word ('take a bite'); add it to wordlists/custom.yml on a purely French server. collisions-ok: en pt-br de Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretin fdp idiot imbecile travelo"
 level-1: [
   "idiot", "idiote", "imbecile", "débile", "debile", "crétin", "cretin", "cretine", "abruti", "abrutie",
   "bouffon", "bouffonne", "naze", "nazes", "tocard", "tocarde", "taré", "tarée", "pauvre type", "pauvre con",
@@ -26,7 +26,7 @@ level-2: [
   "va te faire foutre connard"
 ]
 level-3: [
-  "bite", "bites", "couille", "couilles", "zob", "chatte", "chattes", "foutre", "suce", "sucer", "branler",
+  "bites", "couille", "couilles", "zob", "chatte", "chattes", "foutre", "suce", "sucer", "branler",
   "branlette", "enculeur", "enculeuse", "enculé de ta race", "ntm fdp", "nique ta mère la pute",
   "ta gueule connard", "ferme ta gueule", "ferme ta gueule connard", "salope de merde", "grosse salope",
   "sale salope", "sale pute de merde", "bougnoule", "bougnoules", "bamboula", "bamboulas", "youpin",

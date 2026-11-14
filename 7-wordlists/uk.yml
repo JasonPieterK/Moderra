@@ -5,7 +5,7 @@ script: cyrillic
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-notes: "Cyrillic plus Latin transliteration. Many Russian swear words are used in Ukrainian too, so there is intentional overlap with ru. 'дупа' (also Polish) and 'бляха' are mild. The ethnic slurs кацап and хохол are included as slurs only; skip them if your server treats them as banter. collisions-ok: ru pl Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa idiot jebat kurva pizda suka Related languages share cognate words on purpose. collisions-ok: ru"
+notes: "Cyrillic plus Latin transliteration. Many Russian swear words are used in Ukrainian too, so there is intentional overlap with ru. 'дупа' (also Polish) and 'бляха' are mild. The ethnic slurs кацап and хохол are included as slurs only; skip them if your server treats them as banter. False-positive review 2026-11-14: 'suka' is also Indonesian 'to like'; it is in the bundled default whitelist for new installs, the Cyrillic form does the work. collisions-ok: ru pl Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa idiot jebat kurva pizda suka Related languages share cognate words on purpose. collisions-ok: ru"
 level-1: [
   "дурень", "дурна", "ідіот", "тупий", "дебіл", "кретин", "бовдур", "йолоп", "телепень", "довбень", "чмо",
   "нікчема", "тупак", "дурепа", "безмозкий", "durnyi", "durnyj", "idiot", "tupyj", "tupyi", "debil",

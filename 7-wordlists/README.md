@@ -117,3 +117,44 @@ group to `sources` if they agree to it.
 ## Where this folder goes
 
 This folder is the source of truth. A later part of the project copies these files into every jar and into the config folder on first start.
+
+## Review priorities (which lists a human should check first)
+
+All lists are `unreviewed`. If you can only review a few, start here, in this order:
+
+1. **Thai (`th`), Chinese (`zh`, `zh-tw`), Japanese (`ja`)**: these scripts have no spaces, so entries are found *inside* longer text, and
+   the whitelist does **not** protect them. A wrong short entry blocks normal sentences. Thai is extra fragile because tone marks and vowel
+   signs are removed before matching (the folded word can hide inside everyday words, for example ร่าน inside ร้าน "shop").
+   Known open risks are written in each file's `notes` (for example the legacy `你妈` inside `你妈妈`).
+2. **Thin lists: `sw`, `fil`, `he`, `bn`**: extended on 2026-11-14 with common insults and chat spellings, still short and AI-written.
+3. **Languages that share words with others (accent folding!)**: once accents are removed, `píča` (cs) is `pica` (a Spanish verb), `dům` (cs)
+   is `dum` (the Danish insult), `piña` (es) is `pina`. Hebrew, Arabic, Persian and Urdu lists need someone who also knows the chat spelling.
+4. **Legacy entries** that are also normal words: `suka`, `hui`, `burro`, `tai`, `lixo`, `foda`, `cock`, `penis`, `dick`, `noob`.
+   They stay in the lists so that migrated servers keep their old behaviour. New installs get a bundled default whitelist
+   (`filters.whitelist` in `config.yml`) that lets `suka`, `hui`, `burro`, `tai` and `lixo` through. `foda`, `cock`, `penis`, `dick` and `noob` are
+   blocked on purpose (children's server default); add them to the whitelist if your server wants to allow them.
+
+## The false-positive test
+
+`5-shared-engine/src/test/java/.../WordListFalsePositiveTest.java` loads **every** real list at once, with the default matching options, the
+bundled whitelist and the evasion normaliser, at protection levels 1, 2 and 3, and runs the sentences in
+`5-shared-engine/src/test/resources/falsepositive/corpus-*.txt` (at least 15 everyday sentences per language, plus names, places such as
+Scunthorpe, Penistone, Essex and Sussex, and Minecraft words). **Any hit fails the build.** When you add a word, add a sentence that
+uses the innocent meaning of that word to the corpus if it has one. To see the failures in a readable file run
+`mvn -q -B test -Dtest=WordListFalsePositiveTest -DargLine="-Dabw.fpreport=/tmp/fp.txt"` in `5-shared-engine/`.
+
+## How to report a false positive
+
+A false positive is a normal message that AntiBadWords blocked. Please send us:
+
+1. the **exact message** (or the part that was blocked) and the **language** it is written in,
+2. the **word the filter named** (it is in the staff notification and the console log: `{word}`),
+3. what it **means** in normal speech,
+4. the `filters.enabled-word-lists` and `filters.protection-level` you use (many hits come from two lists that are both switched on).
+
+Open an issue or a pull request. If you fix it yourself:
+
+* the word is a bad word *and* a normal word -> remove it, or keep only the longer insult forms ("babi lu" instead of "babi");
+* the word is only a problem on your server -> add it to `filters.whitelist` in `config.yml` (`/abw whitelist add <word>`), no code change needed
+  (does not work for Chinese, Japanese and Thai text);
+* then add the sentence to `corpus-*.txt`, run `python3 7-wordlists/tools/validate.py` and `mvn -q -B test` in `5-shared-engine/`.

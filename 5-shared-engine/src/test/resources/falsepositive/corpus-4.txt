@@ -1,0 +1,83 @@
+# Part 4: stress sentences. Substring scripts (Han, kana, Thai), accent folding collisions and words that mean
+# something innocent in another language. Every line must pass the real matcher untouched.
+en|Take a bite of the cake and turn the door knob slowly
+en|We do Tai Chi every morning and eat rice on Sundays
+en|I got it, he said, and put the pica ruler on the desk
+en|Pass the salt and the pepper, then let us ask the cook for a pie
+en|The Dutch word for cheese is kaas and the German word is Kase
+en|Our assignment is to build a snowman and a hot cocoa stand
+es|Me gusta la piña y quiero una piña colada
+es|Este chile pica mucho y me pica la cabeza
+pt-br|Jogue o lixo no lixo e leve o saco para a rua
+de|Das Kind hat die Sahne vom Kuchen gegessen und der Mist wurde abgeholt
+tr|Nar suyu çok lezzetli ve annem pazardan nar aldı
+tr|Sıkıntı yok, yarın görüşürüz ve kitabı alırız
+ja|kuni ni kaerimasu
+ja|今日は雨ばかり降っています
+ja|彼はゲームばかりしています
+ja|赤ちゃんがぐずぐずして泣いています
+ja|ふくそうは自由です
+ja|このくだものは甘くておいしいです
+ja|おばあちゃんは京都に住んでいます
+ja|野球の試合を見に行きます
+ja|私は犬の散歩をしてから朝ごはんを食べます
+ja|ウサギとカメの話を聞いて、みんなで笑いました
+ja|明日は試験なので、しっかり勉強しなければなりません
+ja|駅の近くに新しい本屋ができました
+ja|私の叔父さんは先生で、いとこはロンドンにいます
+ja|パンダを見に動物園に行ってきました
+ja|町にはおおきなスーパーとコンビニがあります
+ko|고양이 새끼가 귀여워요
+ko|나는 그것을 보지 않았다
+ko|너무 늦어서 자지 않고 공부했어요
+ko|걸레로 바닥을 닦았어요
+ko|이 시발점에서 버스를 타세요
+ko|빨래를 빨아서 널었어요
+ko|졸라맨 끈을 풀어 주세요
+zh|我妈妈的书在桌子上
+zh|他妈妈今天去超市了
+zh|我们明年去死亡谷旅游
+zh|我操作电脑很熟练
+zh|我日记里写了很多事情
+zh|这台机器低能耗而且很安静
+zh|奶奶的饺子比妈妈的更好吃
+zh|我爸爸和妈妈的朋友一起来
+zh|他们在草泥地里种了很多花
+zh-tw|我媽媽的書在桌子上
+zh-tw|他媽媽今天去超市了
+zh-tw|你媽媽在家嗎
+zh-tw|這些廢物可以回收再利用
+zh-tw|我們明年去死亡谷旅遊
+zh-tw|這台機器低能耗而且很安靜
+zh-tw|我等了三小時才吃到飯
+zh-tw|媽媽的飯菜最好吃
+zh-tw|我們三小隊明天出發
+zh-tw|豬頭肉很好吃
+zh-tw|我日記裡寫了很多事情
+th|ฉันจะซื้อหนังสือที่ร้านหนังสือ
+th|ระวังอย่าเหยียบหญ้าและอย่าเหยียบสนามนะ
+th|แมงมุมตัวใหญ่อยู่ในถ้ำ
+th|แม่งานของงานนี้ชื่อคุณสมศรี
+th|เราซื้อผงกะหรี่และกะหรี่ปั๊บที่ตลาด
+th|เขาเป็นมือหนึ่งในวงการนี้
+th|ปู่ของฉันเป็นโรคคอหอยอักเสบ
+th|เหยี่ยวบินอยู่เหนือภูเขา
+th|ฉันดื่มชาเย็นและกินข้าวมันไก่
+th|ควายตัวนั้นเดินอยู่ในทุ่งนา
+th|ชั่วโมงหน้าฝนจะตกหนัก
+th|น้ำตกอยู่ไกลจากบ้านเรามาก
+th|เมื่อวานฉันไปหาหมอเพราะปวดท้อง
+th|เธอใส่เสื้อสีเหลืองและกางเกงสีดำ
+th|ฉันต้องสอบวิชาคณิตศาสตร์พรุ่งนี้
+th|เด็กชายกำลังเล่นฟุตบอลที่สนามโรงเรียน
+th|ต้นไม้ใหญ่อยู่หน้าบ้านและมีนกเกาะอยู่
+th|ฉันชอบอ่านการ์ตูนและเล่นเกมกับเพื่อน
+th|รถไฟออกจากสถานีตอนเจ็ดโมงเช้า
+th|ผู้ชายคนนั้นขายแตงโมและส้มโอที่ตลาด
+th|เรากินข้าวเหนียวมะม่วงเป็นของหวาน
+en|The blue tit is a small bird and we eat peas and carrots
+en|We cook pea soup and the E. coli test at school was negative
+en|Tai is a language of Thailand and the tai chi master teaches a class
+vi|toi muon ngu som vi mai di hoc, me toi nau com ngon lam
+vi|ban co the cho toi muon cai but khong, cam on ban nhieu
+id|Sup kacang itu enak dan anak-anak suka makan tahu
