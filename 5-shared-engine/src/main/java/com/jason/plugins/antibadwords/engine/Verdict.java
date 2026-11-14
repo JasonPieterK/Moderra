@@ -21,8 +21,14 @@ public final class Verdict {
     private final String text;
     private final List<Hit> hits;
     private final EffectiveSettings settings;
+    private final boolean captured;
 
     Verdict(Type type, String text, List<Hit> hits, EffectiveSettings settings) {
+        this(type, text, hits, settings, false);
+    }
+
+    private Verdict(Type type, String text, List<Hit> hits, EffectiveSettings settings, boolean captured) {
+        this.captured = captured;
         this.type = type;
         this.text = text;
         this.hits = List.copyOf(hits);
@@ -31,6 +37,20 @@ public final class Verdict {
 
     static Verdict allow(EffectiveSettings settings) {
         return new Verdict(Type.ALLOW, null, List.of(), settings);
+    }
+
+    /**
+     * The message was taken by a text prompt (the player's answer to a menu question). The type is BLOCK with no hits, so
+     * a loader that does not know this still cancels the message. A loader that does should: not broadcast it, not scan
+     * it, not store it, not publish events, not call {@code onViolation}.
+     */
+    static Verdict captured(EffectiveSettings settings) {
+        return new Verdict(Type.BLOCK, null, List.of(), settings, true);
+    }
+
+    /** {@code true} when a text prompt consumed this message; apply nothing else (see {@link #captured(EffectiveSettings)}). */
+    public boolean captured() {
+        return captured;
     }
 
     public Type type() {
