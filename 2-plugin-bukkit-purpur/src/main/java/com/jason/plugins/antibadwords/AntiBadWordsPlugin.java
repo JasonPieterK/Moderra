@@ -5,6 +5,7 @@ import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
 import com.jason.plugins.antibadwords.gui.GuiListener;
 import com.jason.plugins.antibadwords.gui.GuiManager;
+import com.jason.plugins.antibadwords.integrations.VaultHook;
 import com.jason.plugins.antibadwords.integrations.essentials.EssentialsHook;
 import java.util.Locale;
 import java.util.Objects;
@@ -59,6 +60,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         getServer().getOnlinePlayers().forEach(punishmentExecutor::restoreLeftovers);
         startDiscordSrv();
         startLuckPerms();
+        startVault();
         startPlaceholderApi();
         logStartupBanner();
     }
@@ -146,6 +148,31 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
             engine.setPermissionSource(LuckPermsHook.start(platform.logger()));
         } catch (Throwable ex) { // NoClassDefFoundError and friends included on purpose
             getLogger().warning("The LuckPerms hook could not start (" + ex.getClass().getSimpleName() + "); profiles by group and offline checks are off.");
+        }
+    }
+
+    /** Vault is optional: used for groups and prefixes only when LuckPerms is not connected. Reflection only, any problem is one log line. */
+    private void startVault() {
+        try {
+            for (String name : new String[] {"TAB", "NametagEdit"}) {
+                if (platform.hasPlugin(name) && engine.value(name.equals("TAB")
+                    ? com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.TAB
+                    : com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.NAMETAGEDIT)) {
+                    getLogger().info(name + " found: its commands (integrations." + name.toLowerCase(Locale.ROOT) + ".scan-commands) are scanned.");
+                }
+            }
+            if (!platform.hasPlugin(VaultHook.PLUGIN_NAME)) {
+                return;
+            }
+            if (!engine.value(com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.VAULT)) {
+                getLogger().info("Vault hook: switched off (integrations.vault.enabled).");
+            } else if (engine.permissionSource() != null) {
+                getLogger().info("Vault found, but " + engine.permissionSource().name() + " is already connected; Vault is not used.");
+            } else {
+                engine.setPermissionSource(VaultHook.start(platform.logger()));
+            }
+        } catch (Throwable ex) {
+            getLogger().warning("The Vault hook could not start (" + ex.getClass().getSimpleName() + "); Vault groups and prefixes are off.");
         }
     }
 

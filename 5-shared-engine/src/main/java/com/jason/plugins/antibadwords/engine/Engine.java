@@ -225,6 +225,7 @@ public final class Engine {
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.PluginCommandSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -676,6 +677,10 @@ public final class Engine {
             }
             if (arguments == null) {
                 arguments = pluginCommands.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
+            if (arguments == null) {
+                arguments = com.jason.plugins.antibadwords.engine.integrations.PluginCommandScan.extraCommandText(this,
+                    settings.legacy().ignoredCommands(), message.text());
             }
             current = arguments == null ? null : message.withText(arguments);
         }

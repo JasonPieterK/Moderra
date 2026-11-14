@@ -24,6 +24,11 @@ public interface PermissionSource {
     /** A meta value of an online player (for example {@code antibadwords-profile}), or empty. Answers from memory. */
     Optional<String> meta(UUID player, String key);
 
+    /** The chat prefix of an online player (Vault Chat, LuckPerms meta), colour codes as stored, or empty. Answers from memory. */
+    default Optional<String> prefix(UUID player) {
+        return Optional.empty();
+    }
+
     /**
      * Permission check for any player, also one who is offline (the data is loaded in the background). The future never
      * fails: an unknown player or an error completes with {@code false}.
