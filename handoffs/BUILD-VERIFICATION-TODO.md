@@ -153,3 +153,11 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
 - [ ] **Unicode confusables data**: unicode.org was unreachable, so the table was built from the ICU repository's copy of
       `confusables.txt` 18.0.0 (see `7-wordlists/NOTICE.md`). Re-run `5-shared-engine/generate-confusables.py` against
       the official file when the network allows, and check the diff is empty.
+
+## Mini tasks 11/12 (DiscordSRV hook)
+- [ ] `2-plugin-bukkit-purpur` `DiscordSrvHook` / `DiscordSrvListener`: compiled only against the hand-written Bukkit stub and two name-only DiscordSRV shim
+      classes. Test on a real server WITH DiscordSRV 1.x and a bot: alerts reach the channel, a blocked word typed in Discord is not shown in game, `!abw` commands
+      (all off by default), no stack traces when DiscordSRV is missing.
+- [ ] `2-plugin-bukkit-purpur/pom.xml`: new build-helper execution `add-discordsrv-shim` and `maven-jar-plugin` excludes `github/**`. Run `mvn package` and check
+      with `unzip -l` that no `github/scarsz` class is inside the jar and that the jar loads without DiscordSRV.
+- [ ] Reflection names that could differ per DiscordSRV version are listed in the `DiscordSrvHook` class comment.

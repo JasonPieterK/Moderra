@@ -205,6 +205,7 @@ public final class Engine {
         HistorySettings.register(registry);
         MuteSettings.register(registry);
         DiscordSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
         PromptSettings.register(registry);
     }
 

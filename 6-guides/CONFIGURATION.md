@@ -350,6 +350,28 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.templates.link` | text | `{player} posted a link in {source}: {detail} (action {action})` | no | Text for link events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
 | `discord.templates.evasion` | text | `{player} tried to dodge the filter in {source}: {detail} (action {action})` | no | Text for evasion events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
 | `discord.templates.admin-command` | text | `{player} ran /{command}` | no | Text for admin-command events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.discordsrv.alert-channel` | text | `alerts` | no | BUKKIT FAMILY ONLY, needs DiscordSRV. The DiscordSRV channel NAME (from DiscordSRV's config.yml, option Channels,<br>for example global) that receives the kinds listed in discord.routing.alerts. Empty = none. |
+| `discord.discordsrv.log-channel` | text | (empty) | no | Same for the kinds listed in discord.routing.log (a quiet log channel). Empty = none. |
+| `discord.inbound.enabled` | true or false | `false` | no | BUKKIT FAMILY ONLY, needs DiscordSRV. Check messages that arrive from Discord with the same word lists before<br>they are shown in the game (source discord-in). The link and bypass-trick filters only look at it when<br>discord-in is added to their sources list. Default off. |
+| `discord.inbound.action` | one of: block, censor, log-only | `block` | no | block = the message is not shown in the game, censor = shown with the bad words cleaned (only when the server can<br>change the text; DiscordSRV cannot, so it is blocked instead), log-only = shown unchanged, only recorded. |
+| `discord.inbound.channels` | list of texts | `*` | no | Discord channel ids or names; "*" = every channel DiscordSRV relays. Anything not listed is not checked. |
+| `discord.inbound.except-channels` | list of texts | (empty) | no | Ids or names; wins over the list above. |
+| `discord.inbound.bypass-roles` | list of texts | (empty) | no | Discord ROLE ids (numbers). People with one of these roles are never filtered. |
+| `discord.inbound.bypass-users` | list of texts | (empty) | no | Discord USER ids (numbers). |
+| `discord.inbound.notify-sender` | true or false | `true` | no | Send the person a direct message in Discord when their message was blocked or cleaned. |
+| `discord.inbound.notify-text` | text | `Your message was not delivered to the Minecraft chat because it contains words that are not allowed on this server.` | no | The direct message. No placeholders; never put the blocked word in it. |
+| `discord.commands.prefix` | text | `!abw` | no | Moderation from Discord works by typing a message that starts with this prefix, for example: !abw mute Steve 1h spam<br>(DiscordSRV slash commands are not used by this plugin.) A prefix message is never relayed to Minecraft. |
+| `discord.commands.mute.enabled` | true or false | `false` | no | Allow "<prefix> mute <player> [time] [reason]" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.unmute.enabled` | true or false | `false` | no | Allow "<prefix> unmute <player>" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.history.enabled` | true or false | `false` | no | Allow "<prefix> history <player> [page]" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.strikes.enabled` | true or false | `false` | no | Allow "<prefix> strikes <player>" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.check.enabled` | true or false | `false` | no | Allow "<prefix> check <text>" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.reload.enabled` | true or false | `false` | no | Allow "<prefix> reload" from Discord (only for the allowed roles / users). Default off. |
+| `discord.commands.allowed-roles` | list of texts | (empty) | no | Discord ROLE ids (numbers). Empty list AND empty users list = nobody can<br>run any command (the safe default). Being allowed is not enough: the command itself must be switched on above. |
+| `discord.commands.allowed-users` | list of texts | (empty) | no | Discord USER ids (numbers). |
+| `discord.commands.channels` | list of texts | (empty) | no | Discord channel ids or names where the prefix is understood.<br>Empty = nowhere (the safe default); "*" = every channel DiscordSRV sees. Use a private staff channel. |
+| `discord.commands.rate.max` | whole number from 1 to 100 | `5` | no | How many commands one Discord user may run within the time below. |
+| `discord.commands.rate.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `30s` | no | Time window for the limit above. |
 
 ## The extra filters in plain words
 

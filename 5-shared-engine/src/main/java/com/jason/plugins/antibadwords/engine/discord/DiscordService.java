@@ -39,6 +39,8 @@ public final class DiscordService {
     private final WebhookSender log;
     private volatile Function<String, String> environment = System::getenv;
     private volatile boolean suppressed;
+    private volatile DiscordLink link;
+    private volatile boolean linkSuppressed;
     private Runnable unsubscribe;
 
     public DiscordService(Engine engine) {
@@ -53,6 +55,51 @@ public final class DiscordService {
         unsubscribe = engine.events().subscribe(this::onEvent);
         engine.commands().register(new DiscordCommand(this));
         engine.addReloadListener(this::checkSettings);
+        engine.addReloadListener(this::applyMode);
+    }
+
+    // ------------------------------------------------------------------------------------------
+    // DiscordSRV (Bukkit family): the bridge is attached by the plugin, never by the engine itself
+    // ------------------------------------------------------------------------------------------
+
+    /**
+     * Called by the Bukkit plugin when DiscordSRV is present. Returns the link the plugin feeds with Discord messages. While the link
+     * exists and {@code discord.mode} is {@code auto} or {@code discordsrv}, alerts go through the bridge and the webhooks stay quiet.
+     */
+    public DiscordLink attachBridge(DiscordBridge bridge) {
+        DiscordLink created = new DiscordLink(engine, this, bridge);
+        link = created;
+        applyMode();
+        return created;
+    }
+
+    /** Called when DiscordSRV goes away: the webhooks work again. */
+    public void detachBridge() {
+        link = null;
+        applyMode();
+    }
+
+    /** The current DiscordSRV link, or null on Fabric/Forge and when DiscordSRV is not installed. */
+    public DiscordLink link() {
+        return link;
+    }
+
+    /** Whether the DiscordSRV features (filter, commands) may work at all: the master switch is on and the mode is not {@code off}. */
+    boolean hookEnabled() {
+        return engine.value(DiscordSettings.ENABLED) && !DiscordSettings.MODE_OFF.equals(engine.value(DiscordSettings.MODE));
+    }
+
+    boolean bridgeCarriesAlerts() {
+        String mode = engine.value(DiscordSettings.MODE);
+        return link != null && engine.value(DiscordSettings.ENABLED)
+            && (DiscordSettings.MODE_AUTO.equals(mode) || DiscordSettings.MODE_DISCORDSRV.equals(mode));
+    }
+
+    private void applyMode() {
+        if (link != null || linkSuppressed) {
+            suppressed = bridgeCarriesAlerts();
+            linkSuppressed = suppressed;
+        }
     }
 
     /** Stops listening and sends what is still waiting (once, at once, for at most {@code discord.http.shutdown-wait}). */
@@ -88,6 +135,10 @@ public final class DiscordService {
     // ------------------------------------------------------------------------------------------
 
     private void onEvent(ModerationEvent event) {
+        DiscordLink current = link;
+        if (current != null) {
+            current.onEvent(event);
+        }
         if (!active()) {
             return;
         }
@@ -235,7 +286,9 @@ public final class DiscordService {
     List<String> status() {
         List<String> lines = new ArrayList<>();
         lines.add("enabled: " + engine.value(DiscordSettings.ENABLED) + ", mode: " + engine.value(DiscordSettings.MODE)
-            + (suppressed ? " (webhooks currently handed over to DiscordSRV)" : "") + ", sending: " + (active() ? "yes" : "no"));
+            + (suppressed ? " (webhooks currently handed over to DiscordSRV)" : "") + ", sending: " + (active() ? "yes" : "no")
+            + ", DiscordSRV: " + (link == null ? "not connected (Bukkit family only)" : "connected (" + link.bridge().name() + ")"));
+
         for (String target : List.of(ALERTS, LOG)) {
             Setting<String> url = ALERTS.equals(target) ? DiscordSettings.ALERTS_URL : DiscordSettings.LOG_URL;
             WebhookSender s = ALERTS.equals(target) ? alerts : log;
@@ -317,7 +370,11 @@ public final class DiscordService {
     }
 
     private boolean routed(Setting<List<String>> setting, String kind) {
-        for (String entry : engine.value(setting)) {
+        return routed(engine.value(setting), kind);
+    }
+
+    static boolean routed(List<String> kinds, String kind) {
+        for (String entry : kinds) {
             String e = entry.trim().toLowerCase(Locale.ROOT);
             if (e.equals("*") || e.equals(kind)) {
                 return true;
