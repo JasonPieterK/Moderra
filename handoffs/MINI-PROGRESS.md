@@ -159,3 +159,10 @@ copies the documented `legacy` step (in the `ladder.steps` comment and shown by 
 ### Left for later mini tasks
 - Mute service (implements `MuteHandler`), history (`/abw history`), adapters, guides (`6-guides/MODERATION.md`, README command
   table is generated?: check, CHANGELOG, engine README), bot.js. Nothing verified on a real server.
+
+## Mini task 8: flaky-test fix and moderation adapters (session 4, adapters + docs)
+
+Verification: engine suite run 6 times in a row, 271 tests, no failure; plugin and mod permission/adapter files stub-compiled (javac) clean; bot.js `node --check` only.
+- Flaky cause: engines started by tests were never shut down, so the history writer / webhook / debounced saves could create files while JUnit deleted `@TempDir`. Fix: `TestEngines` (global JUnit extension via `META-INF/services` + `junit-platform.properties`) shuts down tracked engines after each test; use `TestEngines.track(Engine.load(...))` for new engines outside `Fixture`. `Engine.shutdown()` is idempotent (`shutDown` flag).
+- Adapters: `plugin.yml` permissions; `BukkitPlatform.kick` via `runSync`; `ForgePermissions` nodes; Fabric/ModPermissions docs. No new `PunishmentExecutor` code needed: ladder actions go through the engine (`Platform.kick`, `MuteHandler`, `applyAction`). Join/quit and inspect for chat/command/sign/book were already wired.
+- Docs: `6-guides/MODERATION.md`, README matrix, CHANGELOG, FABRIC-AND-FORGE-STATUS, engine README, BUILD-VERIFICATION-TODO; `bot.js` modes `moderation` and `moderation-again` (+ README table).

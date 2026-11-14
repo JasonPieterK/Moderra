@@ -27,6 +27,15 @@ was written, and has never run on a server. The jars in `1-download-jars/` are s
 * Programmatic edits (custom words, whitelist, languages) change only the lines they must: comments and order stay.
 * `6-guides/CONFIGURATION.md` is now generated from the code, so it cannot drift from the real options.
 
+### Moderation (session 4)
+* **Persistent strikes** (`data/strikes.json`, decay, cap), **escalation ladder** (`ladder.steps`: warn, mute, kick, ban, command),
+  **built-in mute** (`/abw mute|unmute|mutes`, blocks chat, chosen commands, signs, books) and **history**
+  (`/abw history`, monthly JSONL, retention, privacy defaults). Guide: `6-guides/MODERATION.md`.
+* New permissions: `antibadwords.mute`, `.history`, `.discord`, `.gui` (operators), `.bypass.mute` (nobody), declared in
+  `plugin.yml` and the Forge permission nodes; Fabric passes them to the Permissions API.
+* Bukkit kicks now always run on the main thread. `bot.js` has `moderation` and `moderation-again` modes (never run).
+* Fixed a flaky test failure ("Failed to delete temp directory"): tests now shut their engines down; `Engine.shutdown()` is idempotent.
+
 ### New filters (second step of this round) - all off or silent until you switch them on
 * **Bypass tricks** (`filters/evasion.yml`, `filters/confusables.yml`). Before a message is compared with the word lists
   it is cleaned up: invisible characters removed, full-width and other special letter forms folded, accents ignored,

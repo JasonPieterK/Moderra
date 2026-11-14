@@ -46,6 +46,13 @@ effects/attributes/sounds). Sign lines and book pages go through `engine.inspect
 | a new text source (join name ...) | `engine.registerSource("join", SCAN_SWITCH_SETTING)` and send `Message`s with that source |
 | a programmatic config change | `engine.set(setting, value)`, `engine.addToList(...)`, `engine.removeFromList(...)` or `engine.config().edit(file, editor -> ...)` - they use `YamlEditor`, which keeps comments |
 
+## Moderation (package `engine.moderation`)
+`PersistentStrikeService`, `Ladder`, `MuteService` (`engine.mutes()`), `HistoryStore` (`engine.history()`), `PlayerDirectory`,
+`DurationParser`, `DataFile`. Adapters only need `engine.onJoin/onQuit/shutdown`, `inspect` for every text source and the
+permissions `antibadwords.mute/.history/.bypass.mute`. See `6-guides/MODERATION.md`.
+Tests: every test that starts an engine goes through `TestEngines.track` (global JUnit extension) so engines are shut down
+before the `@TempDir` is deleted.
+
 ## The filters (package `engine.filters`)
 
 | Class | What it does |

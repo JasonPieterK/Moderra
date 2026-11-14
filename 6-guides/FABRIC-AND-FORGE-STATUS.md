@@ -24,6 +24,8 @@
 > | Sign back side with its own switch | pass | not run (uses `SignChangeEvent#getSide`, Bukkit 1.20+) | **switch has no effect**: both sides are scanned with `scan.signs` | **switch has no effect** |
 > | Command blocks | pass | not run; checked when the block runs the command (assumes the server fires `ServerCommandEvent` for command blocks) | **not implemented** | **not implemented** |
 > | New permissions `antibadwords.bypass.spam` / `.links` / `.evasion` | pass | in `plugin.yml`, not run | default nobody; needs the Fabric Permissions API to grant | registered as Forge nodes, not run |
+> | Moderation: strikes, ladder, mute, history (join/quit, mute for chat/commands/signs/books go through the same engine calls as before) | pass | permissions in `plugin.yml`, stub-compiled, not run | nodes pass through to the Permissions API, stub-compiled, not run | nodes `mute history discord gui bypass.mute` registered, stub-compiled, not run; kick via `/kick` |
+> | Scripted player `bot.js ... moderation` / `moderation-again` | - | never run | never run | never run |
 > | Scripted player `bot.js ... filters` (14 checks) | - | never run | never run | never run |
 >
 > "Not compiled" means: only compiled against a small hand-written stand-in for the API classes, which proves that the

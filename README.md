@@ -54,9 +54,10 @@ profiles, and the new spam, link and bypass-trick filters - newer than the jars)
 
 | Part | How it was checked |
 |---|---|
-| Shared engine (`5-shared-engine`: all rules, config folder, migration, commands) | **130 automatic unit tests pass** (`cd 5-shared-engine && mvn test`) |
+| Shared engine (`5-shared-engine`: all rules, config folder, migration, commands) | **271 automatic unit tests pass** (`cd 5-shared-engine && mvn test`) |
 | New filters: spam and flood control, link filter, bypass-trick clean-up and detection, join-name check, check order | part of those 130 tests, including a speed test (10 000 words, 256-character message: 99 of 100 checks under 0.3 ms with every filter on) |
 | Join-name check, sign back side, command blocks, "censor" in chat: the wiring into the server | Bukkit: written, compiled only against a hand-written stand-in, **never run**. Fabric/Forge: join-name check written the same way; **command blocks are not scanned and the sign-back switch does nothing there yet** |
+| Moderation (persistent strikes, ladder, mute, history; `6-guides/MODERATION.md`) | engine unit tests pass (271 tests in total, the suite was run 6 times in a row without a failure). Permissions, join/quit, kick wiring: compiled against hand-written stand-ins only, **never run**. Scripted player `bot.js ... moderation` / `moderation-again`: syntax-checked only |
 | Scripted player for the new filters (`bot.js ... filters`) | written, syntax-checked only, **never run** |
 | Bukkit / Purpur plugin code that connects the engine to the server | **not compiled** against the real Spigot API, **never run** on a server (only compiled against a hand-written stand-in) |
 | Fabric and Forge code that connects the engine to the game | **not compiled** against Minecraft, Fabric or Forge, **never run** on a server (only compiled against a hand-written stand-in) |

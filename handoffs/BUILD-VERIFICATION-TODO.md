@@ -153,3 +153,12 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
 - [ ] **Unicode confusables data**: unicode.org was unreachable, so the table was built from the ICU repository's copy of
       `confusables.txt` 18.0.0 (see `7-wordlists/NOTICE.md`). Re-run `5-shared-engine/generate-confusables.py` against
       the official file when the network allows, and check the diff is empty.
+
+## Session 4 (moderation adapters, mini task 8)
+- [ ] Bukkit: permissions `antibadwords.mute/.history/.discord/.gui/.bypass.mute` in `plugin.yml` (stub-compiled only). Check `/lp`/`/perm` sees them and defaults (op / nobody) are right.
+- [ ] Bukkit: `BukkitPlatform.kick` now goes through `runSync`; confirm a ladder `kick` from an async chat event kicks with the message.
+- [ ] Forge: the new `PermissionNode`s (`mute history discord gui bypass.mute`) register at gather time; check with a permission mod.
+- [ ] Fabric: new nodes are passed to the Permissions API by reflection (unchanged code path); check with LuckPerms.
+- [ ] Fabric/Forge: ladder `kick` uses the vanilla `/kick` command; check message formatting. Mute checks for signs/books/commands rely on existing `ModRuntime` calls to `inspect`.
+- [ ] Run `live-player-test/bot.js ... moderation`, then restart the server, then `moderation-again` (written, only `node --check`ed). Needs the config in `live-player-test/README.md`.
+- [ ] Not done (no API in the repo): mute enforcement on Fabric/Forge for the `world` name, and a GUI/Discord permission check on mods beyond nodes.
