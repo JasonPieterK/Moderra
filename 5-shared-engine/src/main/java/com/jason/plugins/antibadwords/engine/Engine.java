@@ -118,6 +118,7 @@ public final class Engine {
     private final PlayerDirectory players;
     private final HistoryStore history;
     private final MuteService mutes;
+    private final com.jason.plugins.antibadwords.engine.network.NetworkSync network = new com.jason.plugins.antibadwords.engine.network.NetworkSync(this);
     private final DiscordService discord;
     private final com.jason.plugins.antibadwords.engine.integrations.BanService bans = new com.jason.plugins.antibadwords.engine.integrations.BanService(this);
     private final com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock = new com.jason.plugins.antibadwords.engine.integrations.BedrockNames(this);
@@ -201,6 +202,7 @@ public final class Engine {
         commands.register(new com.jason.plugins.antibadwords.engine.command.GuiCommand());
         discord.install();
         essentials.install();
+        network.install(mutes, persistentStrikes);
     }
 
     /**
@@ -223,6 +225,7 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.network.NetworkSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -944,6 +947,11 @@ public final class Engine {
     }
 
     /** The built-in mute (state in {@code data/mutes.json}); also installed as {@link #muteHandler()}. */
+    /** Shared mute and strike list of a network (integrations.network.*). */
+    public com.jason.plugins.antibadwords.engine.network.NetworkSync network() {
+        return network;
+    }
+
     public MuteService mutes() {
         return mutes;
     }
@@ -1053,6 +1061,7 @@ public final class Engine {
         }
         shutDown = true;
         discord.shutdown();
+        network.shutdown();
         // strikes that are kept across restarts are written first; memory is emptied either way
         boolean keep = keepsStrikes();
         persistentStrikes.shutdown(keep);
