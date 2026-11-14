@@ -21,6 +21,8 @@ import com.jason.plugins.antibadwords.engine.filters.LinkSettings;
 import com.jason.plugins.antibadwords.engine.filters.SpamCheck;
 import com.jason.plugins.antibadwords.engine.filters.SpamSettings;
 import com.jason.plugins.antibadwords.engine.filters.SpamState;
+import com.jason.plugins.antibadwords.engine.gui.prompt.PromptService;
+import com.jason.plugins.antibadwords.engine.gui.prompt.PromptSettings;
 import com.jason.plugins.antibadwords.engine.moderation.DataFile;
 import com.jason.plugins.antibadwords.engine.moderation.DurationParser;
 import com.jason.plugins.antibadwords.engine.moderation.LadderSettings;
@@ -93,6 +95,7 @@ public final class Engine {
     private final List<RegisteredCheck> checks = new CopyOnWriteArrayList<>();
     private final Map<String, List<Setting<Boolean>>> sourceSwitches = new ConcurrentHashMap<>();
     private final SpamState spamState = new SpamState();
+    private final PromptService prompts;
     /** Bumped whenever a check is registered, so the cached per-profile order is rebuilt. */
     private volatile int checksVersion;
     /** "This was reported at ..." for things that would otherwise be reported many times per second (command blocks). */
@@ -110,6 +113,7 @@ public final class Engine {
         this.platform = platform;
         this.folder = folder;
         this.clock = clock;
+        this.prompts = new PromptService(this, platform, clock);
         this.store = new ConfigStore(folder, registry);
         this.events = new EventBus(platform.logger());
         this.commands = new CommandRegistry(this);
@@ -181,6 +185,7 @@ public final class Engine {
         EvasionSettings.register(registry);
         ModerationSettings.register(registry);
         LadderSettings.register(registry);
+        PromptSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -494,6 +499,9 @@ public final class Engine {
      * ({@link Platform#canRewrite(String)}).
      */
     public Verdict inspect(Message message) {
+        if (Message.CHAT.equals(message.source()) && message.playerId() != null && prompts.onChat(message.playerId(), message.text())) {
+            return Verdict.captured(settings());
+        }
         return judge(message, true, true);
     }
 
@@ -727,6 +735,11 @@ public final class Engine {
     // ------------------------------------------------------------------------------------------
     // Services
     // ------------------------------------------------------------------------------------------
+
+    /** The text prompts of the menu (chat capture, sign input). */
+    public PromptService prompts() {
+        return prompts;
+    }
 
     public Platform platform() {
         return platform;

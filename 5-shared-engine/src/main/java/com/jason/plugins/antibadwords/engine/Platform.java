@@ -78,4 +78,17 @@ public interface Platform {
      * @return a short description for the punishment message ("blindness"), or {@code null} when it could not be applied
      */
     String applyAction(UUID player, PunishmentAction action);
+
+    /** Whether {@link #openSignPrompt} works here (a sign editor can be opened for a text input). Default: no, the chat is used. */
+    default boolean supportsSignPrompt() {
+        return false;
+    }
+
+    /**
+     * Opens a sign editor for the player; when the player finishes it the loader calls
+     * {@code engine.prompts().onSignInput(uuid, lines)} and cancels the edit when that returns true. Called again after
+     * an invalid answer. Only called when {@link #supportsSignPrompt()} is true.
+     */
+    default void openSignPrompt(UUID player, String title, String hint) {
+    }
 }

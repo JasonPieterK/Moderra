@@ -39,6 +39,14 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `config-version` | whole number | `2` | no | Layout version of this config folder. Do not change it (it tells the plugin that this is the new folder layout). |
 | `logging.console` | true or false | `true` | yes | Print every blocked word to the server console. |
 | `commands.list-page-size` | whole number from 1 to 100 | `10` | no | How many entries one page of a list command shows (for example /abw whitelist list). |
+| `gui.prompt.mode` | one of: auto, sign, chat | `auto` | no | How the menu asks a player to type a value. auto = a sign editor where the server software supports it,<br>otherwise the chat. chat = always the chat (the player's next chat message is taken, never shown to anyone,<br>never checked or saved). sign = sign editor, falls back to chat where it is not available. |
+| `gui.prompt.timeout` | time such as 30s, 10m, 2h or 1d, at least 5s, at most 1h | `1m` | no | A text input is cancelled when the player does not answer within this time. |
+| `gui.prompt.cancel-word` | text | `cancel` | no | Typing this word (any letter case) in the chat prompt aborts it. |
+| `gui.prompt.messages.chat` | text | `&eType the new value for &f{title}&e in the chat. &7{hint}\n&7Type &f{cancel}&7 to abort ({seconds}s).` | no | Shown when a chat input starts. Placeholders: {title}, {hint}, {cancel}, {seconds}. \n = new line. |
+| `gui.prompt.messages.sign` | text | `&eWrite the new value for &f{title}&e on the sign; the lines are joined with spaces. &7{hint}\n&7Leave it empty to abort ({seconds}s).` | no | Shown when a sign input starts. Placeholders: {title}, {hint}, {seconds}. \n = new line. |
+| `gui.prompt.messages.error` | text | `&c{error} &7Try again, or type &f{cancel}&7.` | no | Shown when the typed value is not valid. Placeholders: {error}, {cancel}. |
+| `gui.prompt.messages.cancelled` | text | `&7Input cancelled.` | no | Shown when the player aborts a text input. |
+| `gui.prompt.messages.timeout` | text | `&7Input cancelled: no answer in time.` | no | Shown when a text input ran out of time. |
 
 ### Languages
 

@@ -28,6 +28,18 @@ public final class FakePlatform implements Platform {
     public final List<String> appliedActions = new ArrayList<>();
     public final List<String> infos = new ArrayList<>();
     public final List<String> warnings = new ArrayList<>();
+    public boolean signPrompts;
+    public final List<String> signOpened = new ArrayList<>();
+
+    @Override
+    public boolean supportsSignPrompt() {
+        return signPrompts;
+    }
+
+    @Override
+    public void openSignPrompt(UUID player, String title, String hint) {
+        signOpened.add(title);
+    }
     /** Sources where this pretend server can deliver a changed text (a real Bukkit server: chat). */
     public final Set<String> rewritable = new HashSet<>();
 
