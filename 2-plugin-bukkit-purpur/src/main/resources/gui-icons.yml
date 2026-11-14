@@ -1,0 +1,29 @@
+# AntiBadWords menu icons: which item stands for which abstract icon name.
+#
+# The menu (shared engine) only knows icon NAMES like "toggle_on". This file says which Bukkit Material shows for each
+# name. Admins can change it: copy this file to plugins/AntiBadWords/gui-icons.yml and edit; keys you leave out keep the
+# default below. Names are Bukkit Material names (e.g. LIME_DYE), see the Material list of your server version.
+# A name that does not exist on your server version (or is not an item) shows the "fallback" material instead.
+# The file is read again every time a menu opens.
+fallback: PAPER
+icons:
+  category: CHEST
+  toggle_on: LIME_DYE
+  toggle_off: GRAY_DYE
+  number: CLOCK
+  duration: CLOCK
+  cycle: COMPARATOR
+  text: NAME_TAG
+  secret: TRIPWIRE_HOOK
+  list: BOOK
+  list_item: PAPER
+  add: EMERALD
+  back: ARROW
+  home: OAK_DOOR
+  prev_page: SPECTRAL_ARROW
+  next_page: SPECTRAL_ARROW
+  info: OAK_SIGN
+  done: LIME_CONCRETE
+  cancel: RED_CONCRETE
+  reset: BARRIER
+  warning: ORANGE_CONCRETE

@@ -64,6 +64,11 @@ public final class AntiBadWordsListener implements Listener {
         // Runs on an async thread: inspect() is thread-safe, onViolation() switches to the main thread itself.
         Message message = message(event.getPlayer(), Message.CHAT, event.getMessage());
         Verdict verdict = engine().inspect(message);
+        if (verdict.captured()) {
+            // The line was the answer of a menu text prompt: no broadcast, no scan, no event, no violation.
+            event.setCancelled(true);
+            return;
+        }
         if (verdict.blocked()) {
             event.setCancelled(true);
         } else if (verdict.censored()) {

@@ -151,6 +151,13 @@ public final class BukkitPlatform implements Platform {
         return Message.CHAT.equals(source);
     }
 
+    /*
+     * Sign prompts are NOT implemented on Bukkit (supportsSignPrompt() stays false, so text prompts use the chat).
+     * The only API that opens a sign editor, Paper's Player#openSign(Sign, Side), needs a real sign block placed in a
+     * world (and is not in Bukkit/Spigot), so using it would mean placing a temporary block in the player's world.
+     * Not worth the risk (protection plugins, block updates, crashes leaving blocks behind). Chat prompt it is.
+     */
+
     @Override
     public void runSyncLater(Runnable task, long delayMillis) {
         Bukkit.getScheduler().runTaskLater(plugin, task, Math.max(1L, delayMillis / 50L));

@@ -1,5 +1,7 @@
 package com.jason.plugins.antibadwords;
 
+import com.jason.plugins.antibadwords.engine.gui.Menu;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import org.bukkit.command.Command;
@@ -21,16 +23,46 @@ public final class AntiBadWordsCommand implements CommandExecutor, TabCompleter 
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        // The menu: bare /abw or /abw gui [page], players with antibadwords.gui only. Everyone else (console, players
+        // without the permission) keeps the text commands of the engine.
+        if (sender instanceof Player player) {
+            boolean bare = args.length == 0;
+            boolean gui = args.length >= 1 && args[0].equalsIgnoreCase("gui");
+            if ((bare || gui) && player.hasPermission(Menu.PERMISSION)) {
+                plugin.getGui().open(player, gui && args.length >= 2 ? parsePage(args[1]) : 1);
+                return true;
+            }
+            if (gui) {
+                player.sendMessage("\u00a7cNo permission.");
+                return true;
+            }
+        } else if (args.length >= 1 && args[0].equalsIgnoreCase("gui")) {
+            sender.sendMessage("\u00a7eThe menu can only be opened by a player in the game.");
+            return true;
+        }
         plugin.getEngine().commands().execute(wrap(sender), label, args);
         return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        return plugin.getEngine().commands().complete(wrap(sender), args);
+        List<String> out = new ArrayList<>(plugin.getEngine().commands().complete(wrap(sender), args));
+        if (args.length == 1 && sender instanceof Player && sender.hasPermission(Menu.PERMISSION)
+            && "gui".startsWith(args[0].toLowerCase(java.util.Locale.ROOT)) && !out.contains("gui")) {
+            out.add("gui");
+        }
+        return out;
     }
 
-    private static com.jason.plugins.antibadwords.engine.command.CommandSender wrap(CommandSender sender) {
+    private static int parsePage(String text) {
+        try {
+            return Math.max(1, Integer.parseInt(text.trim()));
+        } catch (NumberFormatException ex) {
+            return 1;
+        }
+    }
+
+    public static com.jason.plugins.antibadwords.engine.command.CommandSender wrap(CommandSender sender) {
         return new com.jason.plugins.antibadwords.engine.command.CommandSender() {
             @Override
             public String name() {

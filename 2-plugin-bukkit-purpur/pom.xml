@@ -80,6 +80,14 @@
                     <include>plugin.yml</include>
                 </includes>
             </resource>
+            <!-- Default icon mapping of the menu (admins override it with plugins/AntiBadWords/gui-icons.yml). -->
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>gui-icons.yml</include>
+                </includes>
+            </resource>
             <!-- The shared engine's own files (default punishment sections, word-list index); never filtered. -->
             <resource>
                 <directory>../5-shared-engine/src/main/resources</directory>
