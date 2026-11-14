@@ -302,6 +302,47 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `mute.messages.unmuted` | text | `&aYou are no longer muted.` | no | Sent to the player (when online) when a staff member lifts the mute. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
 | `mute.messages.expired` | text | `&aYour mute has run out. You can chat again.` | no | Sent to the player (when online) when the mute runs out. Placeholders: {player} {reason} {remaining} {duration} {by}. Colours: & codes. |
 
+## `discord.yml`
+
+### Discord
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `discord.enabled` | true or false | `false` | no | Master switch. false = nothing is ever sent to Discord (default). |
+| `discord.mode` | one of: auto, webhook, discordsrv, off | `auto` | no | How alerts reach Discord:<br>  auto       = DiscordSRV when it is installed (Bukkit family only), otherwise the webhooks below<br>  webhook    = always the webhooks below (works on every server type)<br>  discordsrv = only through DiscordSRV (Bukkit family only; ignored by Fabric and Forge)<br>  off        = nothing is sent |
+| `discord.webhook.alerts-url` | secret text (never shown) | `(not set)` | no | SECRET. The webhook URL of your alerts channel (Discord: channel settings > Integrations > Webhooks).<br>Anyone with this URL can post in your channel, so keep this file private. Better: write ${ENV:ABW_ALERTS_URL}<br>and set that environment variable on the server. Empty = no alerts channel. |
+| `discord.webhook.log-url` | secret text (never shown) | `(not set)` | no | SECRET. Optional second webhook for a quiet log channel (see routing.log). Same rules as the alerts<br>webhook, ${ENV:NAME} works too. Empty = no log channel. |
+| `discord.webhook.username` | text | `AntiBadWords` | no | The name shown for the messages in Discord. Empty = the name set in the webhook. |
+| `discord.routing.alerts` | list of texts | `punishment`, `mute`, `unmute`, `evasion`, `admin-command` | no | Event kinds: violation, punishment, mute, unmute, spam, link, evasion, admin-command. "*" = every kind. |
+| `discord.routing.log` | list of texts | `*` | no | Same kinds as above; the default "*" logs everything. Only used when log-url is set. A kind can go to both. |
+| `discord.style` | one of: embed, plain | `embed` | no | embed = a coloured card per event, plain = one line of text per event. |
+| `discord.mention` | text | (empty) | no | Written exactly as Discord wants it, for example <@&123456789> (a role) or <@123456789> (a person); empty = nobody.<br>Only @everyone, @here, roles and users that appear here can ever be pinged; names typed by players never can. |
+| `discord.mention-kinds` | list of texts | `punishment` | no | Which kinds add the mention (the severe ones). Same kinds as above, "*" = all. |
+| `discord.queue.size` | whole number from 10 to 10000 | `500` | no | How many messages may wait per webhook. When it is full the OLDEST waiting message is dropped (with a warning).<br>The server never waits for Discord. |
+| `discord.rate.min-interval` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 1h | `1s` | no | Shortest time between two requests to the same webhook (Discord allows about 5 per 2 seconds; 429 answers are<br>also honoured). |
+| `discord.rate.batch-size` | whole number from 1 to 10 | `5` | no | Up to this many events are sent in one request (embed style: up to 10 cards; plain style: lines). |
+| `discord.rate.batch-wait` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 10m | `2s` | no | After the first waiting event the sender waits this long for more before sending. 0s = send at once. |
+| `discord.http.timeout` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 2m | `10s` | no | How long one request may take. |
+| `discord.http.retries` | whole number from 0 to 10 | `3` | no | How often a failed request (no connection, 5xx, 429) is repeated before the batch is given up. |
+| `discord.http.backoff` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 10m | `2s` | no | Wait before the first retry; it doubles every time (2s, 4s, 8s ...). |
+| `discord.http.shutdown-wait` | time such as 30s, 10m, 2h or 1d, at least 0s, at most 1m | `5s` | no | When the server stops, waiting messages are sent right away; this is the longest the shutdown waits for that. |
+| `discord.colors.violation` | text | `#F1C40F` | no | Colour of the violation card (embed style) as #RRGGBB. |
+| `discord.colors.punishment` | text | `#E74C3C` | no | Colour of the punishment card (embed style) as #RRGGBB. |
+| `discord.colors.mute` | text | `#E67E22` | no | Colour of the mute card (embed style) as #RRGGBB. |
+| `discord.colors.unmute` | text | `#2ECC71` | no | Colour of the unmute card (embed style) as #RRGGBB. |
+| `discord.colors.spam` | text | `#3498DB` | no | Colour of the spam card (embed style) as #RRGGBB. |
+| `discord.colors.link` | text | `#9B59B6` | no | Colour of the link card (embed style) as #RRGGBB. |
+| `discord.colors.evasion` | text | `#1ABC9C` | no | Colour of the evasion card (embed style) as #RRGGBB. |
+| `discord.colors.admin-command` | text | `#95A5A6` | no | Colour of the admin-command card (embed style) as #RRGGBB. |
+| `discord.templates.violation` | text | `{player} used a blocked word in {source}: {word} ({count}/{limit}, {action})` | no | Text for violation events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.punishment` | text | `{player} was punished ({action}) at {count} strikes, step {step}` | no | Text for punishment events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.mute` | text | `{player} was muted for {duration}: {reason}` | no | Text for mute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.unmute` | text | `{player} was unmuted` | no | Text for unmute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.spam` | text | `{player} triggered the spam filter ({check}: {detail}) in {source}, action {action}` | no | Text for spam events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.link` | text | `{player} posted a link in {source}: {detail} (action {action})` | no | Text for link events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.evasion` | text | `{player} tried to dodge the filter in {source}: {detail} (action {action})` | no | Text for evasion events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.admin-command` | text | `{player} ran /{command}` | no | Text for admin-command events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+
 ## The extra filters in plain words
 
 A message goes through the checks in the order of `filters.check-order` (config.yml):

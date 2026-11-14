@@ -14,7 +14,7 @@ import java.util.UUID;
  * for every hit of such a check (data: check, detail, action = block / censor / log-only, weight, profile, text), published
  * <em>in addition to</em> the one {@code violation} event per message - count one or the other, not both. A bad player name
  * on join is a {@code violation} with source {@code join} and action {@code log}, {@code warn} or {@code kick}.
- * Reserved for later features: {@code mute}, {@code unmute}, {@code mute-expired}, {@code discord-in}.
+ * Reserved for later features (already routed by the Discord alerts): {@code mute}, {@code unmute}, {@code mute-expired}, {@code discord-in}.
  *
  * @param kind       what happened
  * @param time       when, in milliseconds since 1970

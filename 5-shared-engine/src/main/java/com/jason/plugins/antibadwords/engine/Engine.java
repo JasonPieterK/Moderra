@@ -14,6 +14,8 @@ import com.jason.plugins.antibadwords.engine.config.WordList;
 import com.jason.plugins.antibadwords.engine.config.WordLists;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.engine.config.YamlEditor;
+import com.jason.plugins.antibadwords.engine.discord.DiscordService;
+import com.jason.plugins.antibadwords.engine.discord.DiscordSettings;
 import com.jason.plugins.antibadwords.engine.filters.EvasionCheck;
 import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
 import com.jason.plugins.antibadwords.engine.filters.LinkCheck;
@@ -108,6 +110,7 @@ public final class Engine {
     private final PlayerDirectory players;
     private final HistoryStore history;
     private final MuteService mutes;
+    private final DiscordService discord;
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -120,6 +123,7 @@ public final class Engine {
         this.store = new ConfigStore(folder, registry);
         this.events = new EventBus(platform.logger());
         this.commands = new CommandRegistry(this);
+        this.discord = new DiscordService(this);
         // data files are written off the server thread, a moment after the change
         DataFile.Scheduler saver = (task, delay) -> platform.runSync(() -> platform.runSyncLater(() -> platform.runAsync(task), delay));
         Path data = folder.resolve(DATA_FOLDER);
@@ -179,6 +183,7 @@ public final class Engine {
         LadderCommands.register(commands);
         commands.register(new com.jason.plugins.antibadwords.engine.command.HistoryCommand());
         MuteCommands.register(commands);
+        discord.install();
     }
 
     /**
@@ -195,6 +200,7 @@ public final class Engine {
         LadderSettings.register(registry);
         HistorySettings.register(registry);
         MuteSettings.register(registry);
+        DiscordSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -752,6 +758,11 @@ public final class Engine {
         return platform;
     }
 
+    /** Discord webhook alerts (settings in {@code discord.yml}, command {@code /abw discord}). */
+    public DiscordService discord() {
+        return discord;
+    }
+
     public EventBus events() {
         return events;
     }
@@ -865,6 +876,7 @@ public final class Engine {
 
     /** Call when the server stops. */
     public void shutdown() {
+        discord.shutdown();
         // strikes that are kept across restarts are written first; memory is emptied either way
         persistentStrikes.shutdown(keepsStrikes());
         if (strikes != persistentStrikes) {
