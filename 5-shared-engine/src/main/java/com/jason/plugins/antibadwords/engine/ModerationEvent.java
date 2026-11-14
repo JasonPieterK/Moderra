@@ -8,7 +8,8 @@ import java.util.UUID;
  * Discord ...). Deliberately generic so new features only add new {@code kind}s and {@code data} keys.
  *
  * <p>Kinds published by the core: {@code violation} (data: check, word, detail, severity, action, weight, count, limit,
- * remaining, profile, text), {@code punishment} (data: word, punishments, count, limit, profile) and
+ * remaining, profile, text), {@code punishment} (data: word, punishments, count, limit, profile, step = the ladder step's name or
+ * {@code legacy} for the classic flat setup, threshold; for a ladder step also actions, reason, duration, uuid) and
  * {@code admin-command} (data: command, sender). The filters add {@code spam}, {@code link} and {@code evasion}: one event
  * for every hit of such a check (data: check, detail, action = block / censor / log-only, weight, profile, text), published
  * <em>in addition to</em> the one {@code violation} event per message - count one or the other, not both. A bad player name

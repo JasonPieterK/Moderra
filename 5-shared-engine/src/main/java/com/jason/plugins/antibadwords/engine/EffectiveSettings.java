@@ -10,6 +10,8 @@ import com.jason.plugins.antibadwords.engine.config.PunishmentParser;
 import com.jason.plugins.antibadwords.engine.config.WordList;
 import com.jason.plugins.antibadwords.engine.config.WordLists;
 import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
+import com.jason.plugins.antibadwords.engine.moderation.Ladder;
+import com.jason.plugins.antibadwords.engine.moderation.LadderSettings;
 import com.jason.plugins.antibadwords.mod.Names;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public final class EffectiveSettings {
     private final List<String> activeWords;
     private final Map<String, Integer> tiers = new HashMap<>();
     private final AntiBadWordsSettings legacy;
+    private final Ladder ladder;
 
     EffectiveSettings(String profile, Map<String, Object> values, Map<String, Map<String, Object>> sections, WordLists lists,
                       Consumer<String> warn) {
@@ -91,6 +94,7 @@ public final class EffectiveSettings {
             get(CoreSettings.NOTIFY_STAFF), Names.colour(get(CoreSettings.STAFF_NOTIFY_FORMAT)), get(CoreSettings.LOG_CONSOLE),
             get(CoreSettings.SCAN_CHAT), get(CoreSettings.SCAN_COMMANDS), get(CoreSettings.SCAN_SIGNS), get(CoreSettings.SCAN_BOOKS),
             get(CoreSettings.SCAN_ANVIL), lowerCaseSet(get(CoreSettings.SCANNED_COMMANDS)), lowerCaseSet(get(CoreSettings.IGNORED_COMMANDS)));
+        this.ladder = Ladder.parse(section(LadderSettings.STEPS), warn);
     }
 
     private static Set<String> lowerCaseSet(List<String> values) {
@@ -165,5 +169,13 @@ public final class EffectiveSettings {
     /** The classic settings record (messages already coloured) that the punishment flow uses. */
     public AntiBadWordsSettings legacy() {
         return legacy;
+    }
+
+    /**
+     * The punishment ladder of this profile ({@code ladder.steps}). Empty by default: then the classic setup
+     * ({@code punishment.violations-before-punish} plus the enabled actions) is used.
+     */
+    public Ladder ladder() {
+        return ladder;
     }
 }

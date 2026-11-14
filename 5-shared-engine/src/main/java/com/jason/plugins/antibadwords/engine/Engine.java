@@ -21,7 +21,10 @@ import com.jason.plugins.antibadwords.engine.filters.SpamCheck;
 import com.jason.plugins.antibadwords.engine.filters.SpamSettings;
 import com.jason.plugins.antibadwords.engine.filters.SpamState;
 import com.jason.plugins.antibadwords.engine.moderation.DataFile;
+import com.jason.plugins.antibadwords.engine.moderation.DurationParser;
+import com.jason.plugins.antibadwords.engine.moderation.LadderSettings;
 import com.jason.plugins.antibadwords.engine.moderation.ModerationSettings;
+import com.jason.plugins.antibadwords.engine.moderation.MuteHandler;
 import com.jason.plugins.antibadwords.engine.moderation.PersistentStrikeService;
 import com.jason.plugins.antibadwords.engine.moderation.PlayerDirectory;
 import com.jason.plugins.antibadwords.Placeholders;
@@ -98,6 +101,8 @@ public final class Engine {
     private final PersistentStrikeService persistentStrikes;
     private final PlayerDirectory players;
     private volatile StrikeService strikes;
+    private final MuteHandler noMutes;
+    private volatile MuteHandler muteHandler;
     private volatile State state;
 
     private Engine(Platform platform, Path folder, LongSupplier clock) {
@@ -116,6 +121,13 @@ public final class Engine {
         this.persistentStrikes = new PersistentStrikeService(data.resolve(ModerationSettings.STRIKES_FILE), clock, this::strikeOptions,
             platform.logger(), saver);
         this.strikes = persistentStrikes;
+        // stand-in until the mute feature installs itself with setMuteHandler
+        this.noMutes = (player, name, millis, reason, actor) -> {
+            platform.logger().warn("Cannot mute " + name + " (" + DurationParser.format(millis) + "): the built-in mute is not available. "
+                + "Use a command action with the mute command of another plugin instead.");
+            return false;
+        };
+        this.muteHandler = noMutes;
         registerBuiltIns();
     }
 
@@ -166,6 +178,7 @@ public final class Engine {
         LinkSettings.register(registry);
         EvasionSettings.register(registry);
         ModerationSettings.register(registry);
+        LadderSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -271,11 +284,17 @@ public final class Engine {
         long enabledActions = main.legacy().punishmentActions().stream().filter(a -> a.enabled()).count();
         log.info("Loaded " + main.matcher().size() + " blocked words from " + main.enabledLanguages().size() + " lists.");
         log.info("Loaded punishment actions: " + main.legacy().punishmentActions().size() + " total, " + enabledActions + " enabled.");
+        for (EffectiveSettings each : byProfile.values()) {
+            if (!each.ladder().isEmpty()) {
+                log.info("Punishment ladder" + (byProfile.size() > 1 ? " of profile " + each.profile() : "") + ": "
+                    + each.ladder().steps().size() + " steps (the first at " + each.ladder().firstThreshold() + " strikes).");
+            }
+        }
         log.info("Protection level: " + main.get(CoreSettings.PROTECTION_LEVEL) + " (1=LOW, 2=MEDIUM, 3=HIGH)");
         if (profiles.names().size() > 1) {
             log.info("World profiles: " + String.join(", ", profiles.names()) + " (default: " + profiles.defaultProfile() + ")");
         }
-        if (main.legacy().punishmentEnabled() && enabledActions == 0) {
+        if (main.legacy().punishmentEnabled() && enabledActions == 0 && main.ladder().isEmpty()) {
             log.warn("Punishment is enabled but no punishment action is enabled in " + CoreSettings.LADDER + ".");
         }
         for (Runnable listener : reloadListeners) {
@@ -751,6 +770,16 @@ public final class Engine {
      */
     public void setStrikeService(StrikeService service) {
         this.strikes = service;
+    }
+
+    /** Who carries out the ladder's {@code mute} action. Until the mute feature is installed this only logs a warning. */
+    public MuteHandler muteHandler() {
+        return muteHandler;
+    }
+
+    /** Installs the mute feature for the ladder's {@code mute} action; {@code null} puts the logging stand-in back. */
+    public void setMuteHandler(MuteHandler handler) {
+        this.muteHandler = handler == null ? noMutes : handler;
     }
 
     /** Current time in milliseconds (replaceable in tests). */
