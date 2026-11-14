@@ -67,9 +67,13 @@ public final class MuteCommands {
             }
             c.send(GREEN + "Muted " + target.name() + " for " + DurationParser.format(millis)
                 + (reason.isEmpty() ? "" : " (" + reason + ")") + "." + (c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)"));
-            if (c.engine().platform().has(target.id(), MuteService.BYPASS_PERMISSION)) {
-                c.send(YELLOW + target.name() + " has " + MuteService.BYPASS_PERMISSION + " and is not held back by the mute.");
-            }
+            // online: answered at once; offline: by the permission plugin (LuckPerms) in the background, the answer is sent on the main thread
+            c.engine().hasPermission(target.id(), MuteService.BYPASS_PERMISSION).thenAccept(has -> {
+                if (has) {
+                    c.engine().platform().runSync(() -> c.send(YELLOW + target.name() + " has " + MuteService.BYPASS_PERMISSION
+                        + " and is not held back by the mute."));
+                }
+            });
             c.audit();
         }
 

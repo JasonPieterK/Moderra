@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
+import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
 import com.jason.plugins.antibadwords.gui.GuiListener;
 import com.jason.plugins.antibadwords.gui.GuiManager;
 import com.jason.plugins.antibadwords.integrations.essentials.EssentialsHook;
@@ -29,12 +30,15 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     private GuiManager gui;
     private DiscordSrvHook discordSrv;
     private EssentialsHook essentials;
+    private PlaceholderApiHook placeholderApi;
+    private BukkitPlatform platform;
 
     @Override
     public void onEnable() {
         punishmentExecutor = new PunishmentExecutor(this);
         // Creates the config folder on the first start, or converts an old single config.yml (a backup is kept).
-        engine = Engine.load(new BukkitPlatform(this, punishmentExecutor), getDataFolder().toPath());
+        platform = new BukkitPlatform(this, punishmentExecutor);
+        engine = Engine.load(platform, getDataFolder().toPath());
         engine.addReloadListener(this::registerProfilePermissions);
         registerProfilePermissions();
 
@@ -54,6 +58,8 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         // Players who were already online during a /reload: repair leftovers from earlier sessions.
         getServer().getOnlinePlayers().forEach(punishmentExecutor::restoreLeftovers);
         startDiscordSrv();
+        startLuckPerms();
+        startPlaceholderApi();
         logStartupBanner();
     }
 
@@ -62,6 +68,13 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         if (essentials != null) {
             essentials.stop(engine);
             essentials = null;
+        }
+        if (placeholderApi != null) {
+            placeholderApi.stop();
+            placeholderApi = null;
+        }
+        if (platform != null) {
+            platform.setMessageParser(null);
         }
         if (discordSrv != null) {
             discordSrv.stop();
@@ -116,6 +129,35 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
             discordSrv = DiscordSrvHook.start(this, engine);
         } catch (Throwable ex) { // NoClassDefFoundError and friends included on purpose
             getLogger().warning("The DiscordSRV hook could not start (" + ex.getClass().getSimpleName() + "); webhooks still work.");
+        }
+    }
+
+    /** LuckPerms is optional: its classes are only touched after the plugin was found, and any problem is one log line. */
+    private void startLuckPerms() {
+        try {
+            if (!engine.value(IntegrationSettings.LP_ENABLED)) {
+                getLogger().info("LuckPerms hook: switched off (integrations.luckperms.enabled).");
+                return;
+            }
+            org.bukkit.plugin.Plugin lp = getServer().getPluginManager().getPlugin(LuckPermsHook.PLUGIN_NAME);
+            if (lp == null || !lp.isEnabled()) {
+                return; // not installed: nothing to report
+            }
+            engine.setPermissionSource(LuckPermsHook.start(platform.logger()));
+        } catch (Throwable ex) { // NoClassDefFoundError and friends included on purpose
+            getLogger().warning("The LuckPerms hook could not start (" + ex.getClass().getSimpleName() + "); profiles by group and offline checks are off.");
+        }
+    }
+
+    /** PlaceholderAPI is optional too: the expansion class is loaded only when the plugin is there. */
+    private void startPlaceholderApi() {
+        try {
+            placeholderApi = PlaceholderApiHook.start(this, engine, platform.logger());
+            if (placeholderApi != null) {
+                platform.setMessageParser(placeholderApi::parse);
+            }
+        } catch (Throwable ex) {
+            getLogger().warning("The PlaceholderAPI hook could not start (" + ex.getClass().getSimpleName() + "); placeholders are off.");
         }
     }
 
