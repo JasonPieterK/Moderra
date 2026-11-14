@@ -25,4 +25,12 @@ public final class Icons {
     public static final String CANCEL = "cancel";
     public static final String RESET = "reset";
     public static final String WARNING = "warning";
+    public static final String STATUS = "status";
+    public static final String LANGUAGE = "language";
+    public static final String LANGUAGE_OFF = "language_off";
+    public static final String WORD = "word";
+    public static final String LADDER = "ladder";
+    public static final String MUTE = "mute";
+    public static final String PROFILE = "profile";
+    public static final String SEARCH = "search";
 }

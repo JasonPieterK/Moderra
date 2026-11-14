@@ -7,6 +7,11 @@ import java.util.Map;
 
 /** What the menu needs from the engine: the registry, live values, and one save. */
 public interface ConfigAccess {
+    /** The engine behind this access; {@code null} when there is none (then the special pages are not offered). */
+    default com.jason.plugins.antibadwords.engine.Engine engine() {
+        return null;
+    }
+
     SettingsRegistry registry();
 
     /** The value as currently loaded (not staged). */

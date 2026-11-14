@@ -61,6 +61,7 @@ public final class Menu {
             state.discard();
             return MenuAction.denied();
         }
+        state.setViewer(viewer);
         Entry entry = page(state).slots().get(slot);
         if (entry == null || type == null || type == ClickType.OTHER) {
             return MenuAction.none();
@@ -74,6 +75,7 @@ public final class Menu {
             state.discard();
             return MenuAction.denied();
         }
+        state.setViewer(viewer);
         if (state.hasUnsavedChanges() && state.current().kind() != MenuState.Kind.CONFIRM) {
             state.push(new MenuState.View(MenuState.Kind.CONFIRM, "", 0));
             return MenuAction.refresh();
@@ -94,9 +96,16 @@ public final class Menu {
             state.discard();
             return MenuAction.denied();
         }
+        state.setViewer(viewer);
         TextRequest request = state.pendingText();
         if (request == null) {
             return MenuAction.none();
+        }
+        if (request.purpose() == TextRequest.Purpose.SEARCH) {
+            return SpecialPages.submitSearch(state, text);
+        }
+        if (request.purpose() == TextRequest.Purpose.ADD_CUSTOM_WORD) {
+            return SpecialPages.submitCustomWord(state, text);
         }
         Setting<?> setting = state.access().registry().get(request.key());
         if (setting == null) {
@@ -131,6 +140,44 @@ public final class Menu {
         return MenuAction.refresh();
     }
 
+    /**
+     * Checks a typed answer for the pending request without changing anything: {@code null} = fine, else the error for
+     * the player (never repeats a secret). Used as the validator of the engine's text prompt.
+     */
+    public static String validateText(MenuState state, String text) {
+        TextRequest request = state.pendingText();
+        if (request == null) {
+            return "Nothing is being asked right now.";
+        }
+        String value = text == null ? "" : text.trim();
+        switch (request.purpose()) {
+            case SEARCH:
+                if (value.isEmpty()) {
+                    return "Nothing typed.";
+                }
+                return SpecialPages.find(state, value).isEmpty() ? "No setting matches that. Try another word." : null;
+            case ADD_ITEM:
+                return value.isEmpty() ? "Nothing typed." : null;
+            case ADD_CUSTOM_WORD:
+                return com.jason.plugins.antibadwords.WordMatcher.isValidEntry(value) ? null
+                    : "That is not a valid word (use at least 2 letters or digits).";
+            default:
+                Setting<?> setting = state.access().registry().get(request.key());
+                if (setting == null) {
+                    return "That setting no longer exists.";
+                }
+                if (setting.type() == SettingType.SECRET && value.isEmpty()) {
+                    return "Nothing typed.";
+                }
+                try {
+                    setting.require(text == null ? "" : text);
+                    return null;
+                } catch (IllegalArgumentException ex) {
+                    return setting.type() == SettingType.SECRET ? "That value is not valid." : ex.getMessage();
+                }
+        }
+    }
+
     /** The viewer cancelled the text prompt (typed "cancel", timeout, closed the sign). Nothing changes. */
     public static MenuAction cancelText(MenuState state, CommandSender viewer) {
         if (!allowed(viewer)) {
@@ -156,6 +203,13 @@ public final class Menu {
             case CATEGORY -> categoryPage(state, view);
             case LIST -> listPage(state, view);
             case CONFIRM -> confirmPage(state);
+            case LANGUAGES -> SpecialPages.languages(state, view);
+            case SOURCES -> SpecialPages.sources(state, view);
+            case WORDS -> SpecialPages.words(state, view);
+            case LADDER -> SpecialPages.ladder(state, view);
+            case MUTES -> SpecialPages.mutes(state, view);
+            case PROFILES -> SpecialPages.profiles(state, view);
+            case SEARCH -> SpecialPages.search(state, view);
         };
     }
 
@@ -178,10 +232,15 @@ public final class Menu {
                 return MenuAction.refresh();
             }));
         }
-        return paged(state, view, "AntiBadWords", entries, false);
+        entries.addAll(SpecialPages.mainExtras(state));
+        Map<Integer, Entry> extra = new TreeMap<>();
+        extra.put(Page.ADD, new Entry(Icons.SEARCH, "Search settings", List.of("Click, then type a word of a setting's", "name or description to jump to it"),
+            false, (s, t) -> askText(s, TextRequest.Purpose.SEARCH, "", "Type what to search for (part of a name or description).",
+                "any text")));
+        return paged(state, view, "AntiBadWords", entries, false, extra);
     }
 
-    private static List<Setting<?>> settingsOf(MenuState state, String category) {
+    static List<Setting<?>> settingsOf(MenuState state, String category) {
         List<Setting<?>> out = new ArrayList<>();
         state.access().registry().inCategory(category).forEach(e -> {
             if (e instanceof Setting<?> s) {
@@ -242,7 +301,13 @@ public final class Menu {
     }
 
     /** Slices the entries into pages of 45 and adds the navigation row. */
-    private static Page paged(MenuState state, MenuState.View view, String title, List<Entry> entries, boolean listView) {
+    static Page paged(MenuState state, MenuState.View view, String title, List<Entry> entries, boolean listView) {
+        return paged(state, view, title, entries, listView, Map.of());
+    }
+
+    /** As above; {@code extra} entries (navigation row slots) are added last and replace a default entry in the same slot. */
+    static Page paged(MenuState state, MenuState.View view, String title, List<Entry> entries, boolean listView,
+                      Map<Integer, Entry> extra) {
         int pages = Math.max(1, (entries.size() + Page.CONTENT_SLOTS - 1) / Page.CONTENT_SLOTS);
         int index = Math.max(0, Math.min(view.page(), pages - 1));
         if (index != view.page()) {
@@ -288,6 +353,7 @@ public final class Menu {
                 slots.put(Page.RESET, new Entry(Icons.RESET, "Reset list", List.of("Back to the default list"), false, (s, t) -> reset(s, setting)));
             }
         }
+        slots.putAll(extra);
         String shown = state.hasUnsavedChanges() ? title + " *" : title;
         return new Page(shown, slots, index, pages);
     }
@@ -301,7 +367,7 @@ public final class Menu {
     // Setting entries
     // ------------------------------------------------------------------------------------------
 
-    private static Entry settingEntry(MenuState state, Setting<?> setting) {
+    static Entry settingEntry(MenuState state, Setting<?> setting) {
         Object value = state.value(setting);
         boolean staged = state.isStaged(setting);
         List<String> lore = new ArrayList<>(wrap(setting.description(), 40, 6));
@@ -383,6 +449,13 @@ public final class Menu {
         return changed(state.stage(setting, setting.defaultValue()));
     }
 
+    /** A text request that is not about one setting (search, custom word). */
+    static MenuAction askText(MenuState state, TextRequest.Purpose purpose, String key, String prompt, String hint) {
+        TextRequest request = new TextRequest(key, purpose, prompt, hint, false);
+        state.setPending(request);
+        return MenuAction.text(request);
+    }
+
     private static MenuAction askText(MenuState state, Setting<?> setting, TextRequest.Purpose purpose) {
         boolean secret = setting.type() == SettingType.SECRET;
         String prompt = purpose == TextRequest.Purpose.ADD_ITEM ? "Type the new item for " + setting.title() + "."
@@ -392,7 +465,7 @@ public final class Menu {
         return MenuAction.text(request);
     }
 
-    private static MenuAction save(MenuState state) {
+    static MenuAction save(MenuState state) {
         if (state.staged().isEmpty()) {
             return MenuAction.close(null);
         }
@@ -426,7 +499,7 @@ public final class Menu {
     // ------------------------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    private static List<String> listValue(MenuState state, Setting<?> setting) {
+    static List<String> listValue(MenuState state, Setting<?> setting) {
         Object value = state.value(setting);
         return value instanceof List<?> ? (List<String>) value : List.of();
     }
@@ -438,11 +511,11 @@ public final class Menu {
         return shorten(setting.display(value), 60);
     }
 
-    private static String shorten(String s, int max) {
+    static String shorten(String s, int max) {
         return s.length() <= max ? s : s.substring(0, max - 3) + "...";
     }
 
-    private static List<String> wrap(String text, int width, int maxLines) {
+    static List<String> wrap(String text, int width, int maxLines) {
         List<String> lines = new ArrayList<>();
         for (String paragraph : text.split("\n")) {
             StringBuilder line = new StringBuilder();

@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine.gui;
 
+import com.jason.plugins.antibadwords.engine.command.CommandSender;
 import com.jason.plugins.antibadwords.engine.config.Setting;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -12,7 +13,11 @@ import java.util.Map;
  */
 public final class MenuState {
     /** Kinds of screens. */
-    public enum Kind { MAIN, CATEGORY, LIST, CONFIRM }
+    public enum Kind {
+        MAIN, CATEGORY, LIST, CONFIRM,
+        /** Special pages (engine required): languages, word-list index, one word list, ladder, mutes, profiles, search results. */
+        LANGUAGES, SOURCES, WORDS, LADDER, MUTES, PROFILES, SEARCH
+    }
 
     /** One entry of the navigation stack. {@code target} is the category name or the list setting's key. */
     public record View(Kind kind, String target, int page) {
@@ -25,10 +30,20 @@ public final class MenuState {
     private final List<View> stack = new ArrayList<>();
     private final Map<Setting<?>, Object> staged = new LinkedHashMap<>();
     private TextRequest pending;
+    private CommandSender viewer;
 
     MenuState(ConfigAccess access) {
         this.access = access;
         stack.add(new View(Kind.MAIN, "", 0));
+    }
+
+    /** The viewer of the call being handled (set by {@link Menu} after the permission check, for handlers that need it). */
+    CommandSender viewer() {
+        return viewer;
+    }
+
+    void setViewer(CommandSender viewer) {
+        this.viewer = viewer;
     }
 
     ConfigAccess access() {
