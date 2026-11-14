@@ -23,6 +23,8 @@ import com.jason.plugins.antibadwords.engine.filters.SpamState;
 import com.jason.plugins.antibadwords.engine.moderation.DataFile;
 import com.jason.plugins.antibadwords.engine.moderation.DurationParser;
 import com.jason.plugins.antibadwords.engine.moderation.LadderSettings;
+import com.jason.plugins.antibadwords.engine.moderation.HistorySettings;
+import com.jason.plugins.antibadwords.engine.moderation.HistoryStore;
 import com.jason.plugins.antibadwords.engine.moderation.ModerationSettings;
 import com.jason.plugins.antibadwords.engine.moderation.MuteHandler;
 import com.jason.plugins.antibadwords.engine.moderation.PersistentStrikeService;
@@ -100,6 +102,7 @@ public final class Engine {
     private final Set<UUID> anvilFlagged = ConcurrentHashMap.newKeySet();
     private final PersistentStrikeService persistentStrikes;
     private final PlayerDirectory players;
+    private final HistoryStore history;
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -121,6 +124,8 @@ public final class Engine {
         this.persistentStrikes = new PersistentStrikeService(data.resolve(ModerationSettings.STRIKES_FILE), clock, this::strikeOptions,
             platform.logger(), saver);
         this.strikes = persistentStrikes;
+        this.history = new HistoryStore(data, clock, platform.logger(), this::historyOptions);
+        events.subscribe(history::record);
         // stand-in until the mute feature installs itself with setMuteHandler
         this.noMutes = (player, name, millis, reason, actor) -> {
             platform.logger().warn("Cannot mute " + name + " (" + DurationParser.format(millis) + "): the built-in mute is not available. "
@@ -165,6 +170,7 @@ public final class Engine {
         registerCheck(340, new SpamCheck(SpamCheck.Kind.FLOOD, spamState, clock));
         registerCheck(350, new SpamCheck(SpamCheck.Kind.WORDS, spamState, clock));
         CoreCommands.register(commands);
+        commands.register(new com.jason.plugins.antibadwords.engine.command.HistoryCommand());
     }
 
     /**
@@ -179,6 +185,7 @@ public final class Engine {
         EvasionSettings.register(registry);
         ModerationSettings.register(registry);
         LadderSettings.register(registry);
+        HistorySettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -742,6 +749,19 @@ public final class Engine {
         return strikes;
     }
 
+    /** The moderation history ({@code data/history}); fed by the event stream, read by {@code /abw history}. */
+    public HistoryStore history() {
+        return history;
+    }
+
+    private HistoryStore.Options historyOptions() {
+        java.util.Set<String> kinds = new java.util.HashSet<>();
+        value(HistorySettings.KINDS).forEach(k -> kinds.add(k.trim().toLowerCase(java.util.Locale.ROOT)));
+        return new HistoryStore.Options(value(HistorySettings.ENABLED), kinds, value(HistorySettings.STORE_TEXT),
+            value(HistorySettings.REDACT_WORDS), value(HistorySettings.RETENTION_DAYS), value(HistorySettings.MAX_TOTAL_MB) * 1_048_576L,
+            value(HistorySettings.PAGE_SIZE));
+    }
+
     /** Everybody who was ever seen on the server ({@code data/players.json}); finds offline players by name. */
     public PlayerDirectory players() {
         return players;
@@ -831,6 +851,7 @@ public final class Engine {
             strikes.clear();
         }
         players.flush();
+        history.shutdown();
         anvilFlagged.clear();
         spamState.clear();
     }

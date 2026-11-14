@@ -74,9 +74,9 @@ class SettingsRegistryTest {
     void everyEntryIsDescribedAndOwnedByAFile() {
         SettingsRegistry r = registry();
         assertEquals(List.of("config.yml", "moderation/ladder.yml", "worlds.yml", "filters/spam.yml", "filters/links.yml", "filters/evasion.yml",
-            "filters/confusables.yml"), r.files());
+            "filters/confusables.yml", "moderation/history.yml"), r.files());
         assertEquals(List.of("General", "Languages", "Scanning", "Player names", "Matching", "Whitelist", "Messages", "Punishment", "Worlds",
-            "Spam", "Links", "Evasion", "Look-alike tables", "Strikes", "Ladder"), r.categories());
+            "Spam", "Links", "Evasion", "Look-alike tables", "Strikes", "Ladder", "History"), r.categories());
         for (ConfigEntry e : r.entries()) {
             assertFalse(e.title().isBlank(), e.key());
             assertFalse(e.description().isBlank(), e.key());

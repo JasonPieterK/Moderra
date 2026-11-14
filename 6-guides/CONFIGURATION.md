@@ -267,6 +267,20 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `leet-digits` | text | `0=o 1=i 3=e 4=a 5=s 7=t 8=b 9=g` | no | Digits that stand for a letter. They are only read as letters inside a word that also has Latin letters. |
 | `look-alikes` | section (your own keys) | see the file | no | Letters that look like a plain Latin letter. Each line holds items of the form <letter>=<what it looks like>,<br>separated by spaces. The group names (cyrillic, greek ...) are only for you; add your own lines or groups.<br>Letters are read as the Latin letter only inside a word that also has Latin letters. One group is special:<br>the letters under "always" (small capitals) are read as the plain letter everywhere.<br>The default table was made from the Unicode confusables data (Unicode License v3, see NOTICE).<br>If this part is empty or cannot be read, the built-in table is used.<br>This part cannot be edited in the in-game menu; edit the file. |
 
+## `moderation/history.yml`
+
+### History
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `history.enabled` | true or false | `true` | no | Write a line for every moderation event (violation, punishment, mute ...) to data/history/YYYY-MM.jsonl,<br>one file per month. Staff with the permission antibadwords.history read it with /abw history.<br>The history never contains the chat text unless you switch store-message-text on. |
+| `history.kinds` | list of texts | `*` | no | The kinds of event that are written. * = all of them. Kinds: violation, punishment, spam, link, evasion,<br>mute, unmute, mute-expired, admin-command. Example: [violation, punishment, mute] |
+| `history.store-message-text` | true or false | `false` | no | Also write the text the player typed. OFF by default for privacy: chat can contain personal things.<br>Only turn this on when your rules and your players' privacy expectations allow it. |
+| `history.redact-words` | true or false | `true` | no | Only used when store-message-text is on: the bad word is replaced by stars (same length) in the stored text.<br>When the word cannot be found in the text (disguised spelling), no text is stored at all. |
+| `history.retention-days` | whole number from 0 to 36500 | `90` | no | Monthly files that are completely older than this many days are deleted. 0 = keep forever.<br>The unit is a whole month: a file goes when its last day is older than this. |
+| `history.max-total-size-mb` | whole number from 0 to 100000 | `50` | no | When all history files together are bigger than this, the oldest months are deleted. If only the current<br>month is left and it is still too big, new events are not written until it is below the limit. 0 = no limit. |
+| `history.page-size` | whole number from 1 to 50 | `8` | no | How many lines /abw history shows per page. |
+
 ## The extra filters in plain words
 
 A message goes through the checks in the order of `filters.check-order` (config.yml):
