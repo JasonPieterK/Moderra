@@ -223,6 +223,7 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.ChatChannels.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -353,6 +354,7 @@ public final class Engine {
             log.warn("Punishment is enabled but no punishment action is enabled in " + CoreSettings.LADDER + ".");
         }
         ExternalProfiles.validate(snapshot.section(IntegrationSettings.GROUP_PROFILES), profiles.names(), log::warn);
+        com.jason.plugins.antibadwords.engine.integrations.ChatChannels.validate(snapshot.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_PROFILES), profiles.names(), log::warn);
         for (Runnable listener : reloadListeners) {
             try {
                 listener.run();
@@ -394,8 +396,33 @@ public final class Engine {
      * (see {@link #setPermissionSource}) when {@code player} is known.
      */
     public EffectiveSettings settings(UUID player, String world, String dimension, Predicate<String> permissions) {
+        return settings(player, world, dimension, permissions, "");
+    }
+
+    /** Same, also honouring the chat channel ({@code integrations.chatchannels.channel-profiles}); it ranks below a permission plugin's choice. */
+    public EffectiveSettings settings(UUID player, String world, String dimension, Predicate<String> permissions, String channel) {
         State s = state;
-        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions, externalProfile(s, player)));
+        String external = externalProfile(s, player);
+        if (external == null && channel != null && !channel.isEmpty()) {
+            external = channelProfile(s, channel);
+        }
+        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions, external));
+    }
+
+    private String channelProfile(State s, String channel) {
+        ConfigStore.Snapshot snap = s.snapshot();
+        if (!snap.get(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.ENABLED)) {
+            return null;
+        }
+        return com.jason.plugins.antibadwords.engine.integrations.ChatChannels.profileFor(snap.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_PROFILES), channel, s.profiles().names());
+    }
+
+    private String commandChannel(String commandLine) {
+        ConfigStore.Snapshot snap = state.snapshot();
+        if (!snap.get(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.ENABLED)) {
+            return "";
+        }
+        return com.jason.plugins.antibadwords.engine.integrations.ChatChannels.channelOfCommand(snap.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_COMMANDS), commandLine);
     }
 
     private String externalProfile(State s, UUID player) {
@@ -658,7 +685,14 @@ public final class Engine {
      * @param forDelivery   whether "censor" becomes "block" where the text cannot be changed
      */
     private Verdict judge(Message message, boolean useScanSwitch, boolean forDelivery) {
-        EffectiveSettings settings = settings(message.playerId(), message.world(), message.dimension(), message.permissions());
+        if (message.channel().isEmpty() && Message.COMMAND.equals(message.source()) && message.text() != null) {
+            String channel = commandChannel(message.text());
+            if (!channel.isEmpty()) {
+                message = message.withChannel(channel);
+            }
+        }
+        EffectiveSettings settings = settings(message.playerId(), message.world(), message.dimension(), message.permissions(),
+            message.channel());
         if (message.text() == null || message.has(PERMISSION_BYPASS)) {
             return Verdict.allow(settings);
         }

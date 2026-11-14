@@ -115,6 +115,15 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
      */
     private void registerChatListener(AntiBadWordsListener listener) {
         EventPriority priority = EssentialsHook.chatPriority(engine);
+        java.util.List<String> channelPlugins = ChatChannelPlugins.detect(engine);
+        EventPriority channelPriority = ChatChannelPlugins.priority(engine, channelPlugins);
+        if (!channelPlugins.isEmpty()) {
+            getLogger().info("Chat-channel plugins found: " + String.join(", ", channelPlugins)
+                + ". Their channel names are not read; use integrations.chatchannels.channel-commands for channel profiles.");
+        }
+        if (channelPriority != null) {
+            priority = channelPriority;
+        }
         getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, listener, priority, (l, event) -> {
             if (event instanceof AsyncPlayerChatEvent chat) {
                 listener.onAsyncChat(chat);
