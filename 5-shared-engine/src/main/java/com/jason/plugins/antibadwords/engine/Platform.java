@@ -44,6 +44,14 @@ public interface Platform {
     /** Permission check for an online player ({@code false} when the player is offline or unknown). */
     boolean has(UUID player, String node);
 
+    /**
+     * Whether a server plugin (Bukkit family) or mod with this name or id is installed and enabled. Used to detect ban
+     * plugins and Floodgate. Default: false (Fabric and Forge have no way for it yet, so integrations treat that as "not there").
+     */
+    default boolean hasPlugin(String name) {
+        return false;
+    }
+
     /** Name of the world the player is in ("" when unknown). */
     String worldName(UUID player);
 

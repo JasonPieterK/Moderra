@@ -28,6 +28,8 @@ public final class LadderSettings {
             + "    mute <time|perm> [reason]        built-in mute, time like 30s, 10m, 1h30m, 2d\n"
             + "    kick [reason]\n"
             + "    ban [reason]                     runs ladder.ban-command (the normal Minecraft ban, no end date)\n"
+            + "    tempban <time> [reason]          timed ban through the ban plugin found on the server (integrations.yml, integrations.bans.*)\n"
+            + "    ipban [reason]                   IP ban through the same ban plugin\n"
             + "    command <console command>        for example a ban plugin: command tempban {player} 1d {reason}\n"
             + "    effect <name> <level> <seconds>  attribute <name> <value> <seconds>  sound <name> <volume> <pitch>\n"
             + "    punishments                      every enabled action under punishment.effects / attributes / sounds / commands\n"

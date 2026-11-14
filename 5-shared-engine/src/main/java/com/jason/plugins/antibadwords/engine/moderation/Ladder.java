@@ -23,6 +23,8 @@ public final class Ladder {
     public static final String MUTE = "mute";
     public static final String KICK = "kick";
     public static final String BAN = "ban";
+    public static final String TEMPBAN = "tempban";
+    public static final String IPBAN = "ipban";
     public static final String COMMAND = "command";
     public static final String EFFECT = "effect";
     public static final String ATTRIBUTE = "attribute";
@@ -189,8 +191,19 @@ public final class Ladder {
         String type = head[0].toLowerCase(Locale.ROOT);
         String rest = head.length > 1 ? head[1].trim() : "";
         switch (type) {
-            case WARN, KICK, BAN:
+            case WARN, KICK, BAN, IPBAN:
                 return new Action(type, List.of(rest), text);
+            case TEMPBAN: {
+                String[] parts = rest.split("\\s+", 2);
+                if (parts[0].isEmpty()) {
+                    throw new IllegalArgumentException("tempban needs a time (1d, 2h30m ...)");
+                }
+                long millis = DurationParser.parse(parts[0]);
+                if (millis <= 0) {
+                    throw new IllegalArgumentException("the tempban time must be a real time such as 1d (use ban for a permanent ban)");
+                }
+                return new Action(TEMPBAN, List.of(Long.toString(millis), parts.length > 1 ? parts[1].trim() : ""), text);
+            }
             case MUTE: {
                 String[] parts = rest.split("\\s+", 2);
                 if (parts[0].isEmpty()) {
@@ -227,7 +240,7 @@ public final class Ladder {
             case RESET, "reset":
                 return new Action(RESET, List.of(), text);
             default:
-                throw new IllegalArgumentException("unknown action '" + head[0] + "' (known: warn, mute, kick, ban, command, effect, "
+                throw new IllegalArgumentException("unknown action '" + head[0] + "' (known: warn, mute, kick, ban, tempban, ipban, command, effect, "
                     + "attribute, sound, punishments, reset-strikes)");
         }
     }

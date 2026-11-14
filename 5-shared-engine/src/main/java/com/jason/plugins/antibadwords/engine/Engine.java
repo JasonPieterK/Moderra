@@ -114,6 +114,8 @@ public final class Engine {
     private final HistoryStore history;
     private final MuteService mutes;
     private final DiscordService discord;
+    private final com.jason.plugins.antibadwords.engine.integrations.BanService bans = new com.jason.plugins.antibadwords.engine.integrations.BanService(this);
+    private final com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock = new com.jason.plugins.antibadwords.engine.integrations.BedrockNames(this);
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -208,6 +210,7 @@ public final class Engine {
         DiscordSettings.register(registry);
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
         PromptSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -320,6 +323,9 @@ public final class Engine {
                     + each.ladder().steps().size() + " steps (the first at " + each.ladder().firstThreshold() + " strikes).");
             }
         }
+        log.info("Integrations: ban provider " + bans.provider() + ", Bedrock names " + (bedrock.enabled()
+            ? "on (prefix '" + value(com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.BEDROCK_PREFIX) + "'"
+                + (bedrock.detectedPlugin() == null ? "" : ", found " + bedrock.detectedPlugin()) + ")" : "off") + ".");
         log.info("Protection level: " + main.get(CoreSettings.PROTECTION_LEVEL) + " (1=LOW, 2=MEDIUM, 3=HIGH)");
         if (profiles.names().size() > 1) {
             log.info("World profiles: " + String.join(", ", profiles.names()) + " (default: " + profiles.defaultProfile() + ")");
@@ -670,7 +676,7 @@ public final class Engine {
     public Verdict onJoin(UUID playerId, String playerName) {
         players.seen(playerId, playerName);
         mutes.onJoin(playerId, playerName);
-        Message message = message(playerId, playerName, Message.JOIN, playerName);
+        Message message = message(playerId, playerName, Message.JOIN, bedrock.filterName(playerName));
         Verdict verdict = judge(message, true, false);
         Hit hit = verdict.primary();
         if (hit == null || verdict.allowed()) {
@@ -778,6 +784,16 @@ public final class Engine {
         return platform;
     }
 
+    /** The ladder actions tempban and ipban (settings {@code integrations.bans.*}). */
+    public com.jason.plugins.antibadwords.engine.integrations.BanService bans() {
+        return bans;
+    }
+
+    /** Bedrock (Geyser / Floodgate) name handling (settings {@code integrations.bedrock.*}). */
+    public com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock() {
+        return bedrock;
+    }
+
     /** Discord webhook alerts (settings in {@code discord.yml}, command {@code /abw discord}). */
     public DiscordService discord() {
         return discord;
@@ -827,7 +843,22 @@ public final class Engine {
         if (online.isPresent()) {
             return online;
         }
-        return players.find(name).map(known -> new PlayerRef(known.id(), known.name()));
+        Optional<PlayerRef> known = players.find(name).map(k -> new PlayerRef(k.id(), k.name()));
+        if (known.isPresent() || !bedrock.enabled()) {
+            return known;
+        }
+        // Bedrock names: with/without the prefix, space or underscore
+        for (String variant : bedrock.variants(name)) {
+            online = platform.findPlayer(variant);
+            if (online.isPresent()) {
+                return online;
+            }
+            known = players.find(variant).map(k -> new PlayerRef(k.id(), k.name()));
+            if (known.isPresent()) {
+                return known;
+            }
+        }
+        return Optional.empty();
     }
 
     /** Whether that player is on the server right now. */
