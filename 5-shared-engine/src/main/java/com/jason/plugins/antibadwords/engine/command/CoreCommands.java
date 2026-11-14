@@ -193,7 +193,7 @@ public final class CoreCommands {
 
     /** Plugins the engine can work with; shown by {@code /abw info} when {@link com.jason.plugins.antibadwords.engine.Platform#hasPlugin} finds them. */
     static final List<String> KNOWN_PLUGINS = List.of("DiscordSRV", "LuckPerms", "PlaceholderAPI", "Essentials", "LiteBans", "AdvancedBan",
-        "floodgate", "mcMMO", "Towny", "Factions", "FactionsUUID", "Citizens", "DecentHolograms", "Vault", "TAB", "NametagEdit", "ChatControl", "VentureChat", "HuskChat", "CarbonChat");
+        "floodgate", "mcMMO", "Towny", "Factions", "FactionsUUID", "Citizens", "DecentHolograms", "Vault", "TAB", "NametagEdit", "ChatControl", "VentureChat", "HuskChat", "CarbonChat", "ProtocolLib", "packetevents", "CoreProtect", "Plan");
 
     private static void integrations(CommandContext c, Engine engine) {
         com.jason.plugins.antibadwords.engine.Platform platform = engine.platform();

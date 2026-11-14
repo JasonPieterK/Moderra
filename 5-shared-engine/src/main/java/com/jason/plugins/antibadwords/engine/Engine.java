@@ -222,6 +222,7 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.ExtraIntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.PluginCommandSettings.register(registry);
