@@ -196,12 +196,25 @@ public final class WorldProfiles {
      * @param permissions answers "does the player have this permission?"; {@code null} = unknown player
      */
     public String resolve(String world, String dimension, Predicate<String> permissions) {
+        return resolve(world, dimension, permissions, null);
+    }
+
+    /**
+     * Same, with a profile suggested by a permission plugin (LuckPerms meta or group map, see {@code ExternalProfiles}). It wins
+     * over the world rules and the default, but not over an {@code antibadwords.profile.<name>} permission.
+     *
+     * @param external a profile name, or {@code null}; an unknown name is ignored
+     */
+    public String resolve(String world, String dimension, Predicate<String> permissions, String external) {
         if (usePermissions && permissions != null) {
             for (String name : overrides.keySet()) {
                 if (permissions.test(PERMISSION_PREFIX + name)) {
                     return name;
                 }
             }
+        }
+        if (external != null && overrides.containsKey(external)) {
+            return external;
         }
         for (Rule rule : rules) {
             if ((world != null && !world.isEmpty() && rule.pattern().matcher(world).matches())

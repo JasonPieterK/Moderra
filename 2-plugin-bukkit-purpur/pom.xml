@@ -61,6 +61,14 @@
             <version>2.3</version>
             <scope>provided</scope>
         </dependency>
+        <!-- LuckPerms API (Maven Central). Compile-only: LuckPerms itself provides it at runtime. LuckPermsHook is loaded only
+             when the LuckPerms plugin is installed. -->
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -124,6 +132,13 @@
                         <goals><goal>add-source</goal></goals>
                         <configuration><sources><source>src/discordsrv-shim/java</source></sources></configuration>
                     </execution>
+                    <!-- Name-only PlaceholderAPI class (PlaceholderExpansion) for AbwPlaceholderExpansion; NOT packaged (me/**). -->
+                    <execution>
+                        <id>add-papi-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/papi-shim/java</source></sources></configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -144,6 +159,7 @@
                 <configuration>
                     <excludes>
                         <exclude>github/**</exclude>
+                        <exclude>me/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

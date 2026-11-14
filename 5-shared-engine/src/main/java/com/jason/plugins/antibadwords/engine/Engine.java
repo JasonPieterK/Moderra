@@ -15,6 +15,10 @@ import com.jason.plugins.antibadwords.engine.config.WordLists;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.engine.config.YamlEditor;
 import com.jason.plugins.antibadwords.engine.discord.DiscordService;
+import com.jason.plugins.antibadwords.engine.integration.ExternalProfiles;
+import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
+import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
+import com.jason.plugins.antibadwords.engine.integration.PlaceholderValues;
 import com.jason.plugins.antibadwords.engine.discord.DiscordSettings;
 import com.jason.plugins.antibadwords.engine.filters.EvasionCheck;
 import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
@@ -54,6 +58,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.LongSupplier;
@@ -118,6 +123,8 @@ public final class Engine {
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
     private volatile State state;
+    private volatile PermissionSource permissionSource;
+    private final PlaceholderValues placeholders = new PlaceholderValues(this);
 
     private Engine(Platform platform, Path folder, LongSupplier clock) {
         this.platform = platform;
@@ -207,6 +214,7 @@ public final class Engine {
         MuteSettings.register(registry);
         DiscordSettings.register(registry);
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
+        IntegrationSettings.register(registry);
         PromptSettings.register(registry);
     }
 
@@ -327,6 +335,7 @@ public final class Engine {
         if (main.legacy().punishmentEnabled() && enabledActions == 0 && main.ladder().isEmpty()) {
             log.warn("Punishment is enabled but no punishment action is enabled in " + CoreSettings.LADDER + ".");
         }
+        ExternalProfiles.validate(snapshot.section(IntegrationSettings.GROUP_PROFILES), profiles.names(), log::warn);
         for (Runnable listener : reloadListeners) {
             try {
                 listener.run();
@@ -360,8 +369,65 @@ public final class Engine {
 
     /** The settings for a player in a world: resolves the worlds.yml profile. */
     public EffectiveSettings settings(String world, String dimension, Predicate<String> permissions) {
+        return settings(null, world, dimension, permissions);
+    }
+
+    /**
+     * The settings for a player in a world: resolves the worlds.yml profile, also by the permission plugin's meta value or group
+     * (see {@link #setPermissionSource}) when {@code player} is known.
+     */
+    public EffectiveSettings settings(UUID player, String world, String dimension, Predicate<String> permissions) {
         State s = state;
-        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions));
+        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions, externalProfile(s, player)));
+    }
+
+    private String externalProfile(State s, UUID player) {
+        PermissionSource source = permissionSource;
+        if (source == null || player == null) {
+            return null;
+        }
+        ConfigStore.Snapshot snap = s.snapshot();
+        try {
+            return ExternalProfiles.choose(source, player, snap.get(IntegrationSettings.LP_USE_META), snap.get(IntegrationSettings.LP_META_KEY),
+                snap.get(IntegrationSettings.LP_PRIMARY_ONLY), snap.section(IntegrationSettings.GROUP_PROFILES), s.profiles().names());
+        } catch (RuntimeException ex) {
+            platform.logger().warn("The permission plugin could not tell the profile of a player: " + ex);
+            return null;
+        }
+    }
+
+    /** Installs (or removes, with {@code null}) the permission plugin hook: groups, meta and offline permission checks. */
+    public void setPermissionSource(PermissionSource source) {
+        this.permissionSource = source;
+    }
+
+    /** The installed permission plugin hook, or {@code null}. */
+    public PermissionSource permissionSource() {
+        return permissionSource;
+    }
+
+    /**
+     * Permission check that also works for offline players: online players are asked through the platform, offline ones through
+     * the permission plugin (when its offline checks are on). Never blocks; the future completes with {@code false} when unknown.
+     */
+    public CompletableFuture<Boolean> hasPermission(UUID player, String node) {
+        if (isOnline(player)) {
+            return CompletableFuture.completedFuture(platform.has(player, node));
+        }
+        PermissionSource source = permissionSource;
+        if (source == null || !value(IntegrationSettings.LP_OFFLINE)) {
+            return CompletableFuture.completedFuture(false);
+        }
+        try {
+            return source.hasPermission(player, node).exceptionally(ex -> false);
+        } catch (RuntimeException ex) {
+            return CompletableFuture.completedFuture(false);
+        }
+    }
+
+    /** The values behind the PlaceholderAPI expansion. */
+    public PlaceholderValues placeholders() {
+        return placeholders;
     }
 
     /** The settings of one named profile, or {@code null}. */
@@ -532,7 +598,7 @@ public final class Engine {
         }
         if (mutes.enforce(message)) {
             // a muted player: stopped without hits, so no strikes are counted; the service has told the player
-            return new Verdict(Verdict.Type.BLOCK, null, List.of(), settings(message.world(), message.dimension(), message.permissions()));
+            return new Verdict(Verdict.Type.BLOCK, null, List.of(), settings(message.playerId(), message.world(), message.dimension(), message.permissions()));
         }
         return judge(message, true, true);
     }
@@ -550,7 +616,7 @@ public final class Engine {
      * @param forDelivery   whether "censor" becomes "block" where the text cannot be changed
      */
     private Verdict judge(Message message, boolean useScanSwitch, boolean forDelivery) {
-        EffectiveSettings settings = settings(message.world(), message.dimension(), message.permissions());
+        EffectiveSettings settings = settings(message.playerId(), message.world(), message.dimension(), message.permissions());
         if (message.text() == null || message.has(PERMISSION_BYPASS)) {
             return Verdict.allow(settings);
         }
@@ -625,7 +691,7 @@ public final class Engine {
                 return last;
             }
         }
-        return last != null ? last : Verdict.allow(settings(template.world(), template.dimension(), template.permissions()));
+        return last != null ? last : Verdict.allow(settings(template.playerId(), template.world(), template.dimension(), template.permissions()));
     }
 
     /**

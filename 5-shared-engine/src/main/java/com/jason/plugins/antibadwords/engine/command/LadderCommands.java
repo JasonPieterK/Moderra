@@ -33,7 +33,7 @@ public final class LadderCommands {
         if (player == null || !engine.isOnline(player)) {
             return engine.settings();
         }
-        return engine.settings(engine.platform().worldName(player), engine.platform().dimensionName(player),
+        return engine.settings(player, engine.platform().worldName(player), engine.platform().dimensionName(player),
             node -> engine.platform().has(player, node));
     }
 

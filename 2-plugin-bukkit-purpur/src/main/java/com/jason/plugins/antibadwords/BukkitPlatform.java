@@ -20,6 +20,7 @@ public final class BukkitPlatform implements Platform {
     private final JavaPlugin plugin;
     private final PunishmentExecutor executor;
     private final EngineLog log;
+    private volatile java.util.function.BiFunction<Player, String, String> messageParser;
 
     public BukkitPlatform(JavaPlugin plugin, PunishmentExecutor executor) {
         this.plugin = plugin;
@@ -76,8 +77,14 @@ public final class BukkitPlatform implements Platform {
     public void sendMessage(UUID playerId, String message) {
         Player player = Bukkit.getPlayer(playerId);
         if (player != null) {
-            player.sendMessage(message);
+            java.util.function.BiFunction<Player, String, String> parser = messageParser;
+            player.sendMessage(parser == null ? message : parser.apply(player, message));
         }
+    }
+
+    /** Set by the PlaceholderAPI hook (only when integrations.placeholderapi.parse-in-messages is on); {@code null} = off. */
+    public void setMessageParser(java.util.function.BiFunction<Player, String, String> parser) {
+        this.messageParser = parser;
     }
 
     @Override

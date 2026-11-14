@@ -4,7 +4,7 @@ main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
 api-version: '${mc.api.version}'
 authors:
   - Jason
-softdepend: [DiscordSRV]
+softdepend: [DiscordSRV, PlaceholderAPI, LuckPerms]
 description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:
   antibadwords:

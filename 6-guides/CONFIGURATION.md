@@ -373,6 +373,21 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.commands.rate.max` | whole number from 1 to 100 | `5` | no | How many commands one Discord user may run within the time below. |
 | `discord.commands.rate.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `30s` | no | Time window for the limit above. |
 
+## `integrations.yml`
+
+### Integrations
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `integrations.placeholderapi.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY, needs PlaceholderAPI. Register the expansion "antibadwords" with the placeholders<br>%antibadwords_strikes%, _strikes_next%, _next_step%, _muted%, _mute_remaining%, _mute_reason%, _profile%,<br>_violations_total% and _protection_level%. They never contain chat text, word lists or secrets.<br>Without PlaceholderAPI this does nothing. Takes effect after a server restart. |
+| `integrations.placeholderapi.parse-in-messages` | true or false | `false` | no | BUKKIT FAMILY ONLY, needs PlaceholderAPI. Replace %placeholders% of OTHER plugins in the messages this plugin<br>sends to one player. Off by default: a text a player typed (a mute reason, a blocked word) could contain a<br>%placeholder% and would be replaced too. Turn on only if you accept that. Broadcasts are never parsed. |
+| `integrations.luckperms.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY, needs LuckPerms. Use LuckPerms groups and meta for the rule profile and check permissions<br>of offline players. Without LuckPerms this does nothing. Takes effect after a server restart. |
+| `integrations.luckperms.use-meta` | true or false | `true` | no | When a player (or one of their groups) has the LuckPerms meta value named below, it is the rule profile.<br>Set it with: /lp group vip meta set antibadwords-profile relaxed. Beats the group map below, not<br>the permission antibadwords.profile.<name>. Context aware (per server / world contexts of LuckPerms). |
+| `integrations.luckperms.meta-key` | text | `antibadwords-profile` | no | The meta key that holds a profile name from worlds.yml. |
+| `integrations.luckperms.primary-group-only` | true or false | `false` | no | false: a player counts as being in a group when they inherit it. true: only the primary group is compared. |
+| `integrations.luckperms.offline-permission-checks` | true or false | `true` | no | Use LuckPerms to see whether an OFFLINE player has a permission such as antibadwords.bypass.mute (for example<br>to warn when you mute an exempt player). The data is loaded in the background; the server is not stopped. |
+| `integrations.luckperms.group-profiles` | section (your own keys) | see the file | no | Which rule profile (see worlds.yml) a LuckPerms group gets: group name on the left, profile name on the right.<br>The first line that matches a player wins; the order of the file counts. Order of choosing a profile:<br>permission antibadwords.profile.<name>, then LuckPerms meta, then this map, then the world rules, then the default.<br>Example:<br>  group-profiles:<br>    vip: relaxed<br>    newbie: strict<br>A profile name that does not exist in worlds.yml is reported at start and ignored. |
+
 ## The extra filters in plain words
 
 A message goes through the checks in the order of `filters.check-order` (config.yml):
