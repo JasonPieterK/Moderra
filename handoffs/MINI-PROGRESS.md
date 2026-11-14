@@ -122,7 +122,7 @@ Placeholders: `{player} {uuid} {word} {source} {count} {step} {threshold} {reaso
 
 ## Mini task 3: classic setup as a one-step ladder, `/abw ladder`, `/abw strikes` (session 4, task 2, second half) - engine only
 
-Verification level: engine unit tests run (`cd 5-shared-engine && mvn -q -B test`: 180 tests, 9 new; `LegacyMigrationTest` unchanged
+Verification level: engine unit tests run (`cd 5-shared-engine && mvn -q -B test`: 182 tests, 11 new; `LegacyMigrationTest` unchanged
 and passing; `generate-docs.sh` run, `6-guides/CONFIGURATION.md` regenerated). Adapters not changed.
 
 ### Added
