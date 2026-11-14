@@ -15,6 +15,11 @@ public final class EngineConfigAccess implements ConfigAccess {
     }
 
     @Override
+    public Engine engine() {
+        return engine;
+    }
+
+    @Override
     public SettingsRegistry registry() {
         return engine.registry();
     }

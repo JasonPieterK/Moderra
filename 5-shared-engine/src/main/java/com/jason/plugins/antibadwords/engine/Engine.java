@@ -367,6 +367,11 @@ public final class Engine {
         return state.byProfile().get(name.toLowerCase(Locale.ROOT));
     }
 
+    /** What one profile of worlds.yml changes (setting key -> value); empty for unknown names or the plain default. */
+    public java.util.Map<String, Object> profileOverrides(String name) {
+        return state.profiles().overrides(name.toLowerCase(Locale.ROOT));
+    }
+
     /** Names of all profiles in worlds.yml (always contains {@code default}). */
     public Set<String> profileNames() {
         return state.profiles().names();

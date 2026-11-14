@@ -11,5 +11,5 @@ package com.jason.plugins.antibadwords.engine.gui;
  * @param masked  true for secrets: the prompt must never echo what is typed
  */
 public record TextRequest(String key, Purpose purpose, String prompt, String hint, boolean masked) {
-    public enum Purpose { SET_VALUE, ADD_ITEM }
+    public enum Purpose { SET_VALUE, ADD_ITEM, SEARCH, ADD_CUSTOM_WORD }
 }

@@ -40,7 +40,7 @@ class GuiEngineTest {
         List<String> categories = engine.registry().categories().stream()
             .filter(c -> engine.registry().inCategory(c).stream().anyMatch(e -> e instanceof Setting<?>)).toList();
         List<Slot> main = Menu.render(state);
-        assertEquals(categories, main.stream().filter(s -> s.index() < 45).map(Slot::name).toList());
+        assertEquals(categories, main.stream().filter(s -> s.index() < 45 && s.icon().equals("category")).map(Slot::name).toList());
 
         // every category opens and all its pages render
         for (int i = 0; i < categories.size(); i++) {
