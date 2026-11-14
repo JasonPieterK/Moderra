@@ -236,6 +236,9 @@ final class ViolationHandler {
         if (!step.message().isBlank()) {
             platform.sendMessage(playerId, Names.colour(Placeholders.apply(step.message(), values)));
         }
+        if (!step.finalCommand().isBlank()) {
+            platform.runConsoleCommand(stripSlash(Placeholders.apply(step.finalCommand(), values)));
+        }
         for (Runnable task : last) {
             try {
                 task.run();

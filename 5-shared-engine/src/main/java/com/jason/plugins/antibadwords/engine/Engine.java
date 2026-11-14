@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords.engine;
 
 import com.jason.plugins.antibadwords.engine.command.CommandRegistry;
 import com.jason.plugins.antibadwords.engine.command.CoreCommands;
+import com.jason.plugins.antibadwords.engine.command.LadderCommands;
 import com.jason.plugins.antibadwords.engine.config.ConfigProblem;
 import com.jason.plugins.antibadwords.engine.config.ConfigStore;
 import com.jason.plugins.antibadwords.engine.config.CoreSettings;
@@ -165,6 +166,7 @@ public final class Engine {
         registerCheck(340, new SpamCheck(SpamCheck.Kind.FLOOD, spamState, clock));
         registerCheck(350, new SpamCheck(SpamCheck.Kind.WORDS, spamState, clock));
         CoreCommands.register(commands);
+        LadderCommands.register(commands);
     }
 
     /**

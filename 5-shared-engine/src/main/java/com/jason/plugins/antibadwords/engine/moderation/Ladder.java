@@ -50,8 +50,14 @@ public final class Ladder {
      * @param repeatEvery again every this many strikes after the threshold; 0 = once
      * @param message     for the player, not coloured yet; may be empty
      * @param broadcast   for everyone, not coloured yet; may be empty
+     * @param finalCommand a console command run after the messages (before kick/ban); "" = none
      */
-    public record Step(String name, int threshold, int repeatEvery, String message, String broadcast, List<Action> actions) {
+    public record Step(String name, int threshold, int repeatEvery, String message, String broadcast, List<Action> actions,
+                       String finalCommand) {
+        public Step(String name, int threshold, int repeatEvery, String message, String broadcast, List<Action> actions) {
+            this(name, threshold, repeatEvery, message, broadcast, actions, "");
+        }
+
         public boolean repeats() {
             return repeatEvery > 0;
         }
@@ -151,11 +157,12 @@ public final class Ladder {
             }
             String message = step.getString("message", "");
             String broadcast = step.getString("broadcast", "");
-            if (actions.isEmpty() && message.isBlank() && broadcast.isBlank()) {
+            String finalCommand = step.getString("final-command", "").trim();
+            if (actions.isEmpty() && message.isBlank() && broadcast.isBlank() && finalCommand.isBlank()) {
                 warn.accept(where + " has no action and no message; the step is ignored.");
                 continue;
             }
-            steps.add(new Step(e.getKey(), at, repeat, message, broadcast, List.copyOf(actions)));
+            steps.add(new Step(e.getKey(), at, repeat, message, broadcast, List.copyOf(actions), finalCommand));
         }
         return steps.isEmpty() ? EMPTY : of(steps);
     }
@@ -223,6 +230,27 @@ public final class Ladder {
                 throw new IllegalArgumentException("unknown action '" + head[0] + "' (known: warn, mute, kick, ban, command, effect, "
                     + "attribute, sound, punishments, reset-strikes)");
         }
+    }
+
+    /** Name of the step {@link #classic} builds. */
+    public static final String CLASSIC_STEP = "legacy";
+
+    /**
+     * The classic flat setup written as a ladder: one step at {@code violations-before-punish} that repeats whenever the
+     * strikes go up again ({@code repeat: 1}, so it also fires for a player already above the limit), runs every enabled
+     * classic action, says the two punishment messages, runs the final command and sets the strikes back to 0. This is
+     * exactly what an admin would write into {@code ladder.steps} to get the old behaviour; the violation flow itself
+     * still runs the flat setup directly (see the note in MINI-PROGRESS.md).
+     *
+     * @param atStrikes   {@code punishment.violations-before-punish}
+     * @param message     {@code punishment-player} (already coloured)
+     * @param broadcast   {@code punishment-broadcast-format} (already coloured)
+     * @param finalCommand the final command when it is enabled, else ""
+     */
+    public static Ladder classic(int atStrikes, String message, String broadcast, String finalCommand) {
+        return of(List.of(new Step(CLASSIC_STEP, Math.max(1, atStrikes), 1, message, broadcast,
+            List.of(new Action(PUNISHMENTS, List.of(), PUNISHMENTS), new Action(RESET, List.of(), RESET)),
+            finalCommand == null ? "" : finalCommand)));
     }
 
     /** No steps: the simple setup ({@code punishment.violations-before-punish}) is used instead. */

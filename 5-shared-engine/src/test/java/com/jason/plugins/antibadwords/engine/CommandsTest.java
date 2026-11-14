@@ -27,7 +27,7 @@ class CommandsTest {
     Fixture f;
     Engine engine;
 
-    static final class Sender implements CommandSender {
+    static class Sender implements CommandSender {
         final Set<String> permissions;
         final List<String> out = new ArrayList<>();
 
@@ -92,7 +92,7 @@ class CommandsTest {
 
     @Test
     void existingSubcommandsAnswerAsBefore() {
-        assertEquals(List.of("§eUsage: /abw <reload|addword|removeword|listwords|check|violations|resetviolations|info|lang|whitelist>"), run(""));
+        assertEquals(List.of("§eUsage: /abw <reload|addword|removeword|listwords|check|violations|resetviolations|info|lang|whitelist|ladder|strikes>"), run(""));
         assertEquals(List.of("§cBlocked: matches 'fuck'.", "§7Check: §fbadword§7 (word list entry 'fuck', level 3)"), run("check what the fuck"));
         assertEquals(List.of("§aClean: no blocked word found."), run("check hello"));
         assertEquals(List.of("§aAdded custom blocked word."), run("addword zorblax two"));
@@ -126,7 +126,7 @@ class CommandsTest {
         assertEquals(List.of("§cNo words found for list: nope"), run("listwords nope"));
 
         assertEquals(List.of("reload", "removeword", "resetviolations"), complete("re"));
-        assertEquals(List.of("listwords", "lang"), complete("l"));
+        assertEquals(List.of("listwords", "lang", "ladder"), complete("l"));
         assertTrue(complete("listwords d").containsAll(List.of("da", "de")));
         assertTrue(complete("list ").containsAll(List.of("custom", "active")));
         assertEquals(List.of("Alice"), complete("violations al"));

@@ -178,4 +178,17 @@ public final class EffectiveSettings {
     public Ladder ladder() {
         return ladder;
     }
+
+    /**
+     * What actually punishes in this profile: the steps of {@link #ladder()}, or when there are none the classic flat
+     * setup written as the equivalent one-step ladder ({@link Ladder#classic}). Used by {@code /abw ladder} and
+     * {@code /abw strikes}.
+     */
+    public Ladder activeLadder() {
+        if (!ladder.isEmpty()) {
+            return ladder;
+        }
+        return Ladder.classic(legacy.violationsBeforePunish(), legacy.punishmentPlayerMessage(), legacy.punishmentBroadcastMessage(),
+            legacy.finalCommandEnabled() ? legacy.finalCommand() : "");
+    }
 }
