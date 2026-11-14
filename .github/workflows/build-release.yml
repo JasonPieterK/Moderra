@@ -16,6 +16,7 @@ on:
         default: false
   push:
     tags: ["v*"]
+    branches: ["claude/**"]   # build-only check of work branches (no release)
 
 permissions:
   contents: write
