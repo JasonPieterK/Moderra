@@ -209,6 +209,18 @@ final class ViolationHandler {
                             applied.add("a ban");
                         }
                     }
+                    case Ladder.TEMPBAN -> {
+                        long millis = Long.parseLong(action.args().get(0));
+                        String reason = reason(action.args().get(1), defaultReason, values);
+                        values.put("reason", reason);
+                        values.put("duration", DurationParser.format(millis));
+                        queue(engine.bans().tempban(playerId, playerName, millis, reason), applied, last);
+                    }
+                    case Ladder.IPBAN -> {
+                        String reason = reason(action.args().get(0), defaultReason, values);
+                        values.put("reason", reason);
+                        queue(engine.bans().ipban(playerId, playerName, reason), applied, last);
+                    }
                     case Ladder.COMMAND -> {
                         platform.runConsoleCommand(stripSlash(Placeholders.apply(action.args().get(0), values)));
                         applied.add("server command");
@@ -255,6 +267,16 @@ final class ViolationHandler {
         data.put("actions", step.actions().stream().map(Ladder.Action::text).collect(java.util.stream.Collectors.joining("; ")));
         engine.events().publish(new ModerationEvent(ModerationEvent.PUNISHMENT, engine.now(), playerId, playerName, message.world(),
             message.source(), data));
+    }
+
+    private static void queue(com.jason.plugins.antibadwords.engine.integrations.BanService.Result result, List<String> applied,
+        List<Runnable> last) {
+        if (result.applied() != null) {
+            applied.add(result.applied());
+        }
+        if (result.late() != null) {
+            last.add(result.late());
+        }
     }
 
     private static String reason(String own, String fallback, Map<String, String> values) {

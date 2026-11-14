@@ -28,7 +28,14 @@ public final class FakePlatform implements Platform {
     public final List<String> appliedActions = new ArrayList<>();
     public final List<String> infos = new ArrayList<>();
     public final List<String> warnings = new ArrayList<>();
+    public final Set<String> plugins = new HashSet<>();
     public boolean menus;
+
+    @Override
+    public boolean hasPlugin(String name) {
+        return plugins.contains(name);
+    }
+
     public final List<UUID> menusOpened = new ArrayList<>();
 
     @Override

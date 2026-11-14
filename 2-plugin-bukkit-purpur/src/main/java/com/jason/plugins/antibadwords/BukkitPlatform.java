@@ -104,6 +104,12 @@ public final class BukkitPlatform implements Platform {
     }
 
     @Override
+    public boolean hasPlugin(String name) {
+        org.bukkit.plugin.Plugin found = Bukkit.getPluginManager().getPlugin(name);
+        return found != null && found.isEnabled();
+    }
+
+    @Override
     public boolean has(UUID playerId, String node) {
         Player player = Bukkit.getPlayer(playerId);
         return player != null && player.hasPermission(node);
