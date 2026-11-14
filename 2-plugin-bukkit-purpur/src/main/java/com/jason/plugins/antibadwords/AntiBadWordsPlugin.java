@@ -2,6 +2,8 @@ package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
+import com.jason.plugins.antibadwords.gui.GuiListener;
+import com.jason.plugins.antibadwords.gui.GuiManager;
 import java.util.Locale;
 import java.util.Objects;
 import org.bukkit.ChatColor;
@@ -21,6 +23,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public final class AntiBadWordsPlugin extends JavaPlugin {
     private Engine engine;
     private PunishmentExecutor punishmentExecutor;
+    private GuiManager gui;
 
     @Override
     public void onEnable() {
@@ -30,7 +33,9 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         engine.addReloadListener(this::registerProfilePermissions);
         registerProfilePermissions();
 
+        gui = new GuiManager(this);
         getServer().getPluginManager().registerEvents(new AntiBadWordsListener(this), this);
+        getServer().getPluginManager().registerEvents(new GuiListener(gui), this);
 
         PluginCommand pluginCommand = Objects.requireNonNull(getCommand("antibadwords"),
             "antibadwords command not defined in plugin.yml");
@@ -45,6 +50,9 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (gui != null) {
+            gui.closeAll();
+        }
         // Never leave a player with a half-applied attribute punishment.
         if (punishmentExecutor != null) {
             punishmentExecutor.restoreEverything();
@@ -56,6 +64,10 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
     public Engine getEngine() {
         return engine;
+    }
+
+    public GuiManager getGui() {
+        return gui;
     }
 
     public PunishmentExecutor getPunishmentExecutor() {
