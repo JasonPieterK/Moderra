@@ -54,6 +54,37 @@ public final class PersistentStrikeService implements StrikeService {
     private final Supplier<Options> options;
     private final EngineLog log;
     private final DataFile file;
+    private volatile Listener listener;
+
+    /** Told about strikes and resets that happen on this server (not those applied from elsewhere). Used by the network sync. */
+    public interface Listener {
+        void added(UUID player, int weight);
+
+        void reset(UUID player);
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    /** Adds points that were given on another server of the network: counted and saved, but not passed on. */
+    public int addRemote(UUID player, int weight) {
+        Options o = options.get();
+        int points = add(player, weight, o);
+        changed(o);
+        return points;
+    }
+
+    /** Resets a player because another server did; not passed on. */
+    public void resetRemote(UUID player) {
+        boolean removed;
+        synchronized (this) {
+            removed = entries.remove(player) != null;
+        }
+        if (removed) {
+            changed(options.get());
+        }
+    }
 
     public PersistentStrikeService(Path file, LongSupplier clock, Supplier<Options> options, EngineLog log, DataFile.Scheduler scheduler) {
         this.clock = clock;
@@ -107,6 +138,10 @@ public final class PersistentStrikeService implements StrikeService {
         Options o = options.get();
         int points = add(player, weight, o);
         changed(o);
+        Listener l = listener;
+        if (l != null && weight > 0) {
+            l.added(player, weight);
+        }
         return points;
     }
 
@@ -151,6 +186,10 @@ public final class PersistentStrikeService implements StrikeService {
         }
         if (removed) {
             changed(options.get());
+            Listener l = listener;
+            if (l != null) {
+                l.reset(player);
+            }
         }
     }
 
