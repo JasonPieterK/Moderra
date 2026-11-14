@@ -59,22 +59,40 @@ public final class AntiBadWordsListener implements Listener {
     // One handler per text source
     // ------------------------------------------------------------------------------------------
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    /**
+     * Chat. NOT annotated with {@code @EventHandler}: {@link AntiBadWordsPlugin} registers it with
+     * {@code PluginManager#registerEvent} at the priority from {@code integrations.essentials.chat-priority}
+     * (LOWEST with EssentialsX Chat, which formats and sends chat from LOWEST on; otherwise HIGHEST as before), always with
+     * {@code ignoreCancelled = true}.
+     */
     public void onAsyncChat(AsyncPlayerChatEvent event) {
         // Runs on an async thread: inspect() is thread-safe, onViolation() switches to the main thread itself.
         Message message = message(event.getPlayer(), Message.CHAT, event.getMessage());
         Verdict verdict = engine().inspect(message);
         if (verdict.captured()) {
             // The line was the answer of a menu text prompt: no broadcast, no scan, no event, no violation.
-            event.setCancelled(true);
+            stop(event);
             return;
         }
         if (verdict.blocked()) {
-            event.setCancelled(true);
+            stop(event);
         } else if (verdict.censored()) {
             event.setMessage(verdict.text());
         }
         engine().onViolation(message, verdict);
+    }
+
+    /**
+     * Cancels the chat event AND empties its recipient list. A plugin that (wrongly) ignores cancelled events, such as a
+     * chat formatter that sends the line itself, then has nobody left to send it to.
+     */
+    private static void stop(AsyncPlayerChatEvent event) {
+        event.setCancelled(true);
+        try {
+            event.getRecipients().clear();
+        } catch (UnsupportedOperationException ex) {
+            // another plugin made the set read-only; the cancel above still applies
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)

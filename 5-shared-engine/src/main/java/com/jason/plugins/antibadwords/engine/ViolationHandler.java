@@ -28,6 +28,17 @@ final class ViolationHandler {
         this.engine = engine;
     }
 
+    /** The placeholder values for lines that people read: {@code {player}} may be the Essentials nickname. Never used for commands. */
+    private Map<String, String> shown(UUID playerId, String playerName, Map<String, String> values) {
+        String display = engine.essentials().displayName(playerId, playerName);
+        if (display == null || display.equals(playerName)) {
+            return values;
+        }
+        Map<String, String> copy = new HashMap<>(values);
+        copy.put("player", display);
+        return copy;
+    }
+
     void handle(Message message, Verdict verdict) {
         Hit primary = verdict.primary();
         if (primary == null) {
@@ -97,7 +108,7 @@ final class ViolationHandler {
 
         // ---- staff and console ----
         if (s.notifyStaff()) {
-            String staff = Placeholders.apply(s.staffNotifyFormat(), values);
+            String staff = Placeholders.apply(s.staffNotifyFormat(), shown(playerId, playerName, values));
             for (PlayerRef other : platform.onlinePlayers()) {
                 if (!other.name().equals(playerName) && platform.has(other.id(), Engine.PERMISSION_NOTIFY)) {
                     platform.sendMessage(other.id(), staff);
@@ -115,7 +126,7 @@ final class ViolationHandler {
         if (!punish) {
             // Plain warning (or "blocked, but punishment is disabled").
             if (s.broadcastWarnings()) {
-                platform.broadcast(Placeholders.apply(s.warningBroadcastMessage(), values));
+                engine.essentials().broadcastAbout(playerId, Placeholders.apply(s.warningBroadcastMessage(), shown(playerId, playerName, values)));
             }
             boolean disabled = useLadder ? !s.punishmentEnabled() && count >= ladder.firstThreshold() : count >= limit;
             platform.sendMessage(playerId, Placeholders.apply(disabled ? s.punishmentDisabledMessage() : s.warningPlayerMessage(), values));
@@ -142,7 +153,7 @@ final class ViolationHandler {
         values.put("remaining", "0");
         values.put("punishments", Names.formatPunishmentList(applied));
         values.put("punishment", values.get("punishments"));
-        platform.broadcast(Placeholders.apply(s.punishmentBroadcastMessage(), values));
+        engine.essentials().broadcastAbout(playerId, Placeholders.apply(s.punishmentBroadcastMessage(), shown(playerId, playerName, values)));
         platform.sendMessage(playerId, Placeholders.apply(s.punishmentPlayerMessage(), values));
         if (s.finalCommandEnabled() && !s.finalCommand().isBlank()) {
             platform.runConsoleCommand(stripSlash(Placeholders.apply(s.finalCommand(), values)));
@@ -231,7 +242,7 @@ final class ViolationHandler {
         values.put("punishments", Names.formatPunishmentList(applied));
         values.put("punishment", values.get("punishments"));
         if (!step.broadcast().isBlank()) {
-            platform.broadcast(Names.colour(Placeholders.apply(step.broadcast(), values)));
+            engine.essentials().broadcastAbout(playerId, Names.colour(Placeholders.apply(step.broadcast(), shown(playerId, playerName, values))));
         }
         if (!step.message().isBlank()) {
             platform.sendMessage(playerId, Names.colour(Placeholders.apply(step.message(), values)));

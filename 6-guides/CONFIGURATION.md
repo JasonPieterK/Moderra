@@ -373,6 +373,22 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.commands.rate.max` | whole number from 1 to 100 | `5` | no | How many commands one Discord user may run within the time below. |
 | `discord.commands.rate.window` | time such as 30s, 10m, 2h or 1d, at least 1s, at most 1h | `30s` | no | Time window for the limit above. |
 
+## `integrations.yml`
+
+### Integrations
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `integrations.essentials.enabled` | true or false | `true` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). Master switch of everything in this section. It only does something when EssentialsX is installed.<br>Needs a restart (the plugin looks for EssentialsX while it starts). |
+| `integrations.essentials.chat-priority` | one of: auto, lowest, highest | `auto` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). When the chat check runs. EssentialsX Chat formats and sends chat from the LOWEST priority on, so our check must be<br>first: auto = LOWEST when EssentialsChat is installed, otherwise HIGHEST (the old behaviour); lowest / highest = always.<br>A blocked message is cancelled AND its recipient list is emptied, so nothing re-sends it. Needs a restart. |
+| `integrations.essentials.mute-mode` | one of: own, essentials, both | `own` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). own = only the built-in mute (EssentialsX mutes are ignored). essentials = the ladder and /abw mute use the Essentials<br>mute (its own storage and messages) and Essentials-muted players are held back here too. both = both at once.<br>Falls back to the built-in mute when Essentials is not there or refuses. |
+| `integrations.essentials.nickname-in-messages` | one of: off, nickname, both | `off` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). off = {player} is always the real name. nickname = the /nick nickname is shown when there is one in the warning and<br>punishment broadcasts and the staff notice. both = "Nick (RealName)". Console commands and events always use the real name. |
+| `integrations.essentials.hide-vanished` | true or false | `true` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). Broadcast warnings and punishments about a vanished player (Essentials /vanish, or Bukkit metadata "vanished")<br>go only to players with antibadwords.notify instead of everybody. |
+| `integrations.essentials.scan-commands` | list of texts | `nick`, `nickname`, `msg`, `m`, `tell`, `t`, `w`, `whisper`, `r`, `reply`, `mail`, `me`, `action`, `broadcast`, `bc`, `bcast`, `helpop`, `ac` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). Added to commands.scanned-commands while EssentialsX is installed (arguments are checked like chat; a blocked command<br>never runs, so social spy, mail and helpop never see the text). commands.ignored-commands still wins. |
+| `integrations.essentials.check-nickname-on-join` | true or false | `true` | no | BUKKIT FAMILY ONLY (EssentialsX has no Fabric or Forge version). A nickname that was set earlier is checked with the word lists when its owner joins (a new /nick is checked as a command). |
+| `integrations.essentials.nickname-action` | one of: log, warn, reset | `warn` | no | log = only the console and the event history, warn = also tell the player (message below), reset = also remove the nickname. |
+| `integrations.essentials.nickname-message` | text | `&cYour nickname is not allowed on this server.` | no | Sent to the player for the actions warn and reset. No placeholders. |
+
 ## The extra filters in plain words
 
 A message goes through the checks in the order of `filters.check-order` (config.yml):
