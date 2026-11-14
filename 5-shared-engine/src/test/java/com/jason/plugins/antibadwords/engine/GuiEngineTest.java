@@ -27,7 +27,7 @@ class GuiEngineTest {
     private static final CommandSender ADMIN = new CommandSender() {
         public String name() { return "Admin"; }
         public UUID id() { return UUID.randomUUID(); }
-        public boolean has(String p) { return p.equals(Menu.PERMISSION); }
+        public boolean has(String p) { return p.equals(Menu.PERMISSION) || p.startsWith(Menu.EDIT_PREFIX); }
         public void send(String m) { }
     };
 

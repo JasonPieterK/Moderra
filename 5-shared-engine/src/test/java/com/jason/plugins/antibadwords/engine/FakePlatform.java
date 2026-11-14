@@ -49,6 +49,22 @@ public final class FakePlatform implements Platform {
         return true;
     }
 
+    public final List<String> menuPages = new ArrayList<>();
+
+    @Override
+    public boolean openMenu(UUID player, String page) {
+        menuPages.add(page);
+        return openMenu(player);
+    }
+
+    /** Names of "installed plugins" for hasPlugin. */
+    public final Set<String> plugins = new HashSet<>();
+
+    @Override
+    public boolean hasPlugin(String name) {
+        return plugins.contains(name);
+    }
+
     public boolean signPrompts;
     public final List<String> signOpened = new ArrayList<>();
 

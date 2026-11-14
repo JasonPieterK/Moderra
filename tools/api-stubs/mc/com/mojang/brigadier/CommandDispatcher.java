@@ -1,0 +1,1 @@
+package com.mojang.brigadier; public class CommandDispatcher<S> { public Object register(com.mojang.brigadier.builder.LiteralArgumentBuilder<S> b){return null;} public int execute(String c,S s) throws com.mojang.brigadier.exceptions.CommandSyntaxException {return 0;} }

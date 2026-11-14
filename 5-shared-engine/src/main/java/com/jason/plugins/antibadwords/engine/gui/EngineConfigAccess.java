@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords.engine.gui;
 
 import com.jason.plugins.antibadwords.engine.Engine;
+import com.jason.plugins.antibadwords.engine.config.Section;
 import com.jason.plugins.antibadwords.engine.config.Setting;
 import com.jason.plugins.antibadwords.engine.config.SettingsRegistry;
 import java.io.IOException;
@@ -30,11 +31,25 @@ public final class EngineConfigAccess implements ConfigAccess {
     }
 
     @Override
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    public Map<String, Object> section(Section section) {
+        return engine.rawSection(section);
+    }
+
+    @Override
     public void save(Map<Setting<?>, Object> changes) throws IOException {
+        save(changes, Map.of());
+    }
+
+    @Override
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    public void save(Map<Setting<?>, Object> changes, Map<Section, Map<String, Object>> sections) throws IOException {
         synchronized (engine) {
             for (Map.Entry<Setting<?>, Object> e : changes.entrySet()) {
                 engine.config().set((Setting) e.getKey(), e.getValue());
+            }
+            for (Map.Entry<Section, Map<String, Object>> e : sections.entrySet()) {
+                Section section = e.getKey();
+                engine.config().edit(section.file(), editor -> editor.set(section.key(), e.getValue()));
             }
             engine.reload();
         }

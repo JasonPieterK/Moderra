@@ -1,0 +1,1 @@
+package net.minecraftforge.server.permission.events; import net.minecraftforge.server.permission.nodes.PermissionNode; public class PermissionGatherEvent { public static class Nodes extends PermissionGatherEvent { public static final net.minecraftforge.Bus<Nodes> BUS=null; public void addNodes(PermissionNode<?>... n){} } }

@@ -33,4 +33,5 @@ public final class Icons {
     public static final String MUTE = "mute";
     public static final String PROFILE = "profile";
     public static final String SEARCH = "search";
+    public static final String RULE = "rule";
 }

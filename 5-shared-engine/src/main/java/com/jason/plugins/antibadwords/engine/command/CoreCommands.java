@@ -188,6 +188,24 @@ public final class CoreCommands {
         c.send(GRAY + "Filters: spam " + WHITE + spam + GRAY + " | links " + WHITE + e.get(LinkSettings.MODE) + GRAY + " | bypass tricks "
             + WHITE + e.get(EvasionSettings.DETECT_ACTION));
         c.send(GRAY + "Check order: " + WHITE + engine.checks(e).stream().map(TextCheck::id).collect(java.util.stream.Collectors.joining(", ")));
+        integrations(c, engine);
+    }
+
+    /** Plugins the engine can work with; shown by {@code /abw info} when {@link com.jason.plugins.antibadwords.engine.Platform#hasPlugin} finds them. */
+    static final List<String> KNOWN_PLUGINS = List.of("DiscordSRV", "LuckPerms", "PlaceholderAPI", "Essentials", "LiteBans", "AdvancedBan",
+        "floodgate");
+
+    private static void integrations(CommandContext c, Engine engine) {
+        com.jason.plugins.antibadwords.engine.Platform platform = engine.platform();
+        List<String> found = new ArrayList<>();
+        for (String plugin : KNOWN_PLUGINS) {
+            if (platform.hasPlugin(plugin)) {
+                found.add(plugin);
+            }
+        }
+        c.send(GRAY + "Integrations detected: " + WHITE + (found.isEmpty() ? "none" : String.join(", ", found)));
+        c.send(GRAY + "DiscordSRV features (alerts, Discord chat filter, !abw commands) work on Bukkit/Paper/Purpur only"
+            + (platform.name().equalsIgnoreCase("Bukkit") ? "." : "; they are not available on " + platform.name() + "."));
     }
 
     /** The player named by the first argument: online, or offline but seen before (data/players.json). */

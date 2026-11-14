@@ -1,0 +1,1 @@
+package net.minecraftforge.server.permission; public class PermissionAPI { public static <T> T getPermission(net.minecraft.server.level.ServerPlayer p, net.minecraftforge.server.permission.nodes.PermissionNode<T> n){return null;} }

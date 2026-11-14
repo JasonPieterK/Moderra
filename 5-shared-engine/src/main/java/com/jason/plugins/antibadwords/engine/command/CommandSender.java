@@ -15,4 +15,12 @@ public interface CommandSender {
 
     /** Sends one line (coloured with {@code §} codes) back to the sender. */
     void send(String message);
+
+    /**
+     * True when the caller records its own {@code admin-command} event for what this sender runs (Discord does), so a
+     * command's {@link CommandContext#audit()} must not publish a second one. Default: false.
+     */
+    default boolean suppressAudit() {
+        return false;
+    }
 }

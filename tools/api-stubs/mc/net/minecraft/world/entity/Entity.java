@@ -1,0 +1,1 @@
+package net.minecraft.world.entity; public class Entity { public java.util.UUID getUUID(){return null;} public net.minecraft.network.chat.Component getName(){return null;} }

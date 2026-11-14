@@ -194,3 +194,7 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `EssentialsHook` reflection names (see its javadoc), the chat order
 (`Chat check priority: LOWEST` log line, blocked chat never reaches EssentialsX Chat formatting, censored chat is formatted clean),
 `loadbefore: [EssentialsChat]` in plugin.yml, mute-mode essentials/both (`/mute` in Essentials vs `/abw mute`), `/nick`, `/vanish` broadcasts.
+## Mini task 24 (GUI editors, edit rights, stubs)
+- [ ] Bukkit: `antibadwords.gui.edit.<category>` nodes are registered with default TRUE after every reload (`AntiBadWordsPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/abw gui ladder`, `/abw gui spam` open the right page.
+- [ ] Fabric/Forge: edit nodes use `ModPermissions.fallback` (true); Forge does not register them (unregistered nodes use the fallback). `ModGui.open(player, page)` is stub-compiled only; mods still have no chest backend.
+- [ ] Run `tools/stub-compile.sh` (hand-written stubs, see `tools/api-stubs/README.md`): passing it proves nothing about the real APIs. It found a duplicate `case` in `ForgePermissions` (fixed).

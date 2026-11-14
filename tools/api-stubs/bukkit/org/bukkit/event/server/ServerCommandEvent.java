@@ -1,0 +1,1 @@
+package org.bukkit.event.server; public class ServerCommandEvent { public org.bukkit.command.CommandSender getSender(){return null;} public String getCommand(){return null;} public void setCancelled(boolean c){} }

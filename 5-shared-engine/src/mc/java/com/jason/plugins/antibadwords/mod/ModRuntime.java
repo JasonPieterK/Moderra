@@ -296,8 +296,13 @@ public final class ModRuntime {
 
         @Override
         public boolean openMenu(UUID playerId) {
+            return openMenu(playerId, "");
+        }
+
+        @Override
+        public boolean openMenu(UUID playerId, String page) {
             ServerPlayer p = player(playerId);
-            return p != null && com.jason.plugins.antibadwords.mod.gui.ModGui.open(p);
+            return p != null && com.jason.plugins.antibadwords.mod.gui.ModGui.open(p, page);
         }
 
         @Override

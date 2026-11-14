@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 class MenuTest {
     static final class Viewer implements CommandSender {
         boolean allowed = true;
+        final java.util.Set<String> noEdit = new java.util.HashSet<>();
 
         @Override
         public String name() {
@@ -35,7 +36,7 @@ class MenuTest {
 
         @Override
         public boolean has(String permission) {
-            return allowed && permission.equals(Menu.PERMISSION);
+            return allowed && (permission.equals(Menu.PERMISSION) || (permission.startsWith(Menu.EDIT_PREFIX) && !noEdit.contains(permission)));
         }
 
         @Override

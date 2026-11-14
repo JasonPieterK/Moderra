@@ -31,11 +31,15 @@ public final class ModGui {
 
     /** Per viewer: the engine's menu state plus two flags that tell our own closes from the player's. */
     private static final class Session {
-        final MenuState state = Menu.open(ModRuntime.engine);
+        final MenuState state;
         /** true while we close the menu ourselves (text prompt, finished): the "closed" notification is ignored. */
         boolean closingByUs;
         /** true while a text prompt is out; the menu is closed and comes back after the answer. */
         boolean awaitingText;
+
+        Session(String page) {
+            state = Menu.open(ModRuntime.engine, page == null ? "" : page);
+        }
     }
 
     /** Called once by a loader that has a working backend. Without one the menu stays unavailable. */
@@ -49,6 +53,11 @@ public final class ModGui {
 
     /** Opens the main menu. False when there is no backend, no engine or the player lacks the permission (fail closed). */
     public static boolean open(ServerPlayer player) {
+        return open(player, "");
+    }
+
+    /** As {@link #open(ServerPlayer)}, at the page the player asked for (see {@code Menu.open(Engine, String)}). */
+    public static boolean open(ServerPlayer player, String page) {
         if (backend == null || ModRuntime.engine == null || !ModRuntime.has(player, Menu.PERMISSION)) {
             return false;
         }
@@ -59,7 +68,7 @@ public final class ModGui {
             }
             Menu.closed(old.state);
         }
-        Session session = new Session();
+        Session session = new Session(page);
         SESSIONS.put(player.getUUID(), session);
         backend.open(player, Menu.title(session.state), Menu.render(session.state));
         return true;
@@ -135,24 +144,10 @@ public final class ModGui {
         session.closingByUs = true;
         backend.close(player);
         TextPrompt prompt = TextPrompt.of(request.prompt(), request.hint(), request.masked(),
-            text -> validate(request, text),
+            text -> Menu.validateText(session.state, text),
             text -> answered(id, session, text),
             () -> cancelled(id, session));
         ModRuntime.engine.prompts().start(id, prompt);
-    }
-
-    /** {@code null} = fine. Never repeats the typed text. */
-    private static String validate(TextRequest request, String text) {
-        Setting<?> setting = ModRuntime.engine.registry().get(request.key());
-        if (request.purpose() == TextRequest.Purpose.ADD_ITEM || setting == null) {
-            return text == null || text.isBlank() ? "Nothing typed." : null;
-        }
-        try {
-            setting.require(text == null ? "" : text.trim());
-            return null;
-        } catch (IllegalArgumentException ex) {
-            return request.masked() ? "That value is not valid." : ex.getMessage();
-        }
     }
 
     private static void answered(UUID id, Session session, String text) {

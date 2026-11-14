@@ -1,0 +1,1 @@
+package net.fabricmc.fabric.api.message.v1; import net.fabricmc.fabric.api.event.Event; public class ServerMessageEvents { public static final Event<A> ALLOW_CHAT_MESSAGE=null; public interface A { boolean allow(M m, net.minecraft.server.level.ServerPlayer p, Object o); } public interface M { String signedContent(); } }

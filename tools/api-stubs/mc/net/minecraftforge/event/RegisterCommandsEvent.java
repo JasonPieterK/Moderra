@@ -1,0 +1,1 @@
+package net.minecraftforge.event; public class RegisterCommandsEvent { public static final net.minecraftforge.Bus<RegisterCommandsEvent> BUS=null; public com.mojang.brigadier.CommandDispatcher<net.minecraft.commands.CommandSourceStack> getDispatcher(){return null;} }

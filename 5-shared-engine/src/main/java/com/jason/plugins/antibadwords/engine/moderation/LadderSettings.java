@@ -64,7 +64,7 @@ public final class LadderSettings {
             + "      repeat: 2\n"
             + "      actions: [\"kick Watch your language\"]\n"
             + "A profile in worlds.yml can have its own ladder (key ladder.steps).\n"
-            + "This part cannot be edited in the in-game menu; edit the file.",
+            + "It can also be edited in the in-game menu (/abw gui ladder).",
         "{}", true);
 
     public static final Setting<String> SEVERAL_STEPS = Setting.choice("ladder.when-several-steps-are-reached", ALL, ALL, HIGHEST)

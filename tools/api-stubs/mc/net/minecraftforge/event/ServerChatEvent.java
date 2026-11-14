@@ -1,0 +1,1 @@
+package net.minecraftforge.event; public class ServerChatEvent { public static final net.minecraftforge.Bus<ServerChatEvent> BUS=null; public net.minecraft.server.level.ServerPlayer getPlayer(){return null;} public String getRawText(){return null;} }

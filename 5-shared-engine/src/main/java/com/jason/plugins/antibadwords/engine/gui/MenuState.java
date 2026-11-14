@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords.engine.gui;
 
 import com.jason.plugins.antibadwords.engine.command.CommandSender;
+import com.jason.plugins.antibadwords.engine.config.Section;
 import com.jason.plugins.antibadwords.engine.config.Setting;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -16,7 +17,9 @@ public final class MenuState {
     public enum Kind {
         MAIN, CATEGORY, LIST, CONFIRM,
         /** Special pages (engine required): languages, word-list index, one word list, ladder, mutes, profiles, search results. */
-        LANGUAGES, SOURCES, WORDS, LADDER, MUTES, PROFILES, SEARCH
+        LANGUAGES, SOURCES, WORDS, LADDER, MUTES, PROFILES, SEARCH,
+        /** Editors: one ladder step (target = step name), one profile (target = profile name), the world rules. */
+        STEP, PROFILE, RULES
     }
 
     /** One entry of the navigation stack. {@code target} is the category name or the list setting's key. */
@@ -29,6 +32,9 @@ public final class MenuState {
     private final ConfigAccess access;
     private final List<View> stack = new ArrayList<>();
     private final Map<Setting<?>, Object> staged = new LinkedHashMap<>();
+    /** Staged whole sections (ladder steps, profiles, world rules), by section key. Values are private copies. */
+    private final Map<String, Map<String, Object>> stagedSections = new LinkedHashMap<>();
+    private final Map<String, Section> stagedSectionDefs = new LinkedHashMap<>();
     private TextRequest pending;
     private CommandSender viewer;
 
@@ -83,12 +89,40 @@ public final class MenuState {
 
     /** True when something was changed and not yet saved. */
     public boolean hasUnsavedChanges() {
-        return !staged.isEmpty();
+        return !staged.isEmpty() || !stagedSections.isEmpty();
     }
 
-    /** Number of settings with a staged value. */
+    /** Number of settings and sections with a staged value. */
     public int stagedCount() {
-        return staged.size();
+        return staged.size() + stagedSections.size();
+    }
+
+    /** The staged content of a section when there is one, else the loaded content. A private deep copy: change it freely. */
+    public Map<String, Object> sectionValue(Section section) {
+        Map<String, Object> source = stagedSections.containsKey(section.key()) ? stagedSections.get(section.key()) : access.section(section);
+        return Sections.copy(source);
+    }
+
+    public boolean isSectionStaged(Section section) {
+        return stagedSections.containsKey(section.key());
+    }
+
+    /** Stages a new content for the section; staging what is loaded (same keys, same order) removes the change. */
+    void stageSection(Section section, Map<String, Object> value) {
+        Map<String, Object> loaded = access.section(section);
+        if (Sections.sameWithOrder(value, loaded)) {
+            stagedSections.remove(section.key());
+            stagedSectionDefs.remove(section.key());
+        } else {
+            stagedSections.put(section.key(), Sections.copy(value));
+            stagedSectionDefs.put(section.key(), section);
+        }
+    }
+
+    Map<Section, Map<String, Object>> stagedSections() {
+        Map<Section, Map<String, Object>> out = new LinkedHashMap<>();
+        stagedSections.forEach((key, value) -> out.put(stagedSectionDefs.get(key), value));
+        return out;
     }
 
     public boolean isStaged(Setting<?> setting) {
@@ -115,6 +149,8 @@ public final class MenuState {
 
     void discard() {
         staged.clear();
+        stagedSections.clear();
+        stagedSectionDefs.clear();
         pending = null;
     }
 

@@ -40,13 +40,14 @@ class GuiSpecialPagesTest {
     Engine engine;
     UUID adminId;
     final Set<String> perms = new HashSet<>(Set.of(Menu.PERMISSION));
+    final Set<String> denied = new HashSet<>();
     final List<MenuAction> results = new ArrayList<>();
     MenuState state;
 
     final CommandSender admin = new CommandSender() {
         public String name() { return "Admin"; }
         public UUID id() { return adminId; }
-        public boolean has(String p) { return perms.contains(p); }
+        public boolean has(String p) { return !denied.contains(p) && (perms.contains(p) || p.startsWith(Menu.EDIT_PREFIX)); }
         public void send(String m) { }
     };
 
@@ -212,7 +213,7 @@ class GuiSpecialPagesTest {
     // ---- ladder -----------------------------------------------------------------------------------
 
     @Test
-    void ladderIsShownReadOnly() {
+    void ladderIsListedWithItsSteps() {
         TestFiles.edit(f.file("moderation/ladder.yml"), "steps: {}", """
             steps:
                 warn-first:
@@ -234,9 +235,9 @@ class GuiSpecialPagesTest {
         assertTrue(steps.get(0).lore().get(0).startsWith("At 2 strikes"));
         assertTrue(steps.get(1).lore().get(0).contains("again every 3"));
         assertTrue(steps.get(1).lore().stream().anyMatch(l -> l.contains("mute 10m")));
-        assertEquals(MenuAction.Kind.NONE, click(1, ClickType.LEFT).kind());
-        assertEquals(MenuAction.Kind.NONE, click(1, ClickType.SHIFT_RIGHT).kind());
-        assertFalse(state.hasUnsavedChanges());
+        assertFalse(state.hasUnsavedChanges(), "looking changes nothing");
+        assertEquals(MenuAction.Kind.REFRESH, click(1, ClickType.LEFT).kind(), "a click opens the step editor (see GuiEditorTest)");
+        assertEquals("Step: big-mute", Menu.title(state));
     }
 
     @Test
@@ -276,7 +277,7 @@ class GuiSpecialPagesTest {
     // ---- profiles ---------------------------------------------------------------------------------------
 
     @Test
-    void profilesAreListedReadOnly() {
+    void profilesAreListedWithTheirDifferences() {
         TestFiles.write(f.file("worlds.yml"), """
             default-profile: default
             use-permission-profiles: true
@@ -293,8 +294,8 @@ class GuiSpecialPagesTest {
         assertEquals(List.of("default", "relaxed"), profiles.stream().map(Slot::name).toList());
         assertTrue(profiles.get(0).glowing());
         assertTrue(profiles.get(1).lore().stream().anyMatch(l -> l.contains("2 settings differ")), profiles.get(1).lore().toString());
-        assertTrue(profiles.get(1).lore().stream().anyMatch(l -> l.contains("filters.protection-level")));
-        assertEquals(MenuAction.Kind.NONE, click(1, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.REFRESH, click(1, ClickType.LEFT).kind(), "a click opens the profile editor (see GuiEditorTest)");
+        assertTrue(Menu.render(state).stream().anyMatch(sl -> sl.name().equals("filters.protection-level")));
     }
 
     // ---- search -----------------------------------------------------------------------------------------

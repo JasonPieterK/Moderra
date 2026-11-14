@@ -16,6 +16,9 @@ public interface ModPermissions {
         if (node.startsWith("antibadwords.bypass") || node.startsWith("antibadwords.profile.")) {
             return false; // nobody has these unless a permission mod grants them
         }
+        if (node.startsWith(com.jason.plugins.antibadwords.engine.gui.Menu.EDIT_PREFIX)) {
+            return true; // menu edit rights: everybody who may open the menu, until a permission mod takes a node away
+        }
         return isOperator(player.createCommandSourceStack());
     }
 
