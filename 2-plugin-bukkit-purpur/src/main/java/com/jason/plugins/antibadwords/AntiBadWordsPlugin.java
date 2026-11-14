@@ -4,11 +4,14 @@ import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.gui.GuiListener;
 import com.jason.plugins.antibadwords.gui.GuiManager;
+import com.jason.plugins.antibadwords.integrations.essentials.EssentialsHook;
 import java.util.Locale;
 import java.util.Objects;
 import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.PluginManager;
@@ -25,6 +28,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     private PunishmentExecutor punishmentExecutor;
     private GuiManager gui;
     private DiscordSrvHook discordSrv;
+    private EssentialsHook essentials;
 
     @Override
     public void onEnable() {
@@ -35,7 +39,10 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         registerProfilePermissions();
 
         gui = new GuiManager(this);
-        getServer().getPluginManager().registerEvents(new AntiBadWordsListener(this), this);
+        startEssentials(); // before the listeners: it decides the chat priority
+        AntiBadWordsListener listener = new AntiBadWordsListener(this);
+        getServer().getPluginManager().registerEvents(listener, this);
+        registerChatListener(listener);
         getServer().getPluginManager().registerEvents(new GuiListener(gui), this);
 
         PluginCommand pluginCommand = Objects.requireNonNull(getCommand("antibadwords"),
@@ -52,6 +59,10 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (essentials != null) {
+            essentials.stop(engine);
+            essentials = null;
+        }
         if (discordSrv != null) {
             discordSrv.stop();
             discordSrv = null;
@@ -66,6 +77,37 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         if (engine != null) {
             engine.shutdown();
         }
+    }
+
+    /** EssentialsX is an optional soft dependency (reflection only): any problem with it must never stop this plugin. */
+    private void startEssentials() {
+        try {
+            essentials = EssentialsHook.start(this, engine);
+        } catch (Throwable ex) { // NoClassDefFoundError and friends included on purpose
+            getLogger().warning("The EssentialsX hook could not start (" + ex.getClass().getSimpleName() + "); continuing without it.");
+        }
+    }
+
+    /**
+     * Chat is registered by hand to pick its priority from the settings. Spelled out because order matters:
+     * <ul>
+     *   <li>EssentialsX Chat (plugin {@code EssentialsChat}) has handlers at LOWEST, NORMAL and HIGHEST. With it installed, ours runs
+     *       at LOWEST ({@code integrations.essentials.chat-priority: auto}), before its formatting and recipient handling.</li>
+     *   <li>{@code plugin.yml} has {@code loadbefore: [EssentialsChat]}, so this plugin is enabled (and its LOWEST handler registered)
+     *       before EssentialsChat's own: Bukkit runs equal priorities in registration order.</li>
+     *   <li>{@code ignoreCancelled = true}: a message another plugin already cancelled is not scanned or counted.</li>
+     *   <li>A blocked message is cancelled and its recipients are cleared, a censored one gets the cleaned text via
+     *       {@code setMessage}, so EssentialsX Chat formats the cleaned text.</li>
+     * </ul>
+     */
+    private void registerChatListener(AntiBadWordsListener listener) {
+        EventPriority priority = EssentialsHook.chatPriority(engine);
+        getServer().getPluginManager().registerEvent(AsyncPlayerChatEvent.class, listener, priority, (l, event) -> {
+            if (event instanceof AsyncPlayerChatEvent chat) {
+                listener.onAsyncChat(chat);
+            }
+        }, this, true);
+        getLogger().info("Chat check priority: " + priority + (essentials != null ? " (EssentialsX found)" : "") + ".");
     }
 
     /** DiscordSRV is an optional soft dependency: any problem with it (missing, other version) must never stop this plugin. */

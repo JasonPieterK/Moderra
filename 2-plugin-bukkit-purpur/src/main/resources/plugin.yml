@@ -5,6 +5,7 @@ api-version: '${mc.api.version}'
 authors:
   - Jason
 softdepend: [DiscordSRV, Essentials, LiteBans, AdvancedBan, LibertyBans, floodgate, Geyser-Spigot]
+loadbefore: [EssentialsChat]
 description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:
   antibadwords:

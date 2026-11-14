@@ -187,11 +187,20 @@ public final class MuteService implements MuteHandler {
             ? engine.players().get(player).map(k -> k.name()).orElse("") : playerName;
         long until = DurationParser.isPermanent(durationMillis) ? DurationParser.PERMANENT : now + durationMillis;
         Mute mute = new Mute(player, name, now, until, reason == null ? "" : reason.strip(), actor == null || actor.isEmpty() ? SYSTEM : actor);
-        synchronized (this) {
-            mutes.put(player, mute);
+        // EssentialsX mute (integrations.essentials.mute-mode): written there too, or instead of the built-in list
+        var essentials = engine.essentials();
+        boolean wroteEssentials = essentials.writesEssentialsMute()
+            && essentials.setExternalMute(player, name, until, mute.reason());
+        if (essentials.writesEssentialsMute() && !wroteEssentials) {
+            engine.platform().logger().warn("EssentialsX did not accept the mute of " + name + "; the built-in mute is used for it.");
         }
-        changed();
-        arm();
+        if (essentials.keepsOwnMute() || !wroteEssentials) {
+            synchronized (this) {
+                mutes.put(player, mute);
+            }
+            changed();
+            arm();
+        }
         Map<String, String> values = values(mute, now);
         publish(ModerationEvent.MUTE, mute, values);
         tell(player, MuteSettings.MSG_MUTED, values);
@@ -201,6 +210,11 @@ public final class MuteService implements MuteHandler {
     /** Lifts a mute. @return false when the player was not muted */
     public boolean unmute(UUID player, String actor) {
         Mute mute = get(player).orElse(null);
+        boolean liftedEssentials = engine.essentials().writesEssentialsMute() && engine.essentials().clearExternalMute(player);
+        if (mute == null && liftedEssentials) {
+            String name = engine.players().get(player).map(k -> k.name()).orElse("");
+            mute = new Mute(player, name, engine.now(), engine.now(), "", SYSTEM);
+        }
         if (mute == null) {
             return false;
         }
@@ -290,6 +304,12 @@ public final class MuteService implements MuteHandler {
             return false;
         }
         Mute mute = get(player).orElse(null);
+        if (mute == null) {
+            // a mute made in EssentialsX (mute-mode essentials or both) holds the player back here too
+            mute = engine.essentials().externalMute(player)
+                .map(e -> new Mute(player, message.playerName(), 0, e.until() <= 0 ? DurationParser.PERMANENT : e.until(), e.reason() == null ? "" : e.reason(), "essentials"))
+                .filter(m -> !m.expired(engine.now())).orElse(null);
+        }
         if (mute == null || message.has(BYPASS_PERMISSION)) {
             return false;
         }

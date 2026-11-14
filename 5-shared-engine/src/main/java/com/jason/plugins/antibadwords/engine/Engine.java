@@ -116,6 +116,7 @@ public final class Engine {
     private final DiscordService discord;
     private final com.jason.plugins.antibadwords.engine.integrations.BanService bans = new com.jason.plugins.antibadwords.engine.integrations.BanService(this);
     private final com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock = new com.jason.plugins.antibadwords.engine.integrations.BedrockNames(this);
+    private final com.jason.plugins.antibadwords.engine.integrations.EssentialsLink essentials;
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -130,6 +131,7 @@ public final class Engine {
         this.events = new EventBus(platform.logger());
         this.commands = new CommandRegistry(this);
         this.discord = new DiscordService(this);
+        this.essentials = new com.jason.plugins.antibadwords.engine.integrations.EssentialsLink(this);
         // data files are written off the server thread, a moment after the change
         DataFile.Scheduler saver = (task, delay) -> platform.runSync(() -> platform.runSyncLater(() -> platform.runAsync(task), delay));
         Path data = folder.resolve(DATA_FOLDER);
@@ -191,6 +193,7 @@ public final class Engine {
         MuteCommands.register(commands);
         commands.register(new com.jason.plugins.antibadwords.engine.command.GuiCommand());
         discord.install();
+        essentials.install();
     }
 
     /**
@@ -209,6 +212,7 @@ public final class Engine {
         MuteSettings.register(registry);
         DiscordSettings.register(registry);
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
     }
@@ -566,6 +570,9 @@ public final class Engine {
         Message current = scanned ? message : null;
         if (scanned && (playerCommand || Message.COMMAND_BLOCK.equals(message.source()))) {
             String arguments = commandTextToScan(settings, message.text());
+            if (arguments == null) {
+                arguments = essentials.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
             current = arguments == null ? null : message.withText(arguments);
         }
         if (current == null && !playerCommand) {
@@ -676,6 +683,7 @@ public final class Engine {
     public Verdict onJoin(UUID playerId, String playerName) {
         players.seen(playerId, playerName);
         mutes.onJoin(playerId, playerName);
+        platform.runSyncLater(() -> essentials.onJoin(playerId, playerName), 1000); // Essentials loads the user data while the join runs
         Message message = message(playerId, playerName, Message.JOIN, bedrock.filterName(playerName));
         Verdict verdict = judge(message, true, false);
         Hit hit = verdict.primary();
@@ -792,6 +800,19 @@ public final class Engine {
     /** Bedrock (Geyser / Floodgate) name handling (settings {@code integrations.bedrock.*}). */
     public com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock() {
         return bedrock;
+    }
+
+    /** EssentialsX hook (Bukkit family; settings in {@code integrations.yml}). Does nothing until the plugin attaches a bridge. */
+    public com.jason.plugins.antibadwords.engine.integrations.EssentialsLink essentials() {
+        return essentials;
+    }
+
+    /**
+     * Judges a name-like text (a nickname) with all word checks, like a join name: no scan switch, nothing counted.
+     * Does not change anything; the caller decides what to do.
+     */
+    public Verdict inspectName(UUID playerId, String playerName, String text) {
+        return judge(message(playerId, playerName, Message.JOIN, text), false, false);
     }
 
     /** Discord webhook alerts (settings in {@code discord.yml}, command {@code /abw discord}). */

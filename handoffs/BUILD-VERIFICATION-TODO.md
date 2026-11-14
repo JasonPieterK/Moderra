@@ -189,3 +189,8 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 - [ ] `2-plugin-bukkit-purpur/pom.xml`: new build-helper execution `add-discordsrv-shim` and `maven-jar-plugin` excludes `github/**`. Run `mvn package` and check
       with `unzip -l` that no `github/scarsz` class is inside the jar and that the jar loads without DiscordSRV.
 - [ ] Reflection names that could differ per DiscordSRV version are listed in the `DiscordSrvHook` class comment.
+
+## Mini task 21 (EssentialsX hook, Bukkit)
+Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `EssentialsHook` reflection names (see its javadoc), the chat order
+(`Chat check priority: LOWEST` log line, blocked chat never reaches EssentialsX Chat formatting, censored chat is formatted clean),
+`loadbefore: [EssentialsChat]` in plugin.yml, mute-mode essentials/both (`/mute` in Essentials vs `/abw mute`), `/nick`, `/vanish` broadcasts.
