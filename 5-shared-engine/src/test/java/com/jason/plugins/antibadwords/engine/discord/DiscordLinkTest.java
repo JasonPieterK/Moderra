@@ -70,7 +70,7 @@ class DiscordLinkTest {
     void start() throws IOException {
         platform = new FakePlatform(dir);
         bob = platform.join("Bob");
-        engine = Engine.load(platform, dir, now::get);
+        engine = com.jason.plugins.antibadwords.engine.TestEngines.track(Engine.load(platform, dir, now::get));
         bridge = new FakeBridge();
         link = engine.discord().attachBridge(bridge);
         engine.addCustomWord("zorkword");
