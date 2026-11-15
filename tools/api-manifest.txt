@@ -184,7 +184,7 @@ protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketSending(*)
 protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | fromHandle(Object)
 protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | getJson()
 # --- Fabric Text Placeholder API (FabricPlaceholders, compile-only; not reflection, listed so CI checks the names we call) ---
-placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
+placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | value(String)
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | invalid(String)
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | hasPlayer()
@@ -224,11 +224,11 @@ mcmmo | com.gmail.nossr50.mcmmo.kyori.adventure.identity.Identity | uuid()
 @jar placeholderapi-fabric-26.1.1 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.1.1/placeholder-api-3.0.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.1+26.1.1/placeholder-api-3.0.1+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.1.1/placeholder-api-3.1.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.1.1/placeholder-api-3.1.1+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.1.1/placeholder-api-3.2.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.1.1/placeholder-api-3.2.1+26.1.1.jar
 @jar placeholderapi-fabric-26.1.2 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.1.2/placeholder-api-3.0.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.1+26.1.2/placeholder-api-3.0.1+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.1.2/placeholder-api-3.1.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.1.2/placeholder-api-3.1.1+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.1.2/placeholder-api-3.2.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.1.2/placeholder-api-3.2.1+26.1.2.jar
 @jar placeholderapi-fabric-26.2 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.2/placeholder-api-3.1.0+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.2/placeholder-api-3.1.1+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.2/placeholder-api-3.2.0+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.2/placeholder-api-3.2.1+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.2/placeholder-api-3.0.0+26.2.jar
-?placeholderapi-fabric-1.21.11 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
-?placeholderapi-fabric-26.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
-?placeholderapi-fabric-26.1.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
-?placeholderapi-fabric-26.1.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
-?placeholderapi-fabric-26.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Placeholder$Handler)
+?placeholderapi-fabric-1.21.11 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
 # --- task 50: outgoing scan of team prefix/suffix, tab-list names, PacketEvents player chat, ProtocolLib write-back (names seen in plugin-api-dump run 43691650981) ---
 packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field CHAT_MESSAGE
 packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field TEAMS
