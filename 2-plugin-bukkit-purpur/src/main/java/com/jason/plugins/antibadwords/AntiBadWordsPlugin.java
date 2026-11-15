@@ -2,7 +2,7 @@ package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
-import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
+import com.jason.plugins.antibadwords.engine.integrations.PapiLuckPermsSettings;
 import com.jason.plugins.antibadwords.gui.GuiListener;
 import com.jason.plugins.antibadwords.gui.GuiManager;
 import com.jason.plugins.antibadwords.integrations.VaultHook;
@@ -158,7 +158,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     /** LuckPerms is optional: its classes are only touched after the plugin was found, and any problem is one log line. */
     private void startLuckPerms() {
         try {
-            if (!engine.value(IntegrationSettings.LP_ENABLED)) {
+            if (!engine.value(PapiLuckPermsSettings.LP_ENABLED)) {
                 getLogger().info("LuckPerms hook: switched off (integrations.luckperms.enabled).");
                 return;
             }

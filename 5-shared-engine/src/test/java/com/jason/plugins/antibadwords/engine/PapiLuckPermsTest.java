@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jason.plugins.antibadwords.engine.command.CommandSender;
-import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
-import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
-import com.jason.plugins.antibadwords.engine.integration.PlaceholderValues;
+import com.jason.plugins.antibadwords.engine.integrations.PapiLuckPermsSettings;
+import com.jason.plugins.antibadwords.engine.integrations.PermissionSource;
+import com.jason.plugins.antibadwords.engine.integrations.PlaceholderValues;
 import com.jason.plugins.antibadwords.engine.moderation.DurationParser;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -291,10 +291,10 @@ class PapiLuckPermsTest {
 
     @Test
     void settingsHaveSafeDefaults() {
-        assertTrue(engine.value(IntegrationSettings.PAPI_ENABLED));
-        assertFalse(engine.value(IntegrationSettings.PAPI_PARSE), "parsing our messages is opt-in");
-        assertTrue(engine.value(IntegrationSettings.LP_ENABLED));
-        assertEquals("antibadwords-profile", engine.value(IntegrationSettings.LP_META_KEY));
-        assertEquals(Set.of(), new HashSet<>(engine.config().load(null).section(IntegrationSettings.GROUP_PROFILES).keySet()));
+        assertTrue(engine.value(PapiLuckPermsSettings.PAPI_ENABLED));
+        assertFalse(engine.value(PapiLuckPermsSettings.PAPI_PARSE), "parsing our messages is opt-in");
+        assertTrue(engine.value(PapiLuckPermsSettings.LP_ENABLED));
+        assertEquals("antibadwords-profile", engine.value(PapiLuckPermsSettings.LP_META_KEY));
+        assertEquals(Set.of(), new HashSet<>(engine.config().load(null).section(PapiLuckPermsSettings.GROUP_PROFILES).keySet()));
     }
 }

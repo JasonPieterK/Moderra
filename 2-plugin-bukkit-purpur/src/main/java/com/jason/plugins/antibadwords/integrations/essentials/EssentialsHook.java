@@ -3,7 +3,7 @@ package com.jason.plugins.antibadwords.integrations.essentials;
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.EngineLog;
 import com.jason.plugins.antibadwords.engine.integrations.EssentialsBridge;
-import com.jason.plugins.antibadwords.engine.integrations.IntegrationSettings;
+import com.jason.plugins.antibadwords.engine.integrations.EssentialsSettings;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Optional;
@@ -98,7 +98,7 @@ public final class EssentialsHook implements EssentialsBridge {
      */
     public static EssentialsHook start(Plugin plugin, Engine engine) {
         EngineLog log = engine.platform().logger();
-        if (!engine.value(IntegrationSettings.ESSENTIALS)) {
+        if (!engine.value(EssentialsSettings.ESSENTIALS)) {
             log.info("EssentialsX hook: switched off (integrations.essentials.enabled).");
             return null;
         }
@@ -111,10 +111,10 @@ public final class EssentialsHook implements EssentialsBridge {
         try {
             EssentialsHook hook = new EssentialsHook(engine, found);
             engine.essentials().attach(hook);
-            log.info("EssentialsX " + found.getDescription().getVersion() + " found. mute-mode: " + engine.value(IntegrationSettings.MUTE_MODE)
-                + ", nicknames in messages: " + engine.value(IntegrationSettings.NICKNAME_IN_MESSAGES)
-                + ", hide vanished: " + engine.value(IntegrationSettings.HIDE_VANISHED)
-                + ", nickname check: " + (hook.getNickname != null ? engine.value(IntegrationSettings.CHECK_NICKNAME) : "unavailable")
+            log.info("EssentialsX " + found.getDescription().getVersion() + " found. mute-mode: " + engine.value(EssentialsSettings.MUTE_MODE)
+                + ", nicknames in messages: " + engine.value(EssentialsSettings.NICKNAME_IN_MESSAGES)
+                + ", hide vanished: " + engine.value(EssentialsSettings.HIDE_VANISHED)
+                + ", nickname check: " + (hook.getNickname != null ? engine.value(EssentialsSettings.CHECK_NICKNAME) : "unavailable")
                 + ", mute reasons: " + (hook.setMuteReason != null ? "yes" : "not supported by this EssentialsX") + ".");
             return hook;
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
@@ -126,14 +126,14 @@ public final class EssentialsHook implements EssentialsBridge {
 
     /** The priority for the chat check: LOWEST with EssentialsX Chat (it formats from LOWEST on), else the old HIGHEST. */
     public static EventPriority chatPriority(Engine engine) {
-        String setting = engine.value(IntegrationSettings.CHAT_PRIORITY);
-        if (IntegrationSettings.PRIORITY_LOWEST.equals(setting)) {
+        String setting = engine.value(EssentialsSettings.CHAT_PRIORITY);
+        if (EssentialsSettings.PRIORITY_LOWEST.equals(setting)) {
             return EventPriority.LOWEST;
         }
-        if (IntegrationSettings.PRIORITY_HIGHEST.equals(setting)) {
+        if (EssentialsSettings.PRIORITY_HIGHEST.equals(setting)) {
             return EventPriority.HIGHEST;
         }
-        boolean chat = engine.value(IntegrationSettings.ESSENTIALS) && Bukkit.getPluginManager().getPlugin(CHAT_PLUGIN_NAME) != null;
+        boolean chat = engine.value(EssentialsSettings.ESSENTIALS) && Bukkit.getPluginManager().getPlugin(CHAT_PLUGIN_NAME) != null;
         return chat ? EventPriority.LOWEST : EventPriority.HIGHEST;
     }
 

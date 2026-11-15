@@ -15,10 +15,10 @@ import com.jason.plugins.antibadwords.engine.config.WordLists;
 import com.jason.plugins.antibadwords.engine.config.WorldProfiles;
 import com.jason.plugins.antibadwords.engine.config.YamlEditor;
 import com.jason.plugins.antibadwords.engine.discord.DiscordService;
-import com.jason.plugins.antibadwords.engine.integration.ExternalProfiles;
-import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
-import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
-import com.jason.plugins.antibadwords.engine.integration.PlaceholderValues;
+import com.jason.plugins.antibadwords.engine.integrations.ExternalProfiles;
+import com.jason.plugins.antibadwords.engine.integrations.PapiLuckPermsSettings;
+import com.jason.plugins.antibadwords.engine.integrations.PermissionSource;
+import com.jason.plugins.antibadwords.engine.integrations.PlaceholderValues;
 import com.jason.plugins.antibadwords.engine.discord.DiscordSettings;
 import com.jason.plugins.antibadwords.engine.filters.EvasionCheck;
 import com.jason.plugins.antibadwords.engine.filters.EvasionSettings;
@@ -225,14 +225,7 @@ public final class Engine {
         DiscordSettings.register(registry);
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integrations.ExtraIntegrationSettings.register(registry);
         PromptSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integrations.PluginCommandSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.register(registry);
-        com.jason.plugins.antibadwords.engine.integrations.ChatChannels.register(registry);
-        com.jason.plugins.antibadwords.engine.network.NetworkSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -358,7 +351,7 @@ public final class Engine {
             }
         }
         log.info("Integrations: ban provider " + bans.provider() + ", Bedrock names " + (bedrock.enabled()
-            ? "on (prefix '" + value(com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.BEDROCK_PREFIX) + "'"
+            ? "on (prefix '" + value(com.jason.plugins.antibadwords.engine.integrations.BanBedrockSettings.BEDROCK_PREFIX) + "'"
                 + (bedrock.detectedPlugin() == null ? "" : ", found " + bedrock.detectedPlugin()) + ")" : "off") + ".");
         pluginCommands.logFound();
         log.info("Protection level: " + main.get(CoreSettings.PROTECTION_LEVEL) + " (1=LOW, 2=MEDIUM, 3=HIGH)");
@@ -368,7 +361,7 @@ public final class Engine {
         if (main.legacy().punishmentEnabled() && enabledActions == 0 && main.ladder().isEmpty()) {
             log.warn("Punishment is enabled but no punishment action is enabled in " + CoreSettings.LADDER + ".");
         }
-        ExternalProfiles.validate(snapshot.section(IntegrationSettings.GROUP_PROFILES), profiles.names(), log::warn);
+        ExternalProfiles.validate(snapshot.section(PapiLuckPermsSettings.GROUP_PROFILES), profiles.names(), log::warn);
         com.jason.plugins.antibadwords.engine.integrations.ChatChannels.validate(snapshot.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_PROFILES), profiles.names(), log::warn);
         for (Runnable listener : reloadListeners) {
             try {
@@ -447,8 +440,8 @@ public final class Engine {
         }
         ConfigStore.Snapshot snap = s.snapshot();
         try {
-            return ExternalProfiles.choose(source, player, snap.get(IntegrationSettings.LP_USE_META), snap.get(IntegrationSettings.LP_META_KEY),
-                snap.get(IntegrationSettings.LP_PRIMARY_ONLY), snap.section(IntegrationSettings.GROUP_PROFILES), s.profiles().names());
+            return ExternalProfiles.choose(source, player, snap.get(PapiLuckPermsSettings.LP_USE_META), snap.get(PapiLuckPermsSettings.LP_META_KEY),
+                snap.get(PapiLuckPermsSettings.LP_PRIMARY_ONLY), snap.section(PapiLuckPermsSettings.GROUP_PROFILES), s.profiles().names());
         } catch (RuntimeException ex) {
             platform.logger().warn("The permission plugin could not tell the profile of a player: " + ex);
             return null;
@@ -474,7 +467,7 @@ public final class Engine {
             return CompletableFuture.completedFuture(platform.has(player, node));
         }
         PermissionSource source = permissionSource;
-        if (source == null || !value(IntegrationSettings.LP_OFFLINE)) {
+        if (source == null || !value(PapiLuckPermsSettings.LP_OFFLINE)) {
             return CompletableFuture.completedFuture(false);
         }
         try {

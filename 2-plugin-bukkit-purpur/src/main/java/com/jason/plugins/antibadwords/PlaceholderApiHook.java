@@ -2,7 +2,7 @@ package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.EngineLog;
-import com.jason.plugins.antibadwords.engine.integration.IntegrationSettings;
+import com.jason.plugins.antibadwords.engine.integrations.PapiLuckPermsSettings;
 import java.lang.reflect.Method;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -36,7 +36,7 @@ final class PlaceholderApiHook {
 
     /** @return the hook, or {@code null} when it is switched off or PlaceholderAPI is not installed */
     static PlaceholderApiHook start(JavaPlugin plugin, Engine engine, EngineLog log) {
-        if (!engine.value(IntegrationSettings.PAPI_ENABLED)) {
+        if (!engine.value(PapiLuckPermsSettings.PAPI_ENABLED)) {
             log.info("PlaceholderAPI hook: switched off (integrations.placeholderapi.enabled).");
             return null;
         }
@@ -62,7 +62,7 @@ final class PlaceholderApiHook {
             }
             expansion = e;
             unregister = e.getClass().getMethod("unregister");
-            log.info("PlaceholderAPI hook: registered %antibadwords_<" + String.join("|", com.jason.plugins.antibadwords.engine.integration
+            log.info("PlaceholderAPI hook: registered %antibadwords_<" + String.join("|", com.jason.plugins.antibadwords.engine.integrations
                 .PlaceholderValues.NAMES) + ">%.");
         } catch (Throwable ex) {
             log.warn("PlaceholderAPI hook: the expansion could not be registered (" + ex.getClass().getSimpleName() + "); placeholders are off.");
@@ -81,7 +81,7 @@ final class PlaceholderApiHook {
 
     /** Replaces placeholders in a message for one player when the admin switched that on; otherwise returns the text unchanged. */
     String parse(Player player, String message) {
-        if (setPlaceholders == null || !engine.value(IntegrationSettings.PAPI_PARSE) || message == null || message.indexOf('%') < 0) {
+        if (setPlaceholders == null || !engine.value(PapiLuckPermsSettings.PAPI_PARSE) || message == null || message.indexOf('%') < 0) {
             return message;
         }
         try {
@@ -109,6 +109,6 @@ final class PlaceholderApiHook {
     }
 
     static List<String> placeholderNames() {
-        return com.jason.plugins.antibadwords.engine.integration.PlaceholderValues.NAMES;
+        return com.jason.plugins.antibadwords.engine.integrations.PlaceholderValues.NAMES;
     }
 }
