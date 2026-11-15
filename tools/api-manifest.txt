@@ -1,0 +1,107 @@
+# API manifest for tools/verify-apis.py. Built by grepping 2-plugin-bukkit-purpur/src (reflection + shims).
+#
+# @jar <name> | <source> ; <fallback source> ; ...     sources: "url <https://...jar>" or
+#                                                         "mvn <repo> <group> <artifact> [version]" (no version = newest release;
+#                                                         X-SNAPSHOT is resolved through its maven-metadata.xml)
+# <jarname> | <fully.qualified.Class> | <member>       member: "-" = class must exist
+#                                                        "name(type,type)" = method (types matched on the simple name, "*" = any)
+#                                                        "name()" = method without parameters;  "field name" = field
+#                                                        "annotation" = must be an annotation
+# A leading "?" on the jar name makes the entry advisory (WARN instead of FAIL): used where the code does not rely on the name.
+
+@jar essentials | mvn https://repo.essentialsx.net/releases net.essentialsx EssentialsX ; mvn https://repo.essentialsx.net/snapshots net.essentialsx EssentialsX
+@jar papi | mvn https://repo.extendedclip.com/releases me.clip placeholderapi ; mvn https://repo.extendedclip.com/content/repositories/placeholderapi me.clip placeholderapi
+@jar discordsrv | mvn https://nexus.scarsz.me/content/groups/public com.discordsrv discordsrv ; mvn https://nexus.scarsz.me/content/repositories/releases com.discordsrv discordsrv
+@jar vault | url https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7.1/VaultAPI-1.7.1.jar ; url https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7/VaultAPI-1.7.jar
+@jar luckperms | mvn https://repo1.maven.org/maven2 net.luckperms api
+@jar protocollib | mvn https://repo.dmulloy2.net/repository/public com.comphenix.protocol ProtocolLib
+@jar packetevents | mvn https://repo.codemc.io/repository/maven-releases com.github.retrooper packetevents-spigot
+@jar coreprotect | mvn https://maven.playpro.com net.coreprotect coreprotect
+@jar plan | mvn https://repo.codemc.io/repository/maven-public com.djrapitops Plan-api ; url https://jitpack.io/com/github/plan-player-analytics/Plan/5.6-build-2965/Plan-5.6-build-2965.jar
+@jar citizens | mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizens-main ; mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizensapi
+@jar decentholograms | mvn https://repo.codemc.io/repository/maven-public com.github.decentsoftware-eu decentholograms ; url https://jitpack.io/com/github/decentsoftware-eu/decentholograms/2.9.5/decentholograms-2.9.5.jar
+@jar advancedban | url https://jitpack.io/com/github/DevLeoko/AdvancedBan/2.3.0/AdvancedBan-2.3.0.jar
+@jar libertybans | mvn https://repo1.maven.org/maven2 space.arim.libertybans bans-api
+@jar floodgate | mvn https://repo.opencollab.dev/maven-releases org.geysermc.floodgate api ; mvn https://repo.opencollab.dev/maven-snapshots org.geysermc.floodgate api 2.2.4-SNAPSHOT
+@jar spigot-1.21.11 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 1.21.11-R0.1-SNAPSHOT
+@jar spigot-26.3 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 26.3-R0.1-SNAPSHOT
+
+# --- EssentialsHook (reflection; getUser found by name + 1 parameter) ---
+essentials | com.earth2me.essentials.Essentials | getUser(org.bukkit.entity.Player)
+essentials | com.earth2me.essentials.Essentials | getUser(java.util.UUID)
+essentials | com.earth2me.essentials.User | isMuted()
+essentials | com.earth2me.essentials.User | setMuted(boolean)
+essentials | com.earth2me.essentials.User | getMuteTimeout()
+essentials | com.earth2me.essentials.User | setMuteTimeout(long)
+?essentials | com.earth2me.essentials.User | getMuteReason()
+?essentials | com.earth2me.essentials.User | setMuteReason(String)
+?essentials | com.earth2me.essentials.User | getNickname()
+?essentials | com.earth2me.essentials.User | setNickname(String)
+?essentials | com.earth2me.essentials.User | setDisplayNick()
+?essentials | com.earth2me.essentials.User | isVanished()
+
+# --- PlaceholderApiHook + papi-shim (AbwPlaceholderExpansion extends PlaceholderExpansion; static PlaceholderAPI.setPlaceholders) ---
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | -
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getIdentifier()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getAuthor()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getVersion()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | persist()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | canRegister()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | register()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | unregister()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | onRequest(org.bukkit.OfflinePlayer,String)
+papi | me.clip.placeholderapi.PlaceholderAPI | setPlaceholders(org.bukkit.OfflinePlayer,String)
+
+# --- DiscordSrvHook / DiscordSrvListener + discordsrv-shim ---
+discordsrv | github.scarsz.discordsrv.DiscordSRV | getPlugin()
+discordsrv | github.scarsz.discordsrv.DiscordSRV | field api
+discordsrv | github.scarsz.discordsrv.DiscordSRV | getDestinationTextChannelForGameChannelName(String)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | subscribe(Object)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | unsubscribe(Object)
+discordsrv | github.scarsz.discordsrv.api.Subscribe | annotation
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | -
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getAuthor()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getChannel()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getMessage()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getMember()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | setCancelled(boolean)
+discordsrv | github.scarsz.discordsrv.util.DiscordUtil | privateMessage(*,String)
+discordsrv | github.scarsz.discordsrv.util.DiscordUtil | sendMessage(*,String)
+
+# --- VaultHook (Permission/Chat found through the ServicesManager) ---
+vault | net.milkbowl.vault.permission.Permission | getPrimaryGroup(String,org.bukkit.OfflinePlayer)
+vault | net.milkbowl.vault.permission.Permission | playerInGroup(String,org.bukkit.OfflinePlayer,String)
+vault | net.milkbowl.vault.chat.Chat | getPlayerPrefix(String,org.bukkit.OfflinePlayer)
+
+# --- LuckPermsHook (compiled against net.luckperms:api) ---
+luckperms | net.luckperms.api.LuckPerms | -
+luckperms | net.luckperms.api.LuckPermsProvider | get()
+luckperms | net.luckperms.api.LuckPerms | getUserManager()
+luckperms | net.luckperms.api.model.user.User | getCachedData()
+luckperms | net.luckperms.api.cacheddata.CachedDataManager | getMetaData()
+
+# --- ExtraHooks: CoreProtect (getAPI, isEnabled, logChat/logCommand(Player,String)) ---
+coreprotect | net.coreprotect.CoreProtect | getAPI()
+coreprotect | net.coreprotect.CoreProtectAPI | isEnabled()
+coreprotect | net.coreprotect.CoreProtectAPI | logChat(org.bukkit.entity.Player,String)
+coreprotect | net.coreprotect.CoreProtectAPI | logCommand(org.bukkit.entity.Player,String)
+
+# --- Detected by plugin name only; main API classes listed advisory ---
+?protocollib | com.comphenix.protocol.ProtocolLibrary | getProtocolManager()
+?packetevents | com.github.retrooper.packetevents.PacketEvents | getAPI()
+?plan | com.djrapitops.plan.capability.CapabilityService | -
+?citizens | net.citizensnpcs.api.CitizensAPI | getNPCRegistry()
+?decentholograms | eu.decentsoftware.holograms.api.DHAPI | -
+?advancedban | me.leoko.advancedban.utils.Punishment | -
+?libertybans | space.arim.libertybans.api.LibertyBans | -
+?floodgate | org.geysermc.floodgate.api.FloodgateApi | getInstance()
+
+# --- Bukkit events used by name (both Spigot jars) ---
+spigot-1.21.11 | org.bukkit.event.block.SignChangeEvent | -
+spigot-1.21.11 | org.bukkit.event.inventory.PrepareAnvilEvent | -
+spigot-1.21.11 | org.bukkit.event.player.PlayerEditBookEvent | -
+spigot-1.21.11 | org.bukkit.Bukkit | getServicesManager()
+spigot-26.3 | org.bukkit.event.block.SignChangeEvent | -
+spigot-26.3 | org.bukkit.event.inventory.PrepareAnvilEvent | -
+spigot-26.3 | org.bukkit.event.player.PlayerEditBookEvent | -
+spigot-26.3 | org.bukkit.Bukkit | getServicesManager()

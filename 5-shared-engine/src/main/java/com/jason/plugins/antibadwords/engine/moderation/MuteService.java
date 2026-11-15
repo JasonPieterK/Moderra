@@ -63,6 +63,46 @@ public final class MuteService implements MuteHandler {
     private final DataFile file;
     private final AtomicBoolean armed = new AtomicBoolean();
     private volatile long lastSweep = Long.MIN_VALUE / 2;
+    private volatile Listener listener;
+
+    /** Told about every mute and unmute made on this server (not about changes that came from elsewhere). Used by the network sync. */
+    public interface Listener {
+        void muted(Mute mute);
+
+        void unmuted(UUID player);
+    }
+
+    public void setListener(Listener listener) {
+        this.listener = listener;
+    }
+
+    /** Applies a mute made on another server of the network: stored and announced to the player, but not passed on. */
+    public void applyRemoteMute(Mute mute) {
+        if (!engine.value(MuteSettings.ENABLED) || mute.expired(engine.now())) {
+            return;
+        }
+        synchronized (this) {
+            mutes.put(mute.id(), mute);
+        }
+        changed();
+        arm();
+        tell(mute.id(), MuteSettings.MSG_MUTED, values(mute, engine.now()));
+    }
+
+    /** Applies an unmute made on another server. @return false when the player was not muted here */
+    public boolean applyRemoteUnmute(UUID player) {
+        Mute mute;
+        synchronized (this) {
+            mute = mutes.remove(player);
+            lastNotice.remove(player);
+        }
+        if (mute == null) {
+            return false;
+        }
+        changed();
+        tell(player, MuteSettings.MSG_UNMUTED, values(mute, engine.now()));
+        return true;
+    }
 
     /** The engine is only used after construction (it may still be being built). */
     public MuteService(Engine engine, Path file, DataFile.Scheduler scheduler) {
@@ -200,11 +240,19 @@ public final class MuteService implements MuteHandler {
             }
             changed();
             arm();
+            notifyMuted(mute);
         }
         Map<String, String> values = values(mute, now);
         publish(ModerationEvent.MUTE, mute, values);
         tell(player, MuteSettings.MSG_MUTED, values);
         return true;
+    }
+
+    private void notifyMuted(Mute mute) {
+        Listener l = listener;
+        if (l != null) {
+            l.muted(mute);
+        }
     }
 
     /** Lifts a mute. @return false when the player was not muted */
@@ -223,6 +271,10 @@ public final class MuteService implements MuteHandler {
             lastNotice.remove(player);
         }
         changed();
+        Listener l = listener;
+        if (l != null) {
+            l.unmuted(player);
+        }
         Map<String, String> values = values(mute, engine.now());
         values.put("by", actor == null || actor.isEmpty() ? SYSTEM : actor);
         publish(ModerationEvent.UNMUTE, mute, values);

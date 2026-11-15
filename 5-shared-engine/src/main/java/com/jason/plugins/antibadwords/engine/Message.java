@@ -28,6 +28,7 @@ public final class Message {
     private final String rawText;
     private final Predicate<String> permissions;
     private final boolean probe;
+    private final String channel;
 
     private Message(UUID playerId, String playerName, String world, String dimension, String source, String text, String rawText,
                     Predicate<String> permissions) {
@@ -36,6 +37,12 @@ public final class Message {
 
     private Message(UUID playerId, String playerName, String world, String dimension, String source, String text, String rawText,
                     Predicate<String> permissions, boolean probe) {
+        this(playerId, playerName, world, dimension, source, text, rawText, permissions, probe, "");
+    }
+
+    private Message(UUID playerId, String playerName, String world, String dimension, String source, String text, String rawText,
+                    Predicate<String> permissions, boolean probe, String channel) {
+        this.channel = channel == null ? "" : channel;
         this.probe = probe;
         this.playerId = playerId;
         this.playerName = playerName == null ? "" : playerName;
@@ -57,12 +64,12 @@ public final class Message {
     }
 
     public Message withDimension(String dimensionName) {
-        return new Message(playerId, playerName, world, dimensionName, source, text, rawText, permissions, probe);
+        return new Message(playerId, playerName, world, dimensionName, source, text, rawText, permissions, probe, channel);
     }
 
     /** Same message with other text to judge; {@link #rawText()} keeps what the player really sent. */
     public Message withText(String newText) {
-        return new Message(playerId, playerName, world, dimension, source, newText, rawText, permissions, probe);
+        return new Message(playerId, playerName, world, dimension, source, newText, rawText, permissions, probe, channel);
     }
 
     /**
@@ -70,7 +77,17 @@ public final class Message {
      * that need a history of earlier messages skip it.
      */
     public Message asProbe() {
-        return new Message(playerId, playerName, world, dimension, source, text, rawText, permissions, true);
+        return new Message(playerId, playerName, world, dimension, source, text, rawText, permissions, true, channel);
+    }
+
+    /** Same message in a chat channel (a chat-channel plugin's channel name; empty = none / unknown). */
+    public Message withChannel(String channelName) {
+        return new Message(playerId, playerName, world, dimension, source, text, rawText, permissions, probe, channelName);
+    }
+
+    /** The chat channel the text was sent in, or an empty string. Additive: most sources have none. */
+    public String channel() {
+        return channel;
     }
 
     public boolean probe() {

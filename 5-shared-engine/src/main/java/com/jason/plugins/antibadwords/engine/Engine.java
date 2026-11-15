@@ -118,10 +118,12 @@ public final class Engine {
     private final PlayerDirectory players;
     private final HistoryStore history;
     private final MuteService mutes;
+    private final com.jason.plugins.antibadwords.engine.network.NetworkSync network = new com.jason.plugins.antibadwords.engine.network.NetworkSync(this);
     private final DiscordService discord;
     private final com.jason.plugins.antibadwords.engine.integrations.BanService bans = new com.jason.plugins.antibadwords.engine.integrations.BanService(this);
     private final com.jason.plugins.antibadwords.engine.integrations.BedrockNames bedrock = new com.jason.plugins.antibadwords.engine.integrations.BedrockNames(this);
     private final com.jason.plugins.antibadwords.engine.integrations.EssentialsLink essentials;
+    private final com.jason.plugins.antibadwords.engine.integrations.PluginCommands pluginCommands = new com.jason.plugins.antibadwords.engine.integrations.PluginCommands(this);
     private volatile StrikeService strikes;
     private final MuteHandler noMutes;
     private volatile MuteHandler muteHandler;
@@ -202,6 +204,7 @@ public final class Engine {
         commands.register(new com.jason.plugins.antibadwords.engine.command.GuiCommand());
         discord.install();
         essentials.install();
+        network.install(mutes, persistentStrikes);
     }
 
     /**
@@ -222,8 +225,13 @@ public final class Engine {
         com.jason.plugins.antibadwords.engine.discord.DiscordSrvSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integration.IntegrationSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.ExtraIntegrationSettings.register(registry);
         PromptSettings.register(registry);
         com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.PluginCommandSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.register(registry);
+        com.jason.plugins.antibadwords.engine.integrations.ChatChannels.register(registry);
+        com.jason.plugins.antibadwords.engine.network.NetworkSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */
@@ -346,6 +354,7 @@ public final class Engine {
         log.info("Integrations: ban provider " + bans.provider() + ", Bedrock names " + (bedrock.enabled()
             ? "on (prefix '" + value(com.jason.plugins.antibadwords.engine.integrations.IntegrationsSettings.BEDROCK_PREFIX) + "'"
                 + (bedrock.detectedPlugin() == null ? "" : ", found " + bedrock.detectedPlugin()) + ")" : "off") + ".");
+        pluginCommands.logFound();
         log.info("Protection level: " + main.get(CoreSettings.PROTECTION_LEVEL) + " (1=LOW, 2=MEDIUM, 3=HIGH)");
         if (profiles.names().size() > 1) {
             log.info("World profiles: " + String.join(", ", profiles.names()) + " (default: " + profiles.defaultProfile() + ")");
@@ -354,6 +363,7 @@ public final class Engine {
             log.warn("Punishment is enabled but no punishment action is enabled in " + CoreSettings.LADDER + ".");
         }
         ExternalProfiles.validate(snapshot.section(IntegrationSettings.GROUP_PROFILES), profiles.names(), log::warn);
+        com.jason.plugins.antibadwords.engine.integrations.ChatChannels.validate(snapshot.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_PROFILES), profiles.names(), log::warn);
         for (Runnable listener : reloadListeners) {
             try {
                 listener.run();
@@ -395,8 +405,33 @@ public final class Engine {
      * (see {@link #setPermissionSource}) when {@code player} is known.
      */
     public EffectiveSettings settings(UUID player, String world, String dimension, Predicate<String> permissions) {
+        return settings(player, world, dimension, permissions, "");
+    }
+
+    /** Same, also honouring the chat channel ({@code integrations.chatchannels.channel-profiles}); it ranks below a permission plugin's choice. */
+    public EffectiveSettings settings(UUID player, String world, String dimension, Predicate<String> permissions, String channel) {
         State s = state;
-        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions, externalProfile(s, player)));
+        String external = externalProfile(s, player);
+        if (external == null && channel != null && !channel.isEmpty()) {
+            external = channelProfile(s, channel);
+        }
+        return s.byProfile().get(s.profiles().resolve(world, dimension, permissions, external));
+    }
+
+    private String channelProfile(State s, String channel) {
+        ConfigStore.Snapshot snap = s.snapshot();
+        if (!snap.get(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.ENABLED)) {
+            return null;
+        }
+        return com.jason.plugins.antibadwords.engine.integrations.ChatChannels.profileFor(snap.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_PROFILES), channel, s.profiles().names());
+    }
+
+    private String commandChannel(String commandLine) {
+        ConfigStore.Snapshot snap = state.snapshot();
+        if (!snap.get(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.ENABLED)) {
+            return "";
+        }
+        return com.jason.plugins.antibadwords.engine.integrations.ChatChannels.channelOfCommand(snap.section(com.jason.plugins.antibadwords.engine.integrations.ChatChannels.CHANNEL_COMMANDS), commandLine);
     }
 
     private String externalProfile(State s, UUID player) {
@@ -659,7 +694,14 @@ public final class Engine {
      * @param forDelivery   whether "censor" becomes "block" where the text cannot be changed
      */
     private Verdict judge(Message message, boolean useScanSwitch, boolean forDelivery) {
-        EffectiveSettings settings = settings(message.playerId(), message.world(), message.dimension(), message.permissions());
+        if (message.channel().isEmpty() && Message.COMMAND.equals(message.source()) && message.text() != null) {
+            String channel = commandChannel(message.text());
+            if (!channel.isEmpty()) {
+                message = message.withChannel(channel);
+            }
+        }
+        EffectiveSettings settings = settings(message.playerId(), message.world(), message.dimension(), message.permissions(),
+            message.channel());
         if (message.text() == null || message.has(PERMISSION_BYPASS)) {
             return Verdict.allow(settings);
         }
@@ -671,6 +713,13 @@ public final class Engine {
             String arguments = commandTextToScan(settings, message.text());
             if (arguments == null) {
                 arguments = essentials.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
+            if (arguments == null) {
+                arguments = pluginCommands.extraCommandText(settings.legacy().ignoredCommands(), message.text());
+            }
+            if (arguments == null) {
+                arguments = com.jason.plugins.antibadwords.engine.integrations.PluginCommandScan.extraCommandText(this,
+                    settings.legacy().ignoredCommands(), message.text());
             }
             current = arguments == null ? null : message.withText(arguments);
         }
@@ -902,6 +951,11 @@ public final class Engine {
         return bedrock;
     }
 
+    /** Text commands of mcMMO, Towny, Factions, Citizens, DecentHolograms (settings {@code integrations.<plugin>.*}). */
+    public com.jason.plugins.antibadwords.engine.integrations.PluginCommands pluginCommands() {
+        return pluginCommands;
+    }
+
     /** EssentialsX hook (Bukkit family; settings in {@code integrations.yml}). Does nothing until the plugin attaches a bridge. */
     public com.jason.plugins.antibadwords.engine.integrations.EssentialsLink essentials() {
         return essentials;
@@ -946,6 +1000,11 @@ public final class Engine {
     }
 
     /** The built-in mute (state in {@code data/mutes.json}); also installed as {@link #muteHandler()}. */
+    /** Shared mute and strike list of a network (integrations.network.*). */
+    public com.jason.plugins.antibadwords.engine.network.NetworkSync network() {
+        return network;
+    }
+
     public MuteService mutes() {
         return mutes;
     }
@@ -1055,6 +1114,7 @@ public final class Engine {
         }
         shutDown = true;
         discord.shutdown();
+        network.shutdown();
         // strikes that are kept across restarts are written first; memory is emptied either way
         boolean keep = keepsStrikes();
         persistentStrikes.shutdown(keep);
