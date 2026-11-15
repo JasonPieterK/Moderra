@@ -48,7 +48,8 @@ public final class MessageDefaults {
         e("mute.messages.expired", "&aYour mute has run out. You can chat again."),
         e("integrations.essentials.nickname-message", "&cYour nickname is not allowed on this server."),
         e("gui.prompt.messages.chat", "&eType the new value for &f{title}&e in the chat. &7{hint}\\n&7Type &f{cancel}&7 to abort ({seconds}s)."),
-        e("gui.prompt.messages.sign", "&eWrite the new value for &f{title}&e on the sign; the lines are joined with spaces. &7{hint}\\n&7Leave it empty to abort ({seconds}s)."),
+        e("gui.prompt.messages.sign", "&eWrite the new value for &f{title}&e on the sign; the lines are joined with spaces. &7{hint}\\n&7Leave it empty to abort ({seconds}s).",
+            "&8[&6&lAntiBadWords&8]&r &b&lInput needed. &7Write the new value for &f{title}&7 on the sign. The lines are joined with spaces. &7&o{hint}\\n&7Leave the sign empty to cancel. Time limit: &f{seconds}&7 seconds."),
         e("gui.prompt.messages.error", "&c{error} &7Try again, or type &f{cancel}&7."),
         e("gui.prompt.messages.cancelled", "&7Input cancelled."),
         e("gui.prompt.messages.timeout", "&7Input cancelled: no answer in time.")

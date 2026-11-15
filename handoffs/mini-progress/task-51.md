@@ -1,0 +1,12 @@
+## Task 51: real fake-sign prompt on the mods, prompt mode, Placeholder API manifest fix
+
+Verification: signatures read from the Fabric dumps of run 43691650981 (1.21.11, 26.1, 26.3). `tools/stub-compile.sh` PASS (plugin + 6 mod combinations), engine tests green. Not run on a server.
+
+- Fake sign (`mod/FakeSign.java`): `ClientboundBlockUpdatePacket(BlockPos, BlockState)` with `Blocks.OAK_SIGN.defaultBlockState()` two blocks above the feet, `ClientboundBlockEntityDataPacket.create(new SignBlockEntity(pos, state), (be, registries) -> new CompoundTag())`, then the open-editor packet (`SignLines.openEditor`: `(BlockPos, boolean)` on 1.21.11-26.2, `(BlockPos, SignTextSlot.FRONT)` on 26.3). The answer is caught in `ServerGamePacketListenerMixin` (`updateSignText`) only when the position is the player's fake sign; the real block is sent again (`ClientboundBlockUpdatePacket(BlockGetter, BlockPos)` plus `BlockEntity.getUpdatePacket()`), the edit is cancelled, `engine.prompts().onSignInput` gets the lines. An invalid answer opens the sign again. All 6 versions share the code; only `SignLines` differs.
+- Setting `gui.prompt.mode: auto|sign|anvil|chat` (auto = sign). `anvil` keeps the old `AnvilPrompt`. Mods only; Bukkit still uses the chat. Message `gui.prompt.messages.sign` is now generic (sign and anvil); `AnvilPrompt` no longer sends its own line.
+- Fabric Placeholder API: the FAIL was only the manifest entry. Fixed to `registerCommon(Identifier,Placeholder$Handler)` (code was already right). For 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2 the real version numbers cannot be proven from here: advisory download candidates and `?` entries are at the end of `tools/api-manifest.txt`. Those versions stay on `placeholders-none`. After CI shows which candidate downloads (PASS), put it in the Fabric table of `3-mod-fabric/build-all-versions.sh` (`api|<version>`).
+
+Open items
+1. `Block.defaultBlockState()` and `Entity.blockPosition()` are used but `Block` and `Entity` were not in the dumps; they are added to `tools/dump-mc-api.py` now. The real build run will prove them; if it fails, fix with the dump.
+2. Coordinator: add the previous default of `gui.prompt.messages.sign` (the text before this task, "...Write the new value for &f{title}&7 on the sign. The lines are joined with spaces. ...") to `MessageDefaults.OLD_DEFAULTS` (not my file), so unchanged old configs get the new text.
+3. If the prompt times out, the fake sign stays on the player's screen until the editor is closed; the close then restores the block. Not tested on a server.

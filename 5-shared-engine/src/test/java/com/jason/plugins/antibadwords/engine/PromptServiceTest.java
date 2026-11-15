@@ -164,6 +164,40 @@ class PromptServiceTest {
     }
 
     @Test
+    void modesSignAnvilAutoUseTheSignPromptWhereSupported() throws java.io.IOException {
+        f.platform.signPrompts = true;
+        for (String mode : new String[] {"auto", "sign", "anvil"}) {
+            f.engine.set(PromptSettings.MODE, mode);
+            assertEquals(PromptKind.SIGN, prompts.start(alice, numberPrompt()), mode);
+        }
+        f.platform.signPrompts = false;
+        f.engine.set(PromptSettings.MODE, "anvil");
+        assertEquals(PromptKind.CHAT, prompts.start(alice, numberPrompt()));
+    }
+
+    @Test
+    void signInputIsRemovedFromTheScreenOnTimeoutCancelAndQuitButNotOnAnswer() {
+        f.platform.signPrompts = true;
+        prompts.start(alice, numberPrompt());
+        f.now.addAndGet(61_000);
+        prompts.expireDue();
+        assertEquals(List.of(alice), f.platform.signClosed, "time limit");
+        prompts.start(alice, numberPrompt());
+        prompts.cancel(alice);
+        assertEquals(2, f.platform.signClosed.size(), "cancel");
+        prompts.start(alice, numberPrompt());
+        prompts.onQuit(alice);
+        assertEquals(3, f.platform.signClosed.size(), "quit");
+        prompts.start(alice, numberPrompt());
+        assertTrue(prompts.onSignInput(alice, new String[] {"5", "", "", ""}));
+        assertEquals(3, f.platform.signClosed.size(), "an answer closes the sign itself");
+        f.platform.signPrompts = false;
+        prompts.start(alice, numberPrompt());
+        prompts.cancel(alice);
+        assertEquals(3, f.platform.signClosed.size(), "a chat prompt has nothing on the screen");
+    }
+
+    @Test
     void newPromptReplacesOldAndQuitCancels() {
         prompts.start(alice, numberPrompt());
         prompts.start(alice, numberPrompt());

@@ -135,6 +135,7 @@ public final class PromptService {
         if (a == null || !active.remove(player, a)) {
             return false;
         }
+        closeScreen(player, a);
         platform.runSync(a.prompt::cancelled);
         return true;
     }
@@ -156,7 +157,15 @@ public final class PromptService {
     private void abort(UUID player, Active a, com.jason.plugins.antibadwords.engine.config.Setting<String> message) {
         if (active.remove(player, a)) {
             say(player, engine.value(message));
+            closeScreen(player, a);
             platform.runSync(a.prompt::cancelled);
+        }
+    }
+
+    /** A sign or anvil input that ended without an answer must not stay on the player's screen. */
+    private void closeScreen(UUID player, Active a) {
+        if (a.kind == PromptKind.SIGN) {
+            platform.runSync(() -> platform.closeSignPrompt(player));
         }
     }
 

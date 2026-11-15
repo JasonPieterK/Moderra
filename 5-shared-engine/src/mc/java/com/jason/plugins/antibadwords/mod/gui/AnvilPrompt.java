@@ -2,7 +2,6 @@ package com.jason.plugins.antibadwords.mod.gui;
 
 import com.jason.plugins.antibadwords.mod.AnvilNameAccess;
 import com.jason.plugins.antibadwords.mod.ModRuntime;
-import com.jason.plugins.antibadwords.mod.Names;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
@@ -17,8 +16,8 @@ import net.minecraft.world.item.Items;
  * The player types the value into the rename field and clicks the result item; the text goes to
  * {@code engine.prompts().onSignInput} (the same entry the Bukkit sign prompt uses). Nothing is given back, no XP is charged.
  *
- * <p>Why an anvil and not a fake sign: the packets for a fake sign need {@code Blocks}, {@code BlockState} and {@code CompoundTag}
- * members that are not in the API dumps, so that way is left out (see handoffs/mini-progress/task-43.md).
+ * <p>Used when {@code gui.prompt.mode} is {@code anvil}. The default is the fake sign ({@code FakeSign}). The instruction
+ * text comes from the engine setting {@code gui.prompt.messages.sign}.
  */
 public final class AnvilPrompt {
     private AnvilPrompt() {
@@ -29,8 +28,6 @@ public final class AnvilPrompt {
             old.quiet = true; // opening the anvil closes this menu; that is not the player leaving
         }
         player.openMenu(new SimpleMenuProvider((id, inventory, p) -> new GuiAnvilMenu(id, inventory, hint), Component.literal(title)));
-        player.sendSystemMessage(Component.literal(Names.colour(
-            "&8[&6&lAntiBadWords&8]&r &b&lInput needed. &7Use the anvil instead of a sign: type the value in the name field, then click the result item. Close the anvil to cancel.")));
     }
 
     /** The one paper in the input slot; its name is the hint, so the text field starts with it. */

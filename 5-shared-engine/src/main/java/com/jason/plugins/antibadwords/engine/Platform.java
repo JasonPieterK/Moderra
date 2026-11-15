@@ -109,6 +109,13 @@ public interface Platform {
     default void openSignPrompt(UUID player, String title, String hint) {
     }
 
+    /**
+     * Removes a sign (or anvil) text input from the player's screen after the prompt ended without an answer
+     * (time limit, cancel, quit). Default: nothing to remove.
+     */
+    default void closeSignPrompt(UUID player) {
+    }
+
     /** Whether {@link #openMenu} can show the settings menu here. Default: no ({@code /abw} then prints its usage line). */
     default boolean supportsMenu() {
         return false;

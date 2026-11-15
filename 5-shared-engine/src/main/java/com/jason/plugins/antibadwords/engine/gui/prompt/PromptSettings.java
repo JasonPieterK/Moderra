@@ -10,11 +10,12 @@ import java.util.List;
 public final class PromptSettings {
     private static final String CATEGORY = "General";
 
-    public static final Setting<String> MODE = Setting.choice("gui.prompt.mode", "auto", "auto", "sign", "chat")
+    public static final Setting<String> MODE = Setting.choice("gui.prompt.mode", "auto", "auto", "sign", "anvil", "chat")
         .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input method")
-        .description("How the menu asks a player to type a value. auto = a sign editor where the server software supports it,\n"
-            + "otherwise the chat. chat = always the chat (the player's next chat message is taken, never shown to anyone,\n"
-            + "never checked or saved). sign = sign editor, falls back to chat where it is not available.").build();
+        .description("How the menu asks a player to type a value. sign = a sign editor opens (Fabric and Forge: a fake sign that\n"
+            + "only the player sees; the real block is restored). anvil = a rename screen of an anvil (Fabric and Forge only; no item,\n"
+            + "no XP). chat = the player's next chat message is taken, never shown to anyone, never checked or saved.\n"
+            + "auto = sign where the server software supports it, otherwise the chat. A mode that is not available uses the chat.").build();
     public static final Setting<Duration> TIMEOUT = Setting.duration("gui.prompt.timeout", Duration.ofSeconds(60)).range(5, 3600)
         .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input timeout")
         .description("A text input is cancelled when the player does not answer within this time.").build();
@@ -26,9 +27,9 @@ public final class PromptSettings {
         .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input: chat text")
         .description("Shown when a chat input starts. Placeholders: {title}, {hint}, {cancel}, {seconds}. \\n = new line.").build();
     public static final Setting<String> MESSAGE_SIGN = Setting.string("gui.prompt.messages.sign",
-            "&8[&6&lAntiBadWords&8]&r &b&lInput needed. &7Write the new value for &f{title}&7 on the sign. The lines are joined with spaces. &7&o{hint}\\n&7Leave the sign empty to cancel. Time limit: &f{seconds}&7 seconds.")
-        .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input: sign text")
-        .description("Shown when a sign input starts. Placeholders: {title}, {hint}, {seconds}. \\n = new line.").build();
+            "&8[&6&lAntiBadWords&8]&r &b&lInput needed. &7Type the new value for &f{title}&7 in the window that opens. &7&o{hint}\\n&7Sign: the lines are joined with spaces. Anvil: type in the name field, then click the result item. Leave it empty or close the window to cancel. Time limit: &f{seconds}&7 seconds.")
+        .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input: sign and anvil text")
+        .description("Shown when a sign or anvil input starts. Placeholders: {title}, {hint}, {seconds}. \\n = new line.").build();
     public static final Setting<String> MESSAGE_ERROR = Setting.string("gui.prompt.messages.error",
             "&8[&6&lAntiBadWords&8]&r &c&lInvalid value. &7{error} &7Try again, or type &f{cancel}&7 to cancel.")
         .file(CoreSettings.CONFIG).category(CATEGORY).title("Text input: error text")

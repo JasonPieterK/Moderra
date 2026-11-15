@@ -59,6 +59,12 @@ public final class FakePlatform implements Platform {
 
     public boolean signPrompts;
     public final List<String> signOpened = new ArrayList<>();
+    public final List<UUID> signClosed = new ArrayList<>();
+
+    @Override
+    public void closeSignPrompt(UUID player) {
+        signClosed.add(player);
+    }
 
     @Override
     public boolean supportsSignPrompt() {
