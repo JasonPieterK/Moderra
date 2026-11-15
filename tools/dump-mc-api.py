@@ -61,6 +61,28 @@ net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
 net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket
 net.fabricmc.loader.api.FabricLoader
 net.minecraftforge.fml.ModList
+net.minecraft.world.item.component.ItemLore
+net.minecraft.core.component.DataComponents
+net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket
+net.minecraft.world.level.block.entity.SignText
+net.minecraft.world.inventory.AnvilMenu
+net.minecraft.world.inventory.ItemCombinerMenu
+net.minecraft.network.protocol.game.ServerboundRenameItemPacket
+net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
+net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Parameters
+net.minecraft.network.protocol.game.ClientboundSetScorePacket
+net.minecraft.network.protocol.game.ClientboundSetObjectivePacket
+net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket
+net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket$Entry
+net.minecraft.network.protocol.game.ClientboundSystemChatPacket
+net.minecraft.network.protocol.game.ClientboundPlayerChatPacket
+net.minecraft.world.scores.PlayerTeam
+net.fabricmc.loader.api.ModContainer
+net.fabricmc.loader.api.metadata.ModMetadata
+eu.pb4.placeholders.api.Placeholders
+eu.pb4.placeholders.api.PlaceholderHandler
+eu.pb4.placeholders.api.PlaceholderResult
+eu.pb4.placeholders.api.PlaceholderContext
 """.split()
 
 MARK = "net/minecraft/world/inventory/ChestMenu.class"

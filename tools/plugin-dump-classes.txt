@@ -107,3 +107,20 @@ mcmmo | com.gmail.nossr50.chat.message.ChatMessage
 mcmmo | com.gmail.nossr50.chat.message.PartyChatMessage
 venturechat | mineverse.Aust1n46.chat.channel.ChatChannel
 venturechat | mineverse.Aust1n46.chat.api.MineverseChatPlayer
+# --- task 42: wave 5 ---
+protocollib | com.comphenix.protocol.PacketType$Play$Server
+packetevents-api | com.github.retrooper.packetevents.event.PacketSendEvent
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChatMessage
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.build.SlashCommandData
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.SlashCommandInteractionEvent
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionMapping
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.ReplyAction
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.ReplyCallbackAction
+mcmmo | com.gmail.nossr50.chat.author.PlayerAuthor
+carbonchat | net.draycia.carbon.api.event.events.CarbonChatEvent
+factionsuuid | com.massivecraft.factions.event.FactionPlayerChatEvent
+factionsuuid | com.massivecraft.factions.event.FactionChatEvent

@@ -29,12 +29,13 @@
 @jar chatcontrol | ghrelease kangarko/ChatControl-Red (?i)chatcontrol.*\.jar$
 @jar venturechat | ghrelease Aust1n46/VentureChat (?i)venturechat.*\.jar$ ; mvn https://repo.codemc.io/repository/maven-public mineverse.Aust1n46.chat VentureChat
 @jar huskchat | ghrelease WiIliam278/HuskChat (?i)huskchat.*(bukkit|paper|spigot).*\.jar$ ; ghrelease WiIliam278/HuskChat (?i)huskchat.*\.jar$ ; mvn https://repo.william278.net/releases net.william278.huskchat huskchat-bukkit
-@jar carbonchat | mvn https://repo1.maven.org/maven2 net.draycia.carbon api ; mvn https://repo.draycia.dev/releases net.draycia.carbon api ; ghrelease Hexaoxide/Carbon (?i)carbon.*(paper|bukkit).*\.jar$
+@jar carbonchat | mvn https://repo.draycia.dev/releases net.draycia carbonchat-api ; mvn https://repo1.maven.org/maven2 net.draycia carbonchat-api ; mvn https://repo.draycia.dev/releases net.draycia.carbon api ; mvn https://repo1.maven.org/maven2 net.draycia.carbon api ; ghrelease Hexaoxide/Carbon (?i)carbon.*(paper|bukkit).*\.jar$ ; ghrelease Hexaoxide/Carbon (?i)carbon.*\.jar$
 @jar tab | ghrelease NEZNAMY/TAB (?i)^tab.*\.jar$ ; mvn https://repo1.maven.org/maven2 me.neznamy tab-api
 @jar nametagedit | ghrelease sgtcaze/NametagEdit (?i)nametagedit.*\.jar$ ; url https://jitpack.io/com/github/sgtcaze/NametagEdit/4.5.19/NametagEdit-4.5.19.jar
 @jar mcmmo | mvn https://nexus.neetgames.com/repository/maven-public com.gmail.nossr50.mcMMO mcMMO
 @jar townychat | ghrelease TownyAdvanced/TownyChat (?i)townychat.*\.jar$
-@jar factionsuuid | ghrelease drtshock/Factions (?i)factions.*\.jar$ ; mvn https://ci.ender.zone/plugin/repository/everything com.massivecraft Factions
+@jar factionsuuid | ghrelease drtshock/Factions (?i)factions.*\.jar$ ; mvn https://jitpack.io com.github.drtshock Factions ; mvn https://ci.ender.zone/plugin/repository/everything com.massivecraft Factions ; mvn https://repo.ender.zone/ com.massivecraft Factions
+@jar placeholderapi-fabric | mvn https://maven.nucleoid.xyz eu.pb4 placeholder-api
 @jar spigot-1.21.11 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 1.21.11-R0.1-SNAPSHOT
 @jar spigot-26.3 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 26.3-R0.1-SNAPSHOT
 
