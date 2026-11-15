@@ -91,6 +91,15 @@ public final class BanService {
         return reason == null ? "" : reason.replaceAll("[\\p{Cntrl}]+", " ").trim();
     }
 
+    /** The address for {@code {ip}}: online IP, else the last one remembered in players.json, else null. */
+    private String ipOf(UUID id) {
+        String ip = engine.platform().playerIp(id);
+        if (ip == null || ip.isBlank()) {
+            ip = engine.players().ipOf(id).orElse(null);
+        }
+        return ip == null || ip.isBlank() ? null : ip;
+    }
+
     private String command(String provider, boolean temp, UUID id, String name, long millis, String reason) {
         String template = template(provider, temp).trim();
         if (template.isEmpty()) {
@@ -100,6 +109,15 @@ public final class BanService {
         values.put("player", engine.bedrock().commandName(name));
         values.put("uuid", id.toString());
         values.put("reason", clean(reason));
+        if (!temp && template.toLowerCase(Locale.ROOT).contains("{ip}")) {
+            String ip = ipOf(id);
+            if (ip == null) {
+                engine.platform().logger().warn("Ladder action ipban for " + name + ": no IP address known (player offline and none stored, or "
+                    + "known-players.store-ip is off); {ip} was replaced by the player name.");
+                ip = engine.bedrock().commandName(name);
+            }
+            values.put("ip", ip);
+        }
         if (temp) {
             values.put("duration", formatDuration(millis, singleUnit(provider)));
             values.put("seconds", Long.toString(Math.max(1, (millis + 999) / 1000)));

@@ -83,6 +83,35 @@ class IntegrationsTest {
     }
 
     @Test
+    void ipbanUsesTheOnlineIpThenTheLastKnownIpThenTheName() throws Exception {
+        UUID bob = f.platform.join("Bob");
+        f.platform.ips.put(bob, "203.0.113.7");
+        f.engine.onJoin(bob, "Bob"); // remembers the IP in players.json
+        f.engine.bans().ipban(bob, "Bob", "x").late().run();
+        assertEquals(List.of("ban-ip 203.0.113.7 x"), f.platform.consoleCommands);
+
+        // offline now: the last known IP
+        f.platform.ips.remove(bob);
+        f.platform.consoleCommands.clear();
+        f.engine.bans().ipban(bob, "Bob", "x").late().run();
+        assertEquals(List.of("ban-ip 203.0.113.7 x"), f.platform.consoleCommands);
+        assertEquals("203.0.113.7", f.engine.players().ipOf(bob).orElseThrow());
+        f.engine.players().touch(bob);
+        f.engine.players().flush();
+        assertTrue(java.nio.file.Files.readString(f.dir.resolve("data/players.json")).contains("203.0.113.7"));
+
+        // storing switched off: nothing is kept or written, the name is used (with a warning)
+        f.engine.set(com.jason.plugins.antibadwords.engine.moderation.ModerationSettings.STORE_IP, false);
+        f.platform.consoleCommands.clear();
+        f.engine.bans().ipban(bob, "Bob", "x").late().run();
+        assertEquals(List.of("ban-ip Bob x"), f.platform.consoleCommands);
+        assertTrue(f.engine.players().ipOf(bob).isEmpty());
+        f.engine.players().touch(bob); // the next change writes the file without the address
+        f.engine.players().flush();
+        assertFalse(java.nio.file.Files.readString(f.dir.resolve("data/players.json")).contains("203.0.113.7"));
+    }
+
+    @Test
     void explicitProviderAndEditableTemplate() {
         UUID bob = f.platform.join("Bob");
         TestFiles.edit(f.file(INTEGRATIONS), "provider: auto", "provider: custom");

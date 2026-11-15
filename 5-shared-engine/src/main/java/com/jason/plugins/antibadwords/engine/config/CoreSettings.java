@@ -137,10 +137,22 @@ public final class CoreSettings {
         .file(CONFIG).category(MATCHING).title("Partial match: shortest word").min(3).overridable()
         .description("Blocked words shorter than this are never used for partial matching.").build();
 
+    /** The whitelist version 1 shipped. Old installs keep exactly this list when they are migrated. */
+    public static final List<String> LEGACY_WHITELIST = List.of("class", "classic", "assassin", "assume", "assist", "bass", "glass",
+        "grass", "pass", "mass", "closer", "scrap", "cockpit", "cocktail", "peacock", "computer", "computing", "dickens", "analysis",
+        "therapist");
+
+    private static List<String> concat(List<String> a, List<String> b) {
+        java.util.LinkedHashSet<String> all = new java.util.LinkedHashSet<>(a);
+        all.addAll(b);
+        return List.copyOf(all);
+    }
+
     public static final Setting<List<String>> WHITELIST = Setting.list("filters.whitelist",
-            List.of("class", "classic", "assassin", "assume", "assist", "bass", "glass", "grass", "pass", "mass", "closer", "scrap",
-                "cockpit", "cocktail", "peacock", "computer", "computing", "dickens", "analysis", "therapist",
-                "suka", "hui", "burro", "tai", "lixo"))
+            concat(LEGACY_WHITELIST, List.of("suka", "hui", "burro", "tai", "lixo",
+                // Han text: an entry that contains the hit suppresses it (substring matching has no word borders)
+                "你妈妈", "他妈妈", "妈妈的", "我操作", "我日记", "去死亡", "废物利用",
+                "你媽媽", "他媽媽", "媽媽的", "三小時", "三小时", "低能耗", "豬頭肉", "廢物利用", "我操作", "我日記")))
         .file(CONFIG).category(WHITELIST_CATEGORY).title("Whitelist").overridable()
         .description("Words that must never be blocked (mainly useful together with partial-match).\n"
             + "In game: /abw whitelist add <word>, /abw whitelist remove <word>, /abw whitelist list.").build();

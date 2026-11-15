@@ -201,3 +201,10 @@ Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `
 
 ## Task 34: plugin messaging network sync
 Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity network (Velocity: BungeeCord bridge on): `Forward ALL antibadwords:sync` delivery, queue while empty, `sendPluginMessage` from the async poll thread.
+## Mini task 32 (Discord censor, IP API)
+- [ ] CI javap check of DiscordSRV 1.x: `github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent` must exist with `String getProcessedMessage()`,
+      `void setProcessedMessage(String)` and `void setCancelled(boolean)` (Cancellable); `DiscordGuildMessagePreProcessEvent#getMessage()` (JDA Message,
+      `getContentRaw()`). If absent the hook logs one line and `censor` blocks. Check on a real server that the censored text appears in game, and that the
+      processed message really contains the raw Discord text (otherwise nothing is rewritten: the pending entry expires after 30 s and the text goes out unchanged, so test it).
+- [ ] Bukkit `Player#getAddress().getAddress().getHostAddress()` (BukkitPlatform#playerIp) stub-compiled only; mods keep `playerIp` = null (no connection address call exists in the repo).
+- [ ] ipban templates now use `{ip}` (falls back to the name): confirm each ban plugin's ipban command accepts an IP (EssentialsX banip, LiteBans ipban, AdvancedBan ipban, LibertyBans ipban, vanilla ban-ip).

@@ -123,6 +123,15 @@ public final class BukkitPlatform implements Platform {
     }
 
     @Override
+    public String playerIp(UUID playerId) {
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null || player.getAddress() == null || player.getAddress().getAddress() == null) {
+            return null;
+        }
+        return player.getAddress().getAddress().getHostAddress();
+    }
+
+    @Override
     public String worldName(UUID playerId) {
         Player player = Bukkit.getPlayer(playerId);
         return player == null ? "" : player.getWorld().getName();

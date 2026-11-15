@@ -31,8 +31,9 @@ import org.bukkit.plugin.java.JavaPlugin;
  *       {@code getMessage()}, {@code setCancelled(boolean)}; JDA: {@code getId()}, {@code getName()}, {@code getRoles()},
  *       {@code getContentRaw()}</li>
  * </ul>
- * Not used: slash commands (annotation based, cannot be done by reflection), rewriting the text of a Discord message (no
- * confident API), so the {@code censor} action becomes {@code block} here.
+ * Censor (rewrite): {@code DiscordGuildMessagePostProcessEvent#getProcessedMessage()} / {@code #setProcessedMessage(String)} (unverified; if
+ * missing, {@code censor} blocks) and the same event's {@code setCancelled(boolean)} as emergency fallback. Listed in BUILD-VERIFICATION-TODO.
+ * Not used: slash commands (annotation based, cannot be done by reflection).
  * Nothing here ever logs a webhook URL or any other secret.
  */
 final class DiscordSrvHook implements DiscordBridge {
@@ -50,6 +51,12 @@ final class DiscordSrvHook implements DiscordBridge {
     private final Class<?> util;
     private DiscordLink link;
     private DiscordSrvListener listener;
+    private DiscordSrvPostListener postListener;
+    /** The Minecraft-bound text can be rewritten (post-process event with a processed-text getter and setter exists). */
+    private boolean rewrite;
+    /** Censored texts waiting for DiscordSRV's post-process event: original raw text to {censored text, time added}. */
+    private final Map<String, Object[]> pending = new LinkedHashMap<>();
+    private static final long PENDING_MILLIS = 30_000;
     /** Recent Discord users by id, so a direct message can be sent later (the engine only knows ids). */
     private final Map<String, Object> users = new LinkedHashMap<>(16, 0.75f, true) {
         @Override
@@ -108,6 +115,7 @@ final class DiscordSrvHook implements DiscordBridge {
             listener = new DiscordSrvListener(this);
             api.getClass().getMethod("subscribe", Object.class).invoke(api, listener);
             inbound = true;
+            subscribeRewrite();
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
             listener = null;
             log.warn("Could not subscribe to DiscordSRV events (" + ex.getClass().getSimpleName()
@@ -118,8 +126,28 @@ final class DiscordSrvHook implements DiscordBridge {
         log.info("Discord to Minecraft filter: " + (inbound ? (engine.value(DiscordSrvSettings.INBOUND_ENABLED) ? "ON" : "off (discord.inbound.enabled)")
             : "unavailable") + "; commands typed in Discord: " + (inbound ? "prefix '" + engine.value(DiscordSrvSettings.PREFIX)
             + "' (each command is off until switched on and a role/user is listed)" : "unavailable") + ".");
-        log.info("Not supported in this version: DiscordSRV slash commands (use the prefix commands) and cleaning the text of a Discord "
-            + "message (action 'censor' blocks instead).");
+        log.info("Not supported in this version: DiscordSRV slash commands (use the prefix commands). Censoring the text of a Discord message: "
+            + (rewrite ? "available (rewrites DiscordSRV's processed message)." : "unavailable, action 'censor' blocks instead."));
+    }
+
+    /**
+     * Looks for {@code DiscordGuildMessagePostProcessEvent#getProcessedMessage()} and {@code #setProcessedMessage(String)} (DiscordSRV 1.x,
+     * unverified names) and subscribes the second listener. Without them {@link #canRewrite()} stays false and "censor" blocks.
+     */
+    private void subscribeRewrite() {
+        try {
+            Class<?> post = Class.forName("github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent", false, loader);
+            post.getMethod("getProcessedMessage");
+            post.getMethod("setProcessedMessage", String.class);
+            postListener = new DiscordSrvPostListener(this);
+            api.getClass().getMethod("subscribe", Object.class).invoke(api, postListener);
+            rewrite = true;
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
+            postListener = null;
+            rewrite = false;
+            log.info("DiscordSRV has no DiscordGuildMessagePostProcessEvent#setProcessedMessage(String) (" + ex.getClass().getSimpleName()
+                + "): the action 'censor' for Discord messages blocks the message instead.");
+        }
     }
 
     /** Disconnects (server stop or plugin disable): the webhooks take over again. */
@@ -128,10 +156,17 @@ final class DiscordSrvHook implements DiscordBridge {
             if (listener != null) {
                 api.getClass().getMethod("unsubscribe", Object.class).invoke(api, listener);
             }
+            if (postListener != null) {
+                api.getClass().getMethod("unsubscribe", Object.class).invoke(api, postListener);
+            }
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
             // DiscordSRV may already be shutting down; nothing to repair
         }
         listener = null;
+        postListener = null;
+        synchronized (pending) {
+            pending.clear();
+        }
         engine.discord().detachBridge();
     }
 
@@ -184,10 +219,10 @@ final class DiscordSrvHook implements DiscordBridge {
         }
     }
 
-    /** DiscordSRV hands the text to Minecraft itself and offers no safe way to change it, so a changed text is not possible. */
+    /** True when the post-process event with a text setter was found; otherwise the engine turns "censor" into "block". */
     @Override
     public boolean canRewrite() {
-        return false;
+        return rewrite;
     }
 
     private boolean send(Object channel, String text) throws ReflectiveOperationException {
@@ -262,13 +297,56 @@ final class DiscordSrvHook implements DiscordBridge {
                     }
                 }
             });
-            if (decision.type() != DiscordLink.Decision.Type.ALLOW) {
-                // BLOCK; REPLACE cannot happen because canRewrite() is false
+            if (decision.type() == DiscordLink.Decision.Type.REPLACE && decision.text() != null) {
+                String original = String.valueOf(call(message, "getContentRaw"));
+                synchronized (pending) {
+                    long now = System.currentTimeMillis();
+                    pending.values().removeIf(v -> now - (Long) v[1] > PENDING_MILLIS);
+                    pending.put(original, new Object[] {decision.text(), now});
+                }
+            } else if (decision.type() != DiscordLink.Decision.Type.ALLOW) {
                 event.getClass().getMethod("setCancelled", boolean.class).invoke(event, true);
             }
         } catch (ReflectiveOperationException | RuntimeException ex) {
             warnOnce("event", "A DiscordSRV message could not be checked (" + ex.getClass().getSimpleName()
                 + "); it was let through. Does this DiscordSRV version differ from 1.x?");
+        }
+    }
+
+    /**
+     * Called by {@link DiscordSrvPostListener}: puts the censored text into the message DiscordSRV is about to send to Minecraft.
+     * The processed text contains the original raw text inside its prefix/format, so the original is replaced by the censored one.
+     * When it cannot be done the message is cancelled instead (one log line), never sent uncensored.
+     */
+    void onPostProcess(Object event) {
+        try {
+            String processed = String.valueOf(call(event, "getProcessedMessage"));
+            Map.Entry<String, Object[]> hit = null;
+            synchronized (pending) {
+                long now = System.currentTimeMillis();
+                pending.values().removeIf(v -> now - (Long) v[1] > PENDING_MILLIS);
+                for (Map.Entry<String, Object[]> e : pending.entrySet()) {
+                    if (!e.getKey().isEmpty() && processed.contains(e.getKey())) {
+                        hit = e;
+                        break;
+                    }
+                }
+                if (hit != null) {
+                    pending.remove(hit.getKey());
+                }
+            }
+            if (hit == null) {
+                return; // not one of the censored messages
+            }
+            event.getClass().getMethod("setProcessedMessage", String.class)
+                .invoke(event, processed.replace(hit.getKey(), (String) hit.getValue()[0]));
+        } catch (ReflectiveOperationException | RuntimeException ex) {
+            warnOnce("post", "Could not rewrite a censored Discord message (" + ex.getClass().getSimpleName() + "); it is blocked instead.");
+            try {
+                event.getClass().getMethod("setCancelled", boolean.class).invoke(event, true);
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+                warnOnce("post-cancel", "The censored Discord message could not be blocked either; DiscordSRV may deliver it unchanged.");
+            }
         }
     }
 

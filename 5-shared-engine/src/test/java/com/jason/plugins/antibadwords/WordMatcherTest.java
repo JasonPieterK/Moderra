@@ -139,6 +139,23 @@ class WordMatcherTest {
     }
 
     @Test
+    void whitelistAppliesToUnspacedScripts() {
+        List<String> words = List.of("你妈", "三小", "傻逼");
+        WordMatcher plain = new WordMatcher(words, WordMatcher.Options.defaults());
+        assertEquals("你妈", plain.find("我爱你妈妈"));
+        WordMatcher m = new WordMatcher(words, new WordMatcher.Options(true, 3, true, false, false, 4, List.of("你妈妈", "三小時")));
+        assertNull(m.find("我爱你妈妈"));
+        assertNull(m.find("我们开会三小時"));
+        assertEquals("你妈", m.find("你妈"));
+        assertEquals("你妈", m.find("你妈妈 你妈"), "one innocent occurrence does not hide a real one");
+        assertEquals("三小", m.find("三小"));
+        assertEquals("傻逼", m.find("你妈妈傻逼"));
+        // no whitelist entry in a spaced script: same result as before
+        WordMatcher latin = new WordMatcher(words, new WordMatcher.Options(true, 3, true, false, false, 4, List.of("class")));
+        assertEquals("你妈", latin.find("我爱你妈妈"));
+    }
+
+    @Test
     void entryValidation() {
         assertTrue(WordMatcher.isValidEntry("fuck"));
         assertTrue(WordMatcher.isValidEntry("傻逼"));

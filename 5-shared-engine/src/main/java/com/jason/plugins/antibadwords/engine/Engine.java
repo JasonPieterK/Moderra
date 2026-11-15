@@ -147,6 +147,7 @@ public final class Engine {
         this.players = new PlayerDirectory(data.resolve(ModerationSettings.PLAYERS_FILE), clock,
             () -> value(ModerationSettings.SAVE_DELAY).toMillis(), () -> value(ModerationSettings.FORGET_PLAYERS_DAYS) * 86_400_000L,
             platform.logger(), saver);
+        this.players.storeIps(() -> value(ModerationSettings.STORE_IP));
         this.persistentStrikes = new PersistentStrikeService(data.resolve(ModerationSettings.STRIKES_FILE), clock, this::strikeOptions,
             platform.logger(), saver);
         this.strikes = persistentStrikes;
@@ -830,6 +831,7 @@ public final class Engine {
      */
     public Verdict onJoin(UUID playerId, String playerName) {
         players.seen(playerId, playerName);
+        players.ip(playerId, platform.playerIp(playerId));
         mutes.onJoin(playerId, playerName);
         platform.runSyncLater(() -> essentials.onJoin(playerId, playerName), 1000); // Essentials loads the user data while the join runs
         Message message = message(playerId, playerName, Message.JOIN, bedrock.filterName(playerName));

@@ -153,6 +153,14 @@ public final class FakePlatform implements Platform {
         return permissions.getOrDefault(player, Set.of()).contains(node);
     }
 
+    /** IP addresses of online players (null = unknown). */
+    public final java.util.Map<UUID, String> ips = new java.util.HashMap<>();
+
+    @Override
+    public String playerIp(UUID player) {
+        return ips.get(player);
+    }
+
     @Override
     public String worldName(UUID player) {
         return worlds.getOrDefault(player, "");

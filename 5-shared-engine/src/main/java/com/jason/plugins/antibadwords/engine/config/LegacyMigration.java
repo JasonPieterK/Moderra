@@ -43,6 +43,7 @@ public final class LegacyMigration {
      */
     private static final Map<String, Object> LEGACY_DEFAULTS = Map.of(
         CoreSettings.SCANNED_COMMANDS.key(), CoreSettings.LEGACY_SCANNED_COMMANDS,
+        CoreSettings.WHITELIST.key(), CoreSettings.LEGACY_WHITELIST,
         com.jason.plugins.antibadwords.engine.filters.LinkSettings.SOURCES.key(),
         com.jason.plugins.antibadwords.engine.filters.LinkSettings.LEGACY_SOURCES,
         com.jason.plugins.antibadwords.engine.filters.EvasionSettings.DETECT_SOURCES.key(),

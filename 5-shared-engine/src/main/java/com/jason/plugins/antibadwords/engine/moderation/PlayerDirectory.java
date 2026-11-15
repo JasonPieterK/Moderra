@@ -19,7 +19,10 @@ import java.util.function.LongSupplier;
  */
 public final class PlayerDirectory {
     /** A player the server has seen. */
-    public record Known(UUID id, String name, long lastSeen) {
+    public record Known(UUID id, String name, long lastSeen, String ip) {
+        public Known(UUID id, String name, long lastSeen) {
+            this(id, name, lastSeen, null);
+        }
     }
 
     private final Map<UUID, Known> byId = new HashMap<>();
@@ -28,6 +31,7 @@ public final class PlayerDirectory {
     private final LongSupplier forgetAfterMillis;
     private final EngineLog log;
     private final DataFile file;
+    private volatile java.util.function.BooleanSupplier storeIps = () -> true;
 
     /**
      * @param saveDelayMillis   wait this long after a change before the file is written (read on every change)
@@ -40,6 +44,11 @@ public final class PlayerDirectory {
         this.forgetAfterMillis = forgetAfterMillis;
         this.log = log;
         this.file = new DataFile(file, log, clock, scheduler, this::snapshot);
+    }
+
+    /** Whether IP addresses are kept and written (read on every change and save). Default: yes. */
+    public void storeIps(java.util.function.BooleanSupplier setting) {
+        this.storeIps = setting;
     }
 
     /** Replaces what is in memory with the content of the file (missing or damaged file = nobody known). */
@@ -64,7 +73,8 @@ public final class PlayerDirectory {
                 if (row.get("name") == null || name.isEmpty()) {
                     throw new IllegalArgumentException("no name");
                 }
-                byId.put(id, new Known(id, name, ((Number) row.get("last-seen")).longValue()));
+                String ip = row.get("ip") instanceof String text && !text.isEmpty() ? text : null;
+                byId.put(id, new Known(id, name, ((Number) row.get("last-seen")).longValue(), ip));
             } catch (RuntimeException ex) {
                 skipped++;
             }
@@ -82,9 +92,30 @@ public final class PlayerDirectory {
             return;
         }
         synchronized (this) {
-            byId.put(id, new Known(id, name, clock.getAsLong()));
+            Known old = byId.get(id);
+            byId.put(id, new Known(id, name, clock.getAsLong(), old == null ? null : old.ip()));
         }
         file.changed(saveDelayMillis.getAsLong()); // outside the lock: the save may run at once
+    }
+
+    /** Remembers the last IP address of a known player ({@code null} or blank = nothing to remember). Ignored when storing is off. */
+    public void ip(UUID id, String ip) {
+        if (id == null || ip == null || ip.isBlank() || !storeIps.getAsBoolean()) {
+            return;
+        }
+        synchronized (this) {
+            Known known = byId.get(id);
+            if (known == null || ip.equals(known.ip())) {
+                return;
+            }
+            byId.put(id, new Known(id, known.name(), known.lastSeen(), ip));
+        }
+        file.changed(saveDelayMillis.getAsLong());
+    }
+
+    /** The last known IP of a player, or empty (never stored, or storing is switched off). */
+    public Optional<String> ipOf(UUID id) {
+        return get(id).map(Known::ip).filter(ip -> storeIps.getAsBoolean());
     }
 
     /** As {@link #seen} but only when the player is unknown or has a new name (cheap; for places that run often). */
@@ -153,6 +184,9 @@ public final class PlayerDirectory {
             Map<String, Object> row = new LinkedHashMap<>();
             row.put("name", known.name());
             row.put("last-seen", known.lastSeen());
+            if (known.ip() != null && storeIps.getAsBoolean()) {
+                row.put("ip", known.ip());
+            }
             players.put(id.toString(), row);
         });
         Map<String, Object> root = new LinkedHashMap<>();
