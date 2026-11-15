@@ -20,6 +20,9 @@ jobs:
         with: { distribution: temurin, java-version: "21" }
       - name: Download real plugin jars and check every manifest entry with javap
         run: python3 tools/verify-apis.py tools/api-manifest.txt --jars plugin-jars --report api-report.md
+      - name: Print report into the log
+        if: always()
+        run: cat api-report.md || true
       - name: Show report in the job summary
         if: always()
         run: if [ -f api-report.md ]; then cat api-report.md >> "$GITHUB_STEP_SUMMARY"; fi
@@ -64,6 +67,9 @@ jobs:
         run: |
           export PATH="$J25/bin:$PATH"   # javap 25 reads class files of every version
           python3 tools/dump-mc-api.py "${{ matrix.mc }}" "mc-api-dump/${{ matrix.loader }}-${{ matrix.mc }}"
+      - name: Print every dump into the log (the development container reads results from the job log)
+        if: always()
+        run: for f in mc-api-dump/*/*.txt; do echo "=====FILE $f"; cat "$f"; done
       - name: Show index in the job summary
         if: always()
         run: |
@@ -82,22 +88,3 @@ jobs:
           path: "**/build-logs/**"
           if-no-files-found: ignore
 
-  # The development container cannot download artifacts (blob storage is blocked there), but it can fetch git
-  # branches. So the results are also committed to the branch ci-results (force-pushed, no history kept).
-  publish-results:
-    needs: [plugin-apis, mc-api-dump]
-    if: always() && (github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]'))
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with: { path: results }
-      - name: Push results to branch ci-results
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          cd results
-          git init -q -b ci-results
-          git config user.name "ci" && git config user.email "ci@users.noreply.github.com"
-          echo "Results of run ${{ github.run_id }} for commit ${{ github.sha }}" > README.md
-          git add -A && git commit -q -m "CI results for ${{ github.sha }}"
-          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" ci-results
