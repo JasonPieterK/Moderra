@@ -4,6 +4,8 @@ import com.jason.plugins.antibadwords.engine.Engine;
 import com.jason.plugins.antibadwords.engine.EngineLog;
 import com.jason.plugins.antibadwords.engine.integrations.BlockedEditLog;
 import com.jason.plugins.antibadwords.engine.integrations.ExtraIntegrationSettings;
+import com.jason.plugins.antibadwords.engine.integrations.OutgoingScan;
+import com.jason.plugins.antibadwords.engine.integrations.OutgoingScanSettings;
 import com.jason.plugins.antibadwords.engine.integrations.PacketScanPlan;
 import java.lang.reflect.Method;
 import org.bukkit.Bukkit;
@@ -19,7 +21,7 @@ import org.bukkit.plugin.Plugin;
  * exists the hook switches itself off.
  *
  * <p>ProtocolLib: {@link ProtocolLibScan} (shim-compiled), only when the Bukkit events are missing (setting). PacketEvents: detected,
- * listener not implemented (ProtocolPacketEvent/PacketListenerCommon are not in the API dump yet). Plan: {@link PlanHook}.
+ * {@link PacketEventsScan}. Outgoing scan of other plugins' chat: {@link ProtocolLibOutgoing} / {@link PacketEventsOutgoing}. Plan: {@link PlanHook}.
  */
 public final class ExtraHooks {
     private ExtraHooks() {
@@ -28,6 +30,7 @@ public final class ExtraHooks {
     public static void start(Engine engine) {
         EngineLog log = engine.platform().logger();
         startPackets(engine, log);
+        startOutgoing(engine, log);
         startCoreProtect(engine, log);
         if (engine.platform().hasPlugin("Plan") && engine.value(ExtraIntegrationSettings.PLAN)) {
             try {
@@ -71,8 +74,42 @@ public final class ExtraHooks {
                 log.warn("Packet scan: ProtocolLib listener could not start (" + ex.getClass().getSimpleName() + ").");
             }
         } else {
-            log.warn("Packet scan: " + d.reason() + ", but the PacketEvents listener is not implemented (its event class is missing from the API "
-                + "dump); anvil, sign and book edits are only checked where the Bukkit events exist.");
+            try {
+                PacketEventsScan.start(engine);
+                log.info("Packet scan: " + d.reason() + "; sign, book and anvil packets are scanned through PacketEvents.");
+            } catch (Throwable ex) {
+                log.warn("Packet scan: PacketEvents listener could not start (" + ex.getClass().getSimpleName() + ").");
+            }
+        }
+    }
+
+    /** Outgoing-text scan (integrations.outgoing-scan.*): ProtocolLib is preferred, PacketEvents is the other choice. */
+    private static void startOutgoing(Engine engine, EngineLog log) {
+        OutgoingScan scan = new OutgoingScan(engine);
+        if (!scan.enabled()) {
+            return;
+        }
+        boolean lib = engine.platform().hasPlugin("ProtocolLib");
+        boolean pe = engine.platform().hasPlugin("packetevents");
+        PacketScanPlan.Decision d = PacketScanPlan.choose(false, false, engine.value(ExtraIntegrationSettings.PROTOCOLLIB), lib,
+            engine.value(ExtraIntegrationSettings.PACKETEVENTS), pe);
+        try {
+            if (d.backend() == PacketScanPlan.Backend.PROTOCOLLIB) {
+                Plugin self = Bukkit.getPluginManager().getPlugin("AntiBadWords");
+                if (self == null) {
+                    throw new IllegalStateException("own plugin not found");
+                }
+                ProtocolLibOutgoing.start(self, scan);
+                log.info("Outgoing scan: on through ProtocolLib (action: " + engine.value(OutgoingScanSettings.ACTION)
+                    + "; ProtocolLib can log and cancel, not change text).");
+            } else if (d.backend() == PacketScanPlan.Backend.PACKETEVENTS) {
+                PacketEventsOutgoing.start(scan);
+                log.info("Outgoing scan: on through PacketEvents (action: " + engine.value(OutgoingScanSettings.ACTION) + "; system chat only).");
+            } else {
+                log.warn("Outgoing scan: switched on, but " + d.reason() + ". Nothing is scanned.");
+            }
+        } catch (Throwable ex) {
+            log.warn("Outgoing scan: the packet listener could not start (" + ex.getClass().getSimpleName() + ").");
         }
     }
 

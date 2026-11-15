@@ -128,3 +128,14 @@ placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderHandler
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext
+
+# --- Task 44 follow-up: outgoing team prefix / tab-list name scan and ProtocolLib write-back (classes not dumped yet) ---
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate$PlayerInfo
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate$Action
+packetevents-api | com.github.retrooper.packetevents.protocol.chat.message.ChatMessage
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketTypeCommon
+protocollib | com.comphenix.protocol.events.AbstractStructure
+protocollib | com.comphenix.protocol.events.InternalStructure
+protocollib | com.comphenix.protocol.wrappers.AbstractWrapper
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData

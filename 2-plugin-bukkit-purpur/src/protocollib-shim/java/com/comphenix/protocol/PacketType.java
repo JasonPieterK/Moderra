@@ -8,5 +8,11 @@ public class PacketType {
             public static final PacketType ITEM_NAME = new PacketType();
             public static final PacketType UPDATE_SIGN = new PacketType();
         }
+
+        public static class Server {
+            public static final PacketType SYSTEM_CHAT = new PacketType();
+            public static final PacketType CHAT = new PacketType();
+            public static final PacketType DISGUISED_CHAT = new PacketType();
+        }
     }
 }
