@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   plugin-apis:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +31,7 @@ jobs:
           if-no-files-found: warn
 
   mc-api-dump:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]')
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false

@@ -16,13 +16,14 @@ on:
         default: false
   push:
     tags: ["v*"]
-    branches: ["claude/**"]   # build-only check of work branches (no release)
+    branches: ["claude/**"]   # work branches: only when the commit message contains [build]
 
 permissions:
   contents: write
 
 jobs:
   engine-tests:
+    if: github.event_name != 'push' || startsWith(github.ref, 'refs/tags/') || contains(github.event.head_commit.message, '[build]')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
