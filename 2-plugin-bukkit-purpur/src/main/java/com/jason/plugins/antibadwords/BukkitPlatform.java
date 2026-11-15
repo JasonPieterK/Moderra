@@ -144,7 +144,7 @@ public final class BukkitPlatform implements Platform {
     }
 
     /** The vanilla dimension name of a Bukkit world, so worlds.yml can say {@code minecraft:the_nether}. */
-    static String dimensionName(World world) {
+    public static String dimensionName(World world) {
         World.Environment environment = world.getEnvironment();
         if (environment == World.Environment.NORMAL) {
             return "minecraft:overworld";

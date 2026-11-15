@@ -18,10 +18,8 @@ import org.bukkit.plugin.Plugin;
  * {@code isEnabled()} (optional), {@code logChat(Player, String)} and {@code logCommand(Player, String)}. If neither log method
  * exists the hook switches itself off.
  *
- * <p>ProtocolLib / PacketEvents: only detected and reported. The packet listener itself is NOT implemented, because the
- * ProtocolLib and PacketEvents APIs are not available to this build and their packet field layouts differ per Minecraft version
- * (sign text, book pages, anvil name); guessing them would be unsafe. The Bukkit events are used everywhere they exist.
- * Plan: not implemented (its extension API needs compile-time annotations); see the progress note.
+ * <p>ProtocolLib: {@link ProtocolLibScan} (shim-compiled), only when the Bukkit events are missing (setting). PacketEvents: detected,
+ * listener not implemented (ProtocolPacketEvent/PacketListenerCommon are not in the API dump yet). Plan: {@link PlanHook}.
  */
 public final class ExtraHooks {
     private ExtraHooks() {
@@ -32,7 +30,11 @@ public final class ExtraHooks {
         startPackets(engine, log);
         startCoreProtect(engine, log);
         if (engine.platform().hasPlugin("Plan") && engine.value(ExtraIntegrationSettings.PLAN)) {
-            log.info("Plan found: no data extension is exposed by this version (violation counts are available as PlaceholderAPI values).");
+            try {
+                PlanHook.start(engine, log);
+            } catch (Throwable ex) {
+                log.warn("Plan hook could not start (" + ex.getClass().getSimpleName() + ").");
+            }
         }
     }
 
@@ -57,9 +59,20 @@ public final class ExtraHooks {
             engine.value(ExtraIntegrationSettings.PROTOCOLLIB), lib, engine.value(ExtraIntegrationSettings.PACKETEVENTS), pe);
         if (d.backend() == PacketScanPlan.Backend.NONE) {
             log.info("Packet scan: not used (" + d.reason() + ").");
+        } else if (d.backend() == PacketScanPlan.Backend.PROTOCOLLIB) {
+            Plugin self = Bukkit.getPluginManager().getPlugin("AntiBadWords");
+            try {
+                if (self == null) {
+                    throw new IllegalStateException("own plugin not found");
+                }
+                ProtocolLibScan.start(self, engine);
+                log.info("Packet scan: " + d.reason() + "; sign, book and anvil packets are scanned through ProtocolLib.");
+            } catch (Throwable ex) {
+                log.warn("Packet scan: ProtocolLib listener could not start (" + ex.getClass().getSimpleName() + ").");
+            }
         } else {
-            log.warn("Packet scan: " + d.reason() + ", but the packet-level scan is not implemented in this version; anvil, sign and book "
-                + "edits are only checked where the Bukkit events exist.");
+            log.warn("Packet scan: " + d.reason() + ", but the PacketEvents listener is not implemented (its event class is missing from the API "
+                + "dump); anvil, sign and book edits are only checked where the Bukkit events exist.");
         }
     }
 

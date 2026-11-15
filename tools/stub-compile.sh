@@ -52,7 +52,8 @@ if [ "$WHAT" = all ] || [ "$WHAT" = plugin ]; then
   # the plugin sources, the engine, and the name-only DiscordSRV shim (the pom compiles it but keeps it out of the jar)
   compile plugin "$SNAKEYAML:$LUCKPERMS" "$STUBS/bukkit" "$ENGINE/main/java" \
     "$ROOT/2-plugin-bukkit-purpur/src/main/java" "$ROOT/2-plugin-bukkit-purpur/src/discordsrv-shim/java" \
-    "$ROOT/2-plugin-bukkit-purpur/src/papi-shim/java"
+    "$ROOT/2-plugin-bukkit-purpur/src/papi-shim/java" "$ROOT/2-plugin-bukkit-purpur/src/protocollib-shim/java" \
+    "$ROOT/2-plugin-bukkit-purpur/src/plan-shim/java"
 fi
 
 if [ "$WHAT" = all ] || [ "$WHAT" = mods ]; then
