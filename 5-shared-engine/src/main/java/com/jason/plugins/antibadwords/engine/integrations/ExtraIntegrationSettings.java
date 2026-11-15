@@ -47,5 +47,6 @@ public final class ExtraIntegrationSettings {
     public static void register(SettingsRegistry r) {
         List.of(PROTOCOLLIB, PACKETEVENTS, PACKET_ONLY_WHEN_MISSING, COREPROTECT, COREPROTECT_LOG_AS, COREPROTECT_TEXT, COREPROTECT_SOURCES, PLAN)
             .forEach(r::register);
+        OutgoingScanSettings.register(r);
     }
 }

@@ -173,6 +173,7 @@
                         <exclude>github/**</exclude>
                         <exclude>me/**</exclude>
                         <exclude>com/comphenix/**</exclude>
+                        <exclude>com/github/retrooper/**</exclude>
                         <exclude>com/djrapitops/**</exclude>
                     </excludes>
                 </configuration>

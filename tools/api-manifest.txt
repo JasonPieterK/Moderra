@@ -156,3 +156,30 @@ mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setMessage(String)
 mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setCancelled(boolean)
 mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | isCancelled()
 mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | getAuthor()
+# --- Task 44: PacketEvents client scan + outgoing-text scan (ProtocolLib and PacketEvents); signatures seen in the plugin-api-dump job 132707156612 ---
+packetevents-api | com.github.retrooper.packetevents.PacketEvents | getAPI()
+packetevents-api | com.github.retrooper.packetevents.PacketEventsAPI | getEventManager()
+packetevents-api | com.github.retrooper.packetevents.event.EventManager | registerListener(PacketListenerCommon)
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerAbstract | onPacketReceive(PacketReceiveEvent)
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerAbstract | onPacketSend(PacketSendEvent)
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | getPacketType()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | getPlayer()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | isCancelled()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | setCancelled(boolean)
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | markForReEncode(boolean)
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field UPDATE_SIGN
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field EDIT_BOOK
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field NAME_ITEM
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field SYSTEM_CHAT_MESSAGE
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateSign | getTextLines()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEditBook | getPages()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEditBook | getTitle()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientNameItem | getItemName()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage | getMessageJson()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage | setMessageJson(String)
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field SYSTEM_CHAT
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field CHAT
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field DISGUISED_CHAT
+protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketSending(*)
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | fromHandle(Object)
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | getJson()
