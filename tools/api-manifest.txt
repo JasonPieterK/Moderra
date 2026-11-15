@@ -183,3 +183,9 @@ protocollib | com.comphenix.protocol.PacketType$Play$Server | field DISGUISED_CH
 protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketSending(*)
 protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | fromHandle(Object)
 protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | getJson()
+# --- Fabric Text Placeholder API (FabricPlaceholders, compile-only; not reflection, listed so CI checks the names we call) ---
+placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Handler)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | value(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | invalid(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | hasPlayer()
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | player()

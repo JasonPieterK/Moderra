@@ -68,6 +68,14 @@ net.minecraft.world.level.block.entity.SignText
 net.minecraft.world.inventory.AnvilMenu
 net.minecraft.world.inventory.ItemCombinerMenu
 net.minecraft.network.protocol.game.ServerboundRenameItemPacket
+net.minecraft.world.level.block.Blocks
+net.minecraft.world.level.block.state.BlockState
+net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase
+net.minecraft.nbt.CompoundTag
+net.minecraft.world.level.block.entity.BlockEntity
+net.minecraft.core.RegistryAccess
+net.minecraft.core.HolderLookup$Provider
+net.minecraft.core.BlockPos
 net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket
 net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket$Parameters
 net.minecraft.network.protocol.game.ClientboundSetScorePacket

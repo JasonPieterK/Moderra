@@ -13,6 +13,8 @@ version = minecraft_version
 
 repositories {
     mavenCentral()
+    // Text Placeholder API (optional at run time: the hook class is only loaded when the mod is installed)
+    maven { url = 'https://maven.nucleoid.xyz' }
 }
 
 dependencies {
@@ -24,6 +26,9 @@ dependencies {
     } else {
         implementation "net.fabricmc:fabric-loader:${loader_version}"
         implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    }
+    if (placeholders_api == 'api') {
+        compileOnly "eu.pb4:placeholder-api:${placeholder_api_version}"
     }
     implementation 'org.yaml:snakeyaml:2.3'
     include 'org.yaml:snakeyaml:2.3'
@@ -39,6 +44,8 @@ sourceSets {
             srcDir "../5-shared-engine/src/mc-variants/sign-${sign_api}"
             // Chest menu click signature: "input" (ContainerInput, 26.3) or "click" (ClickType, 1.21.11 and assumed older 26.x).
             srcDir "../5-shared-engine/src/mc-variants/menu-${menu_api}"
+            // Text Placeholder API hook: "api" (real hook, compile-only dependency) or "none" (empty hook).
+            srcDir "../5-shared-engine/src/mc-variants/placeholders-${placeholders_api}"
         }
         // The engine's own files (default punishment sections, word-list index) and the mixin config.
         resources.srcDir '../5-shared-engine/src/main/resources'

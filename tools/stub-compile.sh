@@ -5,7 +5,7 @@
 #
 #   tools/stub-compile.sh            all targets
 #   tools/stub-compile.sh plugin     only the Bukkit plugin
-#   tools/stub-compile.sh mods       only Fabric + Forge (both sign variants)
+#   tools/stub-compile.sh mods       only Fabric + Forge (every per-version variant combination)
 #
 # Needs JDK 21 (javac) and the SnakeYAML jar, which Maven downloads (run `mvn -q -B test` in 5-shared-engine once, or
 # set SNAKEYAML=/path/to/snakeyaml.jar). Output goes to a temporary folder that is deleted at the end.
@@ -57,13 +57,14 @@ if [ "$WHAT" = all ] || [ "$WHAT" = plugin ]; then
 fi
 
 if [ "$WHAT" = all ] || [ "$WHAT" = mods ]; then
-  # the same pairs the build scripts use: 1.21.11 sign-array+menu-click, 26.1-26.2 sign-array+menu-input, 26.3 sign-record+menu-input
-  for pair in sign-array:menu-click sign-array:menu-input sign-record:menu-input; do
-    sign="${pair%%:*}" menu="${pair##*:}"
-    compile "fabric-$sign-$menu" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
-      "$ROOT/3-mod-fabric/src/main/java"
-    compile "forge-$sign-$menu" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
-      "$ROOT/4-mod-forge/src/main/java"
+  # the same combinations the build scripts use (sign : menu : Forge ModList : Fabric Text Placeholder API):
+  # 1.21.11 sign-array+menu-click+instance, 26.1-26.2 sign-array+menu-input+static, 26.3 sign-record+menu-input+static (+placeholders api)
+  for combo in sign-array:menu-click:instance:none sign-array:menu-input:static:none sign-record:menu-input:static:api; do
+    IFS=: read -r sign menu modlist ph <<<"$combo"
+    compile "fabric-$sign-$menu-$ph" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
+      "$ENGINE/mc-variants/placeholders-$ph" "$ROOT/3-mod-fabric/src/main/java"
+    compile "forge-$sign-$menu-$modlist" "$SNAKEYAML" "$STUBS/mc" "$STUBS/mc-modlist-${modlist}" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
+      "$ENGINE/mc-variants/forge-modlist-$modlist" "$ROOT/4-mod-forge/src/main/java"
   done
 fi
 

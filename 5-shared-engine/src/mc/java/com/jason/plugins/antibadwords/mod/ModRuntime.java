@@ -50,7 +50,14 @@ public final class ModRuntime {
         return t;
     });
 
+    /** Asks the loader whether a mod id is installed (Fabric: isModLoaded, Forge: ModList). Set by the loader before init. */
+    private static volatile java.util.function.Predicate<String> modLookup;
+
     private ModRuntime() {
+    }
+
+    public static void setModLookup(java.util.function.Predicate<String> lookup) {
+        modLookup = lookup;
     }
 
     /**
@@ -293,6 +300,34 @@ public final class ModRuntime {
         public boolean has(UUID playerId, String node) {
             ServerPlayer p = player(playerId);
             return p != null && ModRuntime.has(p, node);
+        }
+
+        @Override
+        public boolean hasPlugin(String name) {
+            java.util.function.Predicate<String> lookup = modLookup;
+            if (lookup == null || name == null) {
+                return false;
+            }
+            for (String id : ModPluginIds.idsFor(name)) {
+                if (lookup.test(id)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /** The text prompt is an anvil rename screen (a fake sign needs API that is not verified, see AnvilPrompt). */
+        @Override
+        public boolean supportsSignPrompt() {
+            return true;
+        }
+
+        @Override
+        public void openSignPrompt(UUID playerId, String title, String hint) {
+            ServerPlayer p = player(playerId);
+            if (p != null) {
+                com.jason.plugins.antibadwords.mod.gui.AnvilPrompt.open(p, title, hint);
+            }
         }
 
         @Override
