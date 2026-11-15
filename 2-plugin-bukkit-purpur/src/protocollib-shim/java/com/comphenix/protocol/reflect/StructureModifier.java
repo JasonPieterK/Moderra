@@ -6,6 +6,10 @@ public class StructureModifier<T> {
         return null;
     }
 
+    public StructureModifier<T> write(int index, T value) {
+        return this;
+    }
+
     public int size() {
         return 0;
     }

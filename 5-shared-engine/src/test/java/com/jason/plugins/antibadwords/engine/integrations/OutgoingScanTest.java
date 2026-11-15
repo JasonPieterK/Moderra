@@ -103,4 +103,17 @@ class OutgoingScanTest {
         assertEquals("[\"ab\",{\"text\":\"c\"}]", ChatJson.mapText("[\"AB\",{\"text\":\"C\"}]", String::toLowerCase));
         assertEquals("a b", ChatJson.plain("{\"translate\":\"k\",\"with\":[\"a \",{\"text\":\"b\"}]}"));
     }
+
+    @Test
+    void teamAndTabListAreMaskedNeverCancelled() throws Exception {
+        on("cancel");
+        OutgoingScan.Outcome team = scan.handle("team", "Bob", "{\"text\":\"[shit] \",\"color\":\"red\"}", true);
+        assertEquals(Kind.REWRITE, team.kind());
+        assertFalse(team.json().contains("shit"));
+        assertTrue(team.json().contains("\"color\":\"red\""));
+        assertEquals(Kind.REWRITE, scan.handle("tab-list", "Bob", "\"you shit\"", true).kind());
+        // a caller that cannot write back: the packet is kept
+        assertEquals(Kind.PASS, scan.handle("tab-list", "Bob", "\"you shit\"", false).kind());
+        assertTrue(engine.value(OutgoingScanSettings.SOURCES).containsAll(java.util.List.of("team", "tab-list")));
+    }
 }

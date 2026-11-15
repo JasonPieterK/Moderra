@@ -68,6 +68,9 @@ public final class OutgoingScan {
             return Outcome.PASS; // log-only hits of a check: nothing to apply to a foreign message
         }
         String action = engine.value(OutgoingScanSettings.ACTION);
+        if (OutgoingScanSettings.ACTION_CANCEL.equals(action) && keepsPacket(source)) {
+            action = OutgoingScanSettings.ACTION_MASK; // a team or tab-list packet is never dropped: the client would lose its state
+        }
         if (OutgoingScanSettings.ACTION_CANCEL.equals(action)) {
             log("Outgoing scan: a " + source + " packet for " + receiver + " was not sent. It contains a word that is not permitted: " + detail(verdict)
                 + ". Text: " + shorten(plain));
@@ -84,6 +87,10 @@ public final class OutgoingScan {
         log("Outgoing scan: a " + source + " packet for " + receiver + " contains a word that is not permitted: " + detail(verdict)
             + ". The packet is sent unchanged. Text: " + shorten(plain));
         return Outcome.PASS;
+    }
+
+    private static boolean keepsPacket(String source) {
+        return OutgoingScanSettings.SOURCE_TEAM.equals(source) || OutgoingScanSettings.SOURCE_TAB_LIST.equals(source);
     }
 
     private boolean ignored(String plain) {
@@ -142,6 +149,7 @@ public final class OutgoingScan {
 
     /** The packet sources this scan knows; the plugin layer uses these names. */
     public static List<String> knownSources() {
-        return List.of(OutgoingScanSettings.SOURCE_SYSTEM_CHAT, OutgoingScanSettings.SOURCE_PLAYER_CHAT);
+        return List.of(OutgoingScanSettings.SOURCE_SYSTEM_CHAT, OutgoingScanSettings.SOURCE_PLAYER_CHAT, OutgoingScanSettings.SOURCE_TEAM,
+            OutgoingScanSettings.SOURCE_TAB_LIST);
     }
 }

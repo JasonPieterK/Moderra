@@ -13,6 +13,9 @@ public class PacketEvent extends java.util.EventObject {
         return null;
     }
 
+    public void setPacket(PacketContainer packet) {
+    }
+
     public PacketType getPacketType() {
         return null;
     }

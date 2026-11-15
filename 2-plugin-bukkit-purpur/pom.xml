@@ -175,6 +175,7 @@
                         <exclude>com/comphenix/**</exclude>
                         <exclude>com/github/retrooper/**</exclude>
                         <exclude>com/djrapitops/**</exclude>
+                        <exclude>net/kyori/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

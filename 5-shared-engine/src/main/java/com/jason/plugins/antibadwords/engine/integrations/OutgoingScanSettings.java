@@ -14,6 +14,8 @@ public final class OutgoingScanSettings {
     public static final String ACTION_CANCEL = "cancel";
     public static final String SOURCE_SYSTEM_CHAT = "system-chat";
     public static final String SOURCE_PLAYER_CHAT = "player-chat";
+    public static final String SOURCE_TEAM = "team";
+    public static final String SOURCE_TAB_LIST = "tab-list";
 
     public static final Setting<Boolean> ENABLED = s(Setting.bool("integrations.outgoing-scan.enabled", false).title("Outgoing text scan on")
         .description(BUKKIT + "Checks the chat text that OTHER plugins send to players (for example VentureChat or HuskChat chat, or a plugin\n"
@@ -21,13 +23,12 @@ public final class OutgoingScanSettings {
             + "player is punished. Messages of this plugin are never touched. Needs a restart."));
     public static final Setting<String> ACTION = s(Setting.choice("integrations.outgoing-scan.action", ACTION_LOG, ACTION_LOG, ACTION_MASK,
         ACTION_CANCEL).title("Outgoing scan action")
-        .description("log = write one line to the server log (default). mask = replace the offending text with * (PacketEvents only;\n"
-            + "ProtocolLib logs instead). cancel = do not send the packet."));
-    public static final Setting<List<String>> SOURCES = s(Setting.list("integrations.outgoing-scan.sources", List.of(SOURCE_SYSTEM_CHAT, SOURCE_PLAYER_CHAT))
+        .description("log = write one line to the server log (default). mask = replace the offending text with *.\n"
+            + "cancel = do not send the packet; team and tab-list packets are never cancelled (that would break the scoreboard), they are masked."));
+    public static final Setting<List<String>> SOURCES = s(Setting.list("integrations.outgoing-scan.sources", List.of(SOURCE_SYSTEM_CHAT, SOURCE_PLAYER_CHAT, SOURCE_TEAM, SOURCE_TAB_LIST))
         .title("Outgoing scan sources")
-        .description("Packet kinds that are checked: system-chat (messages from plugins and the server) and player-chat (ProtocolLib only;\n"
-            + "the text of a signed player chat packet can be logged or cancelled, not changed). Team prefixes and tab-list names\n"
-            + "are not checked yet: the packet classes needed for them are not verified."));
+        .description("Packet kinds that are checked: system-chat (messages from plugins and the server), player-chat (the text of a player chat\n"
+            + "packet), team (team display name, prefix and suffix, as set by TAB or NametagEdit) and tab-list (tab-list display names)."));
     public static final Setting<List<String>> IGNORE = s(Setting.list("integrations.outgoing-scan.ignore-containing", List.of("[AntiBadWords]"))
         .title("Outgoing scan ignore list")
         .description("A message that contains one of these texts is never checked. The default keeps the messages of this plugin untouched.\n"

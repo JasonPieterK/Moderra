@@ -101,10 +101,11 @@ public final class ExtraHooks {
                 }
                 ProtocolLibOutgoing.start(self, scan);
                 log.info("Outgoing scan: on through ProtocolLib (action: " + engine.value(OutgoingScanSettings.ACTION)
-                    + "; ProtocolLib can log and cancel, not change text).");
+                    + "; sources: " + engine.value(OutgoingScanSettings.SOURCES) + ").");
             } else if (d.backend() == PacketScanPlan.Backend.PACKETEVENTS) {
                 PacketEventsOutgoing.start(scan);
-                log.info("Outgoing scan: on through PacketEvents (action: " + engine.value(OutgoingScanSettings.ACTION) + "; system chat only).");
+                log.info("Outgoing scan: on through PacketEvents (action: " + engine.value(OutgoingScanSettings.ACTION)
+                    + "; sources: " + engine.value(OutgoingScanSettings.SOURCES) + ").");
             } else {
                 log.warn("Outgoing scan: switched on, but " + d.reason() + ". Nothing is scanned.");
             }
