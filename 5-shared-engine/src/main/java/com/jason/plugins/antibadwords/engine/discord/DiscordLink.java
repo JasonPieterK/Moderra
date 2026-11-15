@@ -203,6 +203,9 @@ public final class DiscordLink {
 
     private boolean isCommand(Incoming in) {
         String prefix = engine.value(DiscordSrvSettings.PREFIX).trim();
+        if (DiscordSrvSettings.STYLE_SLASH.equals(engine.value(DiscordSrvSettings.STYLE))) {
+            return false; // slash only: a typed prefix line is an ordinary message
+        }
         if (prefix.isEmpty() || !matches(engine.value(DiscordSrvSettings.COMMAND_CHANNELS), in)) {
             return false;
         }
@@ -236,17 +239,45 @@ public final class DiscordLink {
         }
     }
 
+    /** Reply for a slash command that is refused for any reason before the allow-list passed. It says nothing about why. */
+    static final String SLASH_REFUSED = "This command is not available to you here.";
+
+    /**
+     * Handles one DiscordSRV slash command with the same rules as a prefix command (command channel, allow-list, switch, rate limit,
+     * audit event). Unlike a typed message, a slash command must always be answered, so a refused call gets one neutral line that
+     * does not tell which rule refused it. May be called from any thread.
+     *
+     * @param word the command word ({@code mute}, {@code unmute}, {@code history}, {@code strikes}, {@code check}, {@code reload})
+     * @param arguments the option values in order, joined by spaces (may be empty)
+     * @param reply where the answer goes; called at most once, on the server thread or at once
+     */
+    public void onSlashCommand(Incoming in, String word, String arguments, Consumer<String> reply) {
+        String style = engine.value(DiscordSrvSettings.STYLE);
+        if (!service.hookEnabled() || DiscordSrvSettings.STYLE_PREFIX.equals(style)
+            || !matches(engine.value(DiscordSrvSettings.COMMAND_CHANNELS), in) || !isAllowed(in)) {
+            reply.accept(SLASH_REFUSED);
+            return;
+        }
+        String w = word == null ? "" : word.trim().toLowerCase(Locale.ROOT);
+        String a = arguments == null ? "" : arguments.trim();
+        runCommand(in, a.isEmpty() ? w : w + " " + a, reply);
+    }
+
     private void handleCommand(Incoming in, Consumer<String> reply) {
         // fail closed: somebody who is not listed gets no answer at all and nothing is run or counted
         if (!isAllowed(in)) {
             return;
         }
+        String prefix = engine.value(DiscordSrvSettings.PREFIX).trim();
+        runCommand(in, in.text().stripLeading().substring(prefix.length()).trim(), reply);
+    }
+
+    /** Shared by prefix and slash commands; the caller has already checked the channel and the allow-list. */
+    private void runCommand(Incoming in, String rest, Consumer<String> reply) {
         if (rateLimited(in.userId())) {
             reply.accept("Slow down: too many commands, try again in a moment.");
             return;
         }
-        String prefix = engine.value(DiscordSrvSettings.PREFIX).trim();
-        String rest = in.text().stripLeading().substring(prefix.length()).trim();
         String[] words = rest.isEmpty() ? new String[0] : rest.split("\\s+");
         String word = words.length == 0 ? "" : words[0].toLowerCase(Locale.ROOT);
         var enabled = DiscordSrvSettings.commandSwitch(word);

@@ -197,8 +197,8 @@ class NetworkSyncTest {
             assertEquals("plugin-messaging", f.engine.network().mode());
         }
         p.engine.mutes().mute(bob, "Bob", 600_000, "x", "Admin");
-        assertEquals(1, wire.size());
-        q.engine.network().receive(wire.get(0));
+        assertEquals(2, wire.size(), "the bridge hello and the mute");
+        q.engine.network().receive(wire.get(1));
         q.engine.network().poll();
         assertTrue(q.engine.mutes().isMuted(bob));
     }

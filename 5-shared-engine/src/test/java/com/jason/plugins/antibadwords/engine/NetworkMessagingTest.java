@@ -103,14 +103,14 @@ class NetworkMessagingTest {
         UUID bob = UUID.nameUUIDFromBytes("Bob".getBytes());
         f.engine.mutes().mute(bob, "Bob", 600_000, "x", "Admin");
         assertEquals(0, wire.size());
-        assertEquals(1, f.engine.network().queued());
+        assertEquals(2, f.engine.network().queued(), "the bridge hello and the mute");
         Out out = new Out(true);
         f.engine.commands().execute(out, "abw", new String[] {"network"});
         String all = String.join("\n", out.lines);
         assertTrue(all.contains("plugin-messaging") && all.contains("lobby") && all.contains("Queued records"), all);
         online.set(true);
         f.engine.network().poll();
-        assertEquals(1, wire.size());
+        assertEquals(2, wire.size());
         assertEquals(0, f.engine.network().queued());
         Out denied = new Out(false);
         f.engine.commands().execute(denied, "abw", new String[] {"network"});
