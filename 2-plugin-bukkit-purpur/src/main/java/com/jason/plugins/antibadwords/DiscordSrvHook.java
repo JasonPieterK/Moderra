@@ -361,9 +361,9 @@ final class DiscordSrvHook implements DiscordBridge {
     // ------------------------------------------------------------------------------------------
 
     /**
-     * Registers the slash commands with DiscordSRV when {@code discord.commands.style} is {@code slash} or {@code both}. The method of
-     * DiscordSRV's {@code ApiManager} that takes a {@code SlashCommandProvider} is found by its parameter type (its name is not in the
-     * verified dump yet); when there is none, one log line says so and the prefix commands stay the way.
+     * Registers the slash commands with DiscordSRV when {@code discord.commands.style} is {@code slash} or {@code both}. The real
+     * {@code ApiManager.addSlashCommandProvider(SlashCommandProvider)} is called by reflection (no hard dependency); on an error one log
+     * line says so and the prefix commands stay the way.
      */
     private void subscribeSlash() {
         String style = engine.value(DiscordSrvSettings.STYLE);
@@ -372,22 +372,15 @@ final class DiscordSrvHook implements DiscordBridge {
         }
         try {
             DiscordSrvSlashCommands provider = new DiscordSrvSlashCommands(this, discordSrv);
-            Method add = null;
-            for (Method m : api.getClass().getMethods()) {
-                Class<?>[] p = m.getParameterTypes();
-                String n = m.getName().toLowerCase(java.util.Locale.ROOT);
-                if (p.length == 1 && p[0] != Object.class && p[0].isInstance(provider) && n.contains("slash") && n.startsWith("add")) {
-                    add = m;
-                    break;
-                }
-            }
-            if (add == null) {
-                log.warn("discord.commands.style is '" + style + "' but this DiscordSRV has no method to add a slash command provider: "
-                    + "slash commands are OFF, use the prefix commands.");
-                return;
-            }
-            add.invoke(api, provider);
+            // real names (plugin-api-dump): ApiManager.addSlashCommandProvider(SlashCommandProvider); the class is loaded by name only
+            Class<?> providerType = Class.forName("github.scarsz.discordsrv.api.commands.SlashCommandProvider", false, loader);
+            api.getClass().getMethod("addSlashCommandProvider", providerType).invoke(api, provider);
             api.getClass().getMethod("subscribe", Object.class).invoke(api, provider); // the @SlashCommand methods are found like @Subscribe methods
+            try {
+                api.getClass().getMethod("updateSlashCommands").invoke(api);
+            } catch (ReflectiveOperationException | RuntimeException ex) {
+                // DiscordSRV registers the commands with Discord later by itself
+            }
             slash = provider;
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
             slash = null;
@@ -402,14 +395,8 @@ final class DiscordSrvHook implements DiscordBridge {
             return;
         }
         try {
-            for (Method m : api.getClass().getMethods()) {
-                Class<?>[] p = m.getParameterTypes();
-                String n = m.getName().toLowerCase(java.util.Locale.ROOT);
-                if (p.length == 1 && p[0] != Object.class && p[0].isInstance(provider) && n.contains("slash")
-                    && (n.startsWith("remove") || n.startsWith("unregister"))) {
-                    m.invoke(api, provider);
-                }
-            }
+            Class<?> providerType = Class.forName("github.scarsz.discordsrv.api.commands.SlashCommandProvider", false, loader);
+            api.getClass().getMethod("removeSlashCommandProvider", providerType).invoke(api, provider);
             api.getClass().getMethod("unsubscribe", Object.class).invoke(api, provider);
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
             // DiscordSRV may already be shutting down
@@ -419,7 +406,7 @@ final class DiscordSrvHook implements DiscordBridge {
     /**
      * Called by {@link DiscordSrvSlashCommands} for one slash command. {@code event} is DiscordSRV's (shaded JDA) SlashCommandEvent.
      * The engine decides ({@link DiscordLink#onSlashCommand}); the answer is sent as an ephemeral reply when the event has
-     * {@code reply(String)}, otherwise into the channel of the command.
+     * {@code reply(String)} (Interaction, then ReplyAction.setEphemeral / queue), otherwise into the channel of the command.
      */
     void onSlash(Object event, String word) {
         DiscordLink current = link;

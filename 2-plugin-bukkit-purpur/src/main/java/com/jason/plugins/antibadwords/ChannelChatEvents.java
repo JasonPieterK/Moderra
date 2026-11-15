@@ -78,7 +78,7 @@ final class ChannelChatEvents {
     /**
      * mcMMO party chat. Verified in the plugin-api-dump: {@code McMMOPartyChatEvent extends McMMOChatEvent} (Cancellable) with
      * getMessage(), setMessage(String), getAuthor() (an Author), isCancelled(), setCancelled(boolean). The sender is found with
-     * the Author's {@code uuid()} (a method of the shaded adventure Identity; not in the dump, looked up at run time) or, if that
+     * the Author's {@code uuid()} (abstract method {@code UUID uuid()} of the shaded adventure Identity, verified in the dump; called by reflection because the shaded type is not a dependency) or, if that
      * is missing, by the Author's display name. When the sender cannot be found the line is left alone and logged once.
      */
     private static void registerMcmmoParty(AntiBadWordsPlugin plugin, Engine engine) {
