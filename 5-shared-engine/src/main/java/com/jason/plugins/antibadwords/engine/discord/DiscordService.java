@@ -187,6 +187,8 @@ public final class DiscordService {
         Setting<String> setting = DiscordSettings.template(event.kind());
         String template = setting == null ? DiscordSettings.defaultTemplate(event.kind()) : engine.value(setting);
         Map<String, String> values = placeholders(event);
+        String empty = clean(engine.value(DiscordSettings.EMPTY_VALUE));
+        values.replaceAll((key, value) -> value.isEmpty() ? empty : value);
         Matcher m = PLACEHOLDER.matcher(template);
         StringBuilder out = new StringBuilder();
         while (m.find()) {

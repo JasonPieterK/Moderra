@@ -103,6 +103,18 @@ class DiscordWebhookTest {
         engine.set(DiscordSettings.BACKOFF, Duration.ZERO);
     }
 
+    @Test
+    void emptyValuesAreShownAsNoneOrAsConfigured() throws Exception {
+        ModerationEvent bare = new ModerationEvent("punishment", 1L, UUID.randomUUID(), "Bob", "world", "chat", Map.of());
+        String text = engine.discord().render(bare);
+        assertFalse(text.contains(": ."), text);
+        assertTrue(text.contains("none"), text);
+        engine.set(DiscordSettings.EMPTY_VALUE, "n/a");
+        assertEquals("n/a", engine.value(DiscordSettings.EMPTY_VALUE), "setting value");
+        String dashed = engine.discord().render(bare);
+        assertTrue(dashed.contains("n/a"), dashed);
+    }
+
     ModerationEvent punishment(String player) {
         return new ModerationEvent("punishment", 1_700_000_000_000L, UUID.randomUUID(), player, "world_nether", "chat",
             Map.of("word", "badword", "count", "4", "limit", "3", "punishments", "a mute (10m)", "step", "short-mute"));

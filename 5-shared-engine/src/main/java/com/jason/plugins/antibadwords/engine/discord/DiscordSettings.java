@@ -57,6 +57,8 @@ public final class DiscordSettings {
     public static final Setting<String> LOG_URL = s(Setting.secret(P + "webhook.log-url").title("Log webhook")
         .description("SECRET. Optional second webhook for a quiet log channel (see routing.log). Same rules as the alerts\n"
             + "webhook, ${ENV:NAME} works too. Empty = no log channel."));
+    public static final Setting<String> EMPTY_VALUE = s(Setting.string(P + "templates-empty-value", "none").title("Text for an empty value")
+        .description("Used in the Discord texts when a placeholder has no value (for example {action} or {reason}). Empty = leave it empty."));
     public static final Setting<String> USERNAME = s(Setting.string(P + "webhook.username", "AntiBadWords").title("Sender name")
         .description("The name shown for the messages in Discord. Empty = the name set in the webhook."));
     public static final Setting<List<String>> ROUTE_ALERTS = s(Setting.list(P + "routing.alerts",
@@ -136,6 +138,7 @@ public final class DiscordSettings {
             MENTION_KINDS, QUEUE_SIZE, MIN_INTERVAL, BATCH_SIZE, BATCH_WAIT, TIMEOUT, RETRIES, BACKOFF, SHUTDOWN_WAIT));
         all.addAll(COLORS.values());
         all.addAll(TEMPLATES.values());
+        all.add(EMPTY_VALUE);
         all.forEach(r::register);
     }
 }
