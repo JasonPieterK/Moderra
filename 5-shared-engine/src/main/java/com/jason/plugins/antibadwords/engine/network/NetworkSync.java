@@ -44,6 +44,8 @@ public final class NetworkSync {
     private volatile boolean syncMutes;
     private volatile boolean syncStrikes;
     private volatile long generation;
+    private final Map<String, Long> peers = new ConcurrentHashMap<>();
+    private volatile long lastSync;
     private volatile MuteService mutes;
     private volatile PersistentStrikeService strikes;
 
@@ -117,6 +119,23 @@ public final class NetworkSync {
             resetStamps.merge(record.player(), stamp, (a, b) -> b.newerThan(a) ? b : a);
         }
         c.send(record);
+        lastSync = engine.now();
+    }
+
+    /** Other servers seen so far (server id to the time of their last record). */
+    public Map<String, Long> peers() {
+        return java.util.Collections.unmodifiableMap(new java.util.TreeMap<>(peers));
+    }
+
+    /** Time (engine clock) of the last record sent or received, 0 if none yet. */
+    public long lastSync() {
+        return lastSync;
+    }
+
+    /** Records waiting for a carrier (plugin messaging, nobody online). */
+    public int queued() {
+        SyncChannel c = channel;
+        return c == null ? 0 : c.queued();
     }
 
     private synchronized void configure() {
@@ -208,6 +227,8 @@ public final class NetworkSync {
         if (r.origin().equals(origin)) {
             return;
         }
+        peers.put(r.origin(), engine.now());
+        lastSync = engine.now();
         Stamp stamp = new Stamp(r.ts(), r.origin());
         switch (r.kind()) {
             case SyncRecord.MUTE -> {

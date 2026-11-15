@@ -14,11 +14,19 @@ public final class PluginMessagingChannel implements SyncChannel {
     @FunctionalInterface
     public interface Transport {
         void send(String channel, byte[] payload);
+
+        /** False while the loader has no carrier (plugin messages need an online player); records are then queued. */
+        default boolean available() {
+            return true;
+        }
     }
 
     private final String origin;
     private final Transport transport;
     private final ConcurrentLinkedQueue<SyncRecord> inbox = new ConcurrentLinkedQueue<>();
+    /** Records to send once a carrier exists (oldest dropped beyond {@link #MAX_QUEUE}). */
+    private final java.util.ArrayDeque<SyncRecord> outbox = new java.util.ArrayDeque<>();
+    public static final int MAX_QUEUE = 500;
 
     public PluginMessagingChannel(String origin, Transport transport) {
         this.origin = origin;
@@ -27,10 +35,34 @@ public final class PluginMessagingChannel implements SyncChannel {
 
     @Override
     public void send(SyncRecord record) {
-        try {
-            transport.send(NetworkSettings.CHANNEL, record.toLine().getBytes(StandardCharsets.UTF_8));
-        } catch (RuntimeException ex) {
-            // nobody to deliver to (no player online yet): the change stays local
+        synchronized (outbox) {
+            outbox.add(record);
+            while (outbox.size() > MAX_QUEUE) {
+                outbox.poll();
+            }
+            flush();
+        }
+    }
+
+    /** Sends the queued records while a carrier is available. */
+    private void flush() {
+        synchronized (outbox) {
+            while (!outbox.isEmpty() && transport.available()) {
+                SyncRecord next = outbox.peek();
+                try {
+                    transport.send(NetworkSettings.CHANNEL, next.toLine().getBytes(StandardCharsets.UTF_8));
+                } catch (RuntimeException ex) {
+                    return; // keep it queued, try again at the next poll
+                }
+                outbox.poll();
+            }
+        }
+    }
+
+    @Override
+    public int queued() {
+        synchronized (outbox) {
+            return outbox.size();
         }
     }
 
@@ -44,6 +76,7 @@ public final class PluginMessagingChannel implements SyncChannel {
 
     @Override
     public void poll(Consumer<SyncRecord> sink, Consumer<SyncRecord> backlogSink) {
+        flush();
         SyncRecord r;
         while ((r = inbox.poll()) != null) {
             sink.accept(r);

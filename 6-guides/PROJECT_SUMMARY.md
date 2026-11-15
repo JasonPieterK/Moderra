@@ -5,7 +5,7 @@
 > [`FABRIC-AND-FORGE-STATUS.md`](FABRIC-AND-FORGE-STATUS.md) for what that changed and how far it is tested.
 
 **AntiBadWords** is a Spigot/Paper server **plugin** (not a mod) that blocks profanity and punishes repeat offenders.
-Current version: **1.10**. Licence: All rights reserved (proprietary). Author: Jason P.
+Current version: **2.0**. Licence: All rights reserved (proprietary). Author: Jason P.
 
 ## What was done (by Bram, with Jason)
 
@@ -33,12 +33,12 @@ Current version: **1.10**. Licence: All rights reserved (proprietary). Author: J
 
 | Minecraft | Jar name (LOADER = Bukkit, Purpur, Fabric or Forge) | Java on the server |
 |-----------|---------------------------------------------------------|--------------------|
-| 26.3 | `Antibadwords-RELEASE[LOADER] - 1-26.3.jar` | 25 |
-| 26.2 | `Antibadwords-RELEASE[LOADER] - 1-26.2.jar` | 25 |
-| 26.1.2 | `Antibadwords-RELEASE[LOADER] - 1-26.1.2.jar` | 25 |
-| 26.1.1 | `Antibadwords-RELEASE[LOADER] - 1-26.1.1.jar` | 25 |
-| 26.1 | `Antibadwords-RELEASE[LOADER] - 1-26.1.jar` | 25 |
-| 1.21.11 | `Antibadwords-RELEASE[LOADER] - 1-1.21.11.jar` | 21+ |
+| 26.3 | `Antibadwords-RELEASE[LOADER] - 2-26.3.jar` | 25 |
+| 26.2 | `Antibadwords-RELEASE[LOADER] - 2-26.2.jar` | 25 |
+| 26.1.2 | `Antibadwords-RELEASE[LOADER] - 2-26.1.2.jar` | 25 |
+| 26.1.1 | `Antibadwords-RELEASE[LOADER] - 2-26.1.1.jar` | 25 |
+| 26.1 | `Antibadwords-RELEASE[LOADER] - 2-26.1.jar` | 25 |
+| 1.21.11 | `Antibadwords-RELEASE[LOADER] - 2-1.21.11.jar` | 21+ |
 
 Only full releases (no snapshots, pre-releases or betas): the six newest, checked against Mojang on 2026-11-08. Version numbering was reset, so every jar is release `1`. All 24 jars are built from source by `./build-everything.sh`. How well each is tested: see the main README and `FABRIC-AND-FORGE-STATUS.md`.
 

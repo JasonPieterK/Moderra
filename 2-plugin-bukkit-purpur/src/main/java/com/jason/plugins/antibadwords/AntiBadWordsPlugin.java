@@ -33,6 +33,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
     private EssentialsHook essentials;
     private PlaceholderApiHook placeholderApi;
     private BukkitPlatform platform;
+    private NetworkMessaging networkMessaging;
 
     @Override
     public void onEnable() {
@@ -62,6 +63,8 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         startLuckPerms();
         startVault();
         startPlaceholderApi();
+        networkMessaging = new NetworkMessaging(this, engine);
+        networkMessaging.start();
         try {
             com.jason.plugins.antibadwords.integrations.ExtraHooks.start(engine);
         } catch (Throwable ex) {
@@ -72,6 +75,10 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        if (networkMessaging != null) {
+            networkMessaging.stop();
+            networkMessaging = null;
+        }
         if (essentials != null) {
             essentials.stop(engine);
             essentials = null;

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Antibadwords-RELEASE[Fabric] - 1-<mc>.jar for every supported Minecraft version into ../1-download-jars
+# Builds Antibadwords-RELEASE[Fabric] - 2-<mc>.jar for every supported Minecraft version into ../1-download-jars
 #
 #   ./build-all-versions.sh                 build all versions
 #   ./build-all-versions.sh 26.3 26.2       only these versions

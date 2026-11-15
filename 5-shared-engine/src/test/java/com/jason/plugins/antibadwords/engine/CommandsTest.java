@@ -92,7 +92,7 @@ class CommandsTest {
 
     @Test
     void existingSubcommandsAnswerAsBefore() {
-        assertEquals(List.of("§eUsage: /abw <reload|addword|removeword|listwords|check|violations|resetviolations|info|lang|whitelist|ladder|strikes>"), run(""));
+        assertEquals(List.of("§eUsage: /abw <reload|addword|removeword|listwords|check|violations|resetviolations|info|lang|whitelist|ladder|strikes|network>"), run(""));
         assertEquals(List.of("§cBlocked: matches 'fuck'.", "§7Check: §fbadword§7 (word list entry 'fuck', level 3)"), run("check what the fuck"));
         assertEquals(List.of("§aClean: no blocked word found."), run("check hello"));
         assertEquals(List.of("§aAdded custom blocked word."), run("addword zorblax two"));

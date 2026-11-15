@@ -7,7 +7,7 @@ plugins {
 def remapped = remap.toBoolean()
 apply plugin: remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 
-// Jar name: Antibadwords-RELEASE[Fabric] - 1-<minecraft version>.jar
+// Jar name: Antibadwords-RELEASE[Fabric] - 2-<minecraft version>.jar
 base { archivesName = "Antibadwords-RELEASE[Fabric] - ${mod_version}" }
 version = minecraft_version
 

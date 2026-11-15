@@ -201,6 +201,7 @@ public final class Engine {
         commands.register(new com.jason.plugins.antibadwords.engine.command.HistoryCommand());
         MuteCommands.register(commands);
         commands.register(new com.jason.plugins.antibadwords.engine.command.GuiCommand());
+        commands.register(new com.jason.plugins.antibadwords.engine.network.NetworkCommand());
         discord.install();
         essentials.install();
         network.install(mutes, persistentStrikes);

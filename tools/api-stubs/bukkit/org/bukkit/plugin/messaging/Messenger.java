@@ -1,0 +1,1 @@
+package org.bukkit.plugin.messaging; import org.bukkit.plugin.Plugin; public interface Messenger { void registerOutgoingPluginChannel(Plugin p, String c); void registerIncomingPluginChannel(Plugin p, String c, PluginMessageListener l); void unregisterOutgoingPluginChannel(Plugin p); void unregisterIncomingPluginChannel(Plugin p); }

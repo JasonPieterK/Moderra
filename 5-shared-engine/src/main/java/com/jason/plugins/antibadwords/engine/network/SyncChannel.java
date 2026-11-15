@@ -15,6 +15,11 @@ public interface SyncChannel {
      */
     void poll(Consumer<SyncRecord> sink, Consumer<SyncRecord> backlogSink);
 
+    /** Records waiting to be sent (plugin messaging with nobody online); 0 for channels that never queue. */
+    default int queued() {
+        return 0;
+    }
+
     /** Writes pending state (read positions). */
     void close();
 

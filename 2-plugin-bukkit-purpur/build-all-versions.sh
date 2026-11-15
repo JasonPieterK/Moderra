@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Antibadwords-RELEASE[Bukkit] and [Purpur] jars (version 1) for each supported Minecraft release into ../1-download-jars
+# Builds Antibadwords-RELEASE[Bukkit] and [Purpur] jars (version 2) for each supported Minecraft release into ../1-download-jars
 #
 #   ./build-all-versions.sh                 build every version below
 #   ./build-all-versions.sh 26.2 26.3       build only the listed versions
@@ -44,8 +44,8 @@ for entry in "${MINECRAFT_VERSIONS[@]}"; do
        mvn -B -q clean package -Dmc.version="$mc" -Dmc.api.version="$api" \
            -Dspigot.api.version="$paper" -Djava.release="$java" ); then
     # One build serves both Bukkit/Spigot/Paper and Purpur (Purpur runs Paper plugins unchanged).
-    cp "target/Antibadwords-RELEASE[Bukkit] - 1-${mc}.jar" ../1-download-jars/
-    cp "target/Antibadwords-RELEASE[Bukkit] - 1-${mc}.jar" "../1-download-jars/Antibadwords-RELEASE[Purpur] - 1-${mc}.jar"
+    cp "target/Antibadwords-RELEASE[Bukkit] - 2-${mc}.jar" ../1-download-jars/
+    cp "target/Antibadwords-RELEASE[Bukkit] - 2-${mc}.jar" "../1-download-jars/Antibadwords-RELEASE[Purpur] - 2-${mc}.jar"
   else
     echo "!!! build FAILED for ${mc}"; failed+=("$mc")
   fi

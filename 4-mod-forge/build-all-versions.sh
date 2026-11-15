@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Antibadwords-RELEASE[Forge] - 1-<mc>.jar for every supported Minecraft version into ../1-download-jars
+# Builds Antibadwords-RELEASE[Forge] - 2-<mc>.jar for every supported Minecraft version into ../1-download-jars
 #
 #   ./build-all-versions.sh                 build all versions
 #   ./build-all-versions.sh 26.3 26.2       only these versions
@@ -43,7 +43,7 @@ for entry in "${VERSIONS[@]}"; do
     sleep 40
   done
   if [ $ok -eq 1 ]; then
-    cp "build/libs/Antibadwords-RELEASE[Forge] - 1-$mc.jar" ../1-download-jars/   # the full jar, not the "-slim" one
+    cp "build/libs/Antibadwords-RELEASE[Forge] - 2-$mc.jar" ../1-download-jars/   # the full jar, not the "-slim" one
   else
     echo "!!! build FAILED for $mc (see build-logs/build-$mc.log)"; failed+=("$mc"); continue
   fi
