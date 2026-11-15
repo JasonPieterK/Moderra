@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Starts a real Forge dedicated server with the mod, types some /abw commands into its console and checks the output.
-# Usage: ./test-on-real-server.sh <mc> <forge build> <forge major> <java> <mappings> <sign api>
+# Usage: ./test-on-real-server.sh <mc> <forge build> <forge major> <java> <mappings> <sign api> [menu api]
 set -uo pipefail
 cd "$(dirname "$0")"
-mc=$1; forge=$2; major=$3; java=$4; maps=$5; sign=${6:-record}
+mc=$1; forge=$2; major=$3; java=$4; maps=$5; sign=${6:-record}; menu=${7:-input}
 GRADLE="${GRADLE:-gradle}"
 JAVA8_HOME="${JAVA8_HOME:-/usr/lib/jvm/java-8-openjdk-amd64}"
 JAVA21_HOME="${JAVA21_HOME:-/usr/lib/jvm/java-21-openjdk-amd64}"; JAVA25_HOME="${JAVA25_HOME:-/usr/lib/jvm/java-25-openjdk-amd64}"
@@ -20,7 +20,7 @@ fifo=$(mktemp -u); mkfifo "$fifo"
 export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Dantibadwords.selftest=1"
 for attempt in 1 2 3; do
   timeout 480 "$GRADLE" --no-daemon runServer -Pminecraft_version="$mc" -Pforge_version="$forge" -Pforge_major="$major" \
-    -Pjava_release="$java" -Pmappings_version="$maps" -Psign_api="$sign" \
+    -Pjava_release="$java" -Pmappings_version="$maps" -Psign_api="$sign" -Pmenu_api="$menu" \
     -Dorg.gradle.java.installations.paths="$JAVA25_HOME,$JAVA21_HOME,$JAVA8_HOME" < "$fifo" > "$log" 2>&1
   grep -q " 429 " "$log" && { sleep 40; continue; }; break
 done

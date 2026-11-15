@@ -1,0 +1,1 @@
+package net.minecraft.world.inventory; public interface MenuConstructor { AbstractContainerMenu createMenu(int id, net.minecraft.world.entity.player.Inventory i, net.minecraft.world.entity.player.Player p); }

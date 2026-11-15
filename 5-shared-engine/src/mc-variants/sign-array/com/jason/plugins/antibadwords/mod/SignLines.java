@@ -10,4 +10,9 @@ public final class SignLines {
     public static String[] of(ServerboundSignUpdatePacket packet) {
         return packet.getLines();
     }
+
+    /** True when the packet edits the back side of the sign. */
+    public static boolean isBack(ServerboundSignUpdatePacket packet) {
+        return !packet.isFrontText();
+    }
 }

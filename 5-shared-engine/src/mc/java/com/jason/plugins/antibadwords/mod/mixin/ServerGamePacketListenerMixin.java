@@ -4,6 +4,7 @@ import com.jason.plugins.antibadwords.mod.ModRuntime;
 import com.jason.plugins.antibadwords.mod.SignLines;
 import java.util.List;
 import net.minecraft.network.protocol.game.ServerboundEditBookPacket;
+import net.minecraft.network.protocol.game.ServerboundSetCommandBlockPacket;
 import net.minecraft.network.protocol.game.ServerboundSignUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.FilteredText;
@@ -22,7 +23,20 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Inject(method = "updateSignText", at = @At("HEAD"), cancellable = true)
     private void antibadwords$sign(ServerboundSignUpdatePacket packet, List<FilteredText> filtered, CallbackInfo ci) {
-        if (ModRuntime.engine != null && ModRuntime.blockSign(player, SignLines.of(packet))) {
+        if (ModRuntime.engine != null && ModRuntime.blockSign(player, SignLines.of(packet), SignLines.isBack(packet))) {
+            ci.cancel();
+        }
+    }
+
+    /** A player sets the command of a command block (scanned like a command-block run). */
+    @Inject(method = "handleSetCommandBlock", at = @At("HEAD"), cancellable = true)
+    private void antibadwords$commandBlock(ServerboundSetCommandBlockPacket packet, CallbackInfo ci) {
+        if (ModRuntime.engine == null || packet.getCommand() == null || packet.getCommand().isEmpty()) {
+            return;
+        }
+        var pos = packet.getPos();
+        String where = player.getName().getString() + " set " + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+        if (ModRuntime.blockCommandBlock(player.level().dimension().identifier().toString(), where, packet.getCommand())) {
             ci.cancel();
         }
     }
