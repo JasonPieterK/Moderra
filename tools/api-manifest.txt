@@ -207,3 +207,12 @@ discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.Sl
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionMapping | getName()
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionMapping | getAsString()
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.ReplyAction | setEphemeral(boolean)
+# --- task 49: real names seen in the plugin-api-dump of run 43691650981 ---
+discordsrv | github.scarsz.discordsrv.api.ApiManager | addSlashCommandProvider(*)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | removeSlashCommandProvider(*)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | updateSlashCommands()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | getUser()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | getMember()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | reply(String)
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.RestAction | queue()
+mcmmo | com.gmail.nossr50.mcmmo.kyori.adventure.identity.Identity | uuid()
