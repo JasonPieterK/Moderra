@@ -24,17 +24,17 @@ Use this only if you do not want the page to load pictures from GitHub. Then rep
 
 Picture to file:
 
-| Placeholder | File | Used for |
+| Picture | File | Used for |
 |---|---|---|
-| `IMAGE_URL_01` | `images/01-hero.png` | Banner at the top |
-| `IMAGE_URL_02` | `images/02-where.png` | Where it checks |
-| `IMAGE_URL_03` | `images/03-pipeline.png` | Filter pipeline |
-| `IMAGE_URL_04` | `images/04-ladder.png` | Escalation ladder |
-| `IMAGE_URL_05` | `images/05-matrix.png` | Platforms and versions |
-| `IMAGE_URL_06` | `images/06-languages.png` | Languages |
-| `IMAGE_URL_07` | `images/07-menu.png` | In-game menu |
-| `IMAGE_URL_08` | `images/08-integrations.png` | Integrations |
-| `IMAGE_URL_09` | `images/09-divider.png` | Thin divider (used three times) |
+| 01 | `images/01-hero.png` | Banner at the top |
+| 02 | `images/02-where.png` | Where it checks |
+| 03 | `images/03-pipeline.png` | Filter pipeline |
+| 04 | `images/04-ladder.png` | Escalation ladder |
+| 05 | `images/05-matrix.png` | Platforms and versions |
+| 06 | `images/06-languages.png` | Languages |
+| 07 | `images/07-menu.png` | In-game menu |
+| 08 | `images/08-integrations.png` | Integrations |
+| 09 | `images/09-divider.png` | Thin divider (used three times) |
 
 ## Step 1: Upload the pictures to the Gallery
 
@@ -57,12 +57,12 @@ The Modrinth menu names can change. If a button has another name, look for the n
 4. Paste it into a text file. Write the number next to it, for example `03 = https://cdn.modrinth.com/...`.
 5. Do this for all nine pictures. Open each URL in a browser tab and compare it with the table above. This shows if you mixed two pictures.
 
-## Step 3: Replace the placeholders
+## Step 3: Replace the GitHub picture links (Gallery way only)
 
 1. Open `DESCRIPTION.md` in a text editor.
-2. Use **Find and replace all**. Replace `IMAGE_URL_01` with the URL of picture 01. Do the same for 02 to 09.
-   `IMAGE_URL_09` appears three times. Replace all three with the same URL.
-3. Search for `IMAGE_URL`. The search must find nothing.
+2. Each picture link ends with its file name, for example `.../images/03-pipeline.png`. Replace each GitHub link with the
+   Gallery URL of the same picture. `09-divider.png` appears three times: replace all three.
+3. Search for `raw.githubusercontent.com`. The search must find nothing.
 4. Save the file under a new name (for example `DESCRIPTION-final.md`). Do not change anything else.
 
 ## Step 4: Put the text on Modrinth
