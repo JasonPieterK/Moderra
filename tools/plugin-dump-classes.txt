@@ -124,3 +124,7 @@ mcmmo | com.gmail.nossr50.chat.author.PlayerAuthor
 carbonchat | net.draycia.carbon.api.event.events.CarbonChatEvent
 factionsuuid | com.massivecraft.factions.event.FactionPlayerChatEvent
 factionsuuid | com.massivecraft.factions.event.FactionChatEvent
+placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderHandler
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext
