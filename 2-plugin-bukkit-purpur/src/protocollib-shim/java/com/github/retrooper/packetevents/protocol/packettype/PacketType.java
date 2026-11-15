@@ -8,7 +8,7 @@ public final class PacketType {
         }
 
         public enum Server implements PacketTypeCommon {
-            SYSTEM_CHAT_MESSAGE
+            CHAT_MESSAGE, SYSTEM_CHAT_MESSAGE, TEAMS, PLAYER_INFO_UPDATE
         }
     }
 }

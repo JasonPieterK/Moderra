@@ -13,6 +13,8 @@ public class PacketType {
             public static final PacketType SYSTEM_CHAT = new PacketType();
             public static final PacketType CHAT = new PacketType();
             public static final PacketType DISGUISED_CHAT = new PacketType();
+            public static final PacketType SCOREBOARD_TEAM = new PacketType();
+            public static final PacketType PLAYER_INFO = new PacketType();
         }
     }
 }
