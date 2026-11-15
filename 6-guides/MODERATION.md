@@ -21,12 +21,12 @@ Every option has a comment in its file and a row in `CONFIGURATION.md`.
 ## Commands and permissions
 | Command | Permission (default) |
 |---|---|
-| `/abw strikes <player>`, `/abw ladder [profile]`, `/abw violations <player>`, `/abw resetviolations <player>` | `antibadwords.admin` (op) |
-| `/abw mute <player> [10m\|2h\|1d\|perm] [reason]`, `/abw unmute <player>`, `/abw mutes [page]` | `antibadwords.mute` (op) |
-| `/abw history <player> [page]`, `/abw history recent [n]` | `antibadwords.history` (op) |
-| `/abw history purge <player> [confirm]` | `antibadwords.history` and `antibadwords.admin` |
-| Never muted (also not by the ladder) | `antibadwords.bypass.mute` (nobody) |
-| `/abw gui` and the in-game menu (mutes page, ladder editor) | `antibadwords.gui` (op); see [GUI.md](GUI.md) |
+| `/moderra strikes <player>`, `/moderra ladder [profile]`, `/moderra violations <player>`, `/moderra resetviolations <player>` | `moderra.admin` (op) |
+| `/moderra mute <player> [10m\|2h\|1d\|perm] [reason]`, `/moderra unmute <player>`, `/moderra mutes [page]` | `moderra.mute` (op) |
+| `/moderra history <player> [page]`, `/moderra history recent [n]` | `moderra.history` (op) |
+| `/moderra history purge <player> [confirm]` | `moderra.history` and `moderra.admin` |
+| Never muted (also not by the ladder) | `moderra.bypass.mute` (nobody) |
+| `/moderra gui` and the in-game menu (mutes page, ladder editor) | `moderra.gui` (op); see [GUI.md](GUI.md) |
 
 Durations need a unit: `30s`, `10m`, `1h30m`, `2d`, `perm`. Offline players work for all of these.
 
@@ -46,7 +46,7 @@ Actions: `warn [text]`, `mute <time|perm> [reason]`, `kick [reason]`, `ban [reas
 `command <console command>`, `effect`, `attribute`, `sound`, `punishments` (the classic actions), `reset-strikes`.
 Placeholders: `{player} {word} {count} {step} {threshold} {reason} {duration}`. Vanilla has no timed ban: use
 the `tempban` action with a ban plugin (or `command tempban {player} 1d {reason}`). With no steps you get the old behaviour (one punishment at
-`violations-before-punish`); `/abw ladder` shows it as the step `legacy`. With steps, strikes are NOT reset after a
+`violations-before-punish`); `/moderra ladder` shows it as the step `legacy`. With steps, strikes are NOT reset after a
 step; they fade through `strikes.decay` or expiry.
 
 ### Family server (gentle, kids around)
@@ -80,17 +80,17 @@ If strikes are NOT kept (clear on quit is true, or saving is off) and an old `da
 `strikes.json.discarded` at start and at shutdown, so old strikes never come back by surprise. Nothing is deleted.
 
 ## More ways to moderate
-* **From Discord:** `!abw mute`, `unmute`, `history`, `strikes` or the slash commands `/abw-mute` ... with allow-lists: [DISCORD.md](DISCORD.md).
+* **From Discord:** `!moderra mute`, `unmute`, `history`, `strikes` or the slash commands `/moderra-mute` ... with allow-lists: [DISCORD.md](DISCORD.md).
 * **Ban plugin without a timed ban:** when the provider has no `tempban` command, the setting `integrations.bans.fallback` (`kick`, `mute`, `none`) runs and the console shows a notice that names the provider, the empty setting and the fallback. An `ipban` without a command logs a notice and does nothing. Without a known IP, `{ip}` becomes the player name and the log says so.
 * **EssentialsX mute:** `integrations.essentials.mute-mode` (`own`, `essentials`, `both`).
 * **Several servers:** mutes and strikes can be shared, see "Network sync" in [INTEGRATIONS.md](INTEGRATIONS.md).
-* **Placeholders** for scoreboards (`%antibadwords_strikes%`, `%antibadwords_muted%`): PlaceholderAPI section there.
+* **Placeholders** for scoreboards (`%moderra_strikes%`, `%moderra_muted%`): PlaceholderAPI section there.
 * **Message look:** [MESSAGE-STYLE.md](MESSAGE-STYLE.md).
 
 ## Privacy
 History stores who, when, what kind and the step, not the chat text (`history.store-message-text: false`). If you turn
 text on, `history.redact-words` masks the bad word. Old months are deleted after `history.retention-days` (90).
-Only `antibadwords.history` can read it; `purge` also needs admin and a confirm.
+Only `moderra.history` can read it; `purge` also needs admin and a confirm.
 
 ## Limits
 Verified: engine unit tests. The wiring (permissions, join/quit, kick) was compiled on GitHub against the real APIs but never run

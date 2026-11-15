@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AntiBadWords 2 - description preview</title><style>body{margin:0;background:#1b1b1b;font:16px/1.55 system-ui,sans-serif;color:#e6e6e6}
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Moderra - description preview</title><style>body{margin:0;background:#1b1b1b;font:16px/1.55 system-ui,sans-serif;color:#e6e6e6}
 .page{max-width:900px;margin:0 auto;padding:24px 16px 80px}
 h2{border-bottom:3px solid #F2C230;padding-bottom:4px;margin-top:2em}
 img{max-width:100%;height:auto;display:block;margin:16px 0}
@@ -6,10 +6,10 @@ table{border-collapse:collapse;width:100%;margin:12px 0;display:block;overflow-x
 td,th{border:1px solid #555;padding:6px 10px;text-align:left}th{background:#2c2c2c}
 code{background:#2c2c2c;padding:1px 5px;border-radius:4px}pre{background:#2c2c2c;padding:12px;overflow-x:auto}pre code{padding:0}
 blockquote{border-left:6px solid #D6352B;margin:12px 0;padding:2px 14px;background:#262626}
-details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}a{color:#7fb0ff}</style></head><body><div class="page"><p><img alt="AntiBadWords 2: chat filter, moderation, 4 server types, 6 Minecraft versions" src="images/01-hero.png" /></p>
-<p><strong>AntiBadWords 2 keeps your server chat clean.</strong> It blocks bad words before players see them. It warns, mutes, kicks or bans repeat offenders. It works on Bukkit, Spigot, Paper, Purpur, Fabric and Forge.</p>
+details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}a{color:#7fb0ff}</style></head><body><div class="page"><p><img alt="Moderra: chat filter, moderation, 6 server types, 6 Minecraft versions" src="images/01-hero.png" /></p>
+<p><strong>Moderra keeps your server chat clean.</strong> It blocks bad words before players see them. It warns, mutes, kicks or bans repeat offenders. It works on Bukkit, Spigot, Paper, Purpur, Fabric and Forge.</p>
 <blockquote>
-<p><strong>Please read the honest status first.</strong> Version 2 is compiled against the real Minecraft, Spigot, Fabric and Forge APIs. Nobody has run it on a live server yet. Please test it on a copy of your world before you use it on your main server. Details are in the section <a href="#honest-status">Honest status</a>.</p>
+<p><strong>Please read the honest status first.</strong> Version 1.0 is compiled against the real Minecraft, Spigot, Fabric and Forge APIs. Nobody has run it on a live server yet. Please test it on a copy of your world before you use it on your main server. Details are in the section <a href="#honest-status">Honest status</a>.</p>
 </blockquote>
 <p><img alt="" src="images/09-divider.png" /></p>
 <h2 id="summary">Summary</h2>
@@ -19,17 +19,18 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <li><strong>Spam and links.</strong> Spam control, a link filter and a player-name check (you switch them on).</li>
 <li><strong>Checks everywhere.</strong> Chat, commands, signs (both sides), books, anvils, join names and command blocks.</li>
 <li><strong>Moderation.</strong> Strikes, an escalation ladder, a built-in mute and a history log.</li>
-<li><strong>Discord.</strong> Webhook alerts on all server types. DiscordSRV features on Bukkit.</li>
-<li><strong>In-game menu.</strong> Type <code>/abw</code> and change every setting in a chest menu.</li>
+<li><strong>Discord.</strong> Webhook alerts on all server types. DiscordSRV features (including slash commands) on the Bukkit family.</li>
+<li><strong>In-game menu.</strong> Type <code>/moderra</code> and change every setting in a chest menu.</li>
 <li><strong>Integrations.</strong> EssentialsX, LuckPerms, PlaceholderAPI, Vault, ban plugins and more (Bukkit family).</li>
-<li><strong>Same brain everywhere.</strong> All four server types use one shared engine. They make the same decisions.</li>
+<li><strong>Same brain everywhere.</strong> All server types use one shared engine. They make the same decisions.</li>
 </ul>
 <h2 id="what-it-does">What it does</h2>
-<p>A player types a bad word. AntiBadWords blocks the message. The player gets a strike. At a number of strikes that you choose, the player is punished. You decide what the punishment is.</p>
-<p>The plugin starts with safe defaults. English and your custom list are on. Spam, link and bypass-trick filters are off or only note what they see, until you switch them on. After the first start, open <code>/abw</code> and look around.</p>
-<p>A version 1 <code>config.yml</code> is converted automatically. The plugin keeps a backup named <code>config.yml.bak-&lt;date&gt;</code>.</p>
+<p>A player types a bad word. Moderra blocks the message. The player gets a strike. At a number of strikes that you choose, the player is punished. You decide what the punishment is.</p>
+<p>The plugin starts with safe defaults. English and your custom list are on. Spam, link and bypass-trick filters are off or only note what they see, until you switch them on. After the first start, open <code>/moderra</code> and look around.</p>
+<p>An old single-file <code>config.yml</code> is converted automatically. The plugin keeps a backup named <code>config.yml.bak-&lt;date&gt;</code>.</p>
+<p><strong>Upgrading from the project's former name?</strong> Replace the old jar. The old data folder is moved to the new <code>Moderra</code> folder on the first start. The command is now <code>/moderra</code>. The permissions are now <code>moderra.*</code>; the old <code>antibadwords.*</code> nodes still work for one major version. Placeholders are now <code>%moderra_...%</code>, and the Discord commands are now <code>!moderra</code> and <code>/moderra-...</code>. The full list is in the changelog.</p>
 <h2 id="where-it-checks">Where it checks</h2>
-<p><img alt="The nine places where AntiBadWords checks text" src="images/02-where.png" /></p>
+<p><img alt="The nine places where Moderra checks text" src="images/02-where.png" /></p>
 <table>
 <thead>
 <tr>
@@ -72,7 +73,7 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </tr>
 <tr>
 <td>Outgoing text</td>
-<td>Team and tab-list text. Needs ProtocolLib (optional, Bukkit family only).</td>
+<td>Text that other plugins send: system chat, player chat, team prefixes and suffixes, and tab-list names. Needs ProtocolLib or PacketEvents (optional, Bukkit family only). Off by default.</td>
 </tr>
 </tbody>
 </table>
@@ -86,7 +87,7 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <li><strong>Spam.</strong> Six rules: rate, repeat, caps, flood, words and commands.</li>
 </ol>
 <p>The first check that blocks a message ends the search. A check can also clean a message. The next check then reads the cleaned text.</p>
-<p>Use <code>/abw check &lt;text&gt;</code> to test a text. The answer names the check that fired.</p>
+<p>Use <code>/moderra check &lt;text&gt;</code> to test a text. The answer names the check that fired.</p>
 <p>Speed: in the engine speed test, 99 of 100 messages took less than 0.3 ms with every filter on.</p>
 <h2 id="moderation">Moderation</h2>
 <p><img alt="The escalation ladder: warn, mute, kick, tempban" src="images/04-ladder.png" /></p>
@@ -113,7 +114,7 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <ul>
 <li><strong>Actions:</strong> <code>warn</code>, <code>mute</code>, <code>kick</code>, <code>ban</code>, <code>tempban</code>, <code>ipban</code>, <code>command</code>, <code>effect</code>, <code>attribute</code>, <code>sound</code>, <code>reset-strikes</code>.</li>
 <li><strong>Strikes fade</strong> with time (<code>strikes.decay</code>). Strikes can survive a restart.</li>
-<li><strong>Built-in mute:</strong> <code>/abw mute &lt;player&gt; [time] [reason]</code>. Offline players work too.</li>
+<li><strong>Built-in mute:</strong> <code>/moderra mute &lt;player&gt; [time] [reason]</code>. Offline players work too.</li>
 <li><strong>History:</strong> a log of every event. By default it does not keep the chat text. Old months are deleted after 90 days.</li>
 <li><strong>Ban plugins:</strong> <code>tempban</code> and <code>ipban</code> use LiteBans, AdvancedBan, LibertyBans or EssentialsX if found. Minecraft itself cannot ban for a limited time. Without a ban plugin, use the <code>command</code> action.</li>
 <li><strong>Rules per world or group:</strong> <code>worlds.yml</code> gives a world, a permission or a group its own rules.</li>
@@ -144,34 +145,34 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </tbody>
 </table>
 <p><code>filters.protection-level</code> picks what is used: level 1 uses tier 3 only, level 2 uses tiers 2 and 3, level 3 uses all tiers.</p>
-<p>English and your <code>custom</code> list start on. Turn on more languages with <code>/abw lang enable de</code>. Add your own words with <code>/abw addword &lt;word&gt;</code>.</p>
+<p>English and your <code>custom</code> list start on. Turn on more languages with <code>/moderra lang enable de</code>. Add your own words with <code>/moderra addword &lt;word&gt;</code>.</p>
 <p><strong>Important:</strong> An AI wrote the first drafts of all lists. A native speaker has not reviewed them. Every list is marked <code>unreviewed</code>. Please ask a native speaker to read the lists for your languages. A false-positive test checks normal sentences in all 37 languages, but it cannot replace a human reader.</p>
 <h2 id="in-game-menu">In-game menu</h2>
 <p><img alt="Map of the in-game chest menu" src="images/07-menu.png" /></p>
-<p>Type <code>/abw</code> to open a chest menu. Every setting of every config file is a button. Click to change a value. Click <strong>Done</strong> to save. Nothing is saved before you click Done.</p>
+<p>Type <code>/moderra</code> to open a chest menu. Every setting of every config file is a button. Click to change a value. Click <strong>Done</strong> to save. Nothing is saved before you click Done.</p>
 <ul>
 <li>Pages: categories, language lists, word browser, ladder editor, muted players, world profiles, world rules and a settings search.</li>
 <li>Settings that need text ask you in chat. The answer is not shown to other players and gets no strike. Type <code>cancel</code> to stop.</li>
-<li>Permission <code>antibadwords.gui</code> opens the menu. Permission <code>antibadwords.gui.edit.&lt;category&gt;</code> allows changes in one category. Take it away to lock that category.</li>
-<li>Give <code>antibadwords.gui</code> only to people you trust. A change in the menu is as strong as a change in the files.</li>
+<li>Permission <code>moderra.gui</code> opens the menu. Permission <code>moderra.gui.edit.&lt;category&gt;</code> allows changes in one category. Take it away to lock that category.</li>
+<li>Give <code>moderra.gui</code> only to people you trust. A change in the menu is as strong as a change in the files.</li>
 <li>On Fabric and Forge, the chest shows names only. It has no description lines yet.</li>
 </ul>
 <h2 id="discord">Discord</h2>
 <p>Everything is off until you set <code>discord.enabled: true</code> in <code>discord.yml</code>.</p>
 <ul>
-<li><strong>Webhook alerts (all server types).</strong> Staff see violations, punishments, mutes, spam and links in a Discord channel. You can use a second channel for a full log. Use <code>/abw discord test</code> to try it.</li>
+<li><strong>Webhook alerts (all server types).</strong> Staff see violations, punishments, mutes, spam and links in a Discord channel. You can use a second channel for a full log. Use <code>/moderra discord test</code> to try it.</li>
 <li><strong>Safe by design.</strong> The plugin never prints the webhook URL. You can keep the URL in an environment variable (<code>${ENV:NAME}</code>). Players cannot make the bot ping people. Messages are queued, so Discord rate limits are respected.</li>
-<li><strong>DiscordSRV (Bukkit family only).</strong> Send alerts through DiscordSRV. Filter what people type in Discord before it reaches Minecraft (block, censor or log only). Run staff commands from Discord with the prefix <code>!abw</code> (<code>mute</code>, <code>unmute</code>, <code>history</code>, <code>strikes</code>, <code>check</code>, <code>reload</code>). Only listed roles and users can use them. Every command is off by default.</li>
+<li><strong>DiscordSRV (Bukkit family only).</strong> Send alerts through DiscordSRV. Filter what people type in Discord before it reaches Minecraft (block, censor or log only). Run staff commands from Discord (<code>mute</code>, <code>unmute</code>, <code>history</code>, <code>strikes</code>, <code>check</code>, <code>reload</code>) with the prefix <code>!moderra</code>, with the slash commands <code>/moderra-mute</code>, <code>/moderra-unmute</code>, <code>/moderra-history</code>, <code>/moderra-strikes</code>, <code>/moderra-check</code> and <code>/moderra-reload</code>, or with both (setting <code>discord.commands.style: prefix | slash | both</code>, default <code>prefix</code>; restart after you change it). Only listed roles and users can use them. Every command is off by default.</li>
 <li>Fabric and Forge have webhook alerts only.</li>
 </ul>
 <h2 id="integrations">Integrations</h2>
 <p><img alt="Optional integrations with other plugins" src="images/08-integrations.png" /></p>
-<p>All integrations are optional. If the other plugin is missing, nothing happens. If something fails, the plugin writes one log line and keeps working. All integration settings are in <code>integrations.yml</code>. <code>/abw info</code> lists what the plugin found.</p>
+<p>All integrations are optional. If the other plugin is missing, nothing happens. If something fails, the plugin writes one log line and keeps working. All integration settings are in <code>integrations.yml</code>. <code>/moderra info</code> lists what the plugin found.</p>
 <table>
 <thead>
 <tr>
 <th>Plugin</th>
-<th>What AntiBadWords does</th>
+<th>What Moderra does</th>
 </tr>
 </thead>
 <tbody>
@@ -185,7 +186,7 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </tr>
 <tr>
 <td>PlaceholderAPI</td>
-<td>Gives placeholders such as <code>%antibadwords_strikes%</code> and <code>%antibadwords_muted%</code>.</td>
+<td>Gives placeholders such as <code>%moderra_strikes%</code> and <code>%moderra_muted%</code>.</td>
 </tr>
 <tr>
 <td>Vault</td>
@@ -205,11 +206,11 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </tr>
 <tr>
 <td>ProtocolLib</td>
-<td>Scans packets for signs, books and anvil names when Bukkit events are missing. Optional outgoing scan.</td>
+<td>Scans packets for signs, books and anvil names when Bukkit events are missing. Optional outgoing scan (system chat, player chat, team and tab-list text).</td>
 </tr>
 <tr>
 <td>PacketEvents</td>
-<td>Detected only. There is no listener yet.</td>
+<td>The same packet scan as ProtocolLib: signs, books and anvil names, and the optional outgoing scan (team and tab-list text). ProtocolLib is used first when both are installed.</td>
 </tr>
 <tr>
 <td>CoreProtect</td>
@@ -240,7 +241,9 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <thead>
 <tr>
 <th>Minecraft</th>
-<th style="text-align: center;">Bukkit / Spigot / Paper</th>
+<th style="text-align: center;">Bukkit</th>
+<th style="text-align: center;">Spigot</th>
+<th style="text-align: center;">Paper</th>
 <th style="text-align: center;">Purpur</th>
 <th style="text-align: center;">Fabric</th>
 <th style="text-align: center;">Forge</th>
@@ -254,10 +257,14 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td>25</td>
 </tr>
 <tr>
 <td>26.2</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
@@ -270,10 +277,14 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td>25</td>
 </tr>
 <tr>
 <td>26.1.1</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
@@ -286,6 +297,8 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td>25</td>
 </tr>
 <tr>
@@ -294,26 +307,28 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
 <td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
 <td>21 or newer</td>
 </tr>
 </tbody>
 </table>
-<p>That is 24 jars. There is no Minecraft 26.0. The 2026 numbering starts at 26.1. Players install nothing. The mod or plugin goes on the server only. Folia is not supported.</p>
+<p>That is 36 jars (6 server types times 6 versions). There is no Minecraft 26.0. The 2026 numbering starts at 26.1. Players install nothing. The mod or plugin goes on the server only. Folia is not supported.</p>
 <h2 id="installation">Installation</h2>
 <p><img alt="" src="images/09-divider.png" /></p>
 <ol>
 <li>Pick the jar for your server type and your Minecraft version. The name tells you both:
-   <code>Antibadwords-RELEASE[Bukkit] - 2-26.3.jar</code>
-   The server type is in the brackets (<code>Bukkit</code>, <code>Purpur</code>, <code>Fabric</code> or <code>Forge</code>). Then comes the version <code>2</code>. Then comes the Minecraft version.</li>
-<li>Use <code>[Bukkit]</code> for Bukkit, Spigot and Paper. Use <code>[Purpur]</code> for Purpur.</li>
+   <code>Moderra26.3-1.0-paper.jar</code>
+   The name has three parts: <code>Moderra</code>, then the Minecraft version, then the Moderra version, then the server type in lower case (<code>bukkit</code>, <code>spigot</code>, <code>paper</code>, <code>purpur</code>, <code>fabric</code> or <code>forge</code>).</li>
+<li>Use the jar that matches your server software. The four plugin jars contain the same code; they are separate files so that each server type has its own download.</li>
 <li>Put the jar in the <code>plugins/</code> folder (Bukkit family) or the <code>mods/</code> folder (Fabric, Forge).</li>
 <li>Restart the server.</li>
-<li>Look at the config folder. It is <code>plugins/AntiBadWords/</code> or <code>config/antibadwords/</code>. Every file has a comment above every option.</li>
-<li>Change settings with <code>/abw</code> or edit the files. Then run <code>/abw reload</code>.</li>
+<li>Look at the config folder. It is <code>plugins/Moderra/</code> or <code>config/moderra/</code>. Every file has a comment above every option.</li>
+<li>Change settings with <code>/moderra</code> or edit the files. Then run <code>/moderra reload</code>.</li>
 </ol>
 <p>On Fabric, the mod asks the Fabric Permissions API for permission nodes (LuckPerms for Fabric uses it). Check on your copy of the server that your permission setup works.</p>
 <h2 id="commands">Commands</h2>
-<p>Most commands need <code>antibadwords.admin</code>. Operators have it by default. In game, <code>/abw</code> opens the menu. The console gets text help.</p>
+<p>Most commands need <code>moderra.admin</code>. Operators have it by default. In game, <code>/moderra</code> opens the menu. The console gets text help.</p>
 <table>
 <thead>
 <tr>
@@ -323,59 +338,59 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </thead>
 <tbody>
 <tr>
-<td><code>/abw</code> or <code>/abw gui [page]</code></td>
+<td><code>/moderra</code> or <code>/moderra gui [page]</code></td>
 <td>Opens the settings menu.</td>
 </tr>
 <tr>
-<td><code>/abw reload</code></td>
+<td><code>/moderra reload</code></td>
 <td>Reads the config folder again. Shows what is wrong.</td>
 </tr>
 <tr>
-<td><code>/abw addword &lt;word&gt;</code></td>
+<td><code>/moderra addword &lt;word&gt;</code></td>
 <td>Adds a word to your custom list.</td>
 </tr>
 <tr>
-<td><code>/abw removeword &lt;word&gt;</code></td>
+<td><code>/moderra removeword &lt;word&gt;</code></td>
 <td>Removes a word from your custom list.</td>
 </tr>
 <tr>
-<td><code>/abw listwords</code></td>
+<td><code>/moderra listwords</code></td>
 <td>Shows your words.</td>
 </tr>
 <tr>
-<td><code>/abw check &lt;text&gt;</code></td>
+<td><code>/moderra check &lt;text&gt;</code></td>
 <td>Shows if a text is blocked and which check fires.</td>
 </tr>
 <tr>
-<td><code>/abw lang list</code>, <code>enable &lt;code&gt;</code>, <code>disable &lt;code&gt;</code></td>
+<td><code>/moderra lang list</code>, <code>enable &lt;code&gt;</code>, <code>disable &lt;code&gt;</code></td>
 <td>Controls the language lists.</td>
 </tr>
 <tr>
-<td><code>/abw whitelist add &lt;word&gt;</code>, <code>remove &lt;word&gt;</code>, <code>list</code></td>
+<td><code>/moderra whitelist add &lt;word&gt;</code>, <code>remove &lt;word&gt;</code>, <code>list</code></td>
 <td>Words that are never blocked.</td>
 </tr>
 <tr>
-<td><code>/abw violations &lt;player&gt;</code>, <code>resetviolations &lt;player&gt;</code></td>
+<td><code>/moderra violations &lt;player&gt;</code>, <code>resetviolations &lt;player&gt;</code></td>
 <td>Shows or clears strikes (classic commands).</td>
 </tr>
 <tr>
-<td><code>/abw strikes &lt;player&gt;</code>, <code>/abw ladder</code></td>
+<td><code>/moderra strikes &lt;player&gt;</code>, <code>/moderra ladder</code></td>
 <td>Shows strikes and the ladder.</td>
 </tr>
 <tr>
-<td><code>/abw mute &lt;player&gt; [time] [reason]</code>, <code>unmute &lt;player&gt;</code>, <code>mutes</code></td>
+<td><code>/moderra mute &lt;player&gt; [time] [reason]</code>, <code>unmute &lt;player&gt;</code>, <code>mutes</code></td>
 <td>The built-in mute. Times: <code>30s</code>, <code>10m</code>, <code>2h</code>, <code>1d</code>, <code>perm</code>.</td>
 </tr>
 <tr>
-<td><code>/abw history &lt;player&gt;</code>, <code>recent</code>, <code>purge &lt;player&gt; confirm</code></td>
+<td><code>/moderra history &lt;player&gt;</code>, <code>recent</code>, <code>purge &lt;player&gt; confirm</code></td>
 <td>The history log.</td>
 </tr>
 <tr>
-<td><code>/abw discord test</code>, <code>status</code></td>
+<td><code>/moderra discord test</code>, <code>status</code></td>
 <td>Tests Discord alerts.</td>
 </tr>
 <tr>
-<td><code>/abw network</code>, <code>/abw info</code></td>
+<td><code>/moderra network</code>, <code>/moderra info</code></td>
 <td>Status of network sync and of the plugin.</td>
 </tr>
 </tbody>
@@ -391,57 +406,57 @@ details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:point
 </thead>
 <tbody>
 <tr>
-<td><code>antibadwords.admin</code></td>
+<td><code>moderra.admin</code></td>
 <td>op</td>
 <td>All admin sub-commands</td>
 </tr>
 <tr>
-<td><code>antibadwords.notify</code></td>
+<td><code>moderra.notify</code></td>
 <td>op</td>
 <td>See every blocked word</td>
 </tr>
 <tr>
-<td><code>antibadwords.mute</code></td>
+<td><code>moderra.mute</code></td>
 <td>op</td>
-<td><code>/abw mute</code>, <code>unmute</code>, <code>mutes</code></td>
+<td><code>/moderra mute</code>, <code>unmute</code>, <code>mutes</code></td>
 </tr>
 <tr>
-<td><code>antibadwords.history</code></td>
+<td><code>moderra.history</code></td>
 <td>op</td>
-<td><code>/abw history</code> (purge also needs admin)</td>
+<td><code>/moderra history</code> (purge also needs admin)</td>
 </tr>
 <tr>
-<td><code>antibadwords.discord</code></td>
+<td><code>moderra.discord</code></td>
 <td>op</td>
-<td><code>/abw discord</code></td>
+<td><code>/moderra discord</code></td>
 </tr>
 <tr>
-<td><code>antibadwords.gui</code></td>
+<td><code>moderra.gui</code></td>
 <td>op</td>
 <td>Open the settings menu</td>
 </tr>
 <tr>
-<td><code>antibadwords.gui.edit.&lt;category&gt;</code></td>
+<td><code>moderra.gui.edit.&lt;category&gt;</code></td>
 <td>true</td>
 <td>Change that category in the menu</td>
 </tr>
 <tr>
-<td><code>antibadwords.bypass</code></td>
+<td><code>moderra.bypass</code></td>
 <td>nobody</td>
 <td>Never checked</td>
 </tr>
 <tr>
-<td><code>antibadwords.bypass.spam</code>, <code>.links</code>, <code>.evasion</code></td>
+<td><code>moderra.bypass.spam</code>, <code>.links</code>, <code>.evasion</code></td>
 <td>nobody</td>
 <td>Exempt from that filter</td>
 </tr>
 <tr>
-<td><code>antibadwords.bypass.mute</code></td>
+<td><code>moderra.bypass.mute</code></td>
 <td>nobody</td>
 <td>Never muted</td>
 </tr>
 <tr>
-<td><code>antibadwords.profile.&lt;name&gt;</code></td>
+<td><code>moderra.profile.&lt;name&gt;</code></td>
 <td>nobody</td>
 <td>Puts the player on that <code>worlds.yml</code> profile</td>
 </tr>
@@ -467,7 +482,7 @@ integrations.yml         other plugins and network sync
 <h2 id="faq">FAQ</h2>
 <details>
 <summary>Which file do I download?</summary>
-<p>Pick the server type and the Minecraft version. Example: <code>Antibadwords-RELEASE[Purpur] - 2-26.2.jar</code> for Purpur on Minecraft 26.2.</p>
+<p>Pick the server type and the Minecraft version. Example: <code>Moderra26.2-1.0-purpur.jar</code> for Purpur on Minecraft 26.2.</p>
 </details>
 <details>
 <summary>Does it work with my chat plugin?</summary>
@@ -475,15 +490,15 @@ integrations.yml         other plugins and network sync
 </details>
 <details>
 <summary>Can staff swear?</summary>
-<p>Yes. Give them <code>antibadwords.bypass</code>.</p>
+<p>Yes. Give them <code>moderra.bypass</code>.</p>
 </details>
 <details>
 <summary>A normal word is blocked. What do I do?</summary>
-<p>Run <code>/abw check &lt;word&gt;</code> to see the check that fired. Add the word with <code>/abw whitelist add &lt;word&gt;</code>.</p>
+<p>Run <code>/moderra check &lt;word&gt;</code> to see the check that fired. Add the word with <code>/moderra whitelist add &lt;word&gt;</code>.</p>
 </details>
 <details>
 <summary>Can I use only my own words?</summary>
-<p>Yes. Turn off the languages with <code>/abw lang disable en</code> and add words with <code>/abw addword</code>.</p>
+<p>Yes. Turn off the languages with <code>/moderra lang disable en</code> and add words with <code>/moderra addword</code>.</p>
 </details>
 <details>
 <summary>Does it store player data?</summary>
@@ -494,12 +509,12 @@ integrations.yml         other plugins and network sync
 <p>The engine speed test shows less than 0.3 ms for 99 of 100 messages with every filter on. This is a test of the engine, not of a live server.</p>
 </details>
 <details>
-<summary>Can I upgrade from version 1?</summary>
+<summary>Can I upgrade from the old version?</summary>
 <p>Yes. The first start converts your old <code>config.yml</code>. The plugin keeps a backup. Check the result and test it.</p>
 </details>
 <details>
 <summary>Why is Discord missing on Fabric and Forge?</summary>
-<p>Webhook alerts work on all server types. DiscordSRV is a Bukkit plugin, so its features exist only on the Bukkit family.</p>
+<p>Webhook alerts work on all server types. DiscordSRV is a Bukkit plugin, so its features (Discord chat filter, prefix and slash commands) exist only on the Bukkit family.</p>
 </details>
 <h2 id="honest-status">Honest status</h2>
 <p><img alt="" src="images/09-divider.png" /></p>
@@ -513,10 +528,10 @@ integrations.yml         other plugins and network sync
 <tbody>
 <tr>
 <td>Engine unit tests</td>
-<td><strong>410 tests pass.</strong></td>
+<td><strong>444 tests pass.</strong></td>
 </tr>
 <tr>
-<td>All 24 jars built on GitHub against the <strong>real</strong> Spigot, Minecraft, Fabric and Forge APIs</td>
+<td>All 36 jars built on GitHub against the <strong>real</strong> Spigot, Minecraft, Fabric and Forge APIs</td>
 <td><strong>Yes.</strong></td>
 </tr>
 <tr>
@@ -524,7 +539,7 @@ integrations.yml         other plugins and network sync
 <td><strong>64 names, 0 failures.</strong></td>
 </tr>
 <tr>
-<td>A real server started with a version 2 jar and <code>/abw</code> commands tried</td>
+<td>A real server started with a version 1.0 jar and <code>/moderra</code> commands tried</td>
 <td><strong>Not done.</strong></td>
 </tr>
 <tr>
@@ -541,26 +556,24 @@ integrations.yml         other plugins and network sync
 </tr>
 </tbody>
 </table>
-<p><strong>What this means.</strong> The logic has automatic tests. The code fits the real APIs because it compiles against them. Nobody has watched version 2 work on a live server. Version 1 jars ran on real Fabric and Forge servers, but version 2 is a large rewrite.</p>
+<p><strong>What this means.</strong> The logic has automatic tests. The code fits the real APIs because it compiles against them. Nobody has watched this version work on a live server. The jars of the earlier generation (before the rename) ran on real Fabric and Forge servers, but this code base is a large rewrite.</p>
 <p><strong>What we ask you to do.</strong></p>
 <ol>
 <li>Install the jar on a <strong>copy of your world</strong>.</li>
 <li>Test chat, commands, signs, books, anvils, mute, the ladder and the menu.</li>
-<li>Test each plugin that you use with AntiBadWords.</li>
+<li>Test each plugin that you use with Moderra.</li>
 <li>Ask a native speaker to read the word lists of your languages.</li>
 <li>Report problems on GitHub.</li>
 </ol>
-<p><strong>Known gaps in version 2.0.</strong></p>
+<p><strong>Known gaps in version 1.0.</strong></p>
 <ul>
-<li>The chest menu on Fabric and Forge has no description lines.</li>
-<li>The text prompt of the menu uses chat. A sign-editor prompt is not available.</li>
-<li>PacketEvents is detected but not used.</li>
+<li>The text prompt of the menu (setting <code>gui.prompt.mode: auto | sign | anvil | chat</code>): on Fabric and Forge <code>auto</code> uses a fake sign; on the Bukkit family <code>auto</code> still uses the chat.</li>
 <li>CarbonChat, ChatControl and FactionsUUID events are not used. VentureChat, HuskChat, TAB and NametagEdit have no usable events. The plugin scans their commands only.</li>
 <li>On Fabric and Forge, a censored message becomes a blocked message. Mods cannot change chat text.</li>
-<li>Minecraft 26.2 and 26.3 were never played with the scripted player, even in version 1.</li>
+<li>Minecraft 26.2 and 26.3 were never played with the scripted player, even in the earlier generation.</li>
 </ul>
 <h2 id="licence-and-support">Licence and support</h2>
-<p><strong>All Rights Reserved.</strong> Copyright (c) 2026 Jason P. Version 2 replaces the MIT licence of version 1. Read the <code>LICENSE</code> file in the source repository before you copy or share the files.</p>
+<p><strong>All Rights Reserved.</strong> Copyright (c) 2026 Jason P. This replaces the MIT licence of the earlier generation (before the rename). Read the <code>LICENSE</code> file in the source repository before you copy or share the files.</p>
 <ul>
 <li>Source code, guides and releases: https://github.com/JasonPieterK/AntiBadWordsPlugin</li>
 <li>Report a bug or ask a question: GitHub Issues in the same repository.</li>

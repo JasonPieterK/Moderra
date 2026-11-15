@@ -1,12 +1,12 @@
 # 7-wordlists - the bad-word lists
 
-This folder holds the lists of words that AntiBadWords blocks. One file per language.
+This folder holds the lists of words that Moderra blocks. One file per language.
 
 **Heads up:** these files contain swear words. That is the whole point, but please do not read them out loud in class.
 
 ## What is a word list?
 
-A word list is a plain text file with words in it. When a player types a word that is on the list, AntiBadWords can block or punish it.
+A word list is a plain text file with words in it. When a player types a word that is on the list, Moderra can block or punish it.
 Every language has its own file, for example `de.yml` for German and `id.yml` for Indonesian.
 
 * 37 language files (35 languages; English and Portuguese and Chinese have two variants each)
@@ -141,11 +141,11 @@ bundled whitelist and the evasion normaliser, at protection levels 1, 2 and 3, a
 `5-shared-engine/src/test/resources/falsepositive/corpus-*.txt` (at least 15 everyday sentences per language, plus names, places such as
 Scunthorpe, Penistone, Essex and Sussex, and Minecraft words). **Any hit fails the build.** When you add a word, add a sentence that
 uses the innocent meaning of that word to the corpus if it has one. To see the failures in a readable file run
-`mvn -q -B test -Dtest=WordListFalsePositiveTest -DargLine="-Dabw.fpreport=/tmp/fp.txt"` in `5-shared-engine/`.
+`mvn -q -B test -Dtest=WordListFalsePositiveTest -DargLine="-Dmoderra.fpreport=/tmp/fp.txt"` in `5-shared-engine/`.
 
 ## How to report a false positive
 
-A false positive is a normal message that AntiBadWords blocked. Please send us:
+A false positive is a normal message that Moderra blocked. Please send us:
 
 1. the **exact message** (or the part that was blocked) and the **language** it is written in,
 2. the **word the filter named** (it is in the staff notification and the console log: `{word}`),
@@ -155,6 +155,6 @@ A false positive is a normal message that AntiBadWords blocked. Please send us:
 Open an issue or a pull request. If you fix it yourself:
 
 * the word is a bad word *and* a normal word -> remove it, or keep only the longer insult forms ("babi lu" instead of "babi");
-* the word is only a problem on your server -> add it to `filters.whitelist` in `config.yml` (`/abw whitelist add <word>`), no code change needed
+* the word is only a problem on your server -> add it to `filters.whitelist` in `config.yml` (`/moderra whitelist add <word>`), no code change needed
   (does not work for Chinese, Japanese and Thai text);
 * then add the sentence to `corpus-*.txt`, run `python3 7-wordlists/tools/validate.py` and `mvn -q -B test` in `5-shared-engine/`.

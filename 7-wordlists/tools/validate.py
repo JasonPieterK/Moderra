@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the AntiBadWords word lists in 7-wordlists/.
+"""Validate the Moderra word lists in 7-wordlists/.
 
 Usage:  python3 7-wordlists/tools/validate.py [--quiet] [--strict] [folder]
 

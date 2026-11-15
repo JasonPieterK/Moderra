@@ -4,7 +4,7 @@ Retrieval and check date for everything below: **2026-11-12**.
 
 ## Summary
 
-All 37 language files were **written by an AI from its own general knowledge**, plus the old word lists of AntiBadWords 1.x
+All 37 language files were **written by an AI from its own general knowledge**, plus the old word lists of Moderra 1.x
 (the `word-lists:` section of the plugin's `config.yml`, which is part of this project and under the project's licence (all rights reserved, see LICENSE)).
 Every file is marked `review-status: unreviewed`: no human has checked any of them.
 
@@ -27,7 +27,7 @@ No third-party list was copied into these files.
 
 ## Look-alike letter table (not a word list)
 
-`5-shared-engine/src/main/resources/abw-defaults/look-alikes.yml` (copied into every jar and, as the `look-alikes:` part
+`5-shared-engine/src/main/resources/moderra-defaults/look-alikes.yml` (copied into every jar and, as the `look-alikes:` part
 of `filters/confusables.yml`, into every config folder) is **derived from Unicode data**:
 
 * Source: `confusables.txt`, version 18.0.0 (dated 2026-08-06), the data file of Unicode Technical Standard #39

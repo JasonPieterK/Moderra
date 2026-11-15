@@ -1,3 +1,5 @@
+> **Note:** the project is now called **Moderra** (it had another name when these handoff files were written). The `session-*.md` prompts and `mini-progress/*` keep the old names as history.
+
 # handoffs - the plan for the next feature round, split into 5 sessions
 
 Each file is a ready-to-paste prompt for one fresh Claude Code session. Every prompt starts with "read `00-shared-context.md`", so
@@ -7,7 +9,7 @@ make sure the checkout is up to date (`git pull` on `main`) before pasting.
 |------|-----------|----------------|-----------------|
 | [00-shared-context.md](00-shared-context.md) | read first | rules, build/test notes, the contracts the sessions share | - |
 | [session-1-easy.md](session-1-easy.md) | easy | word lists for 35 languages (37 files) + validator | fast, cheap model |
-| [session-2-medium.md](session-2-medium.md) | medium | shared engine, folder config, settings registry, migration, world profiles, `/abw whitelist` | mid-tier model |
+| [session-2-medium.md](session-2-medium.md) | medium | shared engine, folder config, settings registry, migration, world profiles, `/moderra whitelist` | mid-tier model |
 | [session-3-medium.md](session-3-medium.md) | medium | spam control, look-alike/invisible-character detection, link filter, more scanned sources | mid-tier model |
 | [session-4-hard.md](session-4-hard.md) | hard | persistent strikes, escalation ladder, mute, history | strongest model |
 | [session-5-hard.md](session-5-hard.md) | hard | Discord (webhook + DiscordSRV) and the in-game settings GUI | strongest model |

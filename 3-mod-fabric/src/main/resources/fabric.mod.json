@@ -6,6 +6,7 @@
   "description": "Blocks profanity in chat, commands, signs, books and anvils and punishes repeat offenders.",
   "authors": ["Jason"],
   "license": "All-Rights-Reserved",
+  "icon": "assets/moderra/icon.png",
   "environment": "server",
   "entrypoints": { "main": ["com.jason.plugins.moderra.fabric.ModerraFabric"] },
   "mixins": ["moderra.mixins.json"],

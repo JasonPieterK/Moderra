@@ -1,4 +1,4 @@
-# Upload steps: AntiBadWords 2 Modrinth page
+# Upload steps: Moderra Modrinth page
 
 Do these steps once. You need the project owner account on Modrinth. Time: about 15 minutes.
 
@@ -24,7 +24,7 @@ Placeholder to file:
 
 ## Step 1: Upload the pictures to the Gallery
 
-1. Sign in to https://modrinth.com and open your AntiBadWords project.
+1. Sign in to https://modrinth.com and open your Moderra project.
 2. Open the project **Settings**. In the left menu, click **Gallery**.
 3. Click **Add an image** (the button can also say **Upload**).
 4. Choose `01-hero.png`. Type a title, for example `Banner`. Turn on "Featured" only if you want this picture as the main gallery picture.
@@ -62,13 +62,14 @@ The Modrinth menu names can change. If a button has another name, look for the n
 
 ## Step 5: Upload the jars (separate from this page)
 
-The 24 jars come from the GitHub release `v2.0.0`. Name each file as on GitHub: `Antibadwords-RELEASE[<Loader>] - 2-<mc>.jar`. Set the loader (Bukkit, Spigot, Paper, Purpur, Fabric or Forge) and the game version on each upload.
+The 36 jars come from the GitHub release `v1.0`. Name each file as on GitHub: `Moderra<mc>-1.0-<loader>.jar`. Set the loader (Bukkit, Spigot, Paper, Purpur, Fabric or Forge) and the game version on each upload.
 
 ## Checks before you publish
 
 - The licence field on Modrinth says **All Rights Reserved**, not MIT. Use the custom licence option and link to the `LICENSE` file in the GitHub repository.
-- The page says that version 2 is not yet tested on a live server. Change this part only after you test the jars on a copy of your world.
-- The pictures have no logo and no Minecraft textures. Set a project icon yourself if you want one.
+- The page says that version 1.0 is not yet tested on a live server. Change this part only after you test the jars on a copy of your world.
+- The pictures have no Minecraft textures. The hero picture shows the Moderra logo.
+- **Project icon:** in the project **Settings**, **General**, upload `6-guides/branding/logo-a-refined/moderra-icon-512.png` as the project icon (the chosen logo A2, 512 x 512 px).
 
 ## If you change a picture later
 

@@ -1,59 +1,63 @@
-# AntiBadWords
+<p align="center"><img src="6-guides/branding/logo-a-refined/moderra-icon-512.png" alt="Moderra logo" width="128" height="128"></p>
+
+# Moderra
 
 **What is it?** A bouncer for your Minecraft server's chat. When someone types a rude word, the message is blocked.
 Do it again and they get punished (a warning, a mute, a kick, a ban - you choose). It also checks commands (`/msg`), signs,
-books and anvil renames, so there is no sneaky way around it. This is **version 2.1** (the jar names keep the major number `2`).
+books and anvil renames, so there is no sneaky way around it. This is **version 1.0** (the first release under the name Moderra).
 
 ## Which file do I download? (60 seconds)
 
 1. Open the **[GitHub Releases page](https://github.com/JasonPieterK/AntiBadWordsPlugin/releases)** and pick the newest release
-   ([latest release](https://github.com/JasonPieterK/AntiBadWordsPlugin/releases/latest), for example `v2.1.0`). Scroll to **Assets**.
+   ([latest release](https://github.com/JasonPieterK/AntiBadWordsPlugin/releases/latest), for example `v1.0`). Scroll to **Assets**.
    (The jars are built by GitHub Actions, `.github/workflows/build-release.yml`, and attached to the release.
    The folder [`1-download-jars/`](1-download-jars/) holds only a README that explains this; git holds no jar files.)
 2. Pick the file for **your server type** and **your Minecraft version**. The name tells you everything:
 
-   `Antibadwords-RELEASE[` **Bukkit** `] - 2-` **26.3** `.jar`
-   (server type in the brackets, then the major version `2`, then the Minecraft version; release 2.1 keeps the `2`)
+   `Moderra` **26.3** `-1.0-` **paper** `.jar`
+   (the Minecraft version, then the Moderra version, then the server type in lower case)
 
 3. Drop it in your server's `plugins/` folder (Bukkit, Spigot, Paper, Purpur) or `mods/` folder (Fabric, Forge). Restart.
 
 | My server is... | Use the jar named... | Folder with the source code |
 |-----------------|----------------------|-----------------------------|
-| Bukkit, Spigot or Paper | `...[Bukkit]...` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) |
-| Purpur | `...[Purpur]...` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) (same code) |
-| Fabric | `...[Fabric]...` | [`3-mod-fabric/`](3-mod-fabric/) |
-| Forge | `...[Forge]...` | [`4-mod-forge/`](4-mod-forge/) |
+| Bukkit | `...-bukkit.jar` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) |
+| Spigot | `...-spigot.jar` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) (same code) |
+| Paper | `...-paper.jar` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) (same code) |
+| Purpur | `...-purpur.jar` | [`2-plugin-bukkit-purpur/`](2-plugin-bukkit-purpur/) (same code) |
+| Fabric | `...-fabric.jar` | [`3-mod-fabric/`](3-mod-fabric/) |
+| Forge | `...-forge.jar` | [`4-mod-forge/`](4-mod-forge/) |
 
 ### Which Minecraft versions? (the 6 newest full releases, checked against Mojang on 2026-11-08)
 
-| Minecraft | Bukkit / Spigot / Paper | Purpur | Fabric | Forge |
-|-----------|:----:|:----:|:----:|:----:|
-| **26.3**   | yes | yes | yes | yes |
-| **26.2**   | yes | yes | yes | yes |
-| **26.1.2** | yes | yes | yes | yes |
-| **26.1.1** | yes | yes | yes | yes |
-| **26.1**   | yes | yes | yes | yes |
-| **1.21.11**| yes | yes | yes | yes |
+| Minecraft | Bukkit | Spigot | Paper | Purpur | Fabric | Forge |
+|-----------|:----:|:----:|:----:|:----:|:----:|:----:|
+| **26.3**   | yes | yes | yes | yes | yes | yes |
+| **26.2**   | yes | yes | yes | yes | yes | yes |
+| **26.1.2** | yes | yes | yes | yes | yes | yes |
+| **26.1.1** | yes | yes | yes | yes | yes | yes |
+| **26.1**   | yes | yes | yes | yes | yes | yes |
+| **1.21.11**| yes | yes | yes | yes | yes | yes |
 
-That is 24 jars. Minecraft 26.x needs Java 25 on the server. (There is no Minecraft "26.0": the 2026 numbering starts at 26.1.)
+That is 36 jars. Minecraft 26.x needs Java 25 on the server. (There is no Minecraft "26.0": the 2026 numbering starts at 26.1.)
 Players never install anything; this only goes on the server.
 
-### How well is version 2.1 tested? (honest)
+### How well is version 1.0 tested? (honest)
 
 | Check | Result |
 |---|---|
-| Engine unit tests (`cd 5-shared-engine && mvn -q -B test`) | **435 tests pass** |
+| Engine unit tests (`cd 5-shared-engine && mvn -q -B test`) | **444 tests pass** |
 | Plugin and mod code against hand-written stand-ins (`tools/stub-compile.sh`: plugin, 3 Fabric and 3 Forge targets) | passes (only a quick sanity check, proves nothing about the real APIs) |
-| Plugin and mod code compiled on GitHub against the **real** Spigot, Minecraft, Fabric and Forge APIs (all 24 jars build) | yes |
-| Third-party plugin and mod names checked against the real jars (`verify-apis.yml`, `tools/api-manifest.txt`) | yes, every name used by version 2.1 code was read from an API dump (a `[verify]` commit runs the check again) |
+| Plugin and mod code compiled on GitHub against the **real** Spigot, Minecraft, Fabric and Forge APIs (all 36 jars build) | yes |
+| Third-party plugin and mod names checked against the real jars (`verify-apis.yml`, `tools/api-manifest.txt`) | yes, every name used by version 1.0 code was read from an API dump (a `[verify]` commit runs the check again) |
 | Real Minecraft and plugin APIs dumped for checking (`[verify]` commits) | yes |
-| A **real server** started with a version 2.1 jar, `/abw` commands tried | **NOT done** |
+| A **real server** started with a version 1.0 jar, `/moderra` commands tried | **NOT done** |
 | The **scripted player** (`bot.js`) swears in chat, signs, books, anvils | **NOT done** in this round |
 | Any plugin integration tried with the real plugin (EssentialsX, LuckPerms, DiscordSRV, ...) | **NOT done** |
 | Discord alerts sent to a real Discord | **NOT done** |
 
 So: the logic is proven by unit tests, and the code fits the real APIs because it compiles against them, but nobody has watched
-version 2.1 work on a real server yet. The old version 1 jars were run on real Fabric and Forge servers (a different code base).
+version 1.0 work on a real server yet. The jars of the oldest generation (before the rename) were run on real Fabric and Forge servers (a different code base).
 What must be tested, with exact steps, and what cannot be done at all: [`handoffs/BUILD-VERIFICATION-TODO.md`](handoffs/BUILD-VERIFICATION-TODO.md).
 Fabric/Forge details: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AND-FORGE-STATUS.md).
 
@@ -66,9 +70,9 @@ Fabric/Forge details: [`6-guides/FABRIC-AND-FORGE-STATUS.md`](6-guides/FABRIC-AN
 | Menu with help text (lore) | yes | yes | yes |
 | Menu text input | chat | fake sign (default), anvil or chat | fake sign (default), anvil or chat |
 | Discord webhooks | yes | yes | yes |
-| DiscordSRV alerts, Discord filter, `!abw` and slash commands | yes | no | no |
+| DiscordSRV alerts, Discord filter, `!moderra` and slash commands | yes | no | no |
 | Other plugin integrations (EssentialsX, LuckPerms, ban plugins, ...) | yes | no (only `hasPlugin` by mod id, LuckPerms through permission nodes) | no (same) |
-| PlaceholderAPI values | `%antibadwords_<name>%` | `%antibadwords:<name>%` on Minecraft 26.3 with Text Placeholder API | no |
+| PlaceholderAPI values | `%moderra_<name>%` | `%moderra:<name>%` on Minecraft 26.3 with Text Placeholder API | no |
 | Packet scan (sign, book, anvil) and outgoing-text scan | ProtocolLib or PacketEvents | not needed (own hooks) | not needed (own hooks) |
 | Network sync: shared folder | yes | yes | yes |
 | Network sync: plugin messaging | yes | no | no |
@@ -81,13 +85,13 @@ Level for every row: engine unit tests pass, the code compiles against the real 
 * **Spam and flood control**, **link filter**, player-name check on join (all configurable, off until you switch them on).
 * **Checks everywhere**: chat, commands, signs (both sides), books, anvils, command blocks.
 * **Moderation**: strikes that last, a punishment ladder, built-in mute, history diary, ban-plugin support. Guide: [`MODERATION.md`](6-guides/MODERATION.md).
-* **Discord**: webhook alerts on all servers; DiscordSRV alerts, Discord-to-Minecraft filter, `!abw` text commands and slash commands (`/abw-mute`, `/abw-unmute`, `/abw-history`, `/abw-strikes`, `/abw-check`, `/abw-reload`) on Bukkit. Guide: [`DISCORD.md`](6-guides/DISCORD.md).
-* **In-game menu** (`/abw`): change every setting in a chest, on Bukkit, Fabric and Forge (help text as lore on all three). Text input by chat, or on Fabric and Forge by a fake sign or an anvil. Guide: [`GUI.md`](6-guides/GUI.md).
+* **Discord**: webhook alerts on all servers; DiscordSRV alerts, Discord-to-Minecraft filter, `!moderra` text commands and slash commands (`/moderra-mute`, `/moderra-unmute`, `/moderra-history`, `/moderra-strikes`, `/moderra-check`, `/moderra-reload`) on Bukkit. Guide: [`DISCORD.md`](6-guides/DISCORD.md).
+* **In-game menu** (`/moderra`): change every setting in a chest, on Bukkit, Fabric and Forge (help text as lore on all three). Text input by chat, or on Fabric and Forge by a fake sign or an anvil. Guide: [`GUI.md`](6-guides/GUI.md).
 * **Plugin integrations** (Bukkit family): EssentialsX, PlaceholderAPI, LuckPerms, Vault, ban plugins, Floodgate/Geyser, chat-channel plugins (TownyChat, mcMMO party chat), TAB, NametagEdit, ProtocolLib and PacketEvents (packet scan), outgoing-text scan, CoreProtect, Plan, Towny, Factions, Citizens, DecentHolograms, network sync. Guide: [`INTEGRATIONS.md`](6-guides/INTEGRATIONS.md).
-* **Fabric and Forge extras**: `hasPlugin` by mod id, Fabric Text Placeholder API values (`%antibadwords:strikes%`, Minecraft 26.3), Styled Chat works through the normal chat filter.
+* **Fabric and Forge extras**: `hasPlugin` by mod id, Fabric Text Placeholder API values (`%moderra:strikes%`, Minecraft 26.3), Styled Chat works through the normal chat filter.
 * **Outgoing-text scan** (off by default): checks chat, team prefixes and suffixes and tab-list names that other plugins send, with ProtocolLib or PacketEvents. Mask, cancel or log only.
 * **Network sync**: shared mutes and strikes through a shared folder or plugin messaging, with a start-up bridge check and a journal size limit.
-* **Rules per world or group** (`worlds.yml`), formal message style ([`MESSAGE-STYLE.md`](6-guides/MESSAGE-STYLE.md); Discord, network, ban and GUI texts included), automatic migration of a version 1 `config.yml`.
+* **Rules per world or group** (`worlds.yml`), formal message style ([`MESSAGE-STYLE.md`](6-guides/MESSAGE-STYLE.md); Discord, network, ban and GUI texts included), automatic migration of an old single-file `config.yml`.
 
 ## What is in each folder?
 
@@ -97,7 +101,7 @@ AntiBadWordsPlugin/
 ├── build-everything.sh          <- one button: builds every jar for every version
 ├── CHANGELOG.md                 <- what changed, in plain words
 ├── LICENSE                      <- All Rights Reserved
-├── .github/workflows/           <- GitHub Actions: build the 24 jars + release, check the real APIs
+├── .github/workflows/           <- GitHub Actions: build the 36 jars + release, check the real APIs
 │
 ├── 1-download-jars/             <- only a README: the jars are on GitHub Releases
 ├── 2-plugin-bukkit-purpur/      <- source code of the plugin (Bukkit, Spigot, Paper, Purpur)
@@ -114,36 +118,36 @@ Rule of thumb: **Releases = use it, 2-4 = the code for each server type, 5 = sha
 
 ## Commands (in game or console)
 
-Most commands need `antibadwords.admin` (operators have it by default). Full list: [`CONFIGURATION.md`](6-guides/CONFIGURATION.md#commands).
+Most commands need `moderra.admin` (operators have it by default). Full list: [`CONFIGURATION.md`](6-guides/CONFIGURATION.md#commands).
 
 | Command | What it does |
 |---------|--------------|
-| `/abw` or `/abw gui [page]` | open the settings menu (players with `antibadwords.gui`) |
-| `/abw reload` | read the config folder again (and show what is wrong in it) |
-| `/abw addword <word>` / `removeword <word>` / `listwords` | your own blocked words |
-| `/abw check <text>` | would this text be blocked, and by which check? |
-| `/abw lang list` / `enable <code>` / `disable <code>` | language word lists |
-| `/abw whitelist add <word>` / `remove <word>` / `list` | words that are never blocked |
-| `/abw violations <player>` / `resetviolations <player>` / `strikes <player>` / `ladder` | strikes and ladder |
-| `/abw mute <player> [time] [reason]` / `unmute` / `mutes` | built-in mute |
-| `/abw history <player>` / `recent` / `purge <player> confirm` | history |
-| `/abw discord test` / `status`, `/abw network`, `/abw info` | status and tests (`/abw info` lists the plugins and mods it found) |
+| `/moderra` or `/moderra gui [page]` | open the settings menu (players with `moderra.gui`) |
+| `/moderra reload` | read the config folder again (and show what is wrong in it) |
+| `/moderra addword <word>` / `removeword <word>` / `listwords` | your own blocked words |
+| `/moderra check <text>` | would this text be blocked, and by which check? |
+| `/moderra lang list` / `enable <code>` / `disable <code>` | language word lists |
+| `/moderra whitelist add <word>` / `remove <word>` / `list` | words that are never blocked |
+| `/moderra violations <player>` / `resetviolations <player>` / `strikes <player>` / `ladder` | strikes and ladder |
+| `/moderra mute <player> [time] [reason]` / `unmute` / `mutes` | built-in mute |
+| `/moderra history <player>` / `recent` / `purge <player> confirm` | history |
+| `/moderra discord test` / `status`, `/moderra network`, `/moderra info` | status and tests (`/moderra info` lists the plugins and mods it found) |
 
 ## Permissions
 
 | Permission | Default | Use |
 |------------|---------|-----|
-| `antibadwords.admin` | op | all admin sub-commands |
-| `antibadwords.notify` | op | staff see every blocked word |
-| `antibadwords.mute` | op | `/abw mute`, `unmute`, `mutes` |
-| `antibadwords.history` | op | `/abw history` (purge also needs admin) |
-| `antibadwords.discord` | op | `/abw discord` |
-| `antibadwords.gui` | op | open the settings menu |
-| `antibadwords.gui.edit.<category>` | **true** | change that category in the menu (take it away to lock a category) |
-| `antibadwords.bypass` | nobody | never checked |
-| `antibadwords.bypass.spam` / `.links` / `.evasion` | nobody | exempt from that filter |
-| `antibadwords.bypass.mute` | nobody | never muted |
-| `antibadwords.profile.<name>` | nobody | puts the player on that `worlds.yml` profile |
+| `moderra.admin` | op | all admin sub-commands |
+| `moderra.notify` | op | staff see every blocked word |
+| `moderra.mute` | op | `/moderra mute`, `unmute`, `mutes` |
+| `moderra.history` | op | `/moderra history` (purge also needs admin) |
+| `moderra.discord` | op | `/moderra discord` |
+| `moderra.gui` | op | open the settings menu |
+| `moderra.gui.edit.<category>` | **true** | change that category in the menu (take it away to lock a category) |
+| `moderra.bypass` | nobody | never checked |
+| `moderra.bypass.spam` / `.links` / `.evasion` | nobody | exempt from that filter |
+| `moderra.bypass.mute` | nobody | never muted |
+| `moderra.profile.<name>` | nobody | puts the player on that `worlds.yml` profile |
 
 The slash commands of Discord are not game permissions: they use the Discord allow-lists ([`DISCORD.md`](6-guides/DISCORD.md)).
 
@@ -153,8 +157,8 @@ API, e.g. LuckPerms) and Forge (Forge permission nodes). On Forge, nodes for pro
 
 ## I want to change how it behaves
 
-Use the menu (`/abw`) or edit the files. The settings live in a small folder that looks the same on every server type
-(`plugins/AntiBadWords/` or `config/antibadwords/`):
+Use the menu (`/moderra`) or edit the files. The settings live in a small folder that looks the same on every server type
+(`plugins/Moderra/` or `config/moderra/`):
 
 ```
 config.yml               general: languages on/off, how strict, where to look, messages
@@ -171,7 +175,7 @@ discord.yml              Discord alerts and commands     (off until you switch i
 integrations.yml         other plugins, network sync
 ```
 
-Every file is created with a comment above every option. An old version 1 `config.yml` is converted automatically on the first
+Every file is created with a comment above every option. An old single-file `config.yml` is converted automatically on the first
 start (a backup `config.yml.bak-<date>` is kept). Every option is explained in [`6-guides/CONFIGURATION.md`](6-guides/CONFIGURATION.md).
 
 ## Word lists for many languages
@@ -179,11 +183,11 @@ start (a backup `config.yml.bak-<date>` is kept). Every option is explained in [
 The folder [`7-wordlists/`](7-wordlists/) has one bad-word file per language (35 languages in 37 files, from Arabic to Vietnamese),
 three strength tiers each, and an empty `custom.yml` for your own words. They are first drafts written by an AI and are all marked
 `unreviewed`. English plus your custom list are switched on at the first start; every other language is one command away
-(`/abw lang enable de`). How to read, edit and check them: [`7-wordlists/README.md`](7-wordlists/README.md). Sources: [`7-wordlists/NOTICE.md`](7-wordlists/NOTICE.md).
+(`/moderra lang enable de`). How to read, edit and check them: [`7-wordlists/README.md`](7-wordlists/README.md). Sources: [`7-wordlists/NOTICE.md`](7-wordlists/NOTICE.md).
 
 ## I want to build the jars myself
 
-On GitHub: Actions tab, "Build jars and release", Run workflow. A tag like `v2.1.0` also publishes the release. A commit whose
+On GitHub: Actions tab, "Build jars and release", Run workflow. A tag like `v1.0` also publishes the release. A commit whose
 message contains `[build]` builds the jars too; `[verify]` runs the real-API check.
 On your own machine:
 ```bash
@@ -194,4 +198,4 @@ You need Java 21 and Java 25, Maven (plugin) and Gradle 9.8+ (Fabric/Forge). Det
 
 ## Licence
 
-**All Rights Reserved.** Copyright (c) 2026 Jason P. See [LICENSE](LICENSE). This replaces the MIT licence of version 1.
+**All Rights Reserved.** Copyright (c) 2026 Jason P. See [LICENSE](LICENSE). This replaces the MIT licence of the old versions (before the rename).

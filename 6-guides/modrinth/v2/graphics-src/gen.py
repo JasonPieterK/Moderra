@@ -34,20 +34,20 @@ page("01-hero.html", """
 .frame{height:640px}
 .title{position:absolute;left:56px;top:56px;font-size:122px;line-height:.95;text-transform:uppercase;letter-spacing:-.01em}
 .title span{display:block}
-.two{position:absolute;left:56px;top:350px;width:150px;height:150px;border-radius:50%;background:#D6352B;color:#F4EFE6;font-size:110px;display:flex;align-items:center;justify-content:center;border:10px solid #111}
+.two{position:absolute;left:56px;top:350px;width:150px;height:150px;border-radius:50%;background:#D6352B;color:#F4EFE6;font-size:58px;display:flex;align-items:center;justify-content:center;border:10px solid #111}
 .tag{position:absolute;left:236px;top:372px;font-size:32px;line-height:1.35;text-transform:uppercase;width:720px}
 .tag b{background:#F2C230;padding:0 8px}
-.bigc{position:absolute;right:60px;top:40px;width:420px;height:420px;border-radius:50%;background:#F2C230;border:12px solid #111}
+.bigc{position:absolute;right:120px;top:36px;width:470px;height:470px;border:12px solid #111;background:#0A1124;overflow:hidden}.bigc img{display:block;width:100%;height:100%}
 .sq{position:absolute;right:330px;top:250px;width:280px;height:280px;background:#1E4FA3;border:12px solid #111}
 .trg{position:absolute;right:110px;top:290px;--s:110px}
 .vr{position:absolute;right:560px;top:0;width:12px;height:520px;background:#111}
 .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#111;color:#F4EFE6;display:flex;align-items:center;padding:0 56px;font-size:29px;text-transform:uppercase;gap:26px;white-space:nowrap}
 .bar i{display:inline-block;width:20px;height:20px;background:#F2C230;border-radius:50%}
 .bar i.s{border-radius:0;background:#D6352B}.bar i.t{background:#4C7FD6;border-radius:0}
-""", '''<div class="frame"><div class="vr"></div><div class="bigc"></div><div class="sq"></div><div class="tri trg"></div>
-<div class="title"><span>Anti</span><span>BadWords</span></div><div class="two">2</div>
+""", '''<div class="frame"><div class="bigc"><img src="../../../branding/logo-a-refined/moderra-icon.svg" alt=""></div>
+<div class="title"><span>Moderra</span></div><div class="two">1.0</div>
 <div class="tag">Keep your chat clean.<br><b>Everywhere</b> players can type.</div>
-<div class="bar"><span>Chat filter</span><i></i><span>Moderation</span><i class="s"></i><span>4 server types</span><i class="t"></i><span>6 Minecraft versions</span></div></div>''')
+<div class="bar"><span>Chat filter</span><i></i><span>Moderation</span><i class="s"></i><span>6 server types</span><i class="t"></i><span>6 Minecraft versions</span></div></div>''')
 
 # ---------------------------------------------------------------- 02 where
 items = [("Chat", "Public chat", R, "c"), ("Commands", "/msg /tell /me /say /mail /nick and more", B, "s"),
@@ -55,7 +55,7 @@ items = [("Chat", "Public chat", R, "c"), ("Commands", "/msg /tell /me /say /mai
          ("Anvils", "The text of an item rename", B, "c"), ("Join names", "Player names, when they join", Y, "s"),
          ("Command blocks", "A blocked command does not run", P, "t"),
          ("Discord", "Messages typed in Discord (DiscordSRV)", R, "c"),
-         ("Outgoing text", "Team and tab list text (ProtocolLib, optional)", B, "t")]
+         ("Outgoing text", "System chat, team and tab list (ProtocolLib or PacketEvents, optional)", B, "t")]
 tiles = ""
 for i, (t, d, c, sh) in enumerate(items):
     ic = P if c != P else R
@@ -122,7 +122,7 @@ page("04-ladder.html", """
 
 # ---------------------------------------------------------------- 05 matrix
 rows = [("26.3", "Java 25"), ("26.2", "Java 25"), ("26.1.2", "Java 25"), ("26.1.1", "Java 25"), ("26.1", "Java 25"), ("1.21.11", "Java 21")]
-loaders = [("Bukkit / Spigot / Paper", R), ("Purpur", B), ("Fabric", Y), ("Forge", K)]
+loaders = [("Bukkit", R), ("Spigot", Y), ("Paper", B), ("Purpur", P), ("Fabric", Y), ("Forge", K)]
 cells = '<div class="c h" style="background:#111;color:#F4EFE6">Minecraft</div>'
 for n, c in loaders:
     cells += f'<div class="c h" style="background:{c};color:{on(c)}">{n}</div>'
@@ -131,12 +131,12 @@ for v, j in rows:
     for n, c in loaders:
         cells += f'<div class="c">{shape("c", c, 58, K, 7)}</div>'
 page("05-matrix.html", """
-.m{display:grid;grid-template-columns:300px repeat(4,1fr)}
+.m{display:grid;grid-template-columns:330px repeat(6,1fr)}
 .c{height:92px;border-right:12px solid #111;border-bottom:12px solid #111;display:flex;align-items:center;justify-content:center;font-size:26px;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.1}
-.c:nth-child(5n){border-right:0}.c.h{height:100px}
-.c.v{justify-content:flex-start;gap:20px;font-size:44px;padding-left:34px;background:#F4EFE6}.c.v small{font-size:17px;background:#111;color:#F4EFE6;padding:4px 8px}
-""", '<div class="frame">' + head("Platforms and versions", "24 jars: 4 server types times 6 versions", "24") + f'<div class="m">{cells}</div>'
-     '<div class="note" style="border-top:0">File name: <span style="color:#F2C230;text-transform:none">Antibadwords-RELEASE[Fabric] - 2-26.3.jar</span><br>Players install nothing. Put the jar on the server only.</div></div>')
+.c:nth-child(7n){border-right:0}.c.h{height:100px}
+.c.v{justify-content:flex-start;gap:20px;font-size:44px;padding-left:34px;background:#F4EFE6}.c.v small{white-space:nowrap;font-size:17px;background:#111;color:#F4EFE6;padding:4px 8px}
+""", '<div class="frame">' + head("Platforms and versions", "36 jars: 6 server types times 6 versions", "36") + f'<div class="m">{cells}</div>'
+     '<div class="note" style="border-top:0">File name: <span style="color:#F2C230;text-transform:none">Moderra26.3-1.0-fabric.jar</span><br>Players install nothing. Put the jar on the server only.</div></div>')
 
 # ---------------------------------------------------------------- 06 languages
 latin = [("en", "English"), ("en-gb", "English UK extras"), ("de", "German"), ("fr", "French"), ("es", "Spanish"), ("it", "Italian"),
@@ -168,7 +168,7 @@ page("06-languages.html", """
 .grp .chip{min-width:130px}
 """, '<div class="frame">' + head("37 word lists", "35 languages grouped by script", "37") +
      f'<div class="body"><div class="lat"><h3>Latin script <em>23</em></h3><div class="cl">{chips(latin, P, K)}</div></div><div class="rt">{right}</div></div>'
-     '<div class="note">3 strength levels per list. English + your custom list start on. Enable more: /abw lang enable de<br>First drafts written by an AI. All marked unreviewed. Ask a native speaker to read your lists.</div></div>')
+     '<div class="note">3 strength levels per list. English + your custom list start on. Enable more: /moderra lang enable de<br>First drafts written by an AI. All marked unreviewed. Ask a native speaker to read your lists.</div></div>')
 
 # ---------------------------------------------------------------- 07 menu map
 cats = "General Languages Scanning Player-names Matching Whitelist Messages Punishment Strikes Ladder Worlds Spam Links Evasion Look-alikes History Mute Discord Integrations".split()
@@ -176,7 +176,7 @@ lv1 = [("Category pages", "19 categories. One button per setting.", Y, 330), ("L
        ("Punishment ladder", "List of steps.", R, 104), ("Muted players", "Time left, reason, who.", B, 104),
        ("World profiles", "Add, delete, edit.", Y, 104), ("World rules", "Pattern to profile.", R, 104), ("Search settings", "Find any setting.", K, 104)]
 lv2 = [None, ("Word browser", "Your custom list, whitelist and read-only lists"), ("Step editor", "At, repeat, message, broadcast, final command, actions"),
-       ("Unmute by click", "Needs antibadwords.mute"), ("Override editor", "key value pairs"), ("Line editor", "Shift-click moves, middle click removes"),
+       ("Unmute by click", "Needs moderra.mute"), ("Override editor", "key value pairs"), ("Line editor", "Shift-click moves, middle click removes"),
        ("Jump to the setting", "Name, key or text")]
 y = 20
 boxes = ""
@@ -199,7 +199,7 @@ for i, (t, d, c, h) in enumerate(lv1):
         boxes += (f'<div class="b" style="left:900px;top:{y}px;width:640px;height:{h}px;background:#F4EFE6"><h3>{a}</h3><p>{b}</p></div>')
     y += h + GAP
 boxes += (f'<div class="b" style="left:30px;top:{rooty}px;width:270px;height:120px;background:#111;color:#F4EFE6;display:flex;align-items:center;justify-content:center">'
-          '<h3 style="font-size:46px">/abw</h3></div>')
+          '<h3 style="font-size:46px">/moderra</h3></div>')
 height = y + 130
 page("07-menu.html", f"""
 .map{{position:relative;height:{height}px}}
@@ -209,17 +209,17 @@ page("07-menu.html", f"""
 svg.l{{position:absolute;left:0;top:0}}svg.l path{{stroke:#111;stroke-width:8;fill:none}}
 .bot{{position:absolute;left:0;right:0;bottom:0;height:100px;background:#111;color:#F4EFE6;padding:16px 40px;font-size:22px;text-transform:uppercase;line-height:1.35}}
 .bot span{{color:#F2C230}}
-""", '<div class="frame">' + head("In-game menu", "Type /abw. Every setting is a chest button.", "19") +
+""", '<div class="frame">' + head("In-game menu", "Type /moderra. Every setting is a chest button.", "19") +
      f'<div class="map"><svg class="l" width="1572" height="{height}">{lines}</svg>{boxes}'
-     '<div class="bot">Bottom row of every page: <span>back, previous, add, cancel, Done, reset, next, main menu</span>.<br>Nothing is saved before you click Done. Permission: antibadwords.gui</div></div></div>')
+     '<div class="bot">Bottom row of every page: <span>back, previous, add, cancel, Done, reset, next, main menu</span>.<br>Nothing is saved before you click Done. Permission: moderra.gui</div></div></div>')
 
 # ---------------------------------------------------------------- 08 integrations
 integ = [("EssentialsX", "Mute, nicknames, /msg", B, "s", ""), ("LuckPerms", "Groups pick a rule profile", B, "s", ""),
          ("PlaceholderAPI", "Strikes and mute as placeholders", B, "s", ""), ("Vault", "Group and prefix", B, "s", ""),
          ("Ban plugins", "tempban and ipban actions", R, "c", ""), ("Chat plugins", "Channel profiles", R, "c", ""),
-         ("DiscordSRV", "Alerts, filter, !abw", Y, "c", ""), ("Floodgate", "Bedrock player names", Y, "c", ""),
-         ("BungeeCord / Velocity", "Share mutes and strikes", Y, "c", ""), ("ProtocolLib", "Packet scan for sign, book, anvil", K, "t", ""),
-         ("PacketEvents", "Detected only. No listener yet", K, "t", "dash"), ("CoreProtect", "Logs blocked sign and book text", K, "t", ""),
+         ("DiscordSRV", "Alerts, filter, !moderra and slash commands", Y, "c", ""), ("Floodgate", "Bedrock player names", Y, "c", ""),
+         ("BungeeCord / Velocity", "Share mutes and strikes", Y, "c", ""), ("ProtocolLib", "Packet scan: sign, book, anvil, outgoing text", K, "t", ""),
+         ("PacketEvents", "Same packet scan as ProtocolLib", K, "t", ""), ("CoreProtect", "Logs blocked sign and book text", K, "t", ""),
          ("Plan", "Strike data in Plan", K, "t", ""), ("mcMMO", "Party chat commands", P, "s", ""),
          ("Towny", "Town and nation chat", P, "s", ""), ("Citizens", "NPC names", P, "s", ""),
          ("DecentHolograms", "Hologram lines", P, "s", "")]

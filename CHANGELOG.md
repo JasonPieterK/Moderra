@@ -1,5 +1,50 @@
 # Changelog
 
+Version numbers are `<major>.<minor>`: the major number grows with a big update, the minor number with small updates.
+
+## 1.0 (first Moderra release; the project was called AntiBadWords before)
+
+**Renamed to Moderra.** The version counter starts again at 1.0. The older entries below ("Before Moderra") are the history of the
+project under its old name; they stay as they were. All features of the last AntiBadWords version (2.1.0) are in 1.0.
+
+### Jar names and version
+* Jar names are now `Moderra<mc>-<version>-<loader>.jar`, for example `Moderra26.3-1.0-paper.jar`. The loader part is lower case:
+  `bukkit`, `spigot`, `paper`, `purpur`, `fabric`, `forge`: 6 server types x 6 Minecraft versions = **36 jars**. The four plugin jars contain the same code
+  (separate files because Modrinth lists the server types separately). The old pattern `...-RELEASE[X] - 2-<mc>.jar` is gone.
+* ONE version number per build (pom `<version>` / `mod_version` in `gradle.properties`): the jar name and the version shown in `plugin.yml`,
+  `fabric.mod.json` and `mods.toml` are always the same. The release tag is `v1.0`.
+
+### Upgrade notes (servers that run AntiBadWords)
+Replace the old jar by the new one (remove the old jar, never run both). Everything below happens by itself, except where it says "you".
+* **Folder:** on the first start, when the new folder does not exist, the old folder is moved: `plugins/AntiBadWords/` to `plugins/Moderra/`
+  (Bukkit family) and `config/antibadwords/` to `config/moderra/` (Fabric, Forge). A file `MOVED-TO-MODERRA.txt` stays in the old place, and one
+  line goes to the console. A server that already has the new folder is not touched.
+* **Command:** `/abw`, `/antibadwords` and `/antiwords` are now `/moderra` (only that name; no short alias, it would clash with other plugins).
+  Scripts, command blocks and other plugins' configs that run `/abw ...` must be changed by you.
+* **Permissions:** `antibadwords.*` is now `moderra.*` (admin, notify, bypass and its sub-nodes, mute, history, discord, gui, `gui.edit.<category>`,
+  `profile.<name>`). For this major version the old nodes still work as a **legacy fallback** (a player who has `antibadwords.bypass` still has
+  `moderra.bypass`). The fallback is removed in 2.0, so move your permission groups to the new names. An old node counts only when it is explicitly granted.
+* **Messages:** all default texts now start with `[Moderra]`. A message you never changed is updated to the new default automatically (log line "Updated N
+  setting(s)..."); a message you changed is never touched. The same applies to the default of `filters.ignored-commands` (now `moderra`),
+  `integrations.outgoing-scan.ignore-containing`, `discord.webhook.username`, `discord.commands.prefix` and `discord.inbound.notify-text`.
+  Two defaults are NOT changed in existing files because other systems depend on them: `integrations.luckperms.meta-key` (your LuckPerms meta keeps
+  its name) and `integrations.network.folder` (all servers of a network must agree on the folder). New installs get `moderra-profile` and `../moderra-network`.
+* **Placeholders:** PlaceholderAPI `%antibadwords_<name>%` is now `%moderra_<name>%`; Fabric Text Placeholder API `%antibadwords:<name>%` is now `%moderra:<name>%`.
+  Scoreboards, holograms and chat formats that use them must be changed by you.
+* **Discord:** the prefix command `!abw` is now `!moderra` (the default is updated when unchanged) and the DiscordSRV slash commands `/abw-*` are now
+  `/moderra-*` (restart once after the update so that Discord registers the new names; the old slash commands disappear).
+* **Network:** the plugin message channel `antibadwords:sync` is now `moderra:sync`. Servers in one network must run the same Moderra version family
+  (an old server and a new server do not hear each other).
+* **Mods:** the mod id is `moderra` (it was `antibadwords`); the Mixin config is `moderra.mixins.json`; the system property for the self-test is `-Dmoderra.selftest=1`.
+* **Java packages and classes:** `com.jason.plugins.antibadwords` is now `com.jason.plugins.moderra`; `Abw*` and `AntiBadWords*` classes are `Moderra*`.
+  Only matters for developers who built against the old classes.
+* The repository folder and the GitHub repository still carry the old name until the owner renames the GitHub repository.
+
+### Fixes in the same release
+* The own command (`/moderra`) is never scanned for blocked words, also when an admin removed it from `filters.ignored-commands`.
+
+## Before Moderra: the history under the old name AntiBadWords (entries below)
+
 ## 2.1.0 (jar names stay `Antibadwords-RELEASE[X] - 2-<mc>.jar`)
 
 **Honest status:** the jars are built by GitHub Actions (tag `v2.1.0`) and the code compiles against the real Spigot, Minecraft, Fabric,

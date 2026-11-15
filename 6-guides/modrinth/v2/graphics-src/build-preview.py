@@ -21,5 +21,5 @@ blockquote{border-left:6px solid #D6352B;margin:12px 0;padding:2px 14px;backgrou
 details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}a{color:#7fb0ff}"""
 open(os.path.join(root, "DESCRIPTION-preview.html"), "w", encoding="utf-8").write(
     f'<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-    f'<title>AntiBadWords 2 - description preview</title><style>{css}</style></head><body><div class="page">{html}</div></body></html>')
+    f'<title>Moderra - description preview</title><style>{css}</style></head><body><div class="page">{html}</div></body></html>')
 print("ok")

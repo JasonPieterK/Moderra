@@ -1,4 +1,4 @@
-# Modrinth page text - AntiBadWords
+# Modrinth page text - Moderra
 
 Copy section by section into the Modrinth description editor. Formatting hints are in `[brackets]`; do not
 paste the brackets. `[SHOT NN]` = the gallery/inline image from [SCREENSHOT_PLAN.md](SCREENSHOT_PLAN.md).
@@ -10,7 +10,7 @@ Items marked **TODO** need Jason's input. Modrinth supports Markdown, tables, im
 
 [Banner image, centred - TODO logo/banner]
 
-[Heading 1, centred] **AntiBadWords**
+[Heading 1, centred] **Moderra**
 
 [Italic, centred] Keep your chat clean - in seven languages, everywhere players can type.
 
@@ -21,7 +21,7 @@ Items marked **TODO** need Jason's input. Modrinth supports Markdown, tables, im
 
 ## 1. Short pitch (no heading; normal text size, first two sentences bold)
 
-**AntiBadWords blocks profanity before anyone sees it, warns the player, and punishes repeat offenders.
+**Moderra blocks profanity before anyone sees it, warns the player, and punishes repeat offenders.
 It works in chat, commands, signs, books and anvil renames, and it is built to stop the usual tricks players
 use to get around filters.**
 
@@ -32,7 +32,7 @@ getting blocked by mistake.
 
 ---
 
-## 2. Why AntiBadWords? [Heading 2]
+## 2. Why Moderra? [Heading 2]
 
 [Bullet list, bold lead-ins]
 
@@ -45,8 +45,8 @@ getting blocked by mistake.
 - **Covers everything players can type.** Chat, selected commands, signs, books (pages and title) and anvils.
 - **Real punishments.** Potion effects, temporary attribute changes, sounds and console commands.
   Attribute changes are always restored - on timer end, quit, kick, respawn, server stop, or after a crash.
-- **Made for staff.** Live alerts, `/abw check`, per-player violation counters and a bypass permission.
-- **One config, no restart.** Everything lives in `config.yml`; `/abw reload` applies it instantly.
+- **Made for staff.** Live alerts, `/moderra check`, per-player violation counters and a bypass permission.
+- **One config, no restart.** Everything lives in `config.yml`; `/moderra reload` applies it instantly.
 
 ---
 
@@ -96,7 +96,7 @@ happens the first time you install it.
 
 [Table - left column in `code` style, right column normal text]
 
-| Players try... | AntiBadWords sees it |
+| Players try... | Moderra sees it |
 |----------------|----------------------|
 | `f u c k` or `f.u.c.k` | Letters separated by spaces or dots |
 | `sh1t`, `sh!t`, `$hit`, `a$$` | Leetspeak and symbols |
@@ -114,7 +114,7 @@ word. Both are off by default because they cause false positives.
 
 [SHOT 09]
 
-Most filters block `class` because it contains "ass". AntiBadWords compares whole words, so `closer`,
+Most filters block `class` because it contains "ass". Moderra compares whole words, so `closer`,
 `scrap`, `peacock`, `cocktail` and `computer` all pass. A built-in whitelist protects you even if you turn
 partial matching on, and you can add your own words.
 
@@ -137,7 +137,7 @@ partial matching on, and you can add your own words.
 Every list is split into **three severity levels** (mild / rude / severe). Set `protection-level` to
 **1 = LOW** (severe only), **2 = MEDIUM** or **3 = HIGH** (everything).
 
-Add your own words with `/abw addword <word or phrase>` - any language, accents and spaces allowed.
+Add your own words with `/moderra addword <word or phrase>` - any language, accents and spaces allowed.
 
 ---
 
@@ -145,27 +145,27 @@ Add your own words with `/abw addword <word or phrase>` - any language, accents 
 
 [SHOT 11 and SHOT 12]
 
-- **Live alerts** for every blocked word (permission `antibadwords.notify`), also logged to the console.
-- **`/abw check <text>`** tells you instantly whether a text would be blocked - perfect for testing your
+- **Live alerts** for every blocked word (permission `moderra.notify`), also logged to the console.
+- **`/moderra check <text>`** tells you instantly whether a text would be blocked - perfect for testing your
   word list.
 - **Violation counters** with optional expiry (e.g. forget after 30 minutes).
-- **Bypass permission** `antibadwords.bypass` for owners or trusted players.
+- **Bypass permission** `moderra.bypass` for owners or trusted players.
 - Tab completion for sub-commands, players and your custom words.
 
 ### Commands and permissions [Heading 3]
 
 | Command | Permission | Description |
 |---------|-----------|-------------|
-| `/abw reload` | `antibadwords.admin` | Reload config |
-| `/abw addword <word>` | `antibadwords.admin` | Add a custom word or phrase |
-| `/abw removeword <word>` | `antibadwords.admin` | Remove a custom word |
-| `/abw listwords [list]` | `antibadwords.admin` | Show a word list |
-| `/abw check <text>` | `antibadwords.admin` | Test a text |
-| `/abw violations <player>` | `antibadwords.admin` | Show a player's strikes |
-| `/abw resetviolations <player>` | `antibadwords.admin` | Clear a player's strikes |
-| `/abw info` | `antibadwords.admin` | Status summary |
+| `/moderra reload` | `moderra.admin` | Reload config |
+| `/moderra addword <word>` | `moderra.admin` | Add a custom word or phrase |
+| `/moderra removeword <word>` | `moderra.admin` | Remove a custom word |
+| `/moderra listwords [list]` | `moderra.admin` | Show a word list |
+| `/moderra check <text>` | `moderra.admin` | Test a text |
+| `/moderra violations <player>` | `moderra.admin` | Show a player's strikes |
+| `/moderra resetviolations <player>` | `moderra.admin` | Clear a player's strikes |
+| `/moderra info` | `moderra.admin` | Status summary |
 
-Aliases: `/abw`, `/antiwords`. Other permissions: `antibadwords.notify` (default: op), `antibadwords.bypass`
+There are no aliases. Other permissions: `moderra.notify` (default: op), `moderra.bypass`
 (default: nobody).
 
 ---
@@ -199,7 +199,7 @@ punishment:
 punishment:
   final-command:
     enabled: true
-    command: "lp user {player} permission settemp antibadwords.muted true 30s"
+    command: "lp user {player} permission settemp moderra.muted true 30s"
 ```
 
 [Collapsible block "Messages and placeholders"]
@@ -218,15 +218,15 @@ Every message supports `&` colour codes and `{player}`, `{word}`, `{source}`, `{
 - **Software:** Bukkit, Spigot, Paper and Purpur (Purpur has its own download; same code). *(Test on a Purpur server before publishing - TODO.)*
 - Not for Folia. Fabric and Forge versions are a separate download once they have been tested.
 - Uses only the standard Bukkit/Spigot API, so it needs no other plugins or libraries.
-- **Download the file whose name matches your Minecraft version**, e.g. `Antibadwords-RELEASE[Bukkit] - 2-26.3.jar`.
+- **Download the file whose name matches your Minecraft version**, e.g. `Moderra26.3-1.0-paper.jar`.
 - Only full releases from the last year are published; snapshots are not supported.
 
 ## 11. Installation [Heading 2]
 
 1. Download the jar for your Minecraft version.
 2. Put it in your server's `plugins` folder.
-3. Start the server. `plugins/AntiBadWords/config.yml` is created.
-4. Edit the config, then run `/abw reload`.
+3. Start the server. `plugins/Moderra/config.yml` is created.
+4. Edit the config, then run `/moderra reload`.
 
 ## 12. Upgrading from 1.00 [Heading 2]
 
@@ -243,10 +243,10 @@ It listens to the standard chat event at the highest priority and cancels bad me
 most chat plugins. Plugins that rewrite or send chat themselves without the event can't be filtered.
 
 **Can staff swear?**
-Give them `antibadwords.bypass`.
+Give them `moderra.bypass`.
 
 **A normal word is being blocked.**
-Add it to `filters.whitelist`, or run `/abw check <word>` to see which list entry matches.
+Add it to `filters.whitelist`, or run `/moderra check <word>` to see which list entry matches.
 
 **Does it log to a file?**
 Blocked words are written to the server console (and therefore the normal server log).

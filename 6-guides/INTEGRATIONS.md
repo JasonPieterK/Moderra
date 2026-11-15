@@ -1,13 +1,13 @@
 # Integrations guide: other plugins
 
-All settings are in `integrations.yml` (every key is explained in [CONFIGURATION.md](CONFIGURATION.md)). Every integration is optional: if the other plugin is missing, nothing happens. If something fails, one log line is written and the rest keeps working. `/abw info` ends with "Integrations detected: ...".
+All settings are in `integrations.yml` (every key is explained in [CONFIGURATION.md](CONFIGURATION.md)). Every integration is optional: if the other plugin is missing, nothing happens. If something fails, one log line is written and the rest keeps working. `/moderra info` ends with "Integrations detected: ...".
 
 **Verified levels used below**
 * **Engine tested**: the logic has unit tests (run with `mvn test`).
 * **Real API names**: the code was compiled on GitHub against the real jar, or every name was read from an API dump and listed in `tools/api-manifest.txt` (checked by `verify-apis.yml`).
 * **Not run**: never started on a real server with that plugin. This is true for EVERY integration in this guide.
 
-Where not stated otherwise: Bukkit, Spigot, Paper, Purpur only. Fabric and Forge ignore these settings. They can only see installed mods by id (`hasPlugin`, shown in `/abw info`),
+Where not stated otherwise: Bukkit, Spigot, Paper, Purpur only. Fabric and Forge ignore these settings. They can only see installed mods by id (`hasPlugin`, shown in `/moderra info`),
 use permission nodes (LuckPerms for Fabric and Forge answers them) and, on Fabric 26.3, the Text Placeholder API (see "Fabric and Forge" at the end).
 
 ---
@@ -18,17 +18,17 @@ use permission nodes (LuckPerms for Fabric and Forge answers them) and, on Fabri
 **Limits:** other plugins that listen to commands at a lower priority may still see a blocked command. `plugin.yml` uses `loadbefore: [EssentialsChat]` so our handler is registered first.
 
 ## PlaceholderAPI
-**What it does:** Adds placeholders you can use in scoreboards, tab lists and holograms. Optionally reads other plugins' placeholders in AntiBadWords messages.
-**Placeholders** (all `%antibadwords_<name>%`): `strikes`, `strikes_next` (strikes at the next ladder step), `next_step` (name of the next step), `muted` (true/false), `mute_remaining`, `mute_reason`, `profile`, `violations_total`, `protection_level`. They never contain chat text, word lists or secrets. `violations_total` is cached for 30 seconds; the first call can show 0.
+**What it does:** Adds placeholders you can use in scoreboards, tab lists and holograms. Optionally reads other plugins' placeholders in Moderra messages.
+**Placeholders** (all `%moderra_<name>%`): `strikes`, `strikes_next` (strikes at the next ladder step), `next_step` (name of the next step), `muted` (true/false), `mute_remaining`, `mute_reason`, `profile`, `violations_total`, `protection_level`. They never contain chat text, word lists or secrets. `violations_total` is cached for 30 seconds; the first call can show 0.
 **Settings:** `integrations.placeholderapi.enabled`, `.parse-in-messages` (default off, because a player could type `%something%`; only messages to one player are parsed, never broadcasts).
 **Verified:** engine tested; expansion class compiled against the real PlaceholderAPI names. Not run.
-**Limits:** if another jar already registered `antibadwords`, you get a log line.
+**Limits:** if another jar already registered `moderra`, you get a log line.
 
 ## LuckPerms
-**What it does:** Chooses a rule profile (`worlds.yml`) by group or meta, and knows permissions of offline players (for example to warn that someone you mute has `antibadwords.bypass.mute`).
-**Profile order:** permission `antibadwords.profile.<name>`, then LuckPerms meta, then the group map, then the chat channel, then world rules, then the default.
-**Settings (`integrations.luckperms.*`):** `enabled`, `use-meta`, `meta-key` (`antibadwords-profile`), `primary-group-only`, `offline-permission-checks`, `group-profiles` (group to profile).
-**Examples:** `/lp group vip meta set antibadwords-profile relaxed` or `/lp group vip permission set antibadwords.profile.relaxed true` (the permission way also works on Fabric and Forge).
+**What it does:** Chooses a rule profile (`worlds.yml`) by group or meta, and knows permissions of offline players (for example to warn that someone you mute has `moderra.bypass.mute`).
+**Profile order:** permission `moderra.profile.<name>`, then LuckPerms meta, then the group map, then the chat channel, then world rules, then the default.
+**Settings (`integrations.luckperms.*`):** `enabled`, `use-meta`, `meta-key` (`moderra-profile`), `primary-group-only`, `offline-permission-checks`, `group-profiles` (group to profile).
+**Examples:** `/lp group vip meta set moderra-profile relaxed` or `/lp group vip permission set moderra.profile.relaxed true` (the permission way also works on Fabric and Forge).
 **Verified:** compiled against the real LuckPerms API 5.4 (Maven Central). Not run.
 **Limits on Fabric/Forge:** only the permission nodes work (LuckPerms for Fabric/Forge answers them). No meta, no group map, no offline checks.
 
@@ -55,7 +55,7 @@ Placeholders: `{player} {uuid} {reason} {duration} {seconds} {millis}`; ipban al
 **Limits:** Fabric and Forge always use vanilla.
 
 ## Floodgate and Geyser (Bedrock players)
-**What it does:** Bedrock names carry a prefix (default `.`) and may contain spaces. The prefix is removed before the name check, `{player}` in ban commands has spaces replaced, and `/abw` finds players with or without the prefix.
+**What it does:** Bedrock names carry a prefix (default `.`) and may contain spaces. The prefix is removed before the name check, `{player}` in ban commands has spaces replaced, and `/moderra` finds players with or without the prefix.
 **Settings (`integrations.bedrock.*`):** `mode` (`auto` = on when Floodgate or Geyser is found, `on`, `off`), `prefix`, `strip-prefix-before-filter`, `space-replacement`.
 **Verified:** engine tested; detection by plugin name. Not run.
 
@@ -97,7 +97,7 @@ Placeholders: `{player} {uuid} {reason} {duration} {seconds} {millis}`; ipban al
 ## Plan
 **What it does:** Adds a Plan data extension: violations, strikes and muted state per player.
 **Settings:** `integrations.plan.enabled`.
-**Verified:** compiled against name-only shims of the Plan API; the parameter convention of provider methods is unverified. Not run. You can also show `%antibadwords_violations_total%` through PlaceholderAPI.
+**Verified:** compiled against name-only shims of the Plan API; the parameter convention of provider methods is unverified. Not run. You can also show `%moderra_violations_total%` through PlaceholderAPI.
 
 ## mcMMO, Towny, Factions, Citizens, DecentHolograms
 **What it does:** The text of party, town, nation and faction chat commands, names, boards, NPC names and hologram lines is checked like chat. Needs `filters.scan.commands` on.
@@ -107,17 +107,17 @@ Placeholders: `{player} {uuid} {reason} {duration} {seconds} {millis}`; ipban al
 
 ## Network sync (several servers)
 **What it does:** Shares mutes, unmutes, strike points and strike resets between servers. Off by default.
-**Settings (`integrations.network.*`):** `mode` (`off`, `shared-folder`, `plugin-messaging`), `folder` (default `../abw-network`), `server-id` (unique per server), `poll-interval`, `sync-mutes`, `sync-strikes`, `check-bridge`, `check-timeout`, `journal-max-kb`. `/abw network` shows mode, server id, peers, last sync and queued records.
+**Settings (`integrations.network.*`):** `mode` (`off`, `shared-folder`, `plugin-messaging`), `folder` (default `../moderra-network`), `server-id` (unique per server), `poll-interval`, `sync-mutes`, `sync-strikes`, `check-bridge`, `check-timeout`, `journal-max-kb`. `/moderra network` shows mode, server id, peers, last sync and queued records.
 * **Shared folder:** every server reads and writes the same folder. No proxy needed. Each server writes its own journal file and reads the others.
-* **Plugin messaging:** records travel as `Forward ALL` on channel `antibadwords:sync` through BungeeCord or Velocity (Velocity needs its BungeeCord bridge on). A player must be online to carry messages; otherwise records wait in a queue (500 max).
-* **Bridge check** (mode `plugin-messaging`, `check-bridge` default on): after start the server sends one hello. If no other server answers within `check-timeout` (90 s, counted from the moment a player is online and the hello is sent), one warning names the causes: the BungeeCord plugin message channel of the proxy is off (Velocity: `bungee-plugin-message-channel` in `velocity.toml`), the proxy does not forward `antibadwords:sync`, or no other server runs the plugin. It is only a diagnostic.
+* **Plugin messaging:** records travel as `Forward ALL` on channel `moderra:sync` through BungeeCord or Velocity (Velocity needs its BungeeCord bridge on). A player must be online to carry messages; otherwise records wait in a queue (500 max).
+* **Bridge check** (mode `plugin-messaging`, `check-bridge` default on): after start the server sends one hello. If no other server answers within `check-timeout` (90 s, counted from the moment a player is online and the hello is sent), one warning names the causes: the BungeeCord plugin message channel of the proxy is off (Velocity: `bungee-plugin-message-channel` in `velocity.toml`), the proxy does not forward `moderra:sync`, or no other server runs the plugin. It is only a diagnostic.
 * **Journal size limit** (mode `shared-folder`, `journal-max-kb`, default 0 = never): when the journal of a server is larger, the part that every other recent server has read is replaced by a short summary (newest mute and reset per player). The rewrite is atomic and the read positions of the other servers stay valid. **Every server needs version 2.1 before you switch it on.**
 **Rules:** the newest mute change wins; strikes add up; a reset wins over older strikes. Keep the clocks of all servers in sync (NTP). Without `journal-max-kb` the journals only grow. A new server does not inherit old strikes. Clearing all strikes is not synced.
 **Verified:** engine tested with two engines on temp folders and the message encoding. The plugin glue is compiled against stubs only. Not tested on a real network.
 
 ## Fabric and Forge
-* `Platform.hasPlugin` uses mod ids: Fabric `FabricLoader.isModLoaded`, Forge `ModList.isLoaded`. The default id is the lower-case plugin name; known differences are mapped in `ModPluginIds` (PlaceholderAPI is `placeholder-api`). `/abw info` shows the installed mods that match known plugin names.
-* **Fabric Text Placeholder API** (mod `placeholder-api`, Minecraft 26.3 only): `%antibadwords:strikes%`, `%antibadwords:muted%` and every other name of the PlaceholderAPI list above. The other versions have no placeholders until a matching library version is proven.
+* `Platform.hasPlugin` uses mod ids: Fabric `FabricLoader.isModLoaded`, Forge `ModList.isLoaded`. The default id is the lower-case plugin name; known differences are mapped in `ModPluginIds` (PlaceholderAPI is `placeholder-api`). `/moderra info` shows the installed mods that match known plugin names.
+* **Fabric Text Placeholder API** (mod `placeholder-api`, Minecraft 26.3 only): `%moderra:strikes%`, `%moderra:muted%` and every other name of the PlaceholderAPI list above. The other versions have no placeholders until a matching library version is proven.
 * **Styled Chat**: needs no code. We filter on the vanilla chat event before Styled Chat formats the text.
 * LuckPerms for Fabric and Forge answers our permission nodes. There is no meta, no group map and no offline check.
 * Everything else in this guide is Bukkit only.

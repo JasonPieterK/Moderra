@@ -6,6 +6,7 @@ license = "All Rights Reserved"
 modId = "moderra"
 version = "${version}"
 displayName = "Moderra"
+logoFile = "assets/moderra/icon.png"
 authors = "Jason"
 description = '''Blocks profanity in chat, commands, signs, books and anvils and punishes repeat offenders.'''
 

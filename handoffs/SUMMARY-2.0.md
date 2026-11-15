@@ -34,7 +34,7 @@ This summary uses ASD-STE100 Simplified Technical English. Each sentence gives o
 - The configuration is now a folder with many files.
 - An old `config.yml` changes to the new format automatically. The plugin keeps a backup of the old file.
 - The agent added world profiles (`worlds.yml`).
-- The agent added `/abw lang` and `/abw whitelist`.
+- The agent added `/moderra lang` and `/moderra whitelist`.
 - A test shows that an old install gives the same results after the upgrade.
 
 ## Session 3 (medium): new filters
@@ -50,9 +50,9 @@ This summary uses ASD-STE100 Simplified Technical English. Each sentence gives o
 
 - Mini task 1 added strikes that the plugin keeps after a restart. It also added a list of known players.
 - Mini task 2 added a duration parser and an escalation ladder.
-- Mini task 3 changed the old punishment setup into a one-step ladder. It added `/abw ladder` and `/abw strikes`.
-- Mini tasks 4 and 5 added a built-in mute with `/abw mute`, `/abw unmute` and `/abw mutes`.
-- Mini tasks 6 and 7 added a history log with `/abw history`. By default, the log does not keep chat text.
+- Mini task 3 changed the old punishment setup into a one-step ladder. It added `/moderra ladder` and `/moderra strikes`.
+- Mini tasks 4 and 5 added a built-in mute with `/moderra mute`, `/moderra unmute` and `/moderra mutes`.
+- Mini tasks 6 and 7 added a history log with `/moderra history`. By default, the log does not keep chat text.
 - Mini task 8 connected these features to the plugin and to the mods. It added `6-guides/MODERATION.md`.
 - Mini task 8 also repaired a test that failed at random.
 
@@ -60,7 +60,7 @@ This summary uses ASD-STE100 Simplified Technical English. Each sentence gives o
 
 - Mini tasks 9 and 10 added Discord webhook alerts. The plugin hides all webhook URLs in logs and messages.
 - Mini tasks 11 and 12 added a DiscordSRV connection for Bukkit. It filters messages from Discord to Minecraft.
-- Discord commands use the prefix `!abw`. Only listed roles or users can use them.
+- Discord commands use the prefix `!moderra`. Only listed roles or users can use them.
 - Mini tasks 14 and 15 added the in-game menu model, special pages and a search.
 - Mini task 16 added text input through chat.
 - Mini task 17 added the chest menu for Bukkit.
@@ -92,9 +92,9 @@ This summary uses ASD-STE100 Simplified Technical English. Each sentence gives o
 
 ## Instructions for you
 
-1. Download the jars from the GitHub release `v2.0.0`.
+1. Download the jars from the GitHub release `v1.0` (the first Moderra release; `v2.0.0` was the tag under the old name).
 2. Install the jar on a test server. Use a copy of your world.
 3. Do a test of chat, signs, books, anvils, mute, the ladder and the menu.
-4. Do a test of each plugin that you use with AntiBadWords.
+4. Do a test of each plugin that you use with Moderra.
 5. Read `handoffs/BUILD-VERIFICATION-TODO.md`. It has the full list of tests.
 6. Tell a native speaker to examine the word lists of your languages.

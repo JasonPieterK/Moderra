@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Print a table of the AntiBadWords word lists: language, script, review status, words per tier, total.
+"""Print a table of the Moderra word lists: language, script, review status, words per tier, total.
 
 Usage:  python3 7-wordlists/tools/stats.py [folder]
 

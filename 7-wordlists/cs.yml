@@ -1,4 +1,4 @@
-# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
 language: "cs"
 name: Czech
 script: latin

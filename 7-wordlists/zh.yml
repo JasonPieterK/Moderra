@@ -1,11 +1,11 @@
-# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
 language: "zh"
 name: Chinese Simplified
 script: han
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
 notes: "Han words are matched as substrings (no word spaces in Chinese), so very short entries are risky: 你妈 can appear inside harmless sentences. Pinyin spellings are included because players type them. Left out: 垃圾, 靠, 逼 (too common or too short). False-positive review 2026-11-14: removed 妈的, 他妈, 我操, 我日, 去死 (they sit inside 妈妈的, 他妈妈, 我操作, 我日记, 去死亡谷); longer forms such as 他妈的 and 去死吧 stay. KNOWN RISK, legacy entries kept for migrated installs: 你妈 (inside 你妈妈, your mother), 废物 (also waste, as in 废物利用), 弱智, 尼玛 (a Tibetan name) and 杂种. The whitelist now also applies to Han text: a whitelist entry that contains the hit suppresses it (new installs ship 你妈妈, 我操作, 我日记, 去死亡, 妈妈的, 他妈妈, 废物利用). Migrated installs keep their own whitelist and can add these. Restored after the whitelist change: 妈的, 他妈, 我操, 我日, 去死. short-ok: Related languages share cognate words on purpose. collisions-ok: zh-tw"
 level-1: [

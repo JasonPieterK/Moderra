@@ -1,11 +1,11 @@
-# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
 language: "id"
 name: Indonesian (Bahasa Indonesia)
 script: latin
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
 notes: "Chat spellings (kntl, mmk, gblk) are included on purpose. Risky: 'asu' and 'tai' are also words in other languages; 'cuk' is mild in Surabaya slang; standalone 'babi' (pig) and 'monyet' (monkey) were removed on purpose (false positives: real animals in Minecraft and zoo talk); only the insult forms ('babi lu', 'dasar monyet') stay. Left out: suka, loh, gila, sampah (too common). False-positive review 2026-11-14: 'pea' was removed (English 'pea'), 'coli' too (E. coli). legacy 'tai' (also Tai Chi) and 'asu' (also Japanese romaji for 'tomorrow') stay; 'tai' is in the bundled default whitelist for new installs, 'asu' is not because it is the main Javanese insult. collisions-ok: ms Related languages share cognate words on purpose. collisions-ok: ms"
 level-1: [
   "bodoh", "bodo", "bego", "goblok", "gblk", "tolol", "bacot", "bacod", "sialan", "kampret", "dungu",

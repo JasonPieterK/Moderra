@@ -1,6 +1,6 @@
-# Open items for 2.1 (the one clean list - start here)
+# Open items for 1.0 (the one clean list - start here)
 
-State: all 24 jars are built by GitHub Actions. The code compiles against the real Spigot, Minecraft, Fabric, Forge, DiscordSRV, ProtocolLib,
+State: all jars (24 under the old name; 36 since the rename) were built by GitHub Actions. The code compiles against the real Spigot, Minecraft, Fabric, Forge, DiscordSRV, ProtocolLib,
 PacketEvents and mcMMO APIs; every third-party name is in `tools/api-manifest.txt` and is checked by `verify-apis.yml`. The engine has
 435 unit tests. **Nothing was run on a real server and the scripted player was not used.** Tick a box when you have done it, then update
 the tables in `README.md` and `6-guides/FABRIC-AND-FORGE-STATUS.md`. Items that were done are not listed here (see `CHANGELOG.md`).
@@ -8,32 +8,32 @@ the tables in `README.md` and `6-guides/FABRIC-AND-FORGE-STATUS.md`. Items that 
 ## A. Needs a real-server test (exact steps)
 
 ### A1. Start every jar
-- [ ] Fabric and Forge: `TEST=1 ./build-everything.sh <version>`. Expect: `/abw` works, no error in the log.
+- [ ] Fabric and Forge: `TEST=1 ./build-everything.sh <version>`. Expect: `/moderra` works, no error in the log.
 - [ ] Paper or Purpur (never run): `SERVER_JAR=/path/to/paper.jar ./2-plugin-bukkit-purpur/test-on-real-server.sh <version>`; add `OLD_CONFIG=1` for the migration check. Expect small fixes (console flags, wait time).
-- [ ] Spigot and Bukkit: start once, run `/abw info`, expect no error.
-- [ ] `plugin.yml`, `fabric.mod.json` and `mods.toml` show version **2.1** while the jar name keeps `- 2-<mc>.jar` (the version is now a separate property: `abw.display.version` in the plugin pom, `display_version` in both `gradle.properties`). The next `[build]` run must be green; check that Fabric Loader and Forge accept the version text `2.1`.
+- [ ] Spigot and Bukkit: start once, run `/moderra info`, expect no error.
+- [ ] `plugin.yml`, `fabric.mod.json` and `mods.toml` show version **1.0**, the same number as in the jar name (ONE version: `<version>` in the plugin pom, `mod_version` in both `gradle.properties`). The next `[build]` run must be green; check that Fabric Loader and Forge accept the version text `1.0`.
 - [ ] Scripted player: `cd 5-shared-engine/live-player-test && npm install && node bot.js <host> <port> <version> extras,filters,moderation`, then restart the server and run `moderation-again`. Not possible on 26.2 and 26.3 (the bot library lacks them).
-- [ ] Migration from a version 1 `config.yml` (`OLD_CONFIG=1`): the old message texts are upgraded (log line "Updated N message(s)"), `strikes.json.discarded` appears when strikes are not kept.
-- [ ] Upgrade of the 2.1 message texts: start with the 2.0 `discord.yml` and `config.yml` unchanged, reload, expect the new default texts and the log line. A text you changed must stay.
+- [ ] Migration from an old single-file `config.yml` (`OLD_CONFIG=1`): the old message texts are upgraded (log line "Updated N setting(s)"), `strikes.json.discarded` appears when strikes are not kept.
+- [ ] Upgrade of the message texts: start with the old 2.0 `discord.yml` and `config.yml` unchanged, reload, expect the new default texts and the log line. A text you changed must stay.
 
 ### A2. Menu (Bukkit, Fabric, Forge)
-- [ ] Open `/abw`, click every kind of entry, number keys, shift-click, drag, Esc with unsaved changes. Item names are gold, lore is gray, no colour code shows as text.
-- [ ] Bukkit: `antibadwords.gui.edit.<category>` negated in LuckPerms blocks only that category; `/abw gui ladder` opens the right page; `ItemFlag` names on 1.21.x (tooltips); the nodes are registered with default TRUE.
+- [ ] Open `/moderra`, click every kind of entry, number keys, shift-click, drag, Esc with unsaved changes. Item names are gold, lore is gray, no colour code shows as text.
+- [ ] Bukkit: `moderra.gui.edit.<category>` negated in LuckPerms blocks only that category; `/moderra gui ladder` opens the right page; `ItemFlag` names on 1.21.x (tooltips); the nodes are registered with default TRUE.
 - [ ] Fabric and Forge, **all six versions**: lore appears on the items (`DataComponents.LORE`).
 - [ ] Fabric and Forge, fake sign (`gui.prompt.mode: sign`, the default): click a text setting, a sign opens above the head, write a value, expect the menu to continue, the real block back at once, no strike, the answer not in chat. Close the sign: input cancelled. Wait for the time limit: sign removed. Leave the server while the sign is open: block restored. An invalid value opens the sign again.
 - [ ] Fabric and Forge, `gui.prompt.mode: anvil`: type in the name field, click the result item. Test with a survival player at **0 XP levels** (the client may not send the click when it cannot afford the item). Expect no item and no XP change.
 - [ ] Chat mode on all server types: the answer is not shown to others, `cancel` stops it.
 
 ### A3. Discord
-- [ ] Webhook: `/abw discord test`, rate limits, a `${ENV:ABW_ALERTS_URL}` secret. Check the new plain-text templates look right in embed and plain style (no broken markdown, no ping).
+- [ ] Webhook: `/moderra discord test`, rate limits, a `${ENV:MODERRA_ALERTS_URL}` secret. Check the new plain-text templates look right in embed and plain style (no broken markdown, no ping).
 - [ ] DiscordSRV alerts and log channel; the inbound filter with `block` and `censor` (does the processed message really contain the raw Discord text? if not the `censor` action does nothing for 30 s and then lets the text go); the direct message to the sender (`discord.inbound.notify-text`).
-- [ ] `!abw` commands: set `discord.commands.channels`, `allowed-roles`, switch on one command, run `!abw check hello`; a person not on the list must get no answer.
-- [ ] Slash commands: set `discord.commands.style: both`, the command switch, an allowed role and a command channel. **Restart the server.** Wait up to one minute. Run `/abw-check text:hello`. Expect an ephemeral reply that starts with `[AntiBadWords]`. A person not on the list must get "You cannot use this command here." The reply path (`reply(String)`, `setEphemeral`, `queue`) and the `ApiManager` calls are looked up by name at run time: if a name is missing the log has one warning and Discord shows "application did not respond".
+- [ ] `!moderra` commands: set `discord.commands.channels`, `allowed-roles`, switch on one command, run `!moderra check hello`; a person not on the list must get no answer.
+- [ ] Slash commands: set `discord.commands.style: both`, the command switch, an allowed role and a command channel. **Restart the server.** Wait up to one minute. Run `/moderra-check text:hello`. Expect an ephemeral reply that starts with `[Moderra]`. A person not on the list must get "You cannot use this command here." The reply path (`reply(String)`, `setEphemeral`, `queue`) and the `ApiManager` calls are looked up by name at run time: if a name is missing the log has one warning and Discord shows "application did not respond".
 
 ### A4. Plugin integrations (Bukkit family, each one never run with the real plugin)
 - [ ] EssentialsX and EssentialsX Chat: chat order (log line "Chat check priority: LOWEST"), a blocked message never reaches Essentials formatting, `/mute`, `/nick`, `/vanish`; `getUser(UUID)` exists, `setMuteTimeout(0)` means no end.
-- [ ] LuckPerms: profile by meta (`/lp group vip meta set antibadwords-profile relaxed`) and by permission.
-- [ ] Vault (method names from memory), PlaceholderAPI (every `%antibadwords_<name>%`), Floodgate and Geyser names.
+- [ ] LuckPerms: profile by meta (`/lp group vip meta set moderra-profile relaxed`) and by permission.
+- [ ] Vault (method names from memory), PlaceholderAPI (every `%moderra_<name>%`), Floodgate and Geyser names.
 - [ ] Ban plugins: run every `tempban` and `ipban` template and `{ip}` (LiteBans, AdvancedBan, LibertyBans, EssentialsX, vanilla). Check the notice texts when a provider has no tempban command.
 - [ ] TownyChat event: a blocked word in a town channel. TAB and NametagEdit commands. mcMMO, Towny, Factions, Citizens and DecentHolograms command lists (from memory, edit them).
 - [ ] **mcMMO party chat:** write a blocked word in party chat (`/p`). Expect it cancelled. Check that `Identity.uuid()` finds the sender (otherwise the log shows "mcMMO: notice. The plugin cannot find the sender ...").
@@ -43,13 +43,13 @@ the tables in `README.md` and `6-guides/FABRIC-AND-FORGE-STATUS.md`. Items that 
 - [ ] **Outgoing-text scan:** install TAB or NametagEdit and ProtocolLib or PacketEvents, set `integrations.outgoing-scan.enabled: true` and `action: mask`, restart, give a team a prefix with a blocked word. Expect `***` in the name tag and the log line "Outgoing scan: a team packet for <player> was changed.". Also test a tab-list name and a broadcast (system chat). ProtocolLib `getPlayerInfoDataLists()` has different list indexes per server version.
 
 ### A5. Network
-- [ ] Shared folder with two servers: mutes, unmutes, strikes, resets. Then set `journal-max-kb: 64` on both (all servers on 2.1), write many records, check that the journal shrinks and that neither server misses or repeats a record. On Windows the atomic move can fail while another server reads the file (one warning, the next write retries).
-- [ ] Plugin messaging through BungeeCord and Velocity (Velocity: `bungee-plugin-message-channel` on): `Forward ALL antibadwords:sync`, queue while no player is online, `sendPluginMessage` from the async thread. Switch the bridge off on purpose: expect the one "Network sync: notice. No other server answered ..." warning after `check-timeout`. `/abw network` shows peers.
+- [ ] Shared folder with two servers: mutes, unmutes, strikes, resets. Then set `journal-max-kb: 64` on both (all servers on 1.0), write many records, check that the journal shrinks and that neither server misses or repeats a record. On Windows the atomic move can fail while another server reads the file (one warning, the next write retries).
+- [ ] Plugin messaging through BungeeCord and Velocity (Velocity: `bungee-plugin-message-channel` on): `Forward ALL moderra:sync`, queue while no player is online, `sendPluginMessage` from the async thread. Switch the bridge off on purpose: expect the one "Network sync: notice. No other server answered ..." warning after `check-timeout`. `/moderra network` shows peers.
 
 ### A6. Fabric and Forge only
 - [ ] Sign back side on 26.3 (`SignTextSlot.toString()` must give "back"), command blocks (run and save), world name in `worlds.yml`, player IP for `{ip}`, kick message through `/kick`.
-- [ ] `hasPlugin` ids: `/abw info` lists installed mods; check the guessed ids `styledchat` and `floodgate` (`ModPluginIds`). On 1.21.11 Forge uses `ModList.get().isLoaded`, on 26.x the static `ModList.isLoaded`.
-- [ ] Fabric 26.3 with the Text Placeholder API mod: `%antibadwords:strikes%` shows the number. Styled Chat installed: a blocked word is still blocked before formatting.
+- [ ] `hasPlugin` ids: `/moderra info` lists installed mods; check the guessed ids `styledchat` and `floodgate` (`ModPluginIds`). On 1.21.11 Forge uses `ModList.get().isLoaded`, on 26.x the static `ModList.isLoaded`.
+- [ ] Fabric 26.3 with the Text Placeholder API mod: `%moderra:strikes%` shows the number. Styled Chat installed: a blocked word is still blocked before formatting.
 - [ ] Placeholder API library versions for 1.21.11, 26.1, 26.1.1, 26.1.2 and 26.2: after a CI run shows which candidate in `tools/api-manifest.txt` is PASS, put its version in the Fabric table of `3-mod-fabric/build-all-versions.sh` (`api|<version>`).
 - [ ] Forge permission nodes with a permission mod; Fabric Permissions API with LuckPerms.
 
@@ -91,7 +91,7 @@ exact list of what was therefore **not** compiled or run. If you have network ac
 tick the boxes, and update the honest test matrix in `README.md` and `6-guides/FABRIC-AND-FORGE-STATUS.md`.
 Later sessions: **append your own section** at the end; do not delete open items.
 
-## Session 2 (shared engine, folder config, migration, world profiles, /abw lang, /abw whitelist)
+## Session 2 (shared engine, folder config, migration, world profiles, /moderra lang, /moderra whitelist)
 
 ### What was verified, and how
 
@@ -113,9 +113,9 @@ Later sessions: **append your own section** at the end; do not delete open items
         (plugin.yml filtered; engine resources; `../7-wordlists/*.yml` -> `wordlists/`);
       * `-Xlint:all` now also sees the engine sources (warnings are fine, errors are not);
       * SnakeYAML is declared `provided` 2.3 next to the one spigot-api brings; remove the explicit one if Maven complains.
-- [ ] **Check the plugin jar content**: `unzip -l "1-download-jars/Antibadwords-RELEASE[Bukkit] - 1-26.3.jar"` must show
-      `plugin.yml`, `wordlists-index.txt`, `abw-defaults/punishment-*.yml` (4 files), `wordlists/en.yml` ... (38 files),
-      `com/jason/plugins/antibadwords/engine/**`.
+- [ ] **Check the plugin jar content**: `unzip -l "1-download-jars/Moderra26.3-1.0-paper.jar"` must show
+      `plugin.yml`, `wordlists-index.txt`, `moderra-defaults/punishment-*.yml` (4 files), `wordlists/en.yml` ... (38 files),
+      `com/jason/plugins/moderra/engine/**`.
 - [ ] **Fabric and Forge compile**: `./build-everything.sh 26.3 26.1 1.21.11`, then all versions.
       Things to look at if it fails:
       * `build.gradle` (both): source roots are now `../5-shared-engine/src/main/java`, `src/mc/java`,
@@ -126,31 +126,31 @@ Later sessions: **append your own section** at the end; do not delete open items
       * `ModRuntime` got a nested `ModPlatform implements Platform`; it uses only Minecraft calls the old file already used
         (`getPlayerList().getPlayers()/getPlayer(uuid)/getPlayerByName`, `sendSystemMessage`, `server.execute`,
         `performPrefixedCommand`, ...).
-- [ ] **Check a mod jar content** the same way (word lists under `wordlists/`, `wordlists-index.txt`, `abw-defaults/`).
+- [ ] **Check a mod jar content** the same way (word lists under `wordlists/`, `wordlists-index.txt`, `moderra-defaults/`).
       On Forge also check that the files are readable at runtime: the engine uses
       `Resources.class.getResourceAsStream("/wordlists/en.yml")` (the old code read `/config.yml` the same way).
-- [ ] **Real server check, Fabric and Forge**: `TEST=1 ./build-everything.sh 26.3 26.1 1.21.11` (then all 24).
+- [ ] **Real server check, Fabric and Forge**: `TEST=1 ./build-everything.sh 26.3 26.1 1.21.11` (then all 36).
       The scripts now type 15 commands (plus `stop`) and make 19 checks per jar (was 9; 20 with `OLD_CONFIG=1`), including: config folder created, word lists
-      copied, `/abw lang list|enable|disable`, a German word blocked while `de` is on, `/abw whitelist add|list|remove`,
-      `/abw reload`, and "no config problems in the log".
+      copied, `/moderra lang list|enable|disable`, a German word blocked while `de` is on, `/moderra whitelist add|list|remove`,
+      `/moderra reload`, and "no config problems in the log".
 - [ ] **Migration on a real server**: `OLD_CONFIG=1 ./3-mod-fabric/test-on-real-server.sh <args>` and the same for Forge
       (starts with the version-1 `config.yml`; expects the migration log lines and the same languages on).
       Arguments: see the `VERSIONS` line of the Minecraft version in `build-all-versions.sh`.
-- [ ] **Bukkit / Paper / Purpur real server** (never done, also not for version 1): get a Paper or Purpur 26.x server jar,
+- [ ] **Bukkit / Paper / Purpur real server** (never done, also not for old version 1): get a Paper or Purpur 26.x server jar,
       then `SERVER_JAR=/path/paper.jar ./2-plugin-bukkit-purpur/test-on-real-server.sh 26.3` and again with `OLD_CONFIG=1`.
       **This script has never been run**; expect small fixes (console flag `--nogui`, warm-up time, log wording).
 - [ ] **Scripted player** on Fabric and Forge 26.1 and 1.21.11 (and on Paper if possible):
       `cd 5-shared-engine/live-player-test && npm install && node bot.js localhost <port> 26.1 extras`.
-      7 new checks for `/abw lang` and `/abw whitelist` were added and never run. One of them looks for the new word at the
+      7 new checks for `/moderra lang` and `/moderra whitelist` were added and never run. One of them looks for the new word at the
       end of a chat line (`/botsafeword$/`); adjust if the server formats the line differently.
 - [ ] **Behaviour to watch on a real server** (logic is unit-tested, the wiring is not):
-      * strikes, warnings, punishments still appear exactly as in version 1 (chat, `/msg`, sign, book, anvil);
+      * strikes, warnings, punishments still appear exactly as in old version 1 (chat, `/msg`, sign, book, anvil);
       * anvil: one strike per anvil session, result slot stays empty;
       * Bukkit: chat is checked on the async chat thread, the follow-up runs on the main thread (`BukkitPlatform.runSync`);
       * mods: `ModRuntime.remember(server)` must have run before the first broadcast (it is called from every entry point;
         on Fabric also at `SERVER_STARTED`);
       * Bukkit: an operator must **not** get a `worlds.yml` profile just for being op (the plugin registers
-        `antibadwords.profile.<name>` with default `false` after every reload);
+        `moderra.profile.<name>` with default `false` after every reload);
       * attribute punishments and the crash ledger still restore values (unchanged code, but re-wired).
 - [ ] After building: copy the new jars into `1-download-jars/` (the build scripts do that) and rewrite the test matrix.
 
@@ -167,7 +167,7 @@ Later sessions: **append your own section** at the end; do not delete open items
       `worlds.yml` later has no node until the next restart (nobody has the permission until then). Documented, not fixable
       without a Forge API for late registration.
 - [ ] **Censoring on mods.** No check censors yet. When one does (session 3), the mods and the non-chat Bukkit events treat
-      "censor" as "block" (`ModRuntime.apply`, `AntiBadWordsListener`). Rewriting chat text on Fabric/Forge needs event APIs
+      "censor" as "block" (`ModRuntime.apply`, `ModerraListener`). Rewriting chat text on Fabric/Forge needs event APIs
       that are not in this repository yet.
 - [ ] **World-profile difference on a live server** (two worlds with different profiles): not scripted; covered by
       `WorldProfilesTest` only.
@@ -183,13 +183,13 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
 
 | Part | Level |
 |------|-------|
-| `5-shared-engine/src/main` (normaliser, look-alike table, word index, spam / link / evasion checks, join-name and command-block entry points, check order, `/abw check`) | **unit tests, run**: `cd 5-shared-engine && mvn -B test` -> 130 tests, 0 failures (JDK 21) |
+| `5-shared-engine/src/main` (normaliser, look-alike table, word index, spam / link / evasion checks, join-name and command-block entry points, check order, `/moderra check`) | **unit tests, run**: `cd 5-shared-engine && mvn -B test` -> 130 tests, 0 failures (JDK 21) |
 | Speed with 10 000 words and 256-character messages | **measured** (`PerformanceTest`, 4-core container, JDK 21): word matcher p50 31 us / p99 75-92 us; with partial-match p99 78-79 us (the old scanning code: p99 ~2.9 ms); whole pipeline with every filter on p50 ~60 us / p99 219-260 us. Budget (p99 < 1 ms) is asserted. The slowest single measurement is 1-5 ms (garbage collector), so a server with a very small heap should be watched. |
 | No false positives | **tested**: 10 clean-language families (Latin with and without accents, Cyrillic, Greek, Arabic/Persian, Hebrew, Indic, Thai, CJK, emoji), every bundled word list compared decision-by-decision against the unchanged old matcher over ~60 000 random and nasty inputs, and the session-2 migration comparison test still passes |
 | `2-plugin-bukkit-purpur/src/main/java` (sign side, `ServerCommandEvent` for command blocks, join check, `canRewrite`) | compiled with `javac` against the **hand-written Bukkit stub** (extended with `block.sign.Side`, `block.Block`, `command.BlockCommandSender`, `entity.minecart.CommandMinecart`, `event.server.ServerCommandEvent`, `SignChangeEvent#getSide`). Not compiled against spigot-api. **Never run.** |
 | `5-shared-engine/src/mc/java`, `3-mod-fabric/src`, `4-mod-forge/src` (join hook, new permission nodes) | compiled with `javac` against the **hand-written Minecraft/Fabric/Forge stub**, both `sign-array` and `sign-record`. **Never run.** |
 | `live-player-test/bot.js` "filters" mode (14 new checks, 15 with `BOT_NAME`) | **only `node --check`**. Never run. |
-| Jars in `1-download-jars/` | untouched (still version 1). |
+| Jars in `1-download-jars/` | untouched (still old version 1). |
 
 ### To do, in this order
 
@@ -205,7 +205,7 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
       26.1 and 1.21.11 (and on Paper if a server jar can be downloaded), plus one run with
       `BOT_NAME=xXshitXx ... filters` for the join-name check.
 - [ ] Check on a real server that **"censor" really rewrites chat on Bukkit** (`AsyncPlayerChatEvent#setMessage` with
-      `filters.spam.caps.action: censor`) and that it **blocks** on Fabric/Forge, and that `/abw check` and `/abw info`
+      `filters.spam.caps.action: censor`) and that it **blocks** on Fabric/Forge, and that `/moderra check` and `/moderra info`
       print the new lines.
 - [ ] Check that a **command block** with a blocked word is stopped on Bukkit and that the console reports it only once
       per `filters.command-blocks.report-interval` while a repeating block keeps running.
@@ -240,20 +240,20 @@ HTTP 403), only JDK 21 was available. Maven Central and raw.githubusercontent.co
       the official file when the network allows, and check the diff is empty.
 
 ## Session 4 (moderation adapters, mini task 8)
-- [ ] Bukkit: permissions `antibadwords.mute/.history/.discord/.gui/.bypass.mute` in `plugin.yml` (stub-compiled only). Check `/lp`/`/perm` sees them and defaults (op / nobody) are right.
+- [ ] Bukkit: permissions `moderra.mute/.history/.discord/.gui/.bypass.mute` in `plugin.yml` (stub-compiled only). Check `/lp`/`/perm` sees them and defaults (op / nobody) are right.
 - [ ] Bukkit: `BukkitPlatform.kick` now goes through `runSync`; confirm a ladder `kick` from an async chat event kicks with the message.
 - [ ] Forge: the new `PermissionNode`s (`mute history discord gui bypass.mute`) register at gather time; check with a permission mod.
 - [ ] Fabric: new nodes are passed to the Permissions API by reflection (unchanged code path); check with LuckPerms.
 - [ ] Fabric/Forge: ladder `kick` uses the vanilla `/kick` command; check message formatting. Mute checks for signs/books/commands rely on existing `ModRuntime` calls to `inspect`.
 - [ ] Run `live-player-test/bot.js ... moderation`, then restart the server, then `moderation-again` (written, only `node --check`ed). Needs the config in `live-player-test/README.md`.
 - [ ] Not done (no API in the repo): mute enforcement on Fabric/Forge for the `world` name, and a GUI/Discord permission check on mods beyond nodes.
-## Mini task 18 (Fabric/Forge GUI glue, chat prompt capture, /abw gui)
+## Mini task 18 (Fabric/Forge GUI glue, chat prompt capture, /moderra gui)
 
 Read/stub-compiled only (javac against the scratchpad stub, both sign variants, no stub additions needed; never run).
 Done and safe: `ModRuntime.blockChat` returns true without `onViolation` when `verdict.captured()`; `mod/gui/ModGui` (sessions,
 click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, close/quit); `Platform.supportsMenu/openMenu` on
-`ModPlatform`; Forge node `antibadwords.gui` in `ForgePermissions`. `ModGui.available()` is false until a loader calls
-`ModGui.install(GuiBackend)`, so `/abw` behaves as before on mods.
+`ModPlatform`; Forge node `moderra.gui` in `ForgePermissions`. `ModGui.available()` is false until a loader calls
+`ModGui.install(GuiBackend)`, so `/moderra` behaves as before on mods.
 
 **NOT done: the `GuiBackend` implementation (the vanilla chest menu).** Needs, to verify with `javap` on 1.21.11 AND 26.x (Mojang names):
 
@@ -264,12 +264,12 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 - [ ] Title change: `update` cannot change the title of an open menu; either reopen the menu (cursor resets) or only update items.
 - [ ] Colour codes: engine texts use `§`; `Component.literal` renders them on chat (as `ModPlatform.sendMessage` relies on); check item name and lore too.
 - [ ] Hook: Fabric and Forge must call `ModGui.install(new ChestBackend())` at startup. Disconnect already calls `ModRuntime.onQuit`, which calls `ModGui.onQuit`.
-- [ ] Run: open `/abw`, try every click type, shift-click from the inventory, number keys, drag, drop; confirm nothing can be taken or inserted; Esc with unsaved changes; disconnect while the menu is open; chat prompt (the answer must not appear in chat, a swear word as answer gives no strike) and `cancel`.
+- [ ] Run: open `/moderra`, try every click type, shift-click from the inventory, number keys, drag, drop; confirm nothing can be taken or inserted; Esc with unsaved changes; disconnect while the menu is open; chat prompt (the answer must not appear in chat, a swear word as answer gives no strike) and `cancel`.
 - [ ] Sign-editor prompt (B2 sign path) on mods: `supportsSignPrompt` is false on mods; needs the open-sign-editor and block update packets, not designed here.
-- [ ] `plugin.yml` permission `antibadwords.gui` (default op) is a Bukkit-side item, not done here.
+- [ ] `plugin.yml` permission `moderra.gui` (default op) is a Bukkit-side item, not done here.
 ## Mini tasks 11/12 (DiscordSRV hook)
 - [ ] `2-plugin-bukkit-purpur` `DiscordSrvHook` / `DiscordSrvListener`: compiled only against the hand-written Bukkit stub and two name-only DiscordSRV shim
-      classes. Test on a real server WITH DiscordSRV 1.x and a bot: alerts reach the channel, a blocked word typed in Discord is not shown in game, `!abw` commands
+      classes. Test on a real server WITH DiscordSRV 1.x and a bot: alerts reach the channel, a blocked word typed in Discord is not shown in game, `!moderra` commands
       (all off by default), no stack traces when DiscordSRV is missing.
 - [ ] `2-plugin-bukkit-purpur/pom.xml`: new build-helper execution `add-discordsrv-shim` and `maven-jar-plugin` excludes `github/**`. Run `mvn package` and check
       with `unzip -l` that no `github/scarsz` class is inside the jar and that the jar loads without DiscordSRV.
@@ -278,14 +278,14 @@ click mapping by vanilla click-type NAME, text prompts via `engine.prompts()`, c
 ## Mini task 21 (EssentialsX hook, Bukkit)
 Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `EssentialsHook` reflection names (see its javadoc), the chat order
 (`Chat check priority: LOWEST` log line, blocked chat never reaches EssentialsX Chat formatting, censored chat is formatted clean),
-`loadbefore: [EssentialsChat]` in plugin.yml, mute-mode essentials/both (`/mute` in Essentials vs `/abw mute`), `/nick`, `/vanish` broadcasts.
+`loadbefore: [EssentialsChat]` in plugin.yml, mute-mode essentials/both (`/mute` in Essentials vs `/moderra mute`), `/nick`, `/vanish` broadcasts.
 ## Mini task 24 (GUI editors, edit rights, stubs)
-- [ ] Bukkit: `antibadwords.gui.edit.<category>` nodes are registered with default TRUE after every reload (`AntiBadWordsPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/abw gui ladder`, `/abw gui spam` open the right page.
+- [ ] Bukkit: `moderra.gui.edit.<category>` nodes are registered with default TRUE after every reload (`ModerraPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/moderra gui ladder`, `/moderra gui spam` open the right page.
 - [ ] Fabric/Forge: edit nodes use `ModPermissions.fallback` (true); Forge does not register them (unregistered nodes use the fallback). `ModGui.open(player, page)` is stub-compiled only; mods still have no chest backend.
 - [ ] Run `tools/stub-compile.sh` (hand-written stubs, see `tools/api-stubs/README.md`): passing it proves nothing about the real APIs. It found a duplicate `case` in `ForgePermissions` (fixed).
 
 ## Task 34: plugin messaging network sync
-Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity network (Velocity: BungeeCord bridge on): `Forward ALL antibadwords:sync` delivery, queue while empty, `sendPluginMessage` from the async poll thread.
+Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity network (Velocity: BungeeCord bridge on): `Forward ALL moderra:sync` delivery, queue while empty, `sendPluginMessage` from the async poll thread.
 ## Mini task 32 (Discord censor, IP API)
 - [ ] CI javap check of DiscordSRV 1.x: `github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent` must exist with `String getProcessedMessage()`,
       `void setProcessedMessage(String)` and `void setCancelled(boolean)` (Cancellable); `DiscordGuildMessagePreProcessEvent#getMessage()` (JDA Message,
@@ -295,3 +295,13 @@ Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity
 - [ ] ipban templates now use `{ip}` (falls back to the name): confirm each ban plugin's ipban command accepts an IP (EssentialsX banip, LiteBans ipban, AdvancedBan ipban, LibertyBans ipban, vanilla ban-ip).
 
 - Task 38: real server test of ProtocolLibScan (type-based field read for sign/book/anvil) and PlanHook (provider method `UUID playerUUID` convention); rerun plugin-api-dump to get PacketEvents ProtocolPacketEvent/PacketListenerCommon, Plan builders and the shaded JDA slash-command classes, then implement the PacketEvents listener and DiscordSRV slash commands.
+
+## Rename to Moderra (task 54): nothing of this was run on a real server
+- [ ] Bukkit family: start a server with an `plugins/AntiBadWords/` folder from an old install and the new jar. Expect the console line "Moved the old data folder", the folder `plugins/Moderra/`, a note file in the old folder, `/moderra info` works, `/abw` is unknown.
+- [ ] Fabric and Forge: the same with `config/antibadwords/` (`OLD_CONFIG=1` in the test scripts now uses the old folder name).
+- [ ] Legacy permission fallback: give a player only `antibadwords.bypass` (LuckPerms) and check that the filter lets them pass; operators without any grant must NOT bypass (Bukkit: `isPermissionSet`).
+- [ ] Forge: the legacy permission nodes are registered as extra `PermissionNode`s with the old mod id prefix (`ForgePermissions.legacy`); never compiled against ForgeGradle here (stub compile only). Check that Forge accepts a second namespace.
+- [ ] Gradle jar names: Fabric `Moderra26.3-1.0-fabric.jar` (archivesName `Moderra<mc>` + version `1.0-fabric`) and Forge `Moderra26.3-1.0-forge.jar` (the full jarJar jar, not `...-forge-slim.jar`). The first `[build]` run must show these names; the release job counts 36 jars.
+- [ ] Plugin jars: `-bukkit`, `-spigot`, `-paper`, `-purpur` are renamed copies of the same build (`2-plugin-bukkit-purpur/build-all-versions.sh`).
+- [ ] DiscordSRV slash commands are now `/moderra-*`: restart once and check that Discord shows the new names.
+- [ ] After the owner renames the GitHub repository: update the URLs (README, 1-download-jars/README.md, Modrinth texts, plugin pom `<url>`).

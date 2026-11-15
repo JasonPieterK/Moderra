@@ -1,11 +1,11 @@
-# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
 language: "en"
 name: English
 script: latin
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
 notes: "Matching is exact-token, so innocent words that merely contain a listed word are safe. Left out on purpose because players use them innocently in Minecraft: creep, hell, hoe, rape, chink, coon, dyke, anal, cock-related farm words are kept only as 'cock' (legacy). 'cock' and 'penis' are legacy entries and can hit biology or chicken talk. Short legacy words fk and mf are kept. False-positive review 2026-11-14: known small risks kept on purpose: 'tits' (the bird), 'cum' (Latin 'with'), 'jerk' (jerk chicken), 'dick' (the name Dick), 'cock' and 'penis' (legacy, always blocked). short-ok: fk mf Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard bitch cretin fuck idiot imbecile loser motherfucker noob Related languages share cognate words on purpose. collisions-ok: en-gb"
 level-1: [

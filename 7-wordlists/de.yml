@@ -1,11 +1,11 @@
-# AntiBadWords word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
 language: "de"
 name: German
 script: latin
 review-status: unreviewed
 sources:
   - "AI-written from general knowledge, no third-party list copied, unreviewed"
-  - "Legacy word-lists section of AntiBadWords 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
   - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
 notes: "German chat spellings (scheisse, scheiss, ae/oe/ue). Left out on purpose: mist, schwanz (also 'tail'), muschi (cat), nazi, kacke is tier 2 only. Because the matcher strips accents, blöd becomes blod, which is also the Scandinavian word for blood; the same goes for 'bloed'. short-ok: collisions-ok: en fr da sv no nl pt-br Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard idiot loser mongo motherfucker noob"
 level-1: [
