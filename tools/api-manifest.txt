@@ -148,3 +148,11 @@ townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setCanc
 townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | isCancelled()
 townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getChannel()
 townychat | com.palmergames.bukkit.TownyChat.channels.Channel | getName()
+
+# --- ChannelChatEvents (mcMMO party chat, task 45; verified in plugin-api-dump) ---
+mcmmo | com.gmail.nossr50.events.chat.McMMOPartyChatEvent | -
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | getMessage()
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setMessage(String)
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setCancelled(boolean)
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | isCancelled()
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | getAuthor()
