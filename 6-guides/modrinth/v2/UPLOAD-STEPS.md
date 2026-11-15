@@ -1,14 +1,28 @@
 # Upload steps: Moderra Modrinth page
 
-Do these steps once. You need the project owner account on Modrinth. Time: about 15 minutes.
+Do these steps once. You need the project owner account on Modrinth. Time: about 5 minutes.
 
-## What you have
+## Quick way (recommended)
 
-- `DESCRIPTION.md`: the page text. It has nine placeholders: `IMAGE_URL_01` to `IMAGE_URL_09`.
-- `images/01-hero.png` to `images/09-divider.png`: the nine pictures (each smaller than 1 MB).
-- `DESCRIPTION-preview.html`: open it in a browser to read the page with the local pictures. Check the text before you upload.
+The repository is public. `DESCRIPTION.md` already loads its nine pictures from the `v1.0` release tag on GitHub
+(`raw.githubusercontent.com/.../v1.0/6-guides/modrinth/v2/images/...`). These links do not change.
 
-Placeholder to file:
+1. Open the Modrinth project, then **Settings -> General**. Upload `6-guides/branding/logo-a-refined/moderra-icon-512.png` as the
+   project icon. Set the project name to **Moderra**.
+2. Open **Settings -> Description**. Delete the old text. Paste the full content of `DESCRIPTION.md`. Click **Preview** and check
+   that all pictures show. Save.
+3. Optional: upload the pictures to the **Gallery** too, so they show on the Gallery tab.
+4. Open **Versions** and upload the jars from the GitHub release `v1.0`: each `Moderra<mc>-1.0-<loader>.jar` with its loader
+   (Bukkit, Spigot, Paper, Purpur, Fabric, Forge) and its Minecraft version.
+
+If you rename the GitHub repository later, GitHub redirects the old picture links, so the page keeps working.
+
+## Other way: pictures from the Modrinth Gallery
+
+Use this only if you do not want the page to load pictures from GitHub. Then replace each GitHub picture link in
+`DESCRIPTION.md` with the Gallery link of the same file.
+
+Picture to file:
 
 | Placeholder | File | Used for |
 |---|---|---|
