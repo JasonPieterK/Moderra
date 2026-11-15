@@ -17,10 +17,10 @@ JAVA25_HOME="${JAVA25_HOME:-/usr/lib/jvm/java-25-openjdk-amd64}"
 # "<minecraft>|<fabric api version>|<remap: true only for obfuscated 1.21.x>|<java to compile with>|<sign packet api: record|array>|<menu click api: input (26.3+, ContainerInput) | click (older, ClickType)>"
 VERSIONS=(
   "26.3|0.165.2+26.3|false|25|record|input"
-  "26.2|0.161.0+26.2|false|25|array|click"
-  "26.1.2|0.155.3+26.1.2|false|25|array|click"
-  "26.1.1|0.145.4+26.1.1|false|25|array|click"
-  "26.1|0.145.1+26.1|false|25|array|click"
+  "26.2|0.161.0+26.2|false|25|array|input"
+  "26.1.2|0.155.3+26.1.2|false|25|array|input"
+  "26.1.1|0.145.4+26.1.1|false|25|array|input"
+  "26.1|0.145.1+26.1|false|25|array|input"
   "1.21.11|0.141.6+1.21.11|true|21|array|click"
 )
 wanted=("$@")

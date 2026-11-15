@@ -19,10 +19,10 @@ export JAVA_HOME="$JAVA25_HOME" PATH="$JAVA25_HOME/bin:$PATH"
 # "<minecraft>|<forge build>|<forge major>|<java to compile with>|<mappings: empty for unobfuscated 26.x>|<sign packet api: record|array>|<menu click api: input (26.3+, ContainerInput) | click (older, ClickType)>"
 VERSIONS=(
   "26.3|66.1.0|66|25||record|input"
-  "26.2|65.1.5|65|25||array|click"
-  "26.1.2|64.1.5|64|25||array|click"
-  "26.1.1|63.0.2|63|25||array|click"
-  "26.1|62.0.9|62|25||array|click"
+  "26.2|65.1.5|65|25||array|input"
+  "26.1.2|64.1.5|64|25||array|input"
+  "26.1.1|63.0.2|63|25||array|input"
+  "26.1|62.0.9|62|25||array|input"
   "1.21.11|61.2.4|61|21|1.21.11|array|click"
 )
 wanted=("$@")
