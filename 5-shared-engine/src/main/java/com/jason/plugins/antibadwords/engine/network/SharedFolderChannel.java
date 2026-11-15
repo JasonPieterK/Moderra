@@ -86,7 +86,7 @@ public final class SharedFolderChannel implements SyncChannel {
                     .forEach(backlogIds::add);
             }
         } catch (IOException | RuntimeException ex) {
-            warn("Network sync: cannot prepare " + folder + ": " + ex);
+            warn("Network sync: error. The plugin cannot prepare the folder " + folder + ": " + ex);
         }
     }
 
@@ -107,7 +107,7 @@ public final class SharedFolderChannel implements SyncChannel {
             Files.writeString(ownJournal(), record.toLine() + "\n", StandardCharsets.UTF_8,
                 StandardOpenOption.CREATE, StandardOpenOption.APPEND);
         } catch (IOException ex) {
-            warn("Network sync: cannot write the journal in " + folder + ": " + ex);
+            warn("Network sync: error. The plugin cannot write the journal in " + folder + ": " + ex);
             return;
         }
         compactIfNeeded();
@@ -179,12 +179,12 @@ public final class SharedFolderChannel implements SyncChannel {
                 return;
             }
             if (size > MAX_COMPACT_BYTES) {
-                warn("Network sync: the journal " + journal.getFileName() + " is too large to shrink (" + size + " bytes).");
+                warn("Network sync: notice. The journal " + journal.getFileName() + " is too large to shrink (" + size + " bytes).");
                 return;
             }
             compact(journal, size);
         } catch (IOException | RuntimeException ex) {
-            warn("Network sync: cannot shrink the journal: " + ex);
+            warn("Network sync: error. The plugin cannot shrink the journal: " + ex);
         }
     }
 
@@ -282,7 +282,7 @@ public final class SharedFolderChannel implements SyncChannel {
         }
         long newSize = headerBytes.length + summaryBytes.length + (all.length - cut);
         nextCompactionSize = newSize + newSize / 4;
-        log.info("Network sync: the journal of this server was shrunk from " + size + " to " + newSize + " bytes.");
+        log.info("Network sync: the journal of this server is smaller now. Old size: " + size + " bytes. New size: " + newSize + " bytes.");
     }
 
     private static SyncRecord newer(SyncRecord a, SyncRecord b) {
@@ -301,7 +301,7 @@ public final class SharedFolderChannel implements SyncChannel {
             files.filter(p -> p.getFileName().toString().startsWith("sync-") && p.getFileName().toString().endsWith(".jsonl"))
                 .sorted().forEach(journals::add);
         } catch (IOException ex) {
-            warn("Network sync: cannot read " + folder + ": " + ex);
+            warn("Network sync: error. The plugin cannot read the folder " + folder + ": " + ex);
             return;
         }
         for (Path journal : journals) {
@@ -345,7 +345,7 @@ public final class SharedFolderChannel implements SyncChannel {
                 offsets.put(id, layout.base() + Math.max(0, start + end - summaryEnd));
                 dirty = true;
             } catch (IOException | RuntimeException ex) {
-                warn("Network sync: cannot read " + journal.getFileName() + ": " + ex);
+                warn("Network sync: error. The plugin cannot read the journal " + journal.getFileName() + ": " + ex);
             }
         }
         if (!Files.exists(offsetFile)) {
@@ -364,7 +364,7 @@ public final class SharedFolderChannel implements SyncChannel {
         try {
             Files.writeString(offsetFile, text, StandardCharsets.UTF_8);
         } catch (IOException ex) {
-            warn("Network sync: cannot write " + offsetFile.getFileName() + ": " + ex);
+            warn("Network sync: error. The plugin cannot write the file " + offsetFile.getFileName() + ": " + ex);
         }
     }
 

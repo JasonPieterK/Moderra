@@ -1,9 +1,6 @@
 package com.jason.plugins.antibadwords.engine.network;
 
-import static com.jason.plugins.antibadwords.engine.command.Chat.GRAY;
-import static com.jason.plugins.antibadwords.engine.command.Chat.GREEN;
-import static com.jason.plugins.antibadwords.engine.command.Chat.YELLOW;
-
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import com.jason.plugins.antibadwords.engine.command.CommandContext;
 import com.jason.plugins.antibadwords.engine.command.SubCommand;
 import java.time.Instant;
@@ -20,14 +17,15 @@ public final class NetworkCommand implements SubCommand {
     public void execute(CommandContext c) {
         NetworkSync n = c.engine().network();
         String mode = n.mode();
-        c.send(GREEN + "Network sync: " + YELLOW + mode + GRAY + " (configured: " + c.engine().value(NetworkSettings.MODE) + ")");
+        c.send(Chat.heading("Network sync."));
+        c.send(Chat.info("Mode: " + Chat.val(mode) + ". Configured mode: " + Chat.val(c.engine().value(NetworkSettings.MODE)) + "."));
         if (NetworkSettings.OFF.equals(mode)) {
             return;
         }
-        c.send(GRAY + "Server id: " + YELLOW + n.serverId());
+        c.send(Chat.info("Server id: " + Chat.val(n.serverId()) + "."));
         Map<String, Long> peers = n.peers();
-        c.send(GRAY + "Peers seen: " + YELLOW + (peers.isEmpty() ? "none yet" : peers.size() + " (" + String.join(", ", peers.keySet()) + ")"));
-        c.send(GRAY + "Last sync: " + YELLOW + (n.lastSync() == 0 ? "never" : Instant.ofEpochMilli(n.lastSync()).toString()));
-        c.send(GRAY + "Queued records: " + YELLOW + n.queued());
+        c.send(Chat.info("Peers seen: " + Chat.val(peers.isEmpty() ? "none yet" : peers.size() + " (" + String.join(", ", peers.keySet()) + ")") + "."));
+        c.send(Chat.info("Last sync: " + Chat.val(n.lastSync() == 0 ? "never" : Instant.ofEpochMilli(n.lastSync()).toString()) + "."));
+        c.send(Chat.info("Queued records: " + Chat.val(n.queued()) + "."));
     }
 }

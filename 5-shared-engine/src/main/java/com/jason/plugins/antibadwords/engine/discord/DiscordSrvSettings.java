@@ -49,7 +49,7 @@ public final class DiscordSrvSettings {
     public static final Setting<Boolean> NOTIFY_SENDER = s(Setting.bool(I + "notify-sender", true).title("Tell the sender")
         .description("Send the person a direct message in Discord when their message was blocked or cleaned."));
     public static final Setting<String> NOTIFY_TEXT = s(Setting.string(I + "notify-text",
-            "Your message was not delivered to the Minecraft chat because it contains words that are not allowed on this server.")
+            "[AntiBadWords] Notice. The plugin did not send your message to the Minecraft chat. It contains a word that is not permitted.")
         .title("Text for the sender").description("The direct message. No placeholders; never put the blocked word in it."));
 
     public static final Setting<String> PREFIX = s(Setting.string(C + "prefix", "!abw").title("Command prefix in Discord")

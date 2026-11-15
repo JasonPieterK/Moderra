@@ -131,7 +131,7 @@ class IntegrationsTest {
         result.late().run();
         assertEquals(List.of("Bob: Rude"), f.platform.kicks);
         assertTrue(f.platform.consoleCommands.isEmpty());
-        assertTrue(f.platform.warnings.stream().anyMatch(w -> w.contains("tempban") && w.contains("fallback: kick")), f.platform.warnings.toString());
+        assertTrue(f.platform.warnings.stream().anyMatch(w -> w.contains("tempban") && w.contains("The fallback is: kick")), f.platform.warnings.toString());
     }
 
     @Test

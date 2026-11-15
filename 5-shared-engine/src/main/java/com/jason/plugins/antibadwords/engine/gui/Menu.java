@@ -185,7 +185,7 @@ public final class Menu {
     /** {@code null} when the viewer may edit the category, else the action that tells them they may not. */
     static MenuAction guard(MenuState state, String category) {
         return mayEdit(state, category) ? null
-            : MenuAction.error("You may not change settings in \"" + category + "\" (permission " + editNode(category) + ").");
+            : MenuAction.error("You cannot change settings in \"" + category + "\". Permission needed: " + editNode(category) + ".");
     }
 
     /** All nodes the platform should know (default true): one per category that has anything the menu can change. */
@@ -234,7 +234,7 @@ public final class Menu {
         }
         int lost = state.stagedCount();
         state.discard();
-        return MenuAction.close(lost > 0 ? "Unsaved changes were discarded." : null);
+        return MenuAction.close(lost > 0 ? "The plugin discarded the unsaved changes." : null);
     }
 
     /** The viewer is gone (quit, server stop): forget everything staged. */
@@ -285,7 +285,7 @@ public final class Menu {
             if (setting.type() == SettingType.SECRET) {
                 value = value.trim();
                 if (value.isEmpty()) {
-                    return MenuAction.error("Nothing typed. Type the new secret or cancel (nothing was changed).");
+                    return MenuAction.error("Nothing typed. Type the new secret or cancel. The plugin changed nothing.");
                 }
             }
             Object checked;
@@ -460,7 +460,7 @@ public final class Menu {
         slots.put(24, new Entry(Icons.CANCEL, "Discard changes", List.of("Throw the changes away and close"),
             false, (s, t) -> {
                 s.discard();
-                return MenuAction.close("Changes discarded.");
+                return MenuAction.close("The plugin discarded the unsaved changes.");
             }));
         slots.put(Page.BACK, new Entry(Icons.BACK, "Keep editing", List.of("Go back to the menu"), false, (s, t) -> {
             s.pop();
@@ -510,7 +510,7 @@ public final class Menu {
             List.of(n == 0 ? "No unsaved changes" : "Unsaved changes: " + n), n > 0, (s, t) -> MenuAction.none()));
         slots.put(Page.CANCEL, new Entry(Icons.CANCEL, "Cancel", List.of("Discard all unsaved changes and close"), false, (s, t) -> {
             s.discard();
-            return MenuAction.close("Changes discarded.");
+            return MenuAction.close("The plugin discarded the unsaved changes.");
         }));
         slots.put(Page.DONE, new Entry(Icons.DONE, "Done", List.of(n == 0 ? "Close the menu" : "Save " + n + " change" + (n == 1 ? "" : "s") + " and close"),
             n > 0, (s, t) -> save(s)));
@@ -678,14 +678,14 @@ public final class Menu {
         }
         String sectionProblem = EditorPages.problem(state);
         if (sectionProblem != null) {
-            return MenuAction.error("Not saved: " + sectionProblem + " (your changes are kept)");
+            return MenuAction.error("Not saved. Problem: " + noDot(sectionProblem) + ". The menu keeps your changes.");
         }
         for (Map.Entry<Setting<?>, Object> e : changes.entrySet()) {
             Setting<?> setting = e.getKey();
             try {
                 setting.require(rawYaml(setting, e.getValue()));
             } catch (IllegalArgumentException ex) {
-                return MenuAction.error("Not saved: " + (setting.type() == SettingType.SECRET ? setting.key() + " is not valid" : ex.getMessage()));
+                return MenuAction.error("Not saved. Problem: " + noDot(setting.type() == SettingType.SECRET ? setting.key() + " is not valid" : ex.getMessage()) + ". The menu keeps your changes.");
             }
         }
         try {
@@ -695,12 +695,18 @@ public final class Menu {
                 state.access().save(changes, sections);
             }
         } catch (IOException | RuntimeException ex) {
-            return MenuAction.error("Not saved: " + (ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage())
-                + " (your changes are kept)");
+            return MenuAction.error("Not saved. Problem: " + noDot(ex.getMessage() == null ? ex.getClass().getSimpleName() : ex.getMessage())
+                + ". The menu keeps your changes.");
         }
         int n = changes.size() + sections.size();
         state.discard();
-        return MenuAction.saved("Saved " + n + " setting" + (n == 1 ? "" : "s") + " and reloaded.");
+        return MenuAction.saved("The plugin saved " + n + " setting" + (n == 1 ? "" : "s") + " and reloaded the configuration.");
+    }
+
+    /** A message without its closing full stop, so a sentence can add its own. */
+    private static String noDot(String text) {
+        String t = text == null ? "" : text.trim();
+        return t.endsWith(".") ? t.substring(0, t.length() - 1) : t;
     }
 
     @SuppressWarnings({"unchecked", "rawtypes"})

@@ -1,5 +1,7 @@
 package com.jason.plugins.antibadwords.engine.gui;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
+
 /**
  * What the platform must do after a click. {@code CLOSE}, {@code SAVED} and {@code DENIED} mean: close the inventory
  * (show {@code message} if present). {@code REFRESH}: call {@link Menu#render} again. {@code ERROR}: show the message,
@@ -17,19 +19,19 @@ public record MenuAction(Kind kind, String message, TextRequest request) {
     }
 
     public static MenuAction close(String message) {
-        return new MenuAction(Kind.CLOSE, message, null);
+        return new MenuAction(Kind.CLOSE, message == null ? null : Chat.info(message), null);
     }
 
     public static MenuAction saved(String message) {
-        return new MenuAction(Kind.SAVED, message, null);
+        return new MenuAction(Kind.SAVED, message == null ? null : Chat.ok(message), null);
     }
 
     public static MenuAction denied() {
-        return new MenuAction(Kind.DENIED, "You do not have permission to use the AntiBadWords menu.", null);
+        return new MenuAction(Kind.DENIED, Chat.error("You do not have permission to use the menu."), null);
     }
 
     public static MenuAction error(String message) {
-        return new MenuAction(Kind.ERROR, message, null);
+        return new MenuAction(Kind.ERROR, message == null ? null : Chat.error(message), null);
     }
 
     public static MenuAction text(TextRequest request) {

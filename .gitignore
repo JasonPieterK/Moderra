@@ -1,4 +1,5 @@
-# Build output. The finished jars worth keeping are copied into 1-download-jars/ by the build scripts.
+# Build output. The build scripts copy the finished jars into 1-download-jars/; they are published on GitHub Releases, not in git.
+1-download-jars/*.jar
 target/
 build/
 .gradle/

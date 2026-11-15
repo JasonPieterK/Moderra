@@ -66,6 +66,10 @@ class MessageStyleTest {
                 continue;
             }
             String text = (String) r.get(key).defaultValue();
+            if (key.startsWith("discord.")) {
+                assertDiscordText(key, text);
+                continue;
+            }
             assertTrue(text.startsWith("&8[&6&lAntiBadWords&8]&r "), key + " starts with the prefix");
             String plain = CODES.matcher(PLACEHOLDER.matcher(text.replace("\\n", " ")).replaceAll("x")).replaceAll("");
             assertFalse(Pattern.compile("\\b[A-Z]{3,}\\b").matcher(plain.replace("AntiBadWords", "")).find(), key + " has shouting: " + plain);
@@ -74,6 +78,39 @@ class MessageStyleTest {
             }
             assertFalse(text.toLowerCase().contains("please"), key);
         }
+    }
+
+    /** Discord text: plain, no Minecraft colour codes, formal sentences. */
+    private static void assertDiscordText(String key, String text) {
+        assertFalse(text.contains("&") || text.contains("\u00a7"), key + " has no colour codes");
+        String plain = PLACEHOLDER.matcher(text.replace("**", "")).replaceAll("x");
+        assertFalse(Pattern.compile("\\b[A-Z]{3,}\\b").matcher(plain.replace("AntiBadWords", "")).find(), key + " has shouting: " + plain);
+        for (String sentence : plain.split("(?<=[.:!?])\\s+")) {
+            assertTrue(sentence.trim().split("\\s+").length <= 20, key + ": sentence longer than 20 words: " + sentence);
+        }
+        assertFalse(text.toLowerCase().contains("please"), key);
+        assertTrue(text.endsWith("."), key + " ends with a full stop");
+    }
+
+    @Test
+    void menuResultsCarryThePrefixAndTheKeyWord() {
+        assertTrue(com.jason.plugins.antibadwords.engine.gui.MenuAction.error("x").message().startsWith(com.jason.plugins.antibadwords.engine.command.Chat.PREFIX));
+        assertTrue(com.jason.plugins.antibadwords.engine.gui.MenuAction.error("x").message().contains("Error."));
+        assertTrue(com.jason.plugins.antibadwords.engine.gui.MenuAction.saved("x").message().contains("Done."));
+        assertTrue(com.jason.plugins.antibadwords.engine.gui.MenuAction.close("x").message().contains("Info."));
+        assertEquals(null, com.jason.plugins.antibadwords.engine.gui.MenuAction.close(null).message());
+        assertTrue(com.jason.plugins.antibadwords.engine.gui.MenuAction.denied().message().contains("Error."));
+    }
+
+    @Test
+    void everyDiscordWebhookTemplateKeepsItsPlaceholdersAndIsNewlyWorded() {
+        SettingsRegistry r = registry();
+        for (String kind : List.of("violation", "punishment", "mute", "unmute", "spam", "link", "evasion", "admin-command")) {
+            String key = "discord.templates." + kind;
+            assertTrue(MessageDefaults.OLD_DEFAULTS.containsKey(key), key);
+            assertTrue(((String) r.get(key).defaultValue()).contains("{player}"), key);
+        }
+        assertTrue(((String) r.get("discord.inbound.notify-text").defaultValue()).startsWith("[AntiBadWords] "));
     }
 
     @Test

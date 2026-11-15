@@ -59,11 +59,11 @@ processResources {
         include '*.yml'
         into 'wordlists'
     }
-    inputs.property 'version', mod_version
+    inputs.property 'version', display_version
     inputs.property 'minecraft_version', minecraft_version
     inputs.property 'java_release', java_release
     filesMatching('fabric.mod.json') {
-        expand version: mod_version, minecraft_version: minecraft_version, java_release: java_release
+        expand version: display_version, minecraft_version: minecraft_version, java_release: java_release
     }
 }
 

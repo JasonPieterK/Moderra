@@ -1,5 +1,59 @@
 # Changelog
 
+## 2.1.0 (jar names stay `Antibadwords-RELEASE[X] - 2-<mc>.jar`)
+
+**Honest status:** the jars are built by GitHub Actions (tag `v2.1.0`) and the code compiles against the real Spigot, Minecraft, Fabric,
+Forge, DiscordSRV, ProtocolLib, PacketEvents and mcMMO APIs; every name used was read from an API dump (`tools/api-manifest.txt`). The shared
+engine has 435 unit tests. **Nothing of version 2.1 was run on a real server.** The open list with exact steps is `handoffs/BUILD-VERIFICATION-TODO.md`.
+
+### Version and downloads
+* The documents say **2.1**. The jar file names keep the major number: `Antibadwords-RELEASE[X] - 2-<mc>.jar`. The version inside the jars
+  (`plugin.yml`, `fabric.mod.json`, `mods.toml`) is **2.1** (new property `abw.display.version` in the plugin pom, `display_version` in both `gradle.properties`).
+* `1-download-jars/` no longer holds jars. The 24 old version 1 jars were removed from git. The folder has a README that points to GitHub Releases
+  and explains how to pick a jar and how to build them. Built jars in that folder are ignored by git.
+
+### Fabric and Forge
+* **Menu help text:** the chest items show their help as lore on all six Minecraft versions.
+* **Text input:** a fake sign (only the player sees it; the real block is restored) is the default input on all six versions. Setting `gui.prompt.mode: auto|sign|anvil|chat`.
+  `anvil` uses a rename screen (type in the name field, click the result item; no item, no XP). `chat` keeps the old chat input.
+  A sign or anvil input is removed from the screen on time limit, cancel and quit.
+  **Behaviour change:** `gui.prompt.mode: auto` now picks the sign on the mods (it was the chat before). Bukkit still uses the chat.
+* **`hasPlugin` by mod id** (`FabricLoader.isModLoaded`, `ModList.isLoaded`): `/abw info` lists installed mods that match known plugin names; `integrations.bans.provider: auto` and Bedrock `auto` can see them.
+* **Fabric Text Placeholder API** (Minecraft 26.3): `%antibadwords:<name>%` for every PlaceholderAPI value. Other versions stay without placeholders until a matching library version is proven.
+* Styled Chat needs no code: it formats chat after our filter on the vanilla chat path.
+
+### Bukkit family: packets and chat events
+* **PacketEvents packet scan** for sign, book and anvil text, same behaviour as the ProtocolLib scan (ProtocolLib is preferred when both exist).
+* **Outgoing-text scan** (`integrations.outgoing-scan.*`, default off): checks system chat, player chat, **team prefixes and suffixes** and **tab-list names** that other plugins send
+  (VentureChat, forwarded HuskChat chat, TAB, NametagEdit). Actions `log` (default), `mask` (ProtocolLib and PacketEvents) and `cancel`. No strikes are counted.
+  Team and tab-list packets are masked, never cancelled. Texts that contain `[AntiBadWords]` are never touched.
+* **mcMMO party chat** is checked through `McMMOPartyChatEvent` (channel name `mcmmo-party`; sender found with `Identity.uuid()`).
+* CarbonChat, FactionsUUID and ChatControl have no usable API jar. They are covered only through the normal Bukkit chat event (our check runs at the lowest priority and `loadbefore` lists them).
+  See the limits in `handoffs/BUILD-VERIFICATION-TODO.md`.
+
+### Discord
+* **DiscordSRV slash commands** `/abw-mute`, `/abw-unmute`, `/abw-history`, `/abw-strikes`, `/abw-check`, `/abw-reload` with the same allow-list, command channels, per-command switch,
+  rate limit and audit event as the `!abw` prefix commands. Setting `discord.commands.style: prefix | slash | both` (default `prefix`, the old behaviour). A refused slash call gets one neutral answer.
+  The registration uses the real `ApiManager.addSlashCommandProvider`; a restart is needed after you change the style.
+* Webhook templates and bot replies are in the formal style (see Messages).
+
+### Network sync
+* Start-up check of the plugin messaging bridge (`integrations.network.check-bridge`, `check-timeout`): one warning names the likely causes when no other server answers.
+* Size limit and safe compaction of the shared-folder journal (`integrations.network.journal-max-kb`, default 0 = off). All servers need 2.1 before you switch it on.
+* `/abw network` and the network log lines use the formal style.
+
+### Messages (formal style, ASD-STE100)
+* Restyled: `/abw network`, the ban-provider warnings and fallbacks, the Discord webhook templates (`discord.templates.*`, plain text), the Discord bot replies
+  (prefix `[AntiBadWords]` and slash commands), the text sent to a Discord user whose message was blocked (`discord.inbound.notify-text`), the packet-scan and outgoing-scan log lines,
+  the mcMMO and TownyChat notices, and the GUI messages and lore (item names in gold, lore in gray, results with the standard prefix; titles stay short because of the 32-character limit).
+* **Upgrades:** a text that is still exactly the old default is replaced by the new default (one log line). A text you changed is never touched. This includes
+  the old sign-prompt text and every new default above.
+* Discord webhook text: the key word is now the event kind in the title or in `[kind]`; the templates are plain sentences.
+
+### Documentation
+* New `1-download-jars/README.md`, rewritten `6-guides/PROJECT_SUMMARY.md`, updated README, INTEGRATIONS, GUI, DISCORD, MODERATION and FABRIC-AND-FORGE-STATUS guides,
+  regenerated CONFIGURATION.md, one clean open-items list in `handoffs/BUILD-VERIFICATION-TODO.md`.
+
 ## 2.0 (jar names `Antibadwords-RELEASE[X] - 2-<mc>.jar`)
 
 **Honest status:** all 24 jars are built by GitHub Actions (`build-release.yml`) and published as a GitHub Release for the tag

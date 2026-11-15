@@ -264,7 +264,7 @@ public final class DiscordService {
             }
             CompletableFuture<String> result = new CompletableFuture<>();
             ModerationEvent event = new ModerationEvent("test", engine.now(), null, senderName, "", "command", Map.of());
-            String message = "Test message from " + clean(senderName) + ": the " + target + " webhook works.";
+            String message = "Test. " + clean(senderName) + " sent this message. The " + target + " webhook works.";
             WebhookSender.Item item;
             if (embed) {
                 Map<String, Object> card = new LinkedHashMap<>();

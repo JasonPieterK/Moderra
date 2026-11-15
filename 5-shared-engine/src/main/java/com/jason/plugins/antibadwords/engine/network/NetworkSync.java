@@ -167,14 +167,14 @@ public final class NetworkSync {
         if (NetworkSettings.SHARED_FOLDER.equals(wanted)) {
             created = new SharedFolderChannel(folder(), id, log, () -> engine.value(NetworkSettings.JOURNAL_MAX_KB) * 1024L, engine::now);
         } else if (transport == null) {
-            log.warn("integrations.network.mode is plugin-messaging but this loader provides no plugin messaging transport: "
-                + "nothing is synced. Use shared-folder instead.");
+            log.warn("Network sync: error. The mode is plugin-messaging, but this loader has no plugin messaging transport. "
+                + "The plugin syncs nothing. Use the mode shared-folder instead.");
             return;
         } else {
             created = new PluginMessagingChannel(id, transport);
         }
         channel = created;
-        log.info("Network sync: " + created.describe() + " (mutes " + (syncMutes ? "on" : "off") + ", strikes " + (syncStrikes ? "on" : "off") + ").");
+        log.info("Network sync: on. Channel: " + created.describe() + ". Mutes: " + (syncMutes ? "on" : "off") + ". Strikes: " + (syncStrikes ? "on" : "off") + ".");
         checkStart = 0;
         if (created instanceof PluginMessagingChannel && engine.value(NetworkSettings.CHECK)) {
             checkStart = Math.max(1, engine.now());
@@ -231,7 +231,7 @@ public final class NetworkSync {
             }
             checkBridge(c);
         } catch (RuntimeException ex) {
-            engine.platform().logger().warn("Network sync failed: " + ex);
+            engine.platform().logger().warn("Network sync: error. The sync failed: " + ex);
         }
     }
 
@@ -249,11 +249,11 @@ public final class NetworkSync {
             checkStart = Math.max(1, engine.now()); // nobody is online yet: the hello is not sent, so the wait has not started
         } else if (engine.now() - started >= engine.value(NetworkSettings.CHECK_TIMEOUT).toMillis()) {
             checkStart = 0;
-            log.warn("Network sync: no other server answered within " + engine.value(NetworkSettings.CHECK_TIMEOUT).toSeconds()
-                + " seconds. The plugin messaging bridge could be off. Check: (1) the BungeeCord plugin message channel of the proxy is on "
-                + "(Velocity: bungee-plugin-message-channel in velocity.toml), (2) the proxy forwards the channel "
-                + NetworkSettings.CHANNEL + ", (3) the other servers run this plugin with mode plugin-messaging. "
-                + "If this is the only server of the network, ignore this message. Switch it off with integrations.network.check-bridge.");
+            log.warn("Network sync: notice. No other server answered within " + engine.value(NetworkSettings.CHECK_TIMEOUT).toSeconds()
+                + " seconds. The plugin messaging bridge could be off. Check three things. (1) The BungeeCord plugin message channel of the proxy is on "
+                + "(Velocity: bungee-plugin-message-channel in velocity.toml). (2) The proxy forwards the channel "
+                + NetworkSettings.CHANNEL + ". (3) The other servers run this plugin with the mode plugin-messaging. "
+                + "If this is the only server of the network, ignore this message. Switch the check off with integrations.network.check-bridge.");
         }
     }
 

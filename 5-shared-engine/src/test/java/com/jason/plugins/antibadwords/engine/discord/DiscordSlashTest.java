@@ -97,8 +97,8 @@ class DiscordSlashTest {
         slash("42", Set.of(), "staff", "unmute", "Bob");
         slash("42", Set.of(), "staff", "mute", "Bob;op 1h");
         slash("42", Set.of(), "staff", "addword", "evil");
-        assertEquals("The command 'unmute' is switched off on this server.", replies.get(0));
-        assertEquals("That is not a valid player name.", replies.get(1));
+        assertEquals("[AntiBadWords] Error. The command 'unmute' is switched off on this server.", replies.get(0));
+        assertEquals("[AntiBadWords] Error. The player name is not valid.", replies.get(1));
         assertEquals(3, replies.size());
         assertFalse(engine.mutes().isMuted(bob));
     }
@@ -110,7 +110,7 @@ class DiscordSlashTest {
         slash("42", Set.of(), "staff", "mute", "Bob 1h");
         typed("!abw mute Bob 1h");
         slash("42", Set.of(), "staff", "mute", "Bob 1h");
-        assertEquals("Slow down: too many commands, try again in a moment.", replies.get(replies.size() - 1));
+        assertEquals("[AntiBadWords] Notice. You send too many commands. Try again in a moment.", replies.get(replies.size() - 1));
     }
 
     @Test

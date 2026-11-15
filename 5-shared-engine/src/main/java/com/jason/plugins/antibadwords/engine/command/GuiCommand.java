@@ -47,7 +47,7 @@ public final class GuiCommand implements SubCommand {
         if (sender.id() == null) {
             sender.send(Chat.error("The menu can only be opened by a player."));
         } else if (!sender.has(Menu.PERMISSION)) {
-            sender.send(Chat.error("No permission."));
+            sender.send(Chat.error("You do not have permission to use the menu."));
         } else if (!engine.platform().supportsMenu()) {
             sender.send(Chat.warn("The settings menu is not available on this server. Edit the files in the config folder instead."));
         } else {

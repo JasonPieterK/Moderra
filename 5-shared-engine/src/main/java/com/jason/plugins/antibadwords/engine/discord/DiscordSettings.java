@@ -32,14 +32,14 @@ public final class DiscordSettings {
         ModerationEvent.ADMIN_COMMAND, "#95A5A6");
 
     private static final Map<String, String> DEFAULT_TEMPLATES = Map.of(
-        ModerationEvent.VIOLATION, "{player} used a blocked word in {source}: {word} ({count}/{limit}, {action})",
-        ModerationEvent.PUNISHMENT, "{player} was punished ({action}) at {count} strikes, step {step}",
-        "mute", "{player} was muted for {duration}: {reason}",
-        "unmute", "{player} was unmuted",
-        ModerationEvent.SPAM, "{player} triggered the spam filter ({check}: {detail}) in {source}, action {action}",
-        ModerationEvent.LINK, "{player} posted a link in {source}: {detail} (action {action})",
-        ModerationEvent.EVASION, "{player} tried to dodge the filter in {source}: {detail} (action {action})",
-        ModerationEvent.ADMIN_COMMAND, "{player} ran /{command}");
+        ModerationEvent.VIOLATION, "{player} used a word that is not permitted in {source}: {word}. Violations: {count} of {limit}. Action: {action}.",
+        ModerationEvent.PUNISHMENT, "{player} received a penalty at {count} strikes. Step: {step}. Action: {action}.",
+        "mute", "{player} cannot write for {duration}. Reason: {reason}.",
+        "unmute", "{player} can write again.",
+        ModerationEvent.SPAM, "{player} triggered the spam filter in {source}. Check: {check}. Detail: {detail}. Action: {action}.",
+        ModerationEvent.LINK, "{player} posted a link in {source}: {detail}. Action: {action}.",
+        ModerationEvent.EVASION, "{player} tried to avoid the filter in {source}: {detail}. Action: {action}.",
+        ModerationEvent.ADMIN_COMMAND, "{player} ran /{command}.");
 
     public static final Setting<Boolean> ENABLED = s(Setting.bool(P + "enabled", false).title("Discord alerts on")
         .description("Master switch. false = nothing is ever sent to Discord (default)."));
