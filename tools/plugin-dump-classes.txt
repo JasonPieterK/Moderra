@@ -128,3 +128,4 @@ placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderHandler
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult
 placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext
+mcmmo | com.gmail.nossr50.mcmmo.kyori.adventure.identity.Identity
