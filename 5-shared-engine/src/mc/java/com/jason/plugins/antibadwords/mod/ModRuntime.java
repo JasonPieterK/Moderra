@@ -84,6 +84,7 @@ public final class ModRuntime {
         }
         for (String name : new String[] {"net.minecraft.server.network.ServerGamePacketListenerImpl",
             "net.minecraft.world.inventory.AnvilMenu", "net.minecraft.world.inventory.ItemCombinerMenu",
+            "net.minecraft.world.level.BaseCommandBlock",
             "net.minecraft.commands.Commands"}) {
             try {
                 Class.forName(name);
@@ -109,10 +110,14 @@ public final class ModRuntime {
     // action must be cancelled; the follow-up (strikes, messages, punishments) is started before returning.
     // ------------------------------------------------------------------------------------------
 
-    /** World names are not passed yet (see handoffs/BUILD-VERIFICATION-TODO.md), so worlds.yml world rules do not match on mods. */
+    /** The dimension id of the player's level, such as {@code minecraft:the_nether} (what worlds.yml rules match on mods). */
+    static String dimensionOf(ServerPlayer player) {
+        return player.level().dimension().identifier().toString();
+    }
+
     private static Message message(ServerPlayer player, String source, String text) {
         remember(serverOf(player));
-        return Message.of(player.getUUID(), player.getName().getString(), "", source, text, node -> has(player, node));
+        return Message.of(player.getUUID(), player.getName().getString(), dimensionOf(player), source, text, node -> has(player, node));
     }
 
     /**
@@ -143,14 +148,15 @@ public final class ModRuntime {
         return apply(message, engine.inspect(message));
     }
 
-    /**
-     * Signs: the packet carries the lines of the side that was edited, so both sides are scanned under
-     * filters.scan.signs. The packet's front/back flag is not read yet, so filters.scan.sign-back has no effect on mods.
-     * Command blocks are not scanned on mods yet. Both are listed in handoffs/BUILD-VERIFICATION-TODO.md.
-     */
-    public static boolean blockSign(ServerPlayer player, String[] lines) {
-        Message template = message(player, Message.SIGN, "");
+    /** Signs: the packet carries the lines of the side that was edited; the back side uses source sign-back (filters.scan.sign-back). */
+    public static boolean blockSign(ServerPlayer player, String[] lines, boolean back) {
+        Message template = message(player, back ? Message.SIGN_BACK : Message.SIGN, "");
         return apply(template, engine.inspectFirst(template, Arrays.asList(lines)));
+    }
+
+    /** A command block's command was set by a player (packet) or is about to run; {@code where} is for the log. */
+    public static boolean blockCommandBlock(String world, String where, String command) {
+        return engine.blockCommandBlock(world, where, command);
     }
 
     public static boolean blockBook(ServerPlayer player, List<String> pages, String title) {
@@ -307,7 +313,24 @@ public final class ModRuntime {
 
         @Override
         public String worldName(UUID playerId) {
-            return ""; // not available yet on mods, see handoffs/BUILD-VERIFICATION-TODO.md
+            ServerPlayer p = player(playerId);
+            return p == null ? "" : dimensionOf(p);
+        }
+
+        @Override
+        public String dimensionName(UUID playerId) {
+            return worldName(playerId);
+        }
+
+        @Override
+        public String playerIp(UUID playerId) {
+            ServerPlayer p = player(playerId);
+            if (p == null || p.connection == null) {
+                return null;
+            }
+            java.net.SocketAddress address = p.connection.getRemoteAddress();
+            return address instanceof java.net.InetSocketAddress inet && inet.getAddress() != null
+                ? inet.getAddress().getHostAddress() : null;
         }
 
         @Override

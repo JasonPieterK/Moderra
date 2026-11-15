@@ -1,0 +1,1 @@
+package net.minecraft.world.level; public abstract class BaseCommandBlock { public String getCommand(){return null;} public boolean performCommand(net.minecraft.server.level.ServerLevel l){return false;} }

@@ -37,6 +37,8 @@ sourceSets {
             srcDir '../5-shared-engine/src/mc/java'
             // Small per-version shims for APIs that changed between Minecraft releases (see build-all-versions.sh).
             srcDir "../5-shared-engine/src/mc-variants/sign-${sign_api}"
+            // Chest menu click signature: "input" (ContainerInput, 26.3) or "click" (ClickType, 1.21.11 and assumed older 26.x).
+            srcDir "../5-shared-engine/src/mc-variants/menu-${menu_api}"
         }
         // The engine's own files (default punishment sections, word-list index) and the mixin config.
         resources.srcDir '../5-shared-engine/src/main/resources'

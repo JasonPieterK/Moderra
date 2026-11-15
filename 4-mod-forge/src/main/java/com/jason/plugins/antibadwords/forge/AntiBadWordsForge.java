@@ -19,6 +19,7 @@ public final class AntiBadWordsForge {
     private static final Logger LOGGER = LoggerFactory.getLogger("AntiBadWords");
 
     public AntiBadWordsForge(FMLJavaModLoadingContext context) {
+        com.jason.plugins.antibadwords.mod.gui.ModGui.install(new com.jason.plugins.antibadwords.mod.gui.ChestBackend());
         String version = readVersion();
         ModRuntime.init(FMLPaths.CONFIGDIR.get().resolve("antibadwords"), version, "Forge", new ForgePermissions(),
             new EngineLog() {

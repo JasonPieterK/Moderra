@@ -49,6 +49,18 @@ net.minecraftforge.network.NetworkEvent
 net.minecraftforge.event.entity.player.PlayerEvent
 net.minecraftforge.event.entity.player.PlayerContainerEvent
 net.minecraftforge.eventbus.api.bus.BusGroup
+net.minecraft.world.item.component.ItemLore
+net.minecraft.world.item.Item
+net.minecraft.world.inventory.ContainerInput
+net.minecraft.world.inventory.MenuConstructor
+net.minecraft.world.entity.player.Inventory
+net.minecraft.world.level.block.entity.SignTextSlot
+net.minecraft.world.level.block.entity.SignBlockEntity
+net.minecraft.core.BlockPos
+net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket
+net.minecraft.network.protocol.game.ClientboundOpenSignEditorPacket
+net.fabricmc.loader.api.FabricLoader
+net.minecraftforge.fml.ModList
 """.split()
 
 MARK = "net/minecraft/world/inventory/ChestMenu.class"

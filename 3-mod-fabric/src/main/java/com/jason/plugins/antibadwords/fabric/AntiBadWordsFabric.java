@@ -32,6 +32,7 @@ public final class AntiBadWordsFabric implements ModInitializer {
                 }
             });
 
+        com.jason.plugins.antibadwords.mod.gui.ModGui.install(new com.jason.plugins.antibadwords.mod.gui.ChestBackend());
         // Returning false from ALLOW_CHAT_MESSAGE cancels the message.
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> !ModRuntime.blockChat(sender, message.signedContent()));
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ModRuntime.onJoin(handler.getPlayer()));
