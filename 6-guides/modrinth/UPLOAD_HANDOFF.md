@@ -23,8 +23,8 @@ only about the project settings and the six version uploads.
 | Categories | Moderation, Utility (Modrinth category names may differ slightly: pick the closest) |
 | Environment | Server side only; client: unsupported |
 | Licence | MIT |
-| Source | https://github.com/JasonPieterK/AntiBadWordsPlugin |
-| Issues | https://github.com/JasonPieterK/AntiBadWordsPlugin/issues |
+| Source | https://github.com/JasonPieterK/Moderra |
+| Issues | https://github.com/JasonPieterK/Moderra/issues |
 | Donation / Discord / Wiki | none yet - leave empty |
 
 ## Loaders
@@ -83,7 +83,7 @@ Version 1.0 (first release as Moderra; the project was renamed)
 - New permissions: moderra.bypass, moderra.notify
 - New commands: /moderra check, /moderra info
 - Config: per-source toggles, scanned command list, whitelist, violation expiry
-Full list: https://github.com/JasonPieterK/AntiBadWordsPlugin/blob/main/CHANGELOG.md
+Full list: https://github.com/JasonPieterK/Moderra/blob/main/CHANGELOG.md
 ```
 
 Dependencies: none.

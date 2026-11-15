@@ -8,8 +8,8 @@ books and anvil renames, so there is no sneaky way around it. This is **version 
 
 ## Which file do I download? (60 seconds)
 
-1. Open the **[GitHub Releases page](https://github.com/JasonPieterK/AntiBadWordsPlugin/releases)** and pick the newest release
-   ([latest release](https://github.com/JasonPieterK/AntiBadWordsPlugin/releases/latest), for example `v1.0`). Scroll to **Assets**.
+1. Open the **[GitHub Releases page](https://github.com/JasonPieterK/Moderra/releases)** and pick the newest release
+   ([latest release](https://github.com/JasonPieterK/Moderra/releases/latest), for example `v1.0`). Scroll to **Assets**.
    (The jars are built by GitHub Actions, `.github/workflows/build-release.yml`, and attached to the release.
    The folder [`1-download-jars/`](1-download-jars/) holds only a README that explains this; git holds no jar files.)
 2. Pick the file for **your server type** and **your Minecraft version**. The name tells you everything:
@@ -96,7 +96,7 @@ Level for every row: engine unit tests pass, the code compiles against the real 
 ## What is in each folder?
 
 ```
-AntiBadWordsPlugin/
+Moderra/
 ├── README.md                    <- you are here
 ├── build-everything.sh          <- one button: builds every jar for every version
 ├── CHANGELOG.md                 <- what changed, in plain words

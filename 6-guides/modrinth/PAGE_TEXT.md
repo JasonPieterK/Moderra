@@ -260,9 +260,9 @@ Words are indexed once when the config loads; checking a message is a quick look
 
 ## 14. Support and links [Heading 2]
 
-- Source code: https://github.com/JasonPieterK/AntiBadWordsPlugin
+- Source code: https://github.com/JasonPieterK/Moderra
 - Report a bug: GitHub Issues
-- Changelog: https://github.com/JasonPieterK/AntiBadWordsPlugin/blob/main/CHANGELOG.md
+- Changelog: https://github.com/JasonPieterK/Moderra/blob/main/CHANGELOG.md
 - Discord: **TODO** (optional)
 
 [Small, centred] Made by Jason P · Licensed under MIT

@@ -2,9 +2,9 @@
 
 This folder holds **no jar files in git**. The finished jars are on **GitHub Releases**:
 
-* Repository: <https://github.com/JasonPieterK/AntiBadWordsPlugin>
-* All releases: <https://github.com/JasonPieterK/AntiBadWordsPlugin/releases>
-* Newest release: <https://github.com/JasonPieterK/AntiBadWordsPlugin/releases/latest> (open it, scroll to **Assets**, click the jar you need)
+* Repository: <https://github.com/JasonPieterK/Moderra>
+* All releases: <https://github.com/JasonPieterK/Moderra/releases>
+* Newest release: <https://github.com/JasonPieterK/Moderra/releases/latest> (open it, scroll to **Assets**, click the jar you need)
 
 GitHub Actions builds the jars (`.github/workflows/build-release.yml`) and attaches all 36 of them to every release.
 The jars of the project's earlier name are not in the repository any more. Use a Moderra release.

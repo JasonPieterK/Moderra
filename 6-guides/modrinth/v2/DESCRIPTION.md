@@ -1,10 +1,10 @@
-![Moderra: chat filter, moderation, 6 server types, 6 Minecraft versions](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/01-hero.png)
+![Moderra: chat filter, moderation, 6 server types, 6 Minecraft versions](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/01-hero.png)
 
 **Moderra keeps your server chat clean.** It blocks bad words before players see them. It warns, mutes, kicks or bans repeat offenders. It works on Bukkit, Spigot, Paper, Purpur, Fabric and Forge.
 
 > **Please read the honest status first.** Version 1.0 is compiled against the real Minecraft, Spigot, Fabric and Forge APIs. Nobody has run it on a live server yet. Please test it on a copy of your world before you use it on your main server. Details are in the section [Honest status](#honest-status).
 
-![](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/09-divider.png)
+![](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/09-divider.png)
 
 ## Summary
 
@@ -30,7 +30,7 @@ An old single-file `config.yml` is converted automatically. The plugin keeps a b
 
 ## Where it checks
 
-![The nine places where Moderra checks text](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/02-where.png)
+![The nine places where Moderra checks text](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/02-where.png)
 
 | Place | What happens |
 |---|---|
@@ -46,7 +46,7 @@ An old single-file `config.yml` is converted automatically. The plugin keeps a b
 
 ## Filters
 
-![The filter pipeline: evasion, bad words, links, spam](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/03-pipeline.png)
+![The filter pipeline: evasion, bad words, links, spam](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/03-pipeline.png)
 
 A message passes four checks in this order. You can change the order with `filters.check-order`.
 
@@ -63,7 +63,7 @@ Speed: in the engine speed test, 99 of 100 messages took less than 0.3 ms with e
 
 ## Moderation
 
-![The escalation ladder: warn, mute, kick, tempban](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/04-ladder.png)
+![The escalation ladder: warn, mute, kick, tempban](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/04-ladder.png)
 
 Every blocked message adds strikes. The **escalation ladder** is a list of steps. Each step has a strike number and a list of actions. The picture shows an example. You write your own ladder in `moderation/ladder.yml`.
 
@@ -97,7 +97,7 @@ ladder:
 
 ## Languages
 
-![37 word lists grouped by script](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/06-languages.png)
+![37 word lists grouped by script](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/06-languages.png)
 
 The plugin has 37 word lists for 35 languages. They cover Latin, Cyrillic, Arabic, Han, Greek, Hebrew, Devanagari, Bengali, Kana, Hangul and Thai scripts. Every list has three strength levels:
 
@@ -115,7 +115,7 @@ English and your `custom` list start on. Turn on more languages with `/moderra l
 
 ## In-game menu
 
-![Map of the in-game chest menu](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/07-menu.png)
+![Map of the in-game chest menu](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/07-menu.png)
 
 Type `/moderra` to open a chest menu. Every setting of every config file is a button. Click to change a value. Click **Done** to save. Nothing is saved before you click Done.
 
@@ -136,7 +136,7 @@ Everything is off until you set `discord.enabled: true` in `discord.yml`.
 
 ## Integrations
 
-![Optional integrations with other plugins](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/08-integrations.png)
+![Optional integrations with other plugins](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/08-integrations.png)
 
 All integrations are optional. If the other plugin is missing, nothing happens. If something fails, the plugin writes one log line and keeps working. All integration settings are in `integrations.yml`. `/moderra info` lists what the plugin found.
 
@@ -161,7 +161,7 @@ Fabric and Forge cannot see other plugins. They have no plugin integrations. Luc
 
 ## Platforms and versions
 
-![Platform and version matrix](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/05-matrix.png)
+![Platform and version matrix](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/05-matrix.png)
 
 | Minecraft | Bukkit | Spigot | Paper | Purpur | Fabric | Forge | Java on the server |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|---|
@@ -176,7 +176,7 @@ That is 36 jars (6 server types times 6 versions). There is no Minecraft 26.0. T
 
 ## Installation
 
-![](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/09-divider.png)
+![](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/09-divider.png)
 
 1. Pick the jar for your server type and your Minecraft version. The name tells you both:
    `Moderra26.3-1.0-paper.jar`
@@ -307,7 +307,7 @@ Webhook alerts work on all server types. DiscordSRV is a Bukkit plugin, so its f
 
 ## Honest status
 
-![](https://raw.githubusercontent.com/JasonPieterK/AntiBadWordsPlugin/v1.0/6-guides/modrinth/v2/images/09-divider.png)
+![](https://raw.githubusercontent.com/JasonPieterK/Moderra/v1.0/6-guides/modrinth/v2/images/09-divider.png)
 
 | Check | Result |
 |---|---|
@@ -340,7 +340,7 @@ Webhook alerts work on all server types. DiscordSRV is a Bukkit plugin, so its f
 
 **All Rights Reserved.** Copyright (c) 2026 Jason P. This replaces the MIT licence of the earlier generation (before the rename). Read the `LICENSE` file in the source repository before you copy or share the files.
 
-- Source code, guides and releases: https://github.com/JasonPieterK/AntiBadWordsPlugin
+- Source code, guides and releases: https://github.com/JasonPieterK/Moderra
 - Report a bug or ask a question: GitHub Issues in the same repository.
 - Changelog: `CHANGELOG.md` in the repository.
 - Test list for real servers: `handoffs/BUILD-VERIFICATION-TODO.md` in the repository.
