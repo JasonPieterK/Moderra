@@ -99,9 +99,30 @@ coreprotect | net.coreprotect.CoreProtectAPI | logChat(org.bukkit.entity.Player,
 coreprotect | net.coreprotect.CoreProtectAPI | logCommand(org.bukkit.entity.Player,String)
 
 # --- Detected by plugin name only; main API classes listed advisory ---
-?protocollib | com.comphenix.protocol.ProtocolLibrary | getProtocolManager()
+protocollib | com.comphenix.protocol.ProtocolLibrary | getProtocolManager()
+protocollib | com.comphenix.protocol.ProtocolManager | addPacketListener(*)
+protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketReceiving(*)
+protocollib | com.comphenix.protocol.events.PacketEvent | getPacket()
+protocollib | com.comphenix.protocol.events.PacketEvent | getPacketType()
+protocollib | com.comphenix.protocol.events.PacketEvent | getPlayer()
+protocollib | com.comphenix.protocol.events.PacketEvent | isCancelled()
+protocollib | com.comphenix.protocol.events.PacketEvent | setCancelled(boolean)
+protocollib | com.comphenix.protocol.events.PacketContainer | getModifier()
+protocollib | com.comphenix.protocol.reflect.StructureModifier | withType(*)
+protocollib | com.comphenix.protocol.reflect.StructureModifier | read(int)
+protocollib | com.comphenix.protocol.reflect.StructureModifier | size()
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field UPDATE_SIGN
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field B_EDIT
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field ITEM_NAME
 ?packetevents-api | com.github.retrooper.packetevents.PacketEvents | getAPI()
-?plan | com.djrapitops.plan.capability.CapabilityService | -
+plan | com.djrapitops.plan.capability.CapabilityService | getInstance()
+plan | com.djrapitops.plan.capability.CapabilityService | registerEnableListener(*)
+plan | com.djrapitops.plan.extension.ExtensionService | getInstance()
+plan | com.djrapitops.plan.extension.ExtensionService | register(*)
+plan | com.djrapitops.plan.extension.DataExtension | callExtensionMethodsOn()
+plan | com.djrapitops.plan.extension.annotation.PluginInfo | annotation
+plan | com.djrapitops.plan.extension.annotation.NumberProvider | annotation
+plan | com.djrapitops.plan.extension.annotation.StringProvider | annotation
 ?citizens | net.citizensnpcs.api.CitizensAPI | getNPCRegistry()
 ?decentholograms | eu.decentsoftware.holograms.api.DHAPI | -
 ?advancedban | me.leoko.advancedban.utils.Punishment | -

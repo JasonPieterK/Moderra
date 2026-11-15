@@ -208,3 +208,5 @@ Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity
       processed message really contains the raw Discord text (otherwise nothing is rewritten: the pending entry expires after 30 s and the text goes out unchanged, so test it).
 - [ ] Bukkit `Player#getAddress().getAddress().getHostAddress()` (BukkitPlatform#playerIp) stub-compiled only; mods keep `playerIp` = null (no connection address call exists in the repo).
 - [ ] ipban templates now use `{ip}` (falls back to the name): confirm each ban plugin's ipban command accepts an IP (EssentialsX banip, LiteBans ipban, AdvancedBan ipban, LibertyBans ipban, vanilla ban-ip).
+
+- Task 38: real server test of ProtocolLibScan (type-based field read for sign/book/anvil) and PlanHook (provider method `UUID playerUUID` convention); rerun plugin-api-dump to get PacketEvents ProtocolPacketEvent/PacketListenerCommon, Plan builders and the shaded JDA slash-command classes, then implement the PacketEvents listener and DiscordSRV slash commands.

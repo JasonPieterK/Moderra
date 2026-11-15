@@ -139,6 +139,18 @@
                         <goals><goal>add-source</goal></goals>
                         <configuration><sources><source>src/papi-shim/java</source></sources></configuration>
                     </execution>
+                    <execution>
+                        <id>add-protocollib-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/protocollib-shim/java</source></sources></configuration>
+                    </execution>
+                    <execution>
+                        <id>add-plan-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/plan-shim/java</source></sources></configuration>
+                    </execution>
                 </executions>
             </plugin>
             <plugin>
@@ -160,6 +172,8 @@
                     <excludes>
                         <exclude>github/**</exclude>
                         <exclude>me/**</exclude>
+                        <exclude>com/comphenix/**</exclude>
+                        <exclude>com/djrapitops/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>

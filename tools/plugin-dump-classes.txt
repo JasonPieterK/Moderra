@@ -84,3 +84,20 @@ essentials | com.earth2me.essentials.User
 essentials | com.earth2me.essentials.UserData
 essentials | net.ess3.api.IUser
 essentials | com.earth2me.essentials.IConf
+
+# --- Needed by task 38 follow-ups (PacketEvents listener, Plan builders, DiscordSRV slash commands) ---
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerCommon
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerPriority
+packetevents-api | com.github.retrooper.packetevents.wrapper.PacketWrapper
+plan | com.djrapitops.plan.extension.Caller
+plan | com.djrapitops.plan.extension.builder.ExtensionDataBuilder
+plan | com.djrapitops.plan.extension.builder.ValueBuilder
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommandPriority
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.build.CommandData
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.build.CommandDataImpl
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.build.OptionData
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.SlashCommandEvent
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionType
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.InteractionHook
+discordsrv | github.scarsz.discordsrv.util.DiscordUtil
