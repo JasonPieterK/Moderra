@@ -97,15 +97,15 @@ public final class CoreSettings {
         .file(CONFIG).category(JOIN).title("Bad player name: shortest word").overridable()
         .description("Blocked words shorter than this are not searched inside names (short words are part of many innocent names).").build();
     public static final Setting<String> JOIN_KICK_MESSAGE = Setting.string("filters.join-names.kick-message",
-            "&cYour player name is not allowed on this server.")
+            "&8[&6&lAntiBadWords&8]&r &c&lAccess denied. &7Your player name contains a word that is not permitted. Change your name and join again.")
         .file(CONFIG).category(JOIN).title("Bad player name: kick message").overridable()
         .description("Shown to the kicked player. Placeholders: {player} {word}. Colours: & codes.").build();
     public static final Setting<String> JOIN_WARN_MESSAGE = Setting.string("filters.join-names.warn-message",
-            "&eYour player name contains a word that is not welcome here.")
+            "&8[&6&lAntiBadWords&8]&r &e&lWarning. &7Your player name contains a word that is not permitted. Change your name.")
         .file(CONFIG).category(JOIN).title("Bad player name: warning").overridable()
         .description("Sent to the player when the action is warn. Placeholders: {player} {word}. Empty = no message.").build();
     public static final Setting<String> JOIN_STAFF_MESSAGE = Setting.string("filters.join-names.staff-message",
-            "&8[&cAntiBadWords&8] &7The name of &f{player}&7 contains '&f{word}&7'.")
+            "&8[&6&lAntiBadWords&8]&r &6&lStaff notice. &7The name of &f{player}&7 contains the word &c&o{word}&7.")
         .file(CONFIG).category(JOIN).title("Bad player name: staff message").overridable()
         .description("Sent to staff (permission antibadwords.notify) for warn and kick, when messages.notify-staff is true.").build();
 
@@ -162,23 +162,23 @@ public final class CoreSettings {
         .description("Placeholders in all messages (any capitalisation): {player} {word} {source} {count} {limit} {remaining} {punishments}\n"
             + "Show the warning to every player (true) or only to the player who swore (false).").build();
     public static final Setting<String> WARNING_BROADCAST = message("warning-broadcast-format", "Warning (everyone)",
-        "Sent to everyone when a bad word is blocked.", "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED.");
+        "Sent to everyone when a bad word is blocked.", "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &f{player}&7 used a word that is not permitted: &c&o{word}&7.");
     public static final Setting<String> WARNING_PLAYER = message("warning-player", "Warning (player)",
         "Sent only to the player who swore (while they are not punished yet).",
-        "&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN.");
+        "&8[&6&lAntiBadWords&8]&r &e&lWarning. &7Your message contains a word that is not permitted. After &f{remaining}&7 more violations, a penalty is applied.");
     public static final Setting<String> PUNISHMENT_BROADCAST = message("punishment-broadcast-format", "Punishment (everyone)",
         "Sent to everyone when the punishment is applied.",
-        "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH &F{PUNISHMENTS}&C.");
+        "&8[&6&lAntiBadWords&8]&r &c&lPenalty. &f{player}&7 used a word that is not permitted: &c&o{word}&7. The penalty is: &f{punishments}&7.");
     public static final Setting<String> PUNISHMENT_PLAYER = message("punishment-player", "Punishment (player)",
-        "Sent to the player when the punishment is applied.", "&CFOR YOUR BADWORDS, YOU ARE PUNISHED WITH &F{PUNISHMENTS}&C.");
+        "Sent to the player when the punishment is applied.", "&8[&6&lAntiBadWords&8]&r &c&lPenalty. &7You used too many words that are not permitted. The penalty is: &f{punishments}&7.");
     public static final Setting<String> PUNISHMENT_DISABLED_PLAYER = message("punishment-disabled-player", "Blocked, punishment off (player)",
         "Sent to the player when punishment.enabled is false but they reached the limit.",
-        "&EYOUR MESSAGE WAS BLOCKED. PUNISHMENT IS CURRENTLY DISABLED.");
+        "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7Your message contains a word that is not permitted. &7&oNo penalty is applied at this time.");
     public static final Setting<Boolean> NOTIFY_STAFF = Setting.bool("messages.notify-staff", true)
         .file(CONFIG).category(MESSAGES).title("Notify staff").overridable()
         .description("Tell staff (permission antibadwords.notify) about every blocked word.").build();
     public static final Setting<String> STAFF_NOTIFY_FORMAT = message("staff-notify-format", "Staff notification",
-        "What staff see.", "&8[&cAntiBadWords&8] &7Blocked '&f{word}&7' from &f{player}&7 in &f{source}&7 (&f{count}&7/&f{limit}&7).");
+        "What staff see.", "&8[&6&lAntiBadWords&8]&r &6&lStaff notice. &7Blocked &c&o{word}&7 from &f{player}&7 in &f{source}&7. Violations: &f{count}&7 of &f{limit}&7.");
 
     public static final Setting<Boolean> LOG_CONSOLE = Setting.bool("logging.console", true)
         .file(CONFIG).category(GENERAL).title("Log to console").overridable()

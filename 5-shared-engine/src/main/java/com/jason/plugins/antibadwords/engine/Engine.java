@@ -298,6 +298,11 @@ public final class Engine {
             problems.add(new ConfigProblem(folder.toString(), null, "cannot write the default files: " + ex.getMessage()));
         }
         try {
+            com.jason.plugins.antibadwords.engine.config.MessageDefaults.upgrade(folder, registry, store, log::info);
+        } catch (RuntimeException ex) {
+            log.warn("Could not update old message defaults: " + ex.getMessage());
+        }
+        try {
             int copied = WordLists.copyBundled(folder.resolve(WordLists.FOLDER));
             if (copied > 0) {
                 log.info("Copied " + copied + " word-list files into " + WordLists.FOLDER + "/.");

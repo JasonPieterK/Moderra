@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine.discord;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -316,7 +317,7 @@ class DiscordWebhookTest {
         who.waitFor(5);
         who.lines().forEach(l -> assertFalse(l.contains(TOKEN) || l.contains("127.0.0.1"), l));
         assertTrue(who.lines().stream().anyMatch(l -> l.contains("alerts webhook: set (********)")), who.lines().toString());
-        assertTrue(who.lines().stream().anyMatch(l -> l.contains("Discord alerts: OK")), who.lines().toString());
+        assertTrue(who.lines().stream().anyMatch(l -> l.contains("Discord §falerts§7: OK")), who.lines().toString());
         assertEquals("a ******** b", Secrets.mask("a " + url + " b", List.of(url)));
         assertEquals("x ********", Secrets.mask("x https://discord.com/api/webhooks/1/abcdefgh", List.of()));
         assertEquals("fail ********/ok", Secrets.mask("fail " + TOKEN + "/ok", List.of(url)));
@@ -455,7 +456,7 @@ class DiscordWebhookTest {
         configure();
         Capture nobody = new Capture(false);
         engine.commands().execute(nobody, "abw", new String[] {"discord", "test"});
-        assertEquals(List.of("§cNo permission."), nobody.lines());
+        assertEquals(List.of(Chat.error("No permission.")), nobody.lines());
         assertEquals(0, calls.get());
 
         answer = n -> 401;

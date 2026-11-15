@@ -1,6 +1,8 @@
 package com.jason.plugins.antibadwords.engine.moderation;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GRAY;
+import static com.jason.plugins.antibadwords.engine.command.Chat.WHITE;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GREEN;
 import static com.jason.plugins.antibadwords.engine.command.Chat.RED;
 import static com.jason.plugins.antibadwords.engine.command.Chat.YELLOW;
@@ -51,27 +53,27 @@ public final class MuteCommands {
             PlayerRef target = c.engine().resolvePlayer(c.args()[0])
                 .or(() -> service.findByName(c.args()[0]).map(m -> new PlayerRef(m.id(), m.name()))).orElse(null);
             if (target == null) {
-                c.send(RED + "Player not found (not online and never seen on this server).");
+                c.send(Chat.error("Player not found (not online and never seen on this server)."));
                 return;
             }
             OptionalLong parsed = c.args().length >= 2 ? DurationParser.tryParse(c.args()[1]) : OptionalLong.empty();
             long millis = parsed.isPresent() ? parsed.getAsLong() : c.engine().value(MuteSettings.DEFAULT_DURATION).toMillis();
             String reason = c.joined(parsed.isPresent() ? 2 : 1);
             if (!c.engine().value(MuteSettings.ENABLED)) {
-                c.send(RED + "The built-in mute is switched off (mute.enabled in moderation/mute.yml).");
+                c.send(Chat.error("The built-in mute is switched off (mute.enabled in moderation/mute.yml)."));
                 return;
             }
             if (millis == 0 || !service.mute(target.id(), target.name(), millis, reason, c.sender().name())) {
-                c.send(RED + "Could not mute " + target.name() + ".");
+                c.send(Chat.error("The plugin cannot mute " + Chat.val(target.name()) + "."));
                 return;
             }
-            c.send(GREEN + "Muted " + target.name() + " for " + DurationParser.format(millis)
-                + (reason.isEmpty() ? "" : " (" + reason + ")") + "." + (c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)"));
+            c.send(Chat.ok(Chat.val(target.name()) + " is muted for " + Chat.val(DurationParser.format(millis))
+                + (reason.isEmpty() ? "" : " (" + reason + ")") + "." + (c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)")));
             // online: answered at once; offline: by the permission plugin (LuckPerms) in the background, the answer is sent on the main thread
             c.engine().hasPermission(target.id(), MuteService.BYPASS_PERMISSION).thenAccept(has -> {
                 if (has) {
-                    c.engine().platform().runSync(() -> c.send(YELLOW + target.name() + " has " + MuteService.BYPASS_PERMISSION
-                        + " and is not held back by the mute."));
+                    c.engine().platform().runSync(() -> c.send(Chat.warn(Chat.val(target.name()) + " has the permission " + Chat.val(MuteService.BYPASS_PERMISSION)
+                        + ". The mute does not stop this player.")));
                 }
             });
             c.audit();
@@ -102,12 +104,12 @@ public final class MuteCommands {
             PlayerRef target = service.findByName(c.args()[0]).map(m -> new PlayerRef(m.id(), m.name()))
                 .or(() -> c.engine().resolvePlayer(c.args()[0])).orElse(null);
             if (target == null) {
-                c.send(RED + "Player not found (not online and never seen on this server).");
+                c.send(Chat.error("Player not found (not online and never seen on this server)."));
             } else if (service.unmute(target.id(), c.sender().name())) {
-                c.send(GREEN + "Unmuted " + target.name() + "." + (c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)"));
+                c.send(Chat.ok(Chat.val(target.name()) + " is unmuted." + (c.engine().isOnline(target.id()) ? "" : GRAY + " (offline)")));
                 c.audit();
             } else {
-                c.send(RED + target.name() + " is not muted.");
+                c.send(Chat.error(Chat.val(target.name()) + " is not muted."));
             }
         }
 
@@ -128,7 +130,7 @@ public final class MuteCommands {
         public void execute(CommandContext c) {
             List<MuteService.Mute> all = c.engine().mutes().list();
             if (all.isEmpty()) {
-                c.send(GREEN + "Nobody is muted.");
+                c.send(Chat.ok("Nobody is muted."));
                 return;
             }
             int pages = (all.size() + PAGE_SIZE - 1) / PAGE_SIZE;
@@ -142,13 +144,13 @@ public final class MuteCommands {
                 }
             }
             if (page < 1 || page > pages) {
-                c.send(RED + "There " + (pages == 1 ? "is only 1 page." : "are only " + pages + " pages."));
+                c.send(Chat.error("The list has " + (pages == 1 ? "only 1 page." : "only " + pages + " pages.")));
                 return;
             }
             long now = c.engine().now();
-            c.send(YELLOW + "Muted players (" + all.size() + "), page " + page + "/" + pages + ":");
+            c.send(Chat.heading("Muted players") + GRAY + " (" + WHITE + all.size() + GRAY + "), page " + WHITE + page + GRAY + " of " + WHITE + pages + GRAY + ":");
             for (MuteService.Mute m : all.subList((page - 1) * PAGE_SIZE, Math.min(all.size(), page * PAGE_SIZE))) {
-                c.send(GRAY + "- " + RED + m.name() + GRAY + " " + DurationParser.format(m.remaining(now)) + " left, by " + m.by()
+                c.send(GRAY + "- " + RED + m.name() + GRAY + " " + DurationParser.format(m.remaining(now)) + " remaining, by " + m.by()
                     + (m.reason().isEmpty() ? "" : ", " + m.reason()));
             }
         }

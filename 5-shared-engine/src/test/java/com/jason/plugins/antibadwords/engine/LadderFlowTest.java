@@ -80,8 +80,8 @@ class LadderFlowTest {
     void stepsHappenInOrderAndStrikesKeepCounting() {
         ladder(STEPS);
         swear(); // 1
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f1§e BADWORDS AGAIN."), f.platform.sentTo(bob));
-        assertEquals(List.of("§cBob SAID THE WORD §ffuck§c WHICH IS NOT ALLOWED."), f.platform.broadcasts);
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f1§7 more violations, a penalty is applied."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §fBob§7 used a word that is not permitted: §c§ofuck§7."), f.platform.broadcasts);
         assertTrue(punishments().isEmpty());
 
         swear(); // 2: warn
@@ -105,12 +105,12 @@ class LadderFlowTest {
         f.platform.consoleCommands.clear();
         swear(); // 4: kick + ban, after the message
         assertEquals(List.of("§cBye."), f.platform.sentTo(bob));
-        assertEquals(List.of("Bob: Bad language"), f.platform.kicks, "kick without a reason uses ladder.default-reason");
+        assertEquals(List.of("Bob: Language that is not permitted"), f.platform.kicks, "kick without a reason uses ladder.default-reason");
         assertEquals(List.of("ban Bob Repeated swearing"), f.platform.consoleCommands);
 
         swear(); // 5: between two repeats
         assertEquals(1, f.platform.kicks.size());
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f1§e BADWORDS AGAIN."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f1§7 more violations, a penalty is applied."), f.platform.sentTo(bob));
         swear(); // 6: repeat
         assertEquals(2, f.platform.kicks.size());
         assertEquals(List.of("first-warning", "short-mute", "out", "out"), punishments().stream().map(e -> e.data().get("step")).toList());
@@ -142,9 +142,9 @@ class LadderFlowTest {
         TestFiles.edit(f.file(LADDER), "enabled: true", "enabled: false");
         restart();
         swear();
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f1§e BADWORDS AGAIN."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f1§7 more violations, a penalty is applied."), f.platform.sentTo(bob));
         swear();
-        assertEquals(List.of("§eYOUR MESSAGE WAS BLOCKED. PUNISHMENT IS CURRENTLY DISABLED."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7Your message contains a word that is not permitted. §7§oNo penalty is applied at this time."), f.platform.sentTo(bob));
         assertTrue(punishments().isEmpty());
         assertEquals(2, f.engine.strikes().get(bob));
     }
@@ -193,7 +193,7 @@ class LadderFlowTest {
         ladder(STEPS);
         f.platform.worlds.put(bob, "hub");
         swear();
-        assertEquals(List.of("Bob: Bad language"), f.platform.kicks);
+        assertEquals(List.of("Bob: Language that is not permitted"), f.platform.kicks);
         assertEquals("strict", punishments().get(0).data().get("profile"));
 
         f.platform.worlds.put(bob, "world");
@@ -216,7 +216,7 @@ class LadderFlowTest {
         swear();
         List<String> flatActions = List.copyOf(f.platform.appliedActions);
         assertEquals(List.of("sound:villager_no"), flatActions);
-        assertEquals(List.of("§cFOR YOUR BADWORDS, YOU ARE PUNISHED WITH §fvillager no sound§c."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §7You used too many words that are not permitted. The penalty is: §fvillager no sound§7."), f.platform.sentTo(bob));
         assertEquals(0, f.engine.strikes().get(bob));
         assertEquals("legacy", punishments().get(0).data().get("step"));
         assertEquals("2", punishments().get(0).data().get("threshold"));
@@ -233,15 +233,15 @@ class LadderFlowTest {
                 classic:
                   at: 2
                   repeat: once
-                  message: "&CFOR YOUR BADWORDS, YOU ARE PUNISHED WITH &F{PUNISHMENTS}&C."
+                  message: "&8[&6&lAntiBadWords&8]&r &c&lPenalty. &7You used too many words that are not permitted. The penalty is: &f{PUNISHMENTS}&7."
                   actions: [punishments, reset-strikes]
             """);
         assertTrue(f.platform.infos.contains("Punishment ladder: 1 steps (the first at 2 strikes)."));
         swear();
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f1§e BADWORDS AGAIN."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f1§7 more violations, a penalty is applied."), f.platform.sentTo(bob));
         swear();
         assertEquals(flatActions, f.platform.appliedActions);
-        assertEquals(List.of("§cFOR YOUR BADWORDS, YOU ARE PUNISHED WITH §fvillager no sound§c."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §7You used too many words that are not permitted. The penalty is: §fvillager no sound§7."), f.platform.sentTo(bob));
         assertEquals(0, f.engine.strikes().get(bob));
         swear();
         swear();

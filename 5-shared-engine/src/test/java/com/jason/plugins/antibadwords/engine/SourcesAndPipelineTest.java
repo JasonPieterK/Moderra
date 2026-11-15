@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -100,8 +101,8 @@ class SourcesAndPipelineTest {
 
         set(CoreSettings.JOIN_ACTION, "warn");
         engine.onJoin(bad, "xXfuckXx");
-        assertEquals(List.of("§eYour player name contains a word that is not welcome here."), f.platform.sentTo(bad));
-        assertEquals(List.of("§8[§cAntiBadWords§8] §7The name of §fxXfuckXx§7 contains '§ffuck§7'."), f.platform.sentTo(staff));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your player name contains a word that is not permitted. Change your name."), f.platform.sentTo(bad));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §6§lStaff notice. §7The name of §fxXfuckXx§7 contains the word §c§ofuck§7."), f.platform.sentTo(staff));
         assertTrue(f.platform.kicks.isEmpty());
 
         set(CoreSettings.JOIN_ACTION, "kick");
@@ -279,7 +280,7 @@ class SourcesAndPipelineTest {
         assertTrue(v.blocked(), "like Fabric and Forge: censor is applied as block");
         assertNull(v.text());
         assertEquals("spam-caps", v.primary().check());
-        assertEquals(List.of("§cPlease do not write in capital letters."), f.platform.sentTo(bob), "and the player is told why");
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lNotice. §7Your message contains too many capital letters. §7§oUse lower-case letters."), f.platform.sentTo(bob), "and the player is told why");
         f.platform.rewritable.add(Message.CHAT);
         assertTrue(f.say(bob, Message.CHAT, "THIS SERVER CAN REWRITE CHAT").censored());
         // a command is never rewritten, on any server
@@ -293,18 +294,18 @@ class SourcesAndPipelineTest {
 
     @Test
     void checkCommandNamesTheCheckThatFiredAndWhy() {
-        assertEquals(List.of("§aClean: no blocked word found."), run("check hello world"));
-        assertEquals(List.of("§cBlocked: matches 'fuck'.", "§7Check: §fbadword§7 (word list entry 'fuck', level 3)"), run("check what the f.u.c.k"));
-        assertEquals(List.of("§eNoted (not stopped) by check §fevasion§e: look-alike letters.", "§cBlocked: matches 'fuck'.",
-            "§7Check: §fbadword§7 (word list entry 'fuck', level 3)"), run("check fuсk"));
-        assertEquals(List.of("§aClean: no blocked word found."), run("check visit example.com NOW PLEASE EVERYBODY"), "filters are off");
+        assertEquals(List.of(Chat.ok("Clean: no blocked word found.")), run("check hello world"));
+        assertEquals(List.of(Chat.PREFIX + "§c§lBlocked. §7The text contains the blocked word §ffuck§7.", "§7Check: §fbadword§7 (word list entry §ffuck§7, level 3)"), run("check what the f.u.c.k"));
+        assertEquals(List.of(Chat.warn("The check §fevasion§7 records the text but does not stop it: look-alike letters."), Chat.PREFIX + "§c§lBlocked. §7The text contains the blocked word §ffuck§7.",
+            "§7Check: §fbadword§7 (word list entry §ffuck§7, level 3)"), run("check fuсk"));
+        assertEquals(List.of(Chat.ok("Clean: no blocked word found.")), run("check visit example.com NOW PLEASE EVERYBODY"), "filters are off");
 
         set(LinkSettings.MODE, "block-all");
         set(SpamSettings.ENABLED, true);
-        assertEquals(List.of("§cBlocked by check §flink§c: link example.com.",
-            "§7Not tested here (they count real messages over time): spam-commands, spam-rate, spam-repeat."), run("check visit example dot com"));
-        assertEquals(List.of("§eCleaned by check §fspam-caps§e: too many capital letters.", "§7Text after cleaning: §fhello everybody out there",
-            "§7Not tested here (they count real messages over time): spam-commands, spam-rate, spam-repeat."),
+        assertEquals(List.of(Chat.PREFIX + "§c§lBlocked. §7The check §flink§7 blocks the text: link example.com.",
+            "§7§oThese checks are not tested here. They count real messages over time: spam-commands, spam-rate, spam-repeat."), run("check visit example dot com"));
+        assertEquals(List.of(Chat.warn("The check §fspam-caps§7 cleans the text: too many capital letters."), "§7Text after cleaning: §fhello everybody out there",
+            "§7§oThese checks are not tested here. They count real messages over time: spam-commands, spam-rate, spam-repeat."),
             run("check HELLO EVERYBODY OUT THERE"));
         List<String> two = run("check HEEEEEEEEEEELLO EVERYBODY");
         assertTrue(two.get(0).contains("spam-caps") && two.get(2).contains("spam-flood") && two.get(3).equals("§7Text after cleaning: §fheeello everybody"),
@@ -317,7 +318,7 @@ class SourcesAndPipelineTest {
         assertTrue(events.stream().allMatch(e -> e.kind().equals(ModerationEvent.ADMIN_COMMAND)), "a test is not a violation");
         // also works when chat scanning is switched off
         set(CoreSettings.SCAN_CHAT, false);
-        assertEquals("§cBlocked: matches 'fuck'.", run("check fuck").get(0));
+        assertEquals(Chat.PREFIX + "§c§lBlocked. §7The text contains the blocked word §ffuck§7.", run("check fuck").get(0));
 
         List<String> info = run("info");
         assertEquals("§7Scanning: §fcommands, signs, books, anvil", info.get(2));

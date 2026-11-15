@@ -31,7 +31,7 @@ public final class SpamSettings {
 
     // ---- too many messages ----
     public static final Rule RATE = rule("rate", "Too many messages", "A player sends messages faster than allowed.",
-        "&cYou are sending messages too fast. Please slow down.", FilterAction.BLOCK, false, List.of("chat"));
+        "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7You send messages too fast. &7&oWait a moment before you write again.", FilterAction.BLOCK, false, List.of("chat"));
     public static final Setting<Integer> RATE_MAX = add(Setting.integer(P + "rate.max-messages", 5).range(1, 1000).title("Messages allowed per window")
         .description("How many messages a player may send within the time window. The next one is caught."));
     public static final Setting<Duration> RATE_WINDOW = add(Setting.duration(P + "rate.window", Duration.ofSeconds(5)).range(1, 3600)
@@ -39,7 +39,7 @@ public final class SpamSettings {
 
     // ---- repeated messages ----
     public static final Rule REPEAT = rule("repeat", "Repeated messages", "A player sends the same (or nearly the same) message again and again.",
-        "&cPlease do not repeat the same message.", FilterAction.BLOCK, false, List.of("chat"));
+        "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7You repeat the same message. &7&oWrite a different message.", FilterAction.BLOCK, false, List.of("chat"));
     public static final Setting<Integer> REPEAT_MAX = add(Setting.integer(P + "repeat.max-repeats", 2).range(1, 100).title("Same message allowed")
         .description("How many times the same message may be sent within the time window. The next one is caught."));
     public static final Setting<Duration> REPEAT_WINDOW = add(Setting.duration(P + "repeat.window", Duration.ofSeconds(30)).range(1, 86_400)
@@ -55,7 +55,7 @@ public final class SpamSettings {
 
     // ---- capital letters ----
     public static final Rule CAPS = rule("caps", "Too many capital letters", "A message is written mostly IN CAPITAL LETTERS.",
-        "&cPlease do not write in capital letters.", FilterAction.CENSOR, true, List.of("chat"));
+        "&8[&6&lAntiBadWords&8]&r &e&lNotice. &7Your message contains too many capital letters. &7&oUse lower-case letters.", FilterAction.CENSOR, true, List.of("chat"));
     public static final Setting<Integer> CAPS_MAX = add(Setting.integer(P + "caps.max-percent", 70).range(1, 100).title("Capital letters allowed (%)")
         .description("A message is caught when more than this share of its letters are capitals."));
     public static final Setting<Integer> CAPS_MIN_LENGTH = add(Setting.integer(P + "caps.min-length", 8).range(1, 256)
@@ -63,7 +63,7 @@ public final class SpamSettings {
 
     // ---- character flood ----
     public static final Rule FLOOD = rule("flood", "Character flood", "The same character many times in a row (\"heeeeeeello\", \"!!!!!!!!\"), "
-        + "or a message that is mostly symbols or emoji.", "&cPlease do not flood the chat with repeated characters.", FilterAction.CENSOR, true,
+        + "or a message that is mostly symbols or emoji.", "&8[&6&lAntiBadWords&8]&r &e&lNotice. &7Your message contains too many repeated characters. &7&oUse normal text.", FilterAction.CENSOR, true,
         List.of("chat"));
     public static final Setting<Integer> FLOOD_MAX_RUN = add(Setting.integer(P + "flood.max-repeated-characters", 6).range(2, 256)
         .title("Same character in a row allowed")
@@ -79,7 +79,7 @@ public final class SpamSettings {
 
     // ---- repeated words ----
     public static final Rule WORDS = rule("words", "Repeated words", "The same word many times in one message (\"buy buy buy buy buy\").",
-        "&cPlease do not repeat the same word so often.", FilterAction.BLOCK, true, List.of("chat"));
+        "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7Your message repeats the same word too many times. &7&oUse different words.", FilterAction.BLOCK, true, List.of("chat"));
     public static final Setting<Integer> WORDS_MAX = add(Setting.integer(P + "words.max-identical-words", 4).range(1, 256)
         .title("Same word allowed per message")
         .description("A message is caught when one word appears more often than this. With action censor the extra copies are removed."));
@@ -88,7 +88,7 @@ public final class SpamSettings {
 
     // ---- command spam ----
     public static final Rule COMMANDS = rule("commands", "Too many commands", "A player runs commands faster than allowed. Every command "
-        + "counts, also the ones that are not scanned for bad words.", "&cYou are using commands too fast. Please slow down.",
+        + "counts, also the ones that are not scanned for bad words.", "&8[&6&lAntiBadWords&8]&r &c&lCommand blocked. &7You use commands too fast. &7&oWait a moment before you use a command again.",
         FilterAction.BLOCK, false, null);
     public static final Setting<Integer> COMMANDS_MAX = add(Setting.integer(P + "commands.max-commands", 8).range(1, 1000)
         .title("Commands allowed per window").description("How many commands a player may run within the time window. The next one is caught."));

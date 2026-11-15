@@ -235,7 +235,7 @@ class EvasionFilterTest {
         assertTrue(f.platform.sentTo(bob).isEmpty(), "a cleaned message needs no explanation");
         v = f.say(bob, Message.SIGN, "He​llo");
         assertTrue(v.blocked(), "signs cannot be rewritten, so the trick is blocked there");
-        assertEquals(List.of("§cPlease write without invisible or look-alike letters."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7Your message contains hidden or look-alike characters. §7§oUse normal letters."), f.platform.sentTo(bob));
 
         // block, with strike weight
         set(EvasionSettings.DETECT_ACTION, "block");
@@ -244,7 +244,7 @@ class EvasionFilterTest {
         v = f.say(bob, Message.CHAT, "wоrld");
         assertTrue(v.blocked());
         assertEquals(1, engine.strikes().get(bob));
-        assertEquals("§cPlease write without invisible or look-alike letters.", f.platform.sentTo(bob).get(0));
+        assertEquals("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7Your message contains hidden or look-alike characters. §7§oUse normal letters.", f.platform.sentTo(bob).get(0));
 
         // switches
         set(EvasionSettings.DETECT_MIXED, false);

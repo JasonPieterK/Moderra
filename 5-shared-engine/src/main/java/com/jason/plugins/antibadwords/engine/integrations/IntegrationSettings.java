@@ -56,7 +56,7 @@ public final class IntegrationSettings {
         .title("Action for a bad nickname")
         .description("log = only the console and the event history, warn = also tell the player (message below), reset = also remove the nickname."));
     public static final Setting<String> NICKNAME_MESSAGE = s(Setting.string(E + "nickname-message",
-            "&cYour nickname is not allowed on this server.").title("Message for a bad nickname")
+            "&8[&6&lAntiBadWords&8]&r &c&lNickname rejected. &7Your nickname contains a word that is not permitted. &7&oChoose a different nickname.").title("Message for a bad nickname")
         .description("Sent to the player for the actions warn and reset. No placeholders."));
 
     private IntegrationSettings() {

@@ -57,26 +57,26 @@ public final class CommandRegistry {
         }
         List<String> allowed = allowedNames(sender);
         if (allowed.isEmpty()) {
-            sender.send(Chat.RED + "No permission.");
+            sender.send(Chat.error("No permission."));
             return;
         }
         if (args.length == 0) {
-            sender.send(Chat.YELLOW + "Usage: /" + label + " <" + String.join("|", allowed) + ">");
+            sender.send(Chat.usage("/" + label + " <" + String.join("|", allowed) + ">"));
             return;
         }
         SubCommand command = find(args[0]);
         if (command == null) {
-            sender.send(Chat.YELLOW + "Unknown subcommand.");
+            sender.send(Chat.warn("Unknown subcommand."));
             return;
         }
         if (!sender.has(command.permission())) {
-            sender.send(Chat.RED + "No permission.");
+            sender.send(Chat.error("No permission."));
             return;
         }
         try {
             command.execute(new CommandContext(engine, sender, label, args[0].toLowerCase(Locale.ROOT), Arrays.copyOfRange(args, 1, args.length)));
         } catch (RuntimeException ex) {
-            sender.send(Chat.RED + "The command failed: " + ex.getMessage());
+            sender.send(Chat.error("The command failed: " + ex.getMessage()));
             engine.platform().logger().warn("Command /" + label + " " + args[0] + " failed: " + ex);
         }
     }

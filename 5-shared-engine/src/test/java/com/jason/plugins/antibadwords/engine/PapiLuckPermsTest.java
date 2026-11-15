@@ -229,8 +229,8 @@ class PapiLuckPermsTest {
                 out.add(message);
             }
         }, "abw", new String[] {"mute", "Carl", "10m", "test"});
-        assertTrue(out.stream().anyMatch(s -> s.contains("Muted Carl")), out.toString());
-        assertTrue(out.stream().anyMatch(s -> s.contains("antibadwords.bypass.mute") && s.contains("not held back")), out.toString());
+        assertTrue(out.stream().anyMatch(s -> s.contains("§fCarl§7 is muted")), out.toString());
+        assertTrue(out.stream().anyMatch(s -> s.contains("antibadwords.bypass.mute") && s.contains("does not stop")), out.toString());
     }
 
     // ---------------------------------------------------------------------------- placeholders

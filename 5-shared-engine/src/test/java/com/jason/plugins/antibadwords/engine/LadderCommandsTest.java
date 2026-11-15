@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -56,10 +57,10 @@ class LadderCommandsTest {
     @Test
     void ladderShowsTheClassicSetupWhenThereAreNoSteps() {
         assertEquals(List.of(
-            "§6Punishment ladder§7 (profile §fdefault§7, classic setup, no steps in ladder.yml)",
-            "§eAt 2 and every strike after strikes§7: §flegacy",
+            Chat.PREFIX + "§6§lPunishment ladder§7 (profile §fdefault§7, classic setup, no steps in ladder.yml)",
+            "§e§lAt 2 and every strike after strikes§7: §flegacy",
             "§7   enabled actions: villager_no; strikes reset",
-            "§7Strikes start again at 0 after the punishment. Write steps under ladder.steps in moderation/ladder.yml to change this."),
+            "§7§oAfter a penalty, the strikes return to 0. To change this, write steps under ladder.steps in moderation/ladder.yml."),
             run("ladder"));
     }
 
@@ -68,12 +69,12 @@ class LadderCommandsTest {
         steps();
         List<String> out = run("ladder");
         assertEquals(List.of(
-            "§6Punishment ladder§7 (profile §fdefault§7, 2 steps)",
-            "§eAt 2 strikes§7: §fwarn-first",
+            Chat.PREFIX + "§6§lPunishment ladder§7 (profile §fdefault§7, 2 steps)",
+            "§e§lAt 2 strikes§7: §fwarn-first",
             "§7   warn",
-            "§eAt 4, then every 3 strikes§7: §fshort-mute",
+            "§e§lAt 4, then every 3 strikes§7: §fshort-mute",
             "§7   mute 10m No swearing; sound minecraft:entity.villager.no 1 1",
-            "§7When one violation reaches several steps: all of them, lowest first."), out);
+            "§7One violation can reach several steps. Applied steps: all, lowest first."), out);
 
         // a player in another world sees that world's profile
         TestFiles.write(f.file("worlds.yml"), """
@@ -99,10 +100,10 @@ class LadderCommandsTest {
                 return bob;
             }
         };
-        assertEquals(List.of("§6Punishment ladder§7 (profile §fstrict§7, 1 step)", "§eAt 1 strikes§7: §fout", "§7   kick"), run(player, "ladder"));
+        assertEquals(List.of(Chat.PREFIX + "§6§lPunishment ladder§7 (profile §fstrict§7, 1 step)", "§e§lAt 1 strikes§7: §fout", "§7   kick"), run(player, "ladder"));
         assertEquals(out.get(0), run(admin, "ladder").get(0), "the console sees the default profile");
-        assertEquals(List.of("§6Punishment ladder§7 (profile §fstrict§7, 1 step)", "§eAt 1 strikes§7: §fout", "§7   kick"), run("ladder strict"));
-        assertEquals(List.of("§cNo such profile. Known: default, strict"), run("ladder nope"));
+        assertEquals(List.of(Chat.PREFIX + "§6§lPunishment ladder§7 (profile §fstrict§7, 1 step)", "§e§lAt 1 strikes§7: §fout", "§7   kick"), run("ladder strict"));
+        assertEquals(List.of(Chat.error("This profile does not exist. Known profiles: §fdefault, strict§7.")), run("ladder nope"));
         assertEquals(List.of("default", "strict"), engine.commands().complete(admin, new String[] {"ladder", ""}));
         assertEquals(List.of("strict"), engine.commands().complete(admin, new String[] {"ladder", "st"}));
     }
@@ -111,7 +112,7 @@ class LadderCommandsTest {
     void ladderSaysWhenPunishmentIsOff() {
         TestFiles.edit(f.file(LADDER), "enabled: true", "enabled: false");
         engine = f.start();
-        assertEquals("§cPunishment is switched off (punishment.enabled): bad words are blocked, nobody is punished.", run("ladder").get(1));
+        assertEquals(Chat.error("Punishment is switched off (punishment.enabled): bad words are blocked, nobody is punished."), run("ladder").get(1));
     }
 
     @Test
@@ -120,13 +121,13 @@ class LadderCommandsTest {
         UUID bob = f.platform.join("Bob");
         engine.onJoin(bob, "Bob");
         engine.strikes().add(bob, 3);
-        assertEquals(List.of("§eBob: §f3§e strikes§7 (profile default)",
-            "§7Next step: §fshort-mute§7 at §f4§7 strikes (1 more): mute 10m No swearing; sound minecraft:entity.villager.no 1 1"), run("strikes Bob"));
+        assertEquals(List.of("§e§lBob§7: §f3§7 strikes§7 (profile default)",
+            "§7Next step: §fshort-mute§7 at §f4§7 strikes (1 more). Actions: mute 10m No swearing; sound minecraft:entity.villager.no 1 1"), run("strikes Bob"));
         engine.strikes().reset(bob);
         engine.strikes().add(bob, 1);
-        assertEquals("§7Next step: §fwarn-first§7 at §f2§7 strikes (1 more): warn", run("strikes bob").get(1));
+        assertEquals("§7Next step: §fwarn-first§7 at §f2§7 strikes (1 more). Actions: warn", run("strikes bob").get(1));
         engine.strikes().add(bob, 4); // 5: the repeat at 7 is next
-        assertEquals("§7Next step: §fshort-mute§7 at §f7§7 strikes (2 more): mute 10m No swearing; sound minecraft:entity.villager.no 1 1",
+        assertEquals("§7Next step: §fshort-mute§7 at §f7§7 strikes (2 more). Actions: mute 10m No swearing; sound minecraft:entity.villager.no 1 1",
             run("strikes Bob").get(1));
     }
 
@@ -134,12 +135,12 @@ class LadderCommandsTest {
     void strikesInTheClassicSetupAndWithoutAFurtherStep() {
         UUID bob = f.platform.join("Bob");
         engine.onJoin(bob, "Bob");
-        assertEquals(List.of("§eBob: §f0§e strikes§7 (profile default)", "§7Next step: §flegacy§7 at §f2§7 strikes (2 more): punishments; reset-strikes"),
+        assertEquals(List.of("§e§lBob§7: §f0§7 strikes§7 (profile default)", "§7Next step: §flegacy§7 at §f2§7 strikes (2 more). Actions: punishments; reset-strikes"),
             run("strikes Bob"));
         TestFiles.edit(f.file(LADDER), "steps: {}", "steps:\n    only:\n      at: 2\n      actions: [warn]");
         engine = f.start();
         engine.strikes().add(bob, 2);
-        assertEquals("§7No further step: the ladder has no trigger point above 2.", run("strikes Bob").get(1));
+        assertEquals("§7No more steps. The ladder has no step above 2 strikes.", run("strikes Bob").get(1));
     }
 
     @Test
@@ -150,22 +151,22 @@ class LadderCommandsTest {
         engine.onJoin(bob, "Bob");
         engine.onQuit(bob);
         f.platform.players.remove(bob);
-        assertEquals("§eBob: §f1§e strike§7 (profile default)§7 (offline)", run("strikes Bob").get(0));
-        assertEquals(List.of("§cPlayer not found (not online and never seen on this server)."), run("strikes Nobody"));
-        assertEquals(List.of("§eUsage: /abw strikes <player>"), run("strikes"));
+        assertEquals("§e§lBob§7: §f1§7 strike§7 (profile default)§7 (offline)", run("strikes Bob").get(0));
+        assertEquals(List.of(Chat.error("Player not found (not online and never seen on this server).")), run("strikes Nobody"));
+        assertEquals(List.of(Chat.usage("/abw strikes <player>")), run("strikes"));
         assertEquals(List.of("Bob"), engine.commands().complete(admin, new String[] {"strikes", "b"}));
         assertEquals(List.of(), engine.commands().complete(admin, new String[] {"strikes", "bob", ""}));
         TestFiles.edit(f.file(LADDER), "enabled: true", "enabled: false");
         engine = f.start();
         f.platform.join("Alice");
-        assertEquals("§7Punishment is switched off in this profile, so no step will happen.", run("strikes Alice").get(1));
+        assertEquals("§7Punishment is off in this profile. No step is applied.", run("strikes Alice").get(1));
     }
 
     @Test
     void bothNeedTheAdminPermission() {
         CommandsTest.Sender user = new CommandsTest.Sender();
-        assertEquals(List.of("§cNo permission."), run(user, "ladder"));
-        assertEquals(List.of("§cNo permission."), run(user, "strikes Bob"));
+        assertEquals(List.of(Chat.error("No permission.")), run(user, "ladder"));
+        assertEquals(List.of(Chat.error("No permission.")), run(user, "strikes Bob"));
         assertEquals(List.of(), engine.commands().complete(user, new String[] {"strikes", ""}));
         assertEquals(List.of(), engine.commands().complete(user, new String[] {"ladder", ""}));
         assertTrue(engine.commands().complete(admin, new String[] {"s"}).contains("strikes"));

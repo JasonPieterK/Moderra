@@ -7,6 +7,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.jason.plugins.antibadwords.PunishmentAction;
 import com.jason.plugins.antibadwords.engine.config.CoreSettings;
+import com.jason.plugins.antibadwords.engine.config.MessageDefaults;
+import com.jason.plugins.antibadwords.engine.config.SettingsRegistry;
 import com.jason.plugins.antibadwords.engine.config.YamlTree;
 import com.jason.plugins.antibadwords.engine.legacy.LegacyModCore;
 import com.jason.plugins.antibadwords.mod.Names;
@@ -74,7 +76,11 @@ class LegacyMigrationTest {
 
     private Sides migrate(String oldConfig) throws IOException {
         Path oldDir = dir.resolve("old");
-        TestFiles.write(oldDir.resolve("config.yml"), oldConfig);
+        // The old code is the oracle for decisions, strike counts, commands and actions. Its message TEXTS are the old
+        // defaults, which the new version deliberately replaced (MessageDefaults); so the oracle reads the same file with
+        // the old default texts swapped for the new defaults. Customised messages stay as they are.
+        String oracleConfig = withNewMessageDefaults(oldConfig);
+        TestFiles.write(oldDir.resolve("config.yml"), oracleConfig);
         List<String> oracleWarnings = new ArrayList<>();
         Fixture f = new Fixture(dir.resolve("new"));
         LegacyModCore before = new LegacyModCore(oldDir, "1", new LegacyModCore.Log() {
@@ -87,11 +93,27 @@ class LegacyMigrationTest {
                 oracleWarnings.add(message);
             }
         }, f.now::get);
-        assertEquals(oldConfig, TestFiles.read(oldDir.resolve("config.yml")), "the oracle must not change its file");
+        assertEquals(oracleConfig, TestFiles.read(oldDir.resolve("config.yml")), "the oracle must not change its file");
 
         TestFiles.write(f.file("config.yml"), oldConfig);
         f.start();
         return new Sides(before, f, oracleWarnings, oldConfig);
+    }
+
+    /** The old config with every message that still has an old default text switched to the new default text. */
+    private static String withNewMessageDefaults(String oldConfig) {
+        SettingsRegistry registry = new SettingsRegistry();
+        Engine.registerSettings(registry);
+        String text = oldConfig;
+        for (var entry : MessageDefaults.OLD_DEFAULTS.entrySet()) {
+            if (!entry.getKey().startsWith("messages.")) {
+                continue;
+            }
+            for (String old : entry.getValue()) {
+                text = text.replace("\"" + old + "\"", "\"" + registry.get(entry.getKey()).defaultValue() + "\"");
+            }
+        }
+        return text;
     }
 
     private static List<Path> backups(Path folder) throws IOException {

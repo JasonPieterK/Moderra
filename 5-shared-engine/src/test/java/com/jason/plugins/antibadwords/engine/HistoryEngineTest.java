@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -79,13 +80,13 @@ class HistoryEngineTest {
             f.say(bob, Message.CHAT, "fuck");
         }
         List<String> page1 = run(STAFF, "history Bob");
-        assertTrue(page1.get(0).contains("History of Bob") && page1.get(0).contains("page 1/"), page1.toString());
+        assertTrue(page1.get(0).contains("History of Bob") && page1.get(0).contains("page §f1§7 of"), page1.toString());
         assertEquals(8 + 2, page1.size(), "header + 8 lines + next page hint: " + page1);
         assertTrue(page1.get(page1.size() - 1).contains("history Bob 2"));
         List<String> last = run(STAFF, "history bob 99");
         assertTrue(last.get(0).contains("page 3/3") || last.get(0).contains("page "), last.toString());
         assertFalse(last.get(last.size() - 1).contains("Next page"));
-        assertEquals(List.of("§eUsage: /abw history <player> [page]"), run(STAFF, "history Bob x"));
+        assertEquals(List.of(Chat.usage("/abw history <player> [page]")), run(STAFF, "history Bob x"));
     }
 
     @Test
@@ -94,10 +95,10 @@ class HistoryEngineTest {
         engine.onQuit(bob);
         f.platform.players.remove(bob);
         assertTrue(run(STAFF, "history Bob").get(0).contains("History of Bob"));
-        assertEquals(List.of("§cPlayer not found (not online and never seen on this server)."), run(STAFF, "history Nobody"));
+        assertEquals(List.of(Chat.error("Player not found (not online and never seen on this server).")), run(STAFF, "history Nobody"));
         UUID amy = f.platform.join("Amy");
         engine.onJoin(amy, "Amy");
-        assertEquals(List.of("§eNo history for Amy."), run(STAFF, "history Amy"));
+        assertEquals(List.of(Chat.warn("No history exists for §fAmy§7.")), run(STAFF, "history Amy"));
     }
 
     @Test
@@ -124,12 +125,12 @@ class HistoryEngineTest {
         List<String> ask = run(ADMIN, "history purge Bob");
         assertTrue(ask.get(0).contains("permanently deletes") && ask.get(0).contains("history purge Bob confirm"), ask.toString());
         assertTrue(engine.history().count(bob) > 0, "the first call deletes nothing");
-        assertEquals(List.of("§eUsage: /abw history purge <player> [confirm]"), run(ADMIN, "history purge Bob now"));
+        assertEquals(List.of(Chat.usage("/abw history purge <player> [confirm]")), run(ADMIN, "history purge Bob now"));
 
         List<String> done = run(ADMIN, "history purge Bob confirm");
-        assertTrue(done.get(0).startsWith("§aDeleted "), done.toString());
+        assertTrue(done.get(0).startsWith(Chat.ok("Deleted ")), done.toString());
         assertEquals(0, engine.history().count(bob));
-        assertEquals(List.of("§eNo history for Bob."), run(STAFF, "history Bob"));
+        assertEquals(List.of(Chat.warn("No history exists for §fBob§7.")), run(STAFF, "history Bob"));
     }
 
     @Test

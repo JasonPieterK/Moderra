@@ -168,7 +168,7 @@ class LinkFilterTest {
         assertTrue(v.blocked());
         assertEquals("link", v.primary().check());
         assertEquals("link example.com", v.primary().detail());
-        assertEquals(List.of("§cLinks are not allowed here."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7Links are not permitted on this server."), f.platform.sentTo(bob));
         assertEquals(0, engine.strikes().get(bob));
         assertEquals(List.of("link", "violation"), events.stream().map(ModerationEvent::kind).toList());
         assertEquals("join example dot com now", events.get(0).data().get("text"));

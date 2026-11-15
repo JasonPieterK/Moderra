@@ -139,7 +139,7 @@ class WorldProfilesTest {
         f.say(bob, Message.CHAT, "fuck");
         f.say(bob, Message.CHAT, "fuck");
         assertTrue(f.platform.appliedActions.isEmpty(), "relaxed world: punishment is off");
-        assertTrue(f.platform.sentTo(bob).get(2).contains("PUNISHMENT IS CURRENTLY DISABLED"));
+        assertTrue(f.platform.sentTo(bob).get(2).contains("No penalty is applied at this time"));
 
         engine.strikes().reset(bob);
         f.platform.worlds.put(bob, "world_nether");

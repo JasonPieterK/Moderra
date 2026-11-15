@@ -50,14 +50,14 @@ public final class LadderSettings {
             + "    first-warning:\n"
             + "      at: 2\n"
             + "      repeat: once\n"
-            + "      message: \"&eThis is a warning, {player}. Next time you are muted.\"\n"
+            + "      message: \"&e&lWarning. &7{player}, the next violation causes a mute.\"\n"
             + "      actions: [warn]\n"
             + "    short-mute:\n"
             + "      at: 4\n"
             + "      repeat: once\n"
-            + "      message: \"&cYou are muted for {duration}.\"\n"
+            + "      message: \"&c&lMuted. &7You cannot write for &f{duration}&7.\"\n"
             + "      actions:\n"
-            + "        - mute 10m Bad language\n"
+            + "        - mute 10m Language that is not permitted\n"
             + "        - sound minecraft:entity.villager.no 1 1\n"
             + "    kick:\n"
             + "      at: 6\n"
@@ -71,7 +71,7 @@ public final class LadderSettings {
         .file(FILE).category(CATEGORY).title("Several steps at once").overridable()
         .description("One violation can be worth several strikes and so reach more than one step at the same moment.\n"
             + "all = every reached step happens, lowest first. highest = only the highest one.").build();
-    public static final Setting<String> DEFAULT_REASON = Setting.string("ladder.default-reason", "Bad language")
+    public static final Setting<String> DEFAULT_REASON = Setting.string("ladder.default-reason", "Language that is not permitted")
         .file(FILE).category(CATEGORY).title("Default reason").overridable()
         .description("The reason used by mute, kick and ban actions that do not give one. Colours: & codes.").build();
     public static final Setting<String> BAN_COMMAND = Setting.string("ladder.ban-command", "ban {player} {reason}")

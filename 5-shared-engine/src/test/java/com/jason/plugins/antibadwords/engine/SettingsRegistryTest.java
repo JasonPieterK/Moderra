@@ -51,6 +51,10 @@ class SettingsRegistryTest {
                 // migrated installs keep the whitelist they had
                 assertTrue(CoreSettings.WHITELIST.defaultValue().containsAll((List<?>) s.parse(oldValue).value()));
                 assertTrue(CoreSettings.WHITELIST.defaultValue().containsAll(List.of("suka", "hui", "burro", "tai", "lixo")));
+            } else if (oldValue != null && com.jason.plugins.antibadwords.engine.config.MessageDefaults.OLD_DEFAULTS.containsKey(s.key())) {
+                // the message texts were redesigned on purpose; the old default must be recorded so installs that still have it are upgraded
+                assertTrue(com.jason.plugins.antibadwords.engine.config.MessageDefaults.OLD_DEFAULTS.get(s.key()).contains(oldValue),
+                    s.key());
             } else if (oldValue != null && s != CoreSettings.ENABLED_LANGUAGES) {
                 assertEquals(s.parse(oldValue).value(), s.defaultValue(), s.key());
                 assertNull(s.parse(oldValue).problem(), s.key());

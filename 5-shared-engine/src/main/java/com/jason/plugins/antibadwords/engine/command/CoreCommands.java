@@ -1,6 +1,7 @@
 package com.jason.plugins.antibadwords.engine.command;
 
 import static com.jason.plugins.antibadwords.engine.command.Chat.GOLD;
+import static com.jason.plugins.antibadwords.engine.command.Chat.BOLD;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GRAY;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GREEN;
 import static com.jason.plugins.antibadwords.engine.command.Chat.RED;
@@ -75,12 +76,14 @@ public final class CoreCommands {
         };
     }
 
+    private static final String PFX_BLOCKED = Chat.PREFIX + RED + BOLD + "Blocked. " + GRAY;
+
     private static void reload(CommandContext c) {
         List<ConfigProblem> problems = c.engine().reload();
-        c.send(GREEN + "AntiBadWords config reloaded (" + c.engine().settings().matcher().size() + " blocked words active).");
+        c.send(Chat.ok("The configuration is reloaded. Blocked words: " + Chat.val(c.engine().settings().matcher().size()) + "."));
         if (!problems.isEmpty()) {
-            c.send(YELLOW + "" + problems.size() + " config problem(s) were found (full list in the console):");
-            problems.stream().limit(5).forEach(p -> c.send(RED + "- " + p));
+            c.send(Chat.warn("The plugin found " + Chat.val(problems.size()) + " configuration problem(s). The console shows the full list:"));
+            problems.stream().limit(5).forEach(p -> c.send(RED + "- " + GRAY + p));
         }
         c.audit();
     }
@@ -92,12 +95,12 @@ public final class CoreCommands {
         }
         String word = c.joined(0);
         if (!WordMatcher.isValidEntry(word)) {
-            c.send(RED + "That is not a valid word (use at least 2 letters or digits).");
+            c.send(Chat.error("That is not a valid word (use at least 2 letters or digits)."));
         } else if (c.engine().addCustomWord(word)) {
-            c.send(GREEN + "Added custom blocked word.");
+            c.send(Chat.ok("Added custom blocked word."));
             c.audit();
         } else {
-            c.send(RED + "Word already exists.");
+            c.send(Chat.error("Word already exists."));
         }
     }
 
@@ -107,7 +110,7 @@ public final class CoreCommands {
             return;
         }
         boolean ok = c.engine().removeCustomWord(c.joined(0));
-        c.send(ok ? GREEN + "Removed custom blocked word." : RED + "Word not found in the custom list.");
+        c.send(ok ? Chat.ok("The custom blocked word is removed.") : Chat.error("The custom list does not contain this word."));
         if (ok) {
             c.audit();
         }
@@ -117,10 +120,10 @@ public final class CoreCommands {
         String listName = c.args().length >= 1 ? c.args()[0] : "active";
         List<String> words = c.engine().listWords(listName);
         if (words.isEmpty()) {
-            c.send(RED + "No words found for list: " + listName);
+            c.send(Chat.error("No words exist for this list: " + Chat.val(listName) + "."));
             return;
         }
-        c.send(GOLD + listName.toUpperCase(Locale.ROOT) + " words (" + words.size() + "):");
+        c.send(Chat.heading(listName.toUpperCase(Locale.ROOT) + " words") + GRAY + " (" + WHITE + words.size() + GRAY + "):");
         c.send(GRAY + String.join(", ", words));
     }
 
@@ -132,37 +135,37 @@ public final class CoreCommands {
         Engine engine = c.engine();
         Verdict verdict = engine.explain(c.joined(0));
         if (!verdict.hasHits()) {
-            c.send(GREEN + "Clean: no blocked word found.");
+            c.send(Chat.ok("Clean: no blocked word found."));
         }
         for (Hit hit : verdict.hits()) {
             if (BadWordCheck.ID.equals(hit.check())) {
-                c.send(RED + "Blocked: matches '" + hit.detail() + "'.");
-                c.send(GRAY + "Check: " + WHITE + hit.check() + GRAY + " (word list entry '" + hit.detail() + "', level "
+                c.send(PFX_BLOCKED + "The text contains the blocked word " + Chat.val(hit.detail()) + ".");
+                c.send(GRAY + "Check: " + WHITE + hit.check() + GRAY + " (word list entry " + WHITE + hit.detail() + GRAY + ", level "
                     + verdict.settings().tierOf(hit.detail()) + ")");
                 continue;
             }
             switch (hit.action()) {
-                case BLOCK -> c.send(RED + "Blocked by check " + WHITE + hit.check() + RED + ": " + hit.detail() + ".");
+                case BLOCK -> c.send(PFX_BLOCKED + "The check " + WHITE + hit.check() + GRAY + " blocks the text: " + hit.detail() + ".");
                 case CENSOR -> {
-                    c.send(YELLOW + "Cleaned by check " + WHITE + hit.check() + YELLOW + ": " + hit.detail() + ".");
+                    c.send(Chat.warn("The check " + WHITE + hit.check() + GRAY + " cleans the text: " + hit.detail() + "."));
                     c.send(GRAY + "Text after cleaning: " + WHITE + hit.replacement());
                 }
-                default -> c.send(YELLOW + "Noted (not stopped) by check " + WHITE + hit.check() + YELLOW + ": " + hit.detail() + ".");
+                default -> c.send(Chat.warn("The check " + WHITE + hit.check() + GRAY + " records the text but does not stop it: " + hit.detail() + "."));
             }
         }
         List<String> skipped = engine.checks(verdict.settings()).stream()
             .filter(check -> check.id().startsWith("spam-") && check.enabled(verdict.settings()))
             .map(TextCheck::id).filter(id -> id.equals("spam-rate") || id.equals("spam-repeat") || id.equals("spam-commands")).toList();
         if (!skipped.isEmpty()) {
-            c.send(GRAY + "Not tested here (they count real messages over time): " + String.join(", ", skipped) + ".");
+            c.send(Chat.hint("These checks are not tested here. They count real messages over time: " + String.join(", ", skipped) + "."));
         }
     }
 
     private static void violations(CommandContext c) {
         PlayerRef target = requireKnownPlayer(c);
         if (target != null) {
-            c.send(YELLOW + target.name() + " violations: " + c.engine().strikes().get(target.id()) + "/"
-                + c.engine().settings().legacy().violationsBeforePunish() + offlineNote(c, target));
+            c.send(Chat.info("Violations of " + Chat.val(target.name()) + ": " + Chat.val(c.engine().strikes().get(target.id())) + " of "
+                + Chat.val(c.engine().settings().legacy().violationsBeforePunish()) + offlineNote(c, target)));
         }
     }
 
@@ -170,7 +173,7 @@ public final class CoreCommands {
         PlayerRef target = requireKnownPlayer(c);
         if (target != null) {
             c.engine().strikes().reset(target.id());
-            c.send(GREEN + "Violations reset for " + target.name() + "." + offlineNote(c, target));
+            c.send(Chat.ok("The violations of " + Chat.val(target.name()) + " are reset." + offlineNote(c, target)));
             c.audit();
         }
     }
@@ -178,7 +181,7 @@ public final class CoreCommands {
     private static void info(CommandContext c) {
         Engine engine = c.engine();
         AntiBadWordsSettings s = engine.settings().legacy();
-        c.send(GOLD + "AntiBadWords " + engine.version());
+        c.send(Chat.heading("AntiBadWords " + engine.version()));
         c.send(GRAY + "Blocked words: " + WHITE + engine.settings().matcher().size() + GRAY + " | Punishment: " + WHITE
             + (s.punishmentEnabled() ? "on" : "off") + GRAY + " after " + WHITE + s.violationsBeforePunish() + GRAY + " violations");
         c.send(GRAY + "Scanning: " + WHITE + scanSummary(engine.settings()));
@@ -204,8 +207,8 @@ public final class CoreCommands {
             }
         }
         c.send(GRAY + "Integrations detected: " + WHITE + (found.isEmpty() ? "none" : String.join(", ", found)));
-        c.send(GRAY + "DiscordSRV features (alerts, Discord chat filter, !abw commands) work on Bukkit/Paper/Purpur only"
-            + (platform.name().equalsIgnoreCase("Bukkit") ? "." : "; they are not available on " + platform.name() + "."));
+        c.send(Chat.hint("The DiscordSRV features work only on Bukkit, Paper and Purpur"
+            + (platform.name().equalsIgnoreCase("Bukkit") ? "." : ". They are not available on " + platform.name() + ".")));
     }
 
     /** The player named by the first argument: online, or offline but seen before (data/players.json). */
@@ -216,7 +219,7 @@ public final class CoreCommands {
         }
         PlayerRef target = c.engine().resolvePlayer(c.args()[0]).orElse(null);
         if (target == null) {
-            c.send(RED + "Player not found (not online and never seen on this server).");
+            c.send(Chat.error("Player not found (not online and never seen on this server)."));
         }
         return target;
     }

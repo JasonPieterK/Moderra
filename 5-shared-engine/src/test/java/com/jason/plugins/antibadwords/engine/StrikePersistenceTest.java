@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -100,10 +101,10 @@ class StrikePersistenceTest {
         assertTrue(f.platform.infos.stream().anyMatch(i -> i.contains("Loaded the strikes of 1 players")), f.platform.infos.toString());
 
         // offline lookups by name
-        assertEquals(List.of("§eBob violations: 3/10§7 (offline)"), run("violations bob"));
-        assertEquals(List.of("§aViolations reset for Bob.§7 (offline)"), run("resetviolations Bob"));
+        assertEquals(List.of(Chat.info("Violations of §fBob§7: §f3§7 of §f10§7§7 (offline)")), run("violations bob"));
+        assertEquals(List.of(Chat.ok("The violations of §fBob§7 are reset.§7 (offline)")), run("resetviolations Bob"));
         assertEquals(0, engine.strikes().get(bob));
-        assertEquals(List.of("§cPlayer not found (not online and never seen on this server)."), run("violations Nobody"));
+        assertEquals(List.of(Chat.error("Player not found (not online and never seen on this server).")), run("violations Nobody"));
         engine.shutdown();
         assertEquals(0, f.start().strikes().get(bob), "the reset was saved too");
     }
@@ -164,7 +165,7 @@ class StrikePersistenceTest {
         UUID eve = f.platform.join("Eve");
         f.say(eve, Message.CHAT, "you are shit");
         assertEquals(eve, engine.players().find("eve").orElseThrow().id());
-        assertEquals(List.of("§eEve violations: 1/10"), run("violations Eve"));
+        assertEquals(List.of(Chat.info("Violations of §fEve§7: §f1§7 of §f10§7")), run("violations Eve"));
         assertEquals(eve, engine.resolvePlayer("Eve").orElseThrow().id());
         assertEquals(bob, engine.resolvePlayer("BOB").orElseThrow().id());
         assertTrue(engine.resolvePlayer("Nobody").isEmpty());

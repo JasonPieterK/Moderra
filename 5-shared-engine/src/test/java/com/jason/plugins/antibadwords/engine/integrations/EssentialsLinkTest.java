@@ -161,7 +161,7 @@ class EssentialsLinkTest {
         Verdict v = say(bob, Message.CHAT, "hello");
         assertTrue(v.blocked());
         assertFalse(v.hasHits());
-        assertTrue(platform.sentTo(bob).stream().anyMatch(s -> s.contains("You are muted") && s.contains("spam")), platform.sentTo(bob).toString());
+        assertTrue(platform.sentTo(bob).stream().anyMatch(s -> s.contains("cannot write") && s.contains("spam")), platform.sentTo(bob).toString());
         // a mute made with Essentials' own /mute is respected too, and it runs out
         UUID carl = platform.join("Carl");
         ess.mutes.put(carl, new EssentialsBridge.ExternalMute(now.get() + 1000, null));
@@ -232,7 +232,7 @@ class EssentialsLinkTest {
         engine.essentials().attach(ess);
         ess.nicks.put(bob, "&afuck");
         engine.onJoin(bob, "Bob");
-        assertTrue(platform.sentTo(bob).stream().anyMatch(s -> s.contains("nickname is not allowed")), platform.sentTo(bob).toString());
+        assertTrue(platform.sentTo(bob).stream().anyMatch(s -> s.contains("Nickname rejected")), platform.sentTo(bob).toString());
         assertTrue(ess.nicks.containsKey(bob), "warn keeps it");
         set("nickname-action", "reset");
         engine.onJoin(bob, "Bob");
