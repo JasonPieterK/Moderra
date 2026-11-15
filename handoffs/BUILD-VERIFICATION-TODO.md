@@ -198,3 +198,11 @@ Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `
 - [ ] Bukkit: `antibadwords.gui.edit.<category>` nodes are registered with default TRUE after every reload (`AntiBadWordsPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/abw gui ladder`, `/abw gui spam` open the right page.
 - [ ] Fabric/Forge: edit nodes use `ModPermissions.fallback` (true); Forge does not register them (unregistered nodes use the fallback). `ModGui.open(player, page)` is stub-compiled only; mods still have no chest backend.
 - [ ] Run `tools/stub-compile.sh` (hand-written stubs, see `tools/api-stubs/README.md`): passing it proves nothing about the real APIs. It found a duplicate `case` in `ForgePermissions` (fixed).
+
+## Mini task 32 (Discord censor, IP API)
+- [ ] CI javap check of DiscordSRV 1.x: `github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent` must exist with `String getProcessedMessage()`,
+      `void setProcessedMessage(String)` and `void setCancelled(boolean)` (Cancellable); `DiscordGuildMessagePreProcessEvent#getMessage()` (JDA Message,
+      `getContentRaw()`). If absent the hook logs one line and `censor` blocks. Check on a real server that the censored text appears in game, and that the
+      processed message really contains the raw Discord text (otherwise nothing is rewritten: the pending entry expires after 30 s and the text goes out unchanged, so test it).
+- [ ] Bukkit `Player#getAddress().getAddress().getHostAddress()` (BukkitPlatform#playerIp) stub-compiled only; mods keep `playerIp` = null (no connection address call exists in the repo).
+- [ ] ipban templates now use `{ip}` (falls back to the name): confirm each ban plugin's ipban command accepts an IP (EssentialsX banip, LiteBans ipban, AdvancedBan ipban, LibertyBans ipban, vanilla ban-ip).

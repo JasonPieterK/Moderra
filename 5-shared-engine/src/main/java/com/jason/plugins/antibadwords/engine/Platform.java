@@ -52,6 +52,15 @@ public interface Platform {
         return false;
     }
 
+    /**
+     * The IP address (text, no port) an online player connected from; {@code null} when unknown or the player is offline.
+     * Used for {@code {ip}} in ban templates and stored in players.json (see {@code known-players.store-ip}).
+     * Default: unknown (the mods do not expose the connection address in this repository).
+     */
+    default String playerIp(UUID player) {
+        return null;
+    }
+
     /** Name of the world the player is in ("" when unknown). */
     String worldName(UUID player);
 

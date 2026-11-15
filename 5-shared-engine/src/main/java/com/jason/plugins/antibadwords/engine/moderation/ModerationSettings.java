@@ -42,11 +42,18 @@ public final class ModerationSettings {
             + "/abw violations also work for players who are offline. Players who were not seen for this many days\n"
             + "are removed from that list. 0 = never.").build();
 
+    public static final Setting<Boolean> STORE_IP = Setting.bool("known-players.store-ip", true)
+        .file(FILE).category(CATEGORY).title("Remember players' IP addresses")
+        .description("Keep the last IP address of every player in data/players.json. It is only used for {ip} in the ipban command\n"
+            + "templates (integrations.yml) when the player is offline. Turn this off for privacy (IP addresses are personal data in\n"
+            + "many countries): nothing is stored, stored addresses are not written again, and an ipban of an offline player\n"
+            + "falls back to the name. Online players' IPs are still used for the ban itself.").build();
+
     private ModerationSettings() {
     }
 
     public static void register(SettingsRegistry r) {
-        for (Setting<?> setting : List.of(SAVE_TO_DISK, DECAY_EVERY, DECAY_POINTS, MAX_POINTS, SAVE_DELAY, FORGET_PLAYERS_DAYS)) {
+        for (Setting<?> setting : List.of(SAVE_TO_DISK, DECAY_EVERY, DECAY_POINTS, MAX_POINTS, SAVE_DELAY, FORGET_PLAYERS_DAYS, STORE_IP)) {
             r.register(setting);
         }
     }

@@ -128,6 +128,18 @@ public final class WordIndex {
      * @return its value, or {@code null}
      */
     public String firstContained(String text, int minLength) {
+        return firstContained(text, minLength, null);
+    }
+
+    /** An occurrence filter for {@link #firstContained(String, int, Occurrence)}. */
+    @FunctionalInterface
+    public interface Occurrence {
+        /** True when the word found at {@code [start, end)} of the text counts. */
+        boolean accept(int start, int end);
+    }
+
+    /** Like {@link #firstContained(String, int)}, but occurrences the filter rejects are ignored ({@code null} = accept all). */
+    public String firstContained(String text, int minLength, Occurrence filter) {
         int best = -1;
         int n = text.length();
         for (int start = 0; start < n; start++) {
@@ -138,7 +150,8 @@ public final class WordIndex {
                     break;
                 }
                 int id = terminal[node];
-                if (id >= 0 && i - start + 1 >= minLength && (best < 0 || id < best)) {
+                if (id >= 0 && i - start + 1 >= minLength && (best < 0 || id < best)
+                    && (filter == null || filter.accept(start, i + 1))) {
                     best = id;
                 }
             }

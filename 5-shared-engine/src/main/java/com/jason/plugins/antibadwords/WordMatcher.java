@@ -60,6 +60,8 @@ public final class WordMatcher {
     /** Entries written in scripts that have no word spacing; matched as substrings. */
     private final Map<String, String> unspaced = new LinkedHashMap<>();
     private final Set<String> whitelist = new HashSet<>();
+    /** Whitelist entries written in unspaced scripts (Han, kana, Hangul, Thai ...): they suppress hits that lie inside them. */
+    private final List<String> unspacedWhitelist = new ArrayList<>();
     private final Options options;
     private final EvasionNormalizer normalizer;
     /** Index over {@link #exact} for masked ({@code f*ck}) and partial matching. */
@@ -83,6 +85,9 @@ public final class WordMatcher {
             String canonical = String.join("", normalizer.tokenize(safe));
             if (!canonical.isEmpty()) {
                 whitelist.add(canonical);
+                if (containsUnspacedScript(canonical)) {
+                    unspacedWhitelist.add(canonical);
+                }
             }
         }
         for (String word : words) {
@@ -185,7 +190,28 @@ public final class WordMatcher {
 
         // 4) scripts written without spaces (Chinese, Japanese, Thai, ...)
         if (!unspaced.isEmpty()) {
-            return unspacedIndex.firstContained(String.join("", tokens), 1);
+            String joined = String.join("", tokens);
+            if (unspacedWhitelist.isEmpty()) {
+                return unspacedIndex.firstContained(joined, 1);
+            }
+            // a whitelist entry that contains the found region (你妈妈 around 你妈) suppresses that hit
+            List<int[]> safe = new ArrayList<>();
+            for (String entry : unspacedWhitelist) {
+                for (int at = joined.indexOf(entry); at >= 0; at = joined.indexOf(entry, at + 1)) {
+                    safe.add(new int[] {at, at + entry.length()});
+                }
+            }
+            if (safe.isEmpty()) {
+                return unspacedIndex.firstContained(joined, 1);
+            }
+            return unspacedIndex.firstContained(joined, 1, (start, end) -> {
+                for (int[] range : safe) {
+                    if (range[0] <= start && end <= range[1]) {
+                        return false;
+                    }
+                }
+                return true;
+            });
         }
         return null;
     }

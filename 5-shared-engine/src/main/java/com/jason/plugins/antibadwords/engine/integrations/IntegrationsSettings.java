@@ -29,7 +29,7 @@ public final class IntegrationsSettings {
     private static final String B = "integrations.bans.";
     private static final String T = "integrations.bedrock.";
     private static final String PLACEHOLDERS = "Placeholders: {player} {uuid} {reason} {duration} (written the way the provider reads it), "
-        + "{seconds}, {millis}. Empty = this provider cannot do it (the fallback action runs).";
+        + "{seconds}, {millis}; ipban also {ip} (online IP, else the last known IP, else the name). Empty = this provider cannot do it (the fallback action runs).";
 
     public static final Setting<String> PROVIDER = s(Setting.choice(B + "provider", AUTO, AUTO, VANILLA, ESSENTIALS, LITEBANS, ADVANCEDBAN,
         LIBERTYBANS, CUSTOM).title("Ban plugin")
@@ -47,23 +47,23 @@ public final class IntegrationsSettings {
 
     public static final Setting<String> ESSENTIALS_TEMPBAN = s(Setting.string(B + "essentials.tempban", "tempban {player} {duration} {reason}")
         .title("EssentialsX: tempban command").description(PLACEHOLDERS));
-    public static final Setting<String> ESSENTIALS_IPBAN = s(Setting.string(B + "essentials.ipban", "banip {player} {reason}")
+    public static final Setting<String> ESSENTIALS_IPBAN = s(Setting.string(B + "essentials.ipban", "banip {ip} {reason}")
         .title("EssentialsX: ipban command").description(PLACEHOLDERS));
     public static final Setting<String> LITEBANS_TEMPBAN = s(Setting.string(B + "litebans.tempban", "tempban {player} {duration} {reason} -s")
         .title("LiteBans: tempban command").description(PLACEHOLDERS + " The -s keeps the ban silent."));
-    public static final Setting<String> LITEBANS_IPBAN = s(Setting.string(B + "litebans.ipban", "ipban {player} {reason} -s")
+    public static final Setting<String> LITEBANS_IPBAN = s(Setting.string(B + "litebans.ipban", "ipban {ip} {reason} -s")
         .title("LiteBans: ipban command").description(PLACEHOLDERS));
     public static final Setting<String> ADVANCEDBAN_TEMPBAN = s(Setting.string(B + "advancedban.tempban", "tempban {player} {duration} {reason}")
         .title("AdvancedBan: tempban command").description(PLACEHOLDERS));
-    public static final Setting<String> ADVANCEDBAN_IPBAN = s(Setting.string(B + "advancedban.ipban", "ipban {player} {reason}")
+    public static final Setting<String> ADVANCEDBAN_IPBAN = s(Setting.string(B + "advancedban.ipban", "ipban {ip} {reason}")
         .title("AdvancedBan: ipban command").description(PLACEHOLDERS));
     public static final Setting<String> LIBERTYBANS_TEMPBAN = s(Setting.string(B + "libertybans.tempban", "tempban {player} {duration} {reason}")
         .title("LibertyBans: tempban command").description(PLACEHOLDERS));
-    public static final Setting<String> LIBERTYBANS_IPBAN = s(Setting.string(B + "libertybans.ipban", "ipban {player} {reason}")
+    public static final Setting<String> LIBERTYBANS_IPBAN = s(Setting.string(B + "libertybans.ipban", "ipban {ip} {reason}")
         .title("LibertyBans: ipban command").description(PLACEHOLDERS));
     public static final Setting<String> VANILLA_TEMPBAN = s(Setting.string(B + "vanilla.tempban", "")
         .title("Vanilla: tempban command").description("Vanilla Minecraft cannot do this; leave empty. " + PLACEHOLDERS));
-    public static final Setting<String> VANILLA_IPBAN = s(Setting.string(B + "vanilla.ipban", "ban-ip {player} {reason}")
+    public static final Setting<String> VANILLA_IPBAN = s(Setting.string(B + "vanilla.ipban", "ban-ip {ip} {reason}")
         .title("Vanilla: ipban command").description("ban-ip accepts the name of a player who is online. " + PLACEHOLDERS));
     public static final Setting<String> CUSTOM_TEMPBAN = s(Setting.string(B + "custom.tempban", "")
         .title("Custom: tempban command").description("Used when provider is custom. " + PLACEHOLDERS));

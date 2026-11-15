@@ -189,6 +189,23 @@ class DiscordLinkTest {
     }
 
     @Test
+    void censorRewritesTheTextWhenTheBridgeCanAndBlocksOtherwise() throws IOException {
+        set(DiscordSrvSettings.INBOUND_ENABLED, true);
+        set(DiscordSrvSettings.INBOUND_ACTION, DiscordSrvSettings.ACTION_CENSOR);
+        set(com.jason.plugins.antibadwords.engine.filters.SpamSettings.ENABLED, true);
+        set(com.jason.plugins.antibadwords.engine.filters.SpamSettings.CAPS.sources(), List.of("chat", "discord-in"));
+        platform.rewritable.add("discord-in");
+        String shout = "HELLO EVERYBODY HOW ARE YOU TODAY";
+        bridge.rewrite = false;
+        assertEquals(DiscordLink.Decision.Type.BLOCK, say(shout).type(), "no setter in DiscordSRV: blocked");
+        bridge.rewrite = true;
+        DiscordLink.Decision d = say(shout);
+        assertEquals(DiscordLink.Decision.Type.REPLACE, d.type());
+        assertTrue(d.text() != null && !d.text().equals(shout));
+        assertEquals("censor", events.stream().filter(x -> x.kind().equals("violation")).reduce((a, b) -> b).orElseThrow().data().get("action"));
+    }
+
+    @Test
     void channelListExceptionsAndBypass() throws IOException {
         set(DiscordSrvSettings.INBOUND_ENABLED, true);
         set(DiscordSrvSettings.INBOUND_CHANNELS, List.of("general", "100x"));
