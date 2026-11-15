@@ -5,4 +5,4 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = 'AntiBadWords-fabric'
+rootProject.name = 'Moderra-fabric'

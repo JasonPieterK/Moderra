@@ -1,0 +1,1 @@
+package net.minecraft.core.component; public class DataComponents { public static final DataComponentType<net.minecraft.network.chat.Component> CUSTOM_NAME=null; public static final DataComponentType<Boolean> ENCHANTMENT_GLINT_OVERRIDE=null; public static final DataComponentType<net.minecraft.world.item.component.ItemLore> LORE=null; }

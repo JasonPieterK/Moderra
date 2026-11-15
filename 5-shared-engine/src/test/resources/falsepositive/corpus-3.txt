@@ -1,0 +1,240 @@
+# Part 3: ru sv sw th tr uk ur vi zh-tw zh and the extra groups (names, places, Minecraft). Every line must pass the real matcher untouched.
+ru|Привет всем, как у вас дела сегодня
+ru|Я иду в магазин купить хлеб и молоко
+ru|Сегодня очень хорошая погода
+ru|Я построил большой дом рядом с рекой
+ru|Мы нашли алмазы в пещере под горой
+ru|Хочешь поиграть со мной на сервере сегодня вечером
+ru|Моя мама каждый день готовит вкусную еду
+ru|Учитель очень понятно объяснил урок
+ru|Прошлым летом мы ездили в Москву и Санкт-Петербург
+ru|Дай мне, пожалуйста, топор и лопату
+ru|Эта книга очень интересная
+ru|Я люблю зиму и снег
+ru|Где ближайшая автобусная остановка
+ru|Большое спасибо за вашу помощь
+ru|В воскресенье мы поедем в горы
+ru|Привет, как дела, пойдем играть в майнкрафт
+ru|Privet vsem kak dela segodnya
+sv|God dag allihopa, hur mår ni idag
+sv|Jag ska till affären och köpa bröd och mjölk
+sv|Vädret är riktigt fint idag
+sv|Jag har byggt ett stort hus vid ån
+sv|Vi hittade diamanter i grottan under berget
+sv|Vill du spela med mig på servern i kväll
+sv|Min mamma lagar god mat varje dag
+sv|Läraren förklarade lektionen mycket tydligt
+sv|I somras var vi i Stockholm och Göteborg
+sv|Kan du ge mig yxan och spaden
+sv|Den boken är riktigt spännande
+sv|Jag gillar vinter och snö
+sv|Var ligger närmaste busshållplats
+sv|Tack så mycket för hjälpen
+sv|På söndag åker vi till fjällen
+sv|Farten är hög på motorvägen och bilen kör fort
+sw|Habari za asubuhi rafiki yangu
+sw|Ninaenda dukani kununua mkate na maziwa
+sw|Hali ya hewa ni nzuri sana leo
+sw|Nimejenga nyumba kubwa karibu na mto
+sw|Tulipata almasi kwenye pango chini ya mlima
+sw|Unataka kucheza nami kwenye seva usiku huu
+sw|Mama yangu anapika chakula kitamu kila siku
+sw|Mwalimu alieleza somo kwa uwazi sana
+sw|Majira ya joto yaliyopita tulienda Nairobi na Mombasa
+sw|Tafadhali nipe shoka na koleo
+sw|Kitabu hicho ni cha kuvutia sana
+sw|Ninapenda mvua na chai ya tangawizi
+sw|Kituo cha basi kilicho karibu kiko wapi
+sw|Asante sana kwa msaada wako
+sw|Jumapili tutaenda milimani
+sw|Watoto wanacheza uwanjani na mbwa wao
+sw|Karibu sana nyumbani, tunakula wali na maharage
+th|สวัสดีทุกคน วันนี้เป็นอย่างไรบ้าง
+th|ฉันไปตลาดเพื่อซื้อขนมปังและนม
+th|วันนี้อากาศดีมาก
+th|ฉันสร้างบ้านหลังใหญ่ติดแม่น้ำ
+th|เราเจอเพชรในถ้ำใต้ภูเขา
+th|คืนนี้อยากมาเล่นเซิร์ฟเวอร์กับฉันไหม
+th|แม่ของฉันทำอาหารอร่อยทุกวัน
+th|ครูอธิบายบทเรียนได้ชัดเจนมาก
+th|ฤดูร้อนที่แล้วเราไปเชียงใหม่และภูเก็ต
+th|ช่วยส่งขวานกับพลั่วให้หน่อย
+th|หนังสือเล่มนั้นน่าสนใจมาก
+th|ฉันชอบฤดูหนาวและหิมะ
+th|ป้ายรถเมล์ที่ใกล้ที่สุดอยู่ที่ไหน
+th|ขอบคุณมากสำหรับความช่วยเหลือ
+th|วันอาทิตย์เราจะไปเที่ยวภูเขา
+th|พรุ่งนี้ฉันต้องไปโรงเรียนและทำการบ้านเสร็จแล้ว
+th|ร้านอาหารแห่งนี้ขายข้าวผัดและต้มยำกุ้งอร่อยมาก
+th|เด็กๆ กำลังเล่นสนุกกับสุนัขและแมวที่สวนสาธารณะ
+th|ฉันอยากกินส้มตำกับไก่ย่างและข้าวเหนียว
+th|ผมชื่อสมชาย อาศัยอยู่ที่กรุงเทพมหานคร
+th|เมื่อวานนี้ฝนตกหนักมากที่หาดใหญ่
+th|sawatdee krub wanni arakat dee mak
+tr|Herkese merhaba, bugün nasılsınız
+tr|Markete gidip ekmek ve süt alacağım
+tr|Bugün hava gerçekten çok güzel
+tr|Nehrin yanına büyük bir ev yaptım
+tr|Dağın altındaki mağarada elmas bulduk
+tr|Bu akşam benimle sunucuda oynamak ister misin
+tr|Annem her gün lezzetli yemekler yapar
+tr|Öğretmen dersi çok net anlattı
+tr|Geçen yaz İstanbul ve Ankara'ya gittik
+tr|Bana baltayı ve küreği verir misin lütfen
+tr|O kitap gerçekten çok heyecanlı
+tr|Kışı ve karı seviyorum
+tr|En yakın otobüs durağı nerede
+tr|Yardımın için çok teşekkür ederim
+tr|Pazar günü dağlara gideceğiz
+tr|Amcam bana güzel bir hediye aldı, sonra birlikte çay içtik
+tr|Sınıfta sessiz olun ve kitaplarınızı açın
+uk|Привіт усім, як у вас справи сьогодні
+uk|Я йду до магазину купити хліб і молоко
+uk|Сьогодні дуже гарна погода
+uk|Я збудував великий будинок біля річки
+uk|Ми знайшли діаманти в печері під горою
+uk|Хочеш пограти зі мною на сервері сьогодні ввечері
+uk|Моя мама щодня готує смачну їжу
+uk|Вчитель дуже зрозуміло пояснив урок
+uk|Минулого літа ми їздили до Києва і Львова
+uk|Дай мені, будь ласка, сокиру та лопату
+uk|Ця книга дуже цікава
+uk|Я люблю зиму і сніг
+uk|Де найближча автобусна зупинка
+uk|Дуже дякую за вашу допомогу
+uk|У неділю ми поїдемо в гори
+uk|Privit usim yak spravy sohodni
+ur|السلام علیکم دوستو آج آپ کیسے ہیں
+ur|میں بازار جا رہا ہوں روٹی اور دودھ لینے
+ur|آج موسم بہت اچھا ہے
+ur|میں نے دریا کے کنارے ایک بڑا گھر بنایا
+ur|ہمیں پہاڑ کے نیچے غار میں ہیرے ملے
+ur|کیا آپ آج رات میرے ساتھ سرور پر کھیلیں گے
+ur|میری امی ہر روز مزیدار کھانا پکاتی ہیں
+ur|استاد نے سبق بہت صاف سمجھایا
+ur|پچھلی گرمیوں میں ہم لاہور اور کراچی گئے تھے
+ur|براہ مہربانی مجھے کلہاڑی اور بیلچہ دے دیں
+ur|یہ کتاب بہت دلچسپ ہے
+ur|مجھے سردی اور برف پسند ہے
+ur|سب سے قریبی بس اسٹاپ کہاں ہے
+ur|آپ کی مدد کا بہت شکریہ
+ur|اتوار کو ہم پہاڑوں پر جائیں گے
+ur|aaj mausam bohat acha hai
+ur|main bazaar ja raha hoon
+vi|Xin chào mọi người, hôm nay các bạn thế nào
+vi|Tôi đi cửa hàng mua bánh mì và sữa
+vi|Hôm nay thời tiết thật đẹp
+vi|Tôi đã xây một ngôi nhà lớn bên cạnh dòng sông
+vi|Chúng tôi tìm thấy kim cương trong hang dưới núi
+vi|Tối nay bạn muốn chơi cùng tôi trên máy chủ không
+vi|Mẹ tôi nấu những món ăn ngon mỗi ngày
+vi|Cô giáo giải thích bài học rất rõ ràng
+vi|Mùa hè năm ngoái chúng tôi đi Hà Nội và Đà Nẵng
+vi|Làm ơn đưa cho tôi cái rìu và cái xẻng
+vi|Cuốn sách đó thật hấp dẫn
+vi|Tôi thích mùa đông và tuyết
+vi|Trạm xe buýt gần nhất ở đâu
+vi|Cảm ơn bạn rất nhiều vì đã giúp đỡ
+vi|Chủ nhật chúng tôi sẽ đi lên núi
+vi|Toi di cho mua banh mi va sua
+vi|Hom nay troi dep lam, minh di choi nhe
+vi|Con meo dang ngu tren ghe va con cho dang an com
+vi|Bac si noi toi can uong nhieu nuoc va nghi ngoi
+vi|Em di hoc ve roi an com voi gia dinh
+zh-tw|大家好，今天過得怎麼樣
+zh-tw|我要去商店買麵包和牛奶
+zh-tw|今天的天氣真的很好
+zh-tw|我在河邊蓋了一棟大房子
+zh-tw|我們在山下的洞穴裡找到了鑽石
+zh-tw|今晚想和我一起玩伺服器嗎
+zh-tw|我媽媽每天都做好吃的飯菜
+zh-tw|老師把課文講得非常清楚
+zh-tw|去年夏天我們去了台北和高雄
+zh-tw|請把斧頭和鏟子給我
+zh-tw|那本書真的很有趣
+zh-tw|我喜歡冬天和雪
+zh-tw|最近的公車站在哪裡
+zh-tw|非常感謝你的幫忙
+zh-tw|星期天我們要去爬山
+zh-tw|明天早上我要去學校考試，所以今天要早點睡覺
+zh-tw|我們一起去夜市吃小籠包和珍珠奶茶吧
+zh-tw|這個週末天氣很好，朋友約我去海邊玩
+zh-tw|小孩子在公園裡和小狗玩耍
+zh-tw|我的電腦壞了，需要拿去修理
+zh|大家好，今天过得怎么样
+zh|我要去商店买面包和牛奶
+zh|今天的天气真的很好
+zh|我在河边建了一座大房子
+zh|我们在山下的洞穴里找到了钻石
+zh|今晚想和我一起玩服务器吗
+zh|我妈妈每天都做好吃的饭菜
+zh|老师把课文讲得非常清楚
+zh|去年夏天我们去了北京和上海
+zh|请把斧头和铲子给我
+zh|那本书真的很有趣
+zh|我喜欢冬天和雪
+zh|最近的公交车站在哪里
+zh|非常感谢你的帮助
+zh|星期天我们要去爬山
+zh|明天早上我要去学校考试，所以今天要早点睡觉
+zh|我们一起去夜市吃小笼包和珍珠奶茶吧
+zh|这个周末天气很好，朋友约我去海边玩
+zh|小孩子在公园里和小狗玩耍
+zh|我的电脑坏了，需要拿去修理
+zh|他是我们公司的经理，每天早上九点开会
+zh|你好，请问去火车站怎么走
+zh|昨天晚上我看了一部很好看的电影
+zh|nihao jintian tianqi hen hao
+zh|wo yao qu shangdian mai mianbao
+zh|xiexie ni de bangzhu
+misc|Scunthorpe Penistone Essex Sussex Middlesex Cockermouth Twatt Wetwang Great Snoring Brighton Lightwater
+misc|Dickson Hancock Dickens Cockburn Randy Fanny Willy Peter Johnson Moore Gaye Bates Butts Bumble Titmus Bollock
+misc|Mr Hancock and Mrs Dickson live at Cockfosters in Middlesex
+misc|Fukuoka Fukushima Tokyo Kyoto Osaka Nagasaki Shitamachi Kuching Ipoh Bangkok Pattaya Phuket Manila Cebu
+misc|Hellas Athens Sparta Hebron Jerusalem Haifa Tel Aviv Dubai Doha Cairo Riyadh Tehran Karachi Lahore Dhaka
+misc|Titanic Compass Passage Assassin Assistant Associate Classic Bassett Cumberland Cocoa Cocktail Peacock Shuttlecock
+misc|Kazan Kyiv Kharkiv Lviv Odesa Minsk Warsaw Krakow Gdansk Poznan Wroclaw Prague Brno Budapest Bucharest Sofia
+misc|Oslo Bergen Stavanger Tromso Malmo Gothenburg Uppsala Helsinki Tampere Turku Oulu Copenhagen Aarhus Odense
+misc|Madrid Barcelona Valencia Sevilla Lisboa Porto Faro Roma Napoli Milano Torino Bologna Paris Lyon Marseille Lille
+misc|Berlin Hamburg Munchen Koln Dresden Leipzig Bremen Amsterdam Rotterdam Utrecht Eindhoven Brussel Gent Antwerpen
+misc|Nairobi Mombasa Dodoma Zanzibar Kampala Kigali Jakarta Bandung Surabaya Medan Makassar Kuala Lumpur Penang Johor
+misc|Alex Sam Max Tom Anna Maria Jose Juan Luis Pedro Ahmed Mohammed Ali Omar Fatima Yusuf Ivan Olga Natasha Sergei
+misc|Hiroshi Yuki Sakura Haruto Kenji Minho Jiwoo Seoyeon Wei Li Zhang Wang Chen Nguyen Tran Pham Hoang Somchai
+misc|Dimas Budi Siti Putri Agus Joko Rizky Dewi Wayan Ketut Nur Aisyah Zulkifli Hassan Hussein Ibrahim Khalid
+misc|Stefan Lars Sven Olaf Ingrid Astrid Anders Mikael Jukka Matti Aino Tuomas Katarzyna Tomasz Piotr Jan Lukas
+misc|Dag Dagny Tore Knut Per Nils Erik Hans Fritz Klaus Dieter Jurgen Gunther Heidi Helga Ursula Brigitte Gisela
+misc|Kumar Gandhi Muhammad Jesus Moses Buddha Krishna Ganesh Shiva Allah Zeus Thor Odin Loki Freya
+misc|Steve Alex Herobrine Notch Dinnerbone Creeper Enderman Skeleton Zombie Spider Pigman Ghast Blaze Wither
+misc|Minecraft Bukkit Spigot Paper Purpur Fabric Forge Mojang Hypixel Essentials LuckPerms WorldEdit Dynmap Vault
+misc|Redstone Netherite Deepslate Cobblestone Obsidian Bedrock Endstone Quartz Prismarine Glowstone Sandstone
+misc|Pickaxe Shovel Hoe Axe Sword Bow Crossbow Trident Shield Elytra Firework Saddle Lead Bucket Shears Compass Clock
+misc|Cow Pig Sheep Chicken Horse Donkey Mule Llama Cat Ocelot Wolf Parrot Fox Panda Axolotl Bee Turtle Goat Camel
+misc|Villager Pillager Vindicator Evoker Ravager Witch Piglin Hoglin Zoglin Strider Phantom Drowned Husk Stray Slime
+misc|Spawn the mob, kill the mob, loot the chest, mine the ore, smelt the ingot, brew the potion, enchant the book
+misc|Set home, warp spawn, tpa to me, back to death point, sethome base, delhome mine, clear inventory, gamemode creative
+misc|Hit the nether roof, bed bomb the dragon, clutch with a water bucket, speedrun any percent, seed is two five six
+misc|PvP arena, bedwars, skywars, survival games, prison server, factions raid, skyblock island, creative plot
+misc|My plot is next to yours and I will bump the sheep and rake the grass and shoot the skeleton with a bow
+misc|Please do not grief or steal, ask the admin for a rollback, report hackers with slash report and be nice
+misc|Anyone want to trade? I have sixty four diamonds, a beacon and an elytra for two stacks of netherite ingots
+misc|The server is lagging so I will relog, my ping is high and the tps is low, see you after the restart
+misc|Whats your fps, thanks for the vote, join the discord, check the wiki, read the rules, enjoy your stay
+fa|سلام دوستان امروز حالتان چطور است
+fa|من به مغازه می‌روم تا نان و شیر بخرم
+fa|امروز هوا واقعا خوب است
+fa|من یک خانه بزرگ کنار رودخانه ساختم
+fa|ما در غار زیر کوه الماس پیدا کردیم
+fa|امشب می‌خواهی با من در سرور بازی کنی
+fa|مادرم هر روز غذای خوشمزه می‌پزد
+fa|معلم درس را خیلی روشن توضیح داد
+fa|تابستان گذشته به تهران و شیراز رفتیم
+fa|لطفا تبر و بیل را به من بده
+fa|آن کتاب واقعا جالب است
+fa|من زمستان و برف را دوست دارم
+fa|نزدیک‌ترین ایستگاه اتوبوس کجاست
+fa|از کمک شما خیلی ممنون
+fa|یکشنبه به کوه می‌رویم
+fa|salam dostan emrooz chetori
+fa|man mirem bazar nan bekharam
+id|Ada monyet di kebun binatang dan anak itu memberi pisang
+ms|Ada monyet dan babi hutan di dalam hutan dekat kampung kami

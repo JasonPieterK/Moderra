@@ -1,0 +1,110 @@
+# Checks the APIs we only reach by reflection/shim (third-party plugins) and dumps the Minecraft classes needed for the
+# Fabric/Forge gaps. Read the result in the run logs and in the artifacts "api-report" and "mc-api-dump-*".
+name: Verify APIs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["claude/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  plugin-apis:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - name: Download real plugin jars and check every manifest entry with javap
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/verify-apis.py tools/api-manifest.txt --jars plugin-jars --report api-report.md
+      - name: Print report into the log
+        if: always()
+        run: cat api-report.md || true
+      - name: Show report in the job summary
+        if: always()
+        run: if [ -f api-report.md ]; then cat api-report.md >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: api-report
+          path: api-report.md
+          if-no-files-found: warn
+
+  plugin-api-dump:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - name: Download plugin jars and print javap of tools/plugin-dump-classes.txt into the log
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 tools/verify-apis.py tools/api-manifest.txt --jars plugin-jars --report /dev/null --dump tools/plugin-dump-classes.txt | tee plugin-api-dump.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: plugin-api-dump
+          path: plugin-api-dump.txt
+          if-no-files-found: warn
+
+  mc-api-dump:
+    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]')
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        loader: [3-mod-fabric, 4-mod-forge]
+        mc: ["1.21.11", "26.1", "26.1.1", "26.1.2", "26.2", "26.3"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        id: j8
+        with: { distribution: temurin, java-version: "8" }
+      - uses: actions/setup-java@v4
+        id: j21
+        with: { distribution: temurin, java-version: "21" }
+      - uses: actions/setup-java@v4
+        id: j25
+        with: { distribution: temurin, java-version: "25" }
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: "9.8.0" }
+      - name: Build one version (this downloads and maps Minecraft into the Gradle caches)
+        env:
+          JAVA8_HOME: ${{ steps.j8.outputs.path }}
+          JAVA21_HOME: ${{ steps.j21.outputs.path }}
+          JAVA25_HOME: ${{ steps.j25.outputs.path }}
+          GRADLE: gradle
+        run: ./${{ matrix.loader }}/build-all-versions.sh ${{ matrix.mc }} || echo "build failed, dumping whatever is in the caches"
+      - name: Dump public API of the needed classes
+        env:
+          J25: ${{ steps.j25.outputs.path }}
+        run: |
+          export PATH="$J25/bin:$PATH"   # javap 25 reads class files of every version
+          python3 tools/dump-mc-api.py "${{ matrix.mc }}" "mc-api-dump/${{ matrix.loader }}-${{ matrix.mc }}"
+      - name: Print every dump into the log (the development container reads results from the job log)
+        if: always()
+        run: for f in mc-api-dump/*/*.txt; do echo "=====FILE $f"; cat "$f"; done
+      - name: Show index in the job summary
+        if: always()
+        run: |
+          D="mc-api-dump/${{ matrix.loader }}-${{ matrix.mc }}/_index.txt"
+          if [ -f "$D" ]; then { echo '### ${{ matrix.loader }} ${{ matrix.mc }}'; echo '```'; cat "$D"; echo '```'; } >> "$GITHUB_STEP_SUMMARY"; fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mc-api-dump-${{ matrix.loader }}-${{ matrix.mc }}
+          path: mc-api-dump/**/*.txt
+          if-no-files-found: warn
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: logs-${{ matrix.loader }}-${{ matrix.mc }}
+          path: "**/build-logs/**"
+          if-no-files-found: ignore
+

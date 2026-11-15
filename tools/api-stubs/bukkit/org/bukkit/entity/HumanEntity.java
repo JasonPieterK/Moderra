@@ -1,0 +1,1 @@
+package org.bukkit.entity; public interface HumanEntity extends org.bukkit.command.CommandSender { java.util.UUID getUniqueId(); void closeInventory(); org.bukkit.inventory.InventoryView openInventory(org.bukkit.inventory.Inventory i); }

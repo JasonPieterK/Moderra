@@ -1,4 +1,10 @@
 # 4-mod-forge - the Forge mod
 
-Thin wrapper: it plugs the shared brain ([`../5-shared-mod-code`](../5-shared-mod-code/)) into Forge events.
+Thin wrapper: it plugs the shared engine ([`../5-shared-engine`](../5-shared-engine/)) into Forge events.
+The word lists come from [`../7-wordlists`](../7-wordlists/); the build copies them into the jar.
 Status and known gaps: [`../6-guides/FABRIC-AND-FORGE-STATUS.md`](../6-guides/FABRIC-AND-FORGE-STATUS.md).
+
+New in this round: the join hook also runs the player-name check (`filters.scan.join-names`). Two limits compared with
+the plugin: command blocks are not scanned, and `filters.scan.sign-back` has no effect (both sides of a sign are always
+scanned with `filters.scan.signs`). A "censor" action blocks the message here instead of cleaning it. Details:
+`../6-guides/FABRIC-AND-FORGE-STATUS.md` and `../handoffs/BUILD-VERIFICATION-TODO.md`.

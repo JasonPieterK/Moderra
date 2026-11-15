@@ -1,0 +1,2 @@
+package org.bukkit.plugin.java; public abstract class JavaPlugin implements org.bukkit.plugin.Plugin { public final boolean isEnabled(){return true;} public void onEnable(){} public void onDisable(){} public final String getName(){return null;}
+ public java.util.logging.Logger getLogger(){return null;} public final org.bukkit.plugin.PluginDescriptionFile getDescription(){return null;} public final java.io.File getDataFolder(){return null;} public final org.bukkit.Server getServer(){return null;} public org.bukkit.command.PluginCommand getCommand(String n){return null;} }

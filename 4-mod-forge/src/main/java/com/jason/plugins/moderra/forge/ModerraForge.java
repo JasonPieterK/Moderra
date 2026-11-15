@@ -1,0 +1,64 @@
+package com.jason.plugins.moderra.forge;
+
+import com.jason.plugins.moderra.engine.EngineLog;
+import com.jason.plugins.moderra.mod.ModerraCommand;
+import com.jason.plugins.moderra.mod.ModRuntime;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraftforge.event.RegisterCommandsEvent;
+import net.minecraftforge.event.ServerChatEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Mod("moderra")
+public final class ModerraForge {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Moderra");
+
+    public ModerraForge(FMLJavaModLoadingContext context) {
+        com.jason.plugins.moderra.mod.gui.ModGui.install(new com.jason.plugins.moderra.mod.gui.ChestBackend());
+        ModRuntime.setModLookup(ForgeMods::isLoaded); // Platform.hasPlugin on Forge = a mod with that id
+        String version = readVersion();
+        ModRuntime.init(FMLPaths.CONFIGDIR.get().resolve("moderra"), version, "Forge", new ForgePermissions(),
+            new EngineLog() {
+                @Override
+                public void info(String message) {
+                    LOGGER.info(message);
+                }
+
+                @Override
+                public void warn(String message) {
+                    LOGGER.warn(message);
+                }
+            });
+
+        ForgePermissions.register();
+        // A Predicate listener cancels the event when it returns true.
+        ServerChatEvent.BUS.addListener((ServerChatEvent event) -> ModRuntime.blockChat(event.getPlayer(), event.getRawText()));
+        PlayerEvent.PlayerLoggedInEvent.BUS.addListener((PlayerEvent.PlayerLoggedInEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                ModRuntime.onJoin(player);
+            }
+        });
+        PlayerEvent.PlayerLoggedOutEvent.BUS.addListener((PlayerEvent.PlayerLoggedOutEvent event) -> {
+            if (event.getEntity() instanceof ServerPlayer player) {
+                ModRuntime.onQuit(player);
+            }
+        });
+        ServerStoppingEvent.BUS.addListener((ServerStoppingEvent event) -> ModRuntime.restoreEverything(event.getServer()));
+        RegisterCommandsEvent.BUS.addListener((RegisterCommandsEvent event) -> ModerraCommand.register(event.getDispatcher()));
+        net.minecraftforge.event.server.ServerStartedEvent.BUS.addListener((net.minecraftforge.event.server.ServerStartedEvent event) -> ModRuntime.selfTestIfRequested());
+    }
+
+    /** The build writes the mod version into moderra.version. */
+    private static String readVersion() {
+        try (var in = ModerraForge.class.getResourceAsStream("/moderra.version")) {
+            return in == null ? "1" : new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8).trim();
+        } catch (java.io.IOException ex) {
+            return "1";
+        }
+    }
+}

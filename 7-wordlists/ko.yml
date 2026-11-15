@@ -1,0 +1,33 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "ko"
+name: Korean
+script: hangul
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Hangul plus the romanisation players type (ssibal, jonna). Hangul words are matched as substrings, so keep short entries rare: 씹 and 좆 as single characters are not included, only longer forms. 'jonna' is very common mild slang and may annoy players; move it to a higher tier in your own copy if needed. Left out: 한남, 일베 and other political terms. 'babo' is also a Tagalog word with similar meaning, no conflict expected. False-positive review 2026-11-14: '보지' and '자지' were removed because they are also the everyday verb forms 'do not see' and 'do not sleep' (the Latin spellings boji and jaji stay). Known risk kept on purpose: '새끼' alone also means 'baby animal' ('새끼 고양이')."
+level-1: [
+  "바보", "멍청이", "멍청", "찌질이", "쓰레기 같은", "못난이", "등신", "얼간이", "머저리", "쪼다", "띨빵", "맹추", "babo", "meongcheongi",
+  "meongcheong", "jjijiri", "jjijil", "deungsin", "eolganee", "meojeori", "jjoda", "ddilppang",
+  "babo meongcheongi", "바보야", "멍청아", "머저리야", "병맛", "byeongmat", "찐따", "jjinda"
+]
+level-2: [
+  "병신", "븅신", "새끼", "개새끼", "미친놈", "미친년", "지랄", "꺼져", "닥쳐", "엿먹어", "걸레", "개놈", "개자식", "개같은", "쌍놈", "또라이",
+  "정신병자", "미친새끼", "뒤져", "뒈져", "죽어버려", "시키", "새꺄", "새캬", "노답", "한심한", "꼴통", "꼴값", "염병", "지랄하네", "닥치고", "입닥쳐",
+  "아가리", "아가리 닥쳐", "byeongsin", "byungshin", "byeongshin", "byungsin", "beungsin", "saekki", "saeki",
+  "gaesaekki", "gaesaeki", "gaesekki", "michinnom", "michinnyeon", "jiral", "kkeojyeo", "dakchyeo",
+  "yeotmeogeo", "geolre", "geulre", "gaenom", "gaejasik", "ddorai", "ttorai", "dwiyeo", "dwijyeo",
+  "jukeobeoryeo", "sikki", "saekka", "shibal saekki", "ssibal saekki", "jiral hane", "agari",
+  "agari dakchyeo", "nodap", "kkoltong", "yeombyeong", "michin", "michin nom"
+]
+level-3: [
+  "씨발", "시발", "씹새끼", "씹창", "씹년", "좆같은", "좆까", "존나", "졸라", "개년", "창녀", "느금마", "니미", "니애미", "니기미",
+  "씨부랄", "씨팔", "시팔", "십팔", "씨벌", "쉬발", "쌍년", "섹스", "개씹", "걸레년", "화냥년", "년놈", "병신새끼", "씹쌔끼", "씨바", "시바",
+  "지랄새끼", "니엄마", "니애비", "느그엄마", "애미", "애비", "후장", "딸딸이", "빨아", "개보지", "보지년", "자지새끼", "창놈", "변태새끼", "ssibal",
+  "sibal", "ssipal", "sipal", "ssibar", "ssiba", "siba", "ssibba", "shibal", "shibar", "ssibalnom",
+  "ssibalnyeon", "ssip", "ssipsaekki", "jot", "joteun", "jotgateun", "jotkka", "jotgga", "jonna", "jonnae",
+  "jolla", "jjolla", "gaenyeon", "changnyeon", "boji", "jaji", "neukeumma", "nigimi", "nimi", "niaemi",
+  "ssibureol", "ssang", "ssangnyeon", "ssangnom", "seksu", "sseksu", "hwanyangnyeon", "nyeonnom", "hujang",
+  "ppalla", "jotnyeon", "ssibsaekki", "ssibsaeki"
+]

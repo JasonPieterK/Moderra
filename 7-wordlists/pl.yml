@@ -1,0 +1,31 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "pl"
+name: Polish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Diacritics are stripped by the matcher (chuj, kurwa, pierdolić fold to ASCII). Left out on purpose: zajebisty (positive slang), pedał (also pedal), murzyn, cholera is tier 1 only, burdel kept in tier 2. 'suka' is shared with the Russian and Ukrainian transliteration lists. 'dupa' is mild. False-positive review 2026-11-14: 'jeb' was removed (also the Minecraft developer name). 'suka' is also Indonesian 'to like'; the bundled default whitelist lets new installs write it. collisions-ok: ru uk cs hu ro Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: debil dupa duren idiota pizda pojeb pojebany suka zasrany"
+level-1: [
+  "głupi", "glupi", "głupek", "glupek", "idiota", "debil", "kretyn", "cymbał", "cymbal", "matoł", "matol",
+  "ćwok", "cwok", "dureń", "duren", "pacan", "gamoń", "gamon", "oferma", "frajer", "gówniarz", "gowniarz",
+  "cholera", "psiakrew", "psia krew", "kurde", "durny", "głupia", "glupia", "głupol", "glupol"
+]
+level-2: [
+  "dupek", "dupa", "ciul", "ciulowy", "gnój", "gnoj", "gówno", "gowno", "burdel", "zasrany", "zasraniec",
+  "zasrana", "pojeby", "pojebany", "pojebana", "szmaciarz", "śmierdziel", "smierdziel", "pierdolnięty",
+  "pierdolniety", "suka", "wyjebany", "jebnięty", "jebniety", "zjeby", "zjebany", "zjebana", "popierdolony",
+  "popierdolona"
+]
+level-3: [
+  "chuj", "chuja", "chuju", "chujowy", "chujnia", "pierdolić", "pierdolic", "pierdolę", "pierdole",
+  "pierdolony", "pierdolona", "pierdol", "jebać", "jebac", "jebany", "jebana", "jebie", "kurwa",
+  "kurwy", "kurwiszon", "kurewski", "kurewska", "kurewskie", "pizda", "pizdy", "pizdo", "cipa", "cipka",
+  "fiut", "kutas", "skurwysyn", "skurwysyny", "skurwiel", "sukinsyn", "ruchać", "ruchac", "rucha",
+  "spierdalaj", "wypierdalaj", "zajebać", "zajebac", "pojeb", "zjeb", "ciota", "cwel", "cwele", "szmata",
+  "kutafon", "chuj ci w dupę", "chuj ci w dupe", "jebać cię", "jebac cie", "pierdolić cię", "pierdolic cie",
+  "pierdol się", "pierdol sie", "pierdolcie się", "spierdalaj stąd", "spierdalaj stad", "wypierdalaj stąd",
+  "wypierdalaj stad", "idź w chuj", "idz w chuj", "jebany w dupę", "jebany w dupe", "jebana dziwka",
+  "kurwa mać", "kurwa mac", "kurwa jego mać", "kurwa jego mac", "ja pierdolę", "ja pierdole"
+]

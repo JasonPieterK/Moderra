@@ -1,0 +1,1 @@
+package net.minecraft.world.inventory; public class ResultContainer { public net.minecraft.world.item.ItemStack getItem(int i){return null;} public void setItem(int i, net.minecraft.world.item.ItemStack s){} }

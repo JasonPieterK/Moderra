@@ -1,0 +1,26 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "tr"
+name: Turkish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Turkish dotted and dotless i and the letters ç ğ ö ş ü are listed both with and without diacritics because many players type ASCII. Left out on purpose: göt (folds to 'got'), piç (folds to 'pic'), mal (means 'goods'), eşek, köpek, lan, hıyar, meme, am. 'amk' and 'aq' style abbreviations: amk kept, aq is too short. collisions-ok: fa ar Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: siktir"
+level-1: [
+  "aptal", "salak", "gerizekalı", "gerizekali", "ahmak", "dangalak", "budala", "embesil", "gerzek", "ezik",
+  "dallama"
+]
+level-2: [
+  "kaltak", "şerefsiz", "serefsiz", "haysiyetsiz", "alçak", "alcak", "namussuz", "gotlek", "dalyarrak"
+]
+level-3: [
+  "orospu", "orospunun", "orospu çocuğu", "orospu cocugu", "puşt", "pust", "pezevenk", "ibne", "götveren",
+  "gotveren", "götlek", "sikik", "siktir", "siktir git", "sikeyim", "sikerim", "sikmek", "yarrak", "yarak",
+  "dalyarak", "taşak", "tasak", "amcık", "amcik", "amına koyayım", "amina koyayim", "amına koyim",
+  "amina koyim", "amk", "amq", "ananı sikeyim", "anani sikeyim", "bacını sikeyim", "bacini sikeyim", "gavat",
+  "fahişe", "fahise", "kahpe", "yavşak", "yavsak", "sikişmek", "sikismek", "sikici", "sıçayım", "sicayim",
+  "ağzına sıçayım", "agzina sicayim", "sıçmak", "sicmak", "yarramı ye", "yarrami ye", "yarrağı ye",
+  "yarragi ye", "götüne sokayım", "gotune sokayim", "götünü sikeyim", "gotunu sikeyim", "götüne koyayım",
+  "gotune koyayim"
+]

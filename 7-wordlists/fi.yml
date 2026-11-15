@@ -1,0 +1,24 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "fi"
+name: Finnish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: homo (means 'mold' in Finnish), pelle (clown), narttu, sika, kakka, helvetti is tier 1 because it is mild. Accents are stripped (ä becomes a), so tyhmä becomes tyhma and perse/perkele are exact words."
+level-1: [
+  "tyhmä", "tyhma", "hölmö", "holmo", "typerys", "idiootti", "moukka", "puupää", "puupaa", "helvetti",
+  "jumalauta"
+]
+level-2: [
+  "paska", "paskiainen", "paskapää", "paskaa", "paskapaa", "paskanaama", "paskapuhe", "paskahousu",
+  "kusipää", "kusipaa", "kusi", "perkele", "saatana", "huora", "huoranpentu", "huorapoika", "lutka", "perse",
+  "perseestä", "perseesta", "perseenreikä", "perseenreika", "vittuilu", "vitutus", "vituttaa", "vittumainen",
+  "haista paska", "painu helvettiin", "vedä käteen", "veda kateen", "runkkaa", "pimpsa", "mulkvisti"
+]
+level-3: [
+  "vittu", "vitun", "vittuun", "kyrpä", "kyrpa", "mulkku", "mulkero", "pillu", "pillua", "pimppi", "runkata",
+  "runkkari", "nussia", "nussii", "nussi", "nussija", "neekeri", "ryssä", "ryssa", "haista vittu",
+  "painu vittuun"
+]

@@ -1,0 +1,24 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "no"
+name: Norwegian
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Bokmål and common Nynorsk spellings. Left out on purpose: dust (English word), sau, hoe, pult (desk), kødd. 'dritt' is mild-vulgar. False-positive review 2026-11-14: 'dum' was removed (Czech 'dům' folds to 'dum'). Left out: 'boka' (the book). collisions-ok: da sv en Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: idiot mongo Related languages share cognate words on purpose. collisions-ok: da sv"
+level-1: [
+  "idiot", "tulling", "tosk", "tufs", "fjols", "hold kjeft", "hold munn", "kleppert"
+]
+level-2: [
+  "dritt", "drittsekk", "drittunge", "drittsekker", "jævla", "jævel", "jævler", "jævla idiot", "faen",
+  "helvete", "ræva", "faen i helvete", "hold kjeft jævel", "forpult", "forpulte", "horebukk", "kukkhode",
+  "fyfaen", "fy faen", "fy fan"
+]
+level-3: [
+  "fitte", "fittene", "fitter", "kuk", "pikk", "pikker", "pikkhode", "kuksuger", "pikksuger", "knulle",
+  "knuller", "knullet", "knull", "ræv", "rævhøl", "rævslikker", "rasshøl", "rasshull", "rasshol", "horeunge",
+  "horesønn", "horesonn", "hore", "horer", "hurpe", "luder", "ludder", "homse", "homser", "bøsse", "bøsser",
+  "neger", "negere", "mongo", "jævla fitte", "fittetryne", "fitteslikker", "fitteslikkere", "kukksuger",
+  "kukksugere", "pikksugere"
+]

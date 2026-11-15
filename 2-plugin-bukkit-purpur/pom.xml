@@ -4,18 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.jason.plugins</groupId>
-    <artifactId>antibadwords</artifactId>
-    <version>1</version>
+    <artifactId>moderra</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>AntiBadWords</name>
+    <name>Moderra</name>
     <description>Advanced profanity blocking with punishments and admin tools.</description>
 
-    <url>https://github.com/JasonPieterK/AntiBadWordsPlugin</url>
+    <url>https://github.com/JasonPieterK/Moderra</url>
     <licenses>
         <license>
-            <name>MIT License</name>
-            <url>https://opensource.org/licenses/MIT</url>
+            <name>All Rights Reserved</name>
         </license>
     </licenses>
 
@@ -24,7 +23,7 @@
 
         <!--
             One source tree, one jar per Minecraft release. These four properties are overridden per
-            version by build-all.sh (see MINECRAFT_VERSIONS there); the defaults build the oldest
+            version by build-all-versions.sh (see MINECRAFT_VERSIONS there); the defaults build the oldest
             supported release.
               mc.version          Minecraft release the jar is built for (used in the file name)
               mc.api.version      value written to "api-version" in plugin.yml
@@ -32,8 +31,9 @@
                                   jar runs on Spigot and Paper)
               java.release       Java language level (Minecraft 26.x requires Java 25)
         -->
-        <!-- Loader name used in the jar file name: Antibadwords-RELEASE[Bukkit] - 1-<mc.version>.jar -->
-        <loader.name>Bukkit</loader.name>
+        <!-- Loader name used in the jar file name: Moderra<mc.version>-<project.version>-<loader.name>.jar. project.version is the
+             ONE version of the build: it is also the version players see in plugin.yml. -->
+        <loader.name>bukkit</loader.name>
         <mc.version>1.21.11</mc.version>
         <mc.api.version>1.21</mc.api.version>
         <spigot.api.version>1.21.11-R0.1-SNAPSHOT</spigot.api.version>
@@ -54,6 +54,22 @@
             <version>${spigot.api.version}</version>
             <scope>provided</scope>
         </dependency>
+        <!-- The engine reads YAML with SnakeYAML. Every Bukkit server ships it (spigot-api depends on it), so it is only
+             needed for compiling and is not put into the jar. -->
+        <dependency>
+            <groupId>org.yaml</groupId>
+            <artifactId>snakeyaml</artifactId>
+            <version>2.3</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- LuckPerms API (Maven Central). Compile-only: LuckPerms itself provides it at runtime. LuckPermsHook is loaded only
+             when the LuckPerms plugin is installed. -->
+        <dependency>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.4</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -63,9 +79,9 @@
     </dependencies>
 
     <build>
-        <finalName>Antibadwords-RELEASE[${loader.name}] - ${project.version}-${mc.version}</finalName>
+        <finalName>Moderra${mc.version}-${project.version}-${loader.name}</finalName>
         <resources>
-            <!-- plugin.yml needs ${project.version} / ${mc.api.version}; config.yml must stay untouched. -->
+            <!-- plugin.yml needs ${project.version} / ${mc.api.version}. -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>true</filtering>
@@ -73,15 +89,71 @@
                     <include>plugin.yml</include>
                 </includes>
             </resource>
+            <!-- Default icon mapping of the menu (admins override it with plugins/Moderra/gui-icons.yml). -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
-                <excludes>
-                    <exclude>plugin.yml</exclude>
-                </excludes>
+                <includes>
+                    <include>gui-icons.yml</include>
+                </includes>
+            </resource>
+            <!-- The shared engine's own files (default punishment sections, word-list index); never filtered. -->
+            <resource>
+                <directory>../5-shared-engine/src/main/resources</directory>
+                <filtering>false</filtering>
+            </resource>
+            <!-- The word lists (data source of truth: 7-wordlists/) go into the jar as wordlists/<code>.yml. -->
+            <resource>
+                <directory>../7-wordlists</directory>
+                <targetPath>wordlists</targetPath>
+                <filtering>false</filtering>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
             </resource>
         </resources>
         <plugins>
+            <!-- The platform-neutral engine is compiled into the plugin jar as a second source folder (no separate jar). -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-engine-sources</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>../5-shared-engine/src/main/java</source></sources></configuration>
+                    </execution>
+                    <!-- Two empty-ish DiscordSRV class names (Subscribe, the pre-process event) so DiscordSrvListener compiles without DiscordSRV's
+                         repository. They are NOT packaged (see maven-jar-plugin below): at runtime DiscordSRV's own classes are used. -->
+                    <execution>
+                        <id>add-discordsrv-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/discordsrv-shim/java</source></sources></configuration>
+                    </execution>
+                    <!-- Name-only PlaceholderAPI class (PlaceholderExpansion) for ModerraPlaceholderExpansion; NOT packaged (me/**). -->
+                    <execution>
+                        <id>add-papi-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/papi-shim/java</source></sources></configuration>
+                    </execution>
+                    <execution>
+                        <id>add-protocollib-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/protocollib-shim/java</source></sources></configuration>
+                    </execution>
+                    <execution>
+                        <id>add-plan-shim</id>
+                        <phase>generate-sources</phase>
+                        <goals><goal>add-source</goal></goals>
+                        <configuration><sources><source>src/plan-shim/java</source></sources></configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -91,6 +163,21 @@
                     <compilerArgs>
                         <arg>-Xlint:all,-processing,-deprecation</arg>
                     </compilerArgs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>3.4.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>github/**</exclude>
+                        <exclude>me/**</exclude>
+                        <exclude>com/comphenix/**</exclude>
+                        <exclude>com/github/retrooper/**</exclude>
+                        <exclude>com/djrapitops/**</exclude>
+                        <exclude>net/kyori/**</exclude>
+                    </excludes>
                 </configuration>
             </plugin>
             <plugin>

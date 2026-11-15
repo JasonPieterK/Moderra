@@ -1,22 +1,47 @@
-name: AntiBadWords
+name: Moderra
 version: '${project.version}'
-main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
+main: com.jason.plugins.moderra.ModerraPlugin
 api-version: '${mc.api.version}'
 authors:
   - Jason
+softdepend: [DiscordSRV, Essentials, PlaceholderAPI, LuckPerms, LiteBans, AdvancedBan, LibertyBans, floodgate, Geyser-Spigot, mcMMO, Towny, Factions, FactionsUUID, Citizens, DecentHolograms, Vault, TAB, NametagEdit, ChatControl, VentureChat, HuskChat, CarbonChat, ProtocolLib, packetevents, CoreProtect, Plan]
+loadbefore: [EssentialsChat, ChatControl, VentureChat, CarbonChat]
 description: Advanced anti-profanity plugin for chat, signs, books, commands, and anvils.
 commands:
-  antibadwords:
-    description: AntiBadWords admin command.
-    usage: /antibadwords <subcommand>
-    aliases: [abw, antiwords]
+  moderra:
+    description: Moderra admin command.
+    usage: /moderra <subcommand>
 permissions:
-  antibadwords.admin:
-    description: Access to the AntiBadWords admin commands (reload, addword, removeword, check, ...).
+  moderra.admin:
+    description: Access to the Moderra admin commands (reload, addword, removeword, check, ...).
     default: op
-  antibadwords.notify:
+  moderra.notify:
     description: Receive a staff notification whenever a bad word is blocked.
     default: op
-  antibadwords.bypass:
-    description: Exempt from all AntiBadWords checks.
+  moderra.bypass:
+    description: Exempt from all Moderra checks.
     default: false
+  moderra.bypass.spam:
+    description: Exempt from the spam and flood rules (filters/spam.yml).
+    default: false
+  moderra.bypass.links:
+    description: Exempt from the link filter (filters/links.yml).
+    default: false
+  moderra.bypass.evasion:
+    description: Exempt from the bypass-trick detection (filters/evasion.yml, part "detect").
+    default: false
+  moderra.bypass.mute:
+    description: Exempt from the built-in mute (moderation/mute.yml); also lets the player talk while muted by the ladder.
+    default: false
+  moderra.mute:
+    description: Use /moderra mute, /moderra unmute and /moderra mutes.
+    default: op
+  moderra.history:
+    description: Read the violation history (/moderra history). Deleting it also needs moderra.admin.
+    default: op
+  moderra.discord:
+    description: Use /moderra discord (test and status of the Discord alerts).
+    default: op
+  moderra.gui:
+    description: Open the settings menu (/moderra or /moderra gui). Changing settings there is as powerful as editing the config files.
+    default: op

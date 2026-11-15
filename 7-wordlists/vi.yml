@@ -1,0 +1,28 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "vi"
+name: Vietnamese
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Written both with diacritics and the plain ASCII spelling players type. The matcher strips diacritics (but not the letter đ), so the entries are chosen to avoid collisions with ordinary words: single words such as ngu (also ngủ 'sleep'), lồn (lon 'can'), điếm/điểm, đéo/đeo, vãi/vai and buổi/buồi were left out on purpose and only multi-word forms are kept. Risky entries are marked by being multi-word. Needs native review."
+level-1: [
+  "ngu ngốc", "ngu ngoc", "đồ ngu", "do ngu", "thằng ngu", "thang ngu", "con ngu", "đần độn", "dan don",
+  "ngu si", "ngu xuẩn", "ngu xuan", "óc chó", "oc cho", "đồ ăn hại", "do an hai"
+]
+level-2: [
+  "đồ chó", "do cho", "chó chết", "cho chet", "khốn nạn", "khon nan", "đồ khốn", "do khon", "thằng khốn",
+  "thang khon", "mẹ kiếp", "me kiep", "chết tiệt", "chet tiet", "thằng chó", "thang cho", "đồ súc vật",
+  "do suc vat", "súc sinh", "suc sinh", "đồ con hoang", "do con hoang", "câm mồm", "cam mom", "câm miệng",
+  "cam mieng", "cút đi", "cut di", "cút xéo", "cut xeo", "mẹ mày", "me may", "con mẹ mày", "con me may",
+  "đồ khốn kiếp", "do khon kiep", "đồ mất dạy", "do mat day", "thằng mất dạy", "thang mat day", "đồ vô học",
+  "do vo hoc", "thằng vô học", "thang vo hoc", "đồ chết tiệt", "do chet tiet"
+]
+level-3: [
+  "địt mẹ", "dit me", "địt mẹ mày", "dit me may", "đụ má", "du ma", "đù má", "đụ mẹ", "du me", "đù mẹ",
+  "đmm", "dmm", "vcl", "vkl", "vãi lồn", "vai lon", "vãi cặc", "vai cac", "đồ cặc", "do cac", "thằng cặc",
+  "thang cac", "con đĩ", "con di", "đồ đĩ", "do di", "con điếm", "con diem", "đồ điếm", "do diem", "đồ lồn",
+  "do lon", "con lồn", "con lon", "đồ buồi", "do buoi", "thằng buồi", "thang buoi", "cái lồn", "cai lon",
+  "cái buồi", "cai buoi", "địt con mẹ mày", "dit con me may", "đụ con mẹ mày", "du con me may", "đụ cha mày",
+  "du cha may", "đụ bà mày", "du ba may", "địt bà mày", "dit ba may"
+]

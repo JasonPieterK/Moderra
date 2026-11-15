@@ -1,0 +1,25 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "ar"
+name: Arabic
+script: arabic
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Arabic script (with hamza variants written both ways) plus the Latin chat spelling called Franco-Arab. Number spellings such as 3 and 7 are not included because the matcher maps digits to letters. Left out on purpose: حمار, كلب, حيوان and خنزير alone (real animals; only the phrases with يا are kept), كس alone (too short), نيك alone (also a name), شاذ. Needs native review for dialect coverage. Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: manyak Related languages share cognate words on purpose. collisions-ok: fa ur"
+level-1: [
+  "غبي", "غبية", "أحمق", "احمق", "حمقاء", "تافه", "تافهة", "أهبل", "اهبل", "معتوه", "يا حمار", "يا كلب",
+  "ya himar", "ya ghabi", "ya ahbal", "ghabi", "ahbal", "ahmaq"
+]
+level-2: [
+  "ابن الكلب", "ابن الحمار", "يا ابن الكلب", "خرا", "خراء", "حثالة", "وغد", "نذل", "يا خنزير", "ابن الزنا",
+  "ولد الزنا", "ولاد الزنا", "ابن العاهرة", "ابن الشرموطة", "يا ابن الشرموطة", "يا ابن القحبة",
+  "ibn el kalb", "ibn el sharmouta", "ya ibn el kalb", "khara", "kharaa", "ya khara"
+]
+level-3: [
+  "عاهرة", "شرموطة", "شرموطه", "قحبة", "قحبه", "كسمك", "كس امك", "كس أمك", "كس اختك", "كس أختك", "طيز",
+  "زبي", "زبر", "نيك امك", "نيك أمك", "ينيك", "نايك", "متناك", "منيوك", "ابن المتناكة", "ابن القحبة", "لوطي",
+  "خول", "عرص", "ديوث", "ينعل ابوك", "ينعل أبوك", "يلعن ابوك", "يلعن أبوك", "sharmouta", "sharmoota",
+  "sharmota", "kahba", "kos omak", "kosomak", "kess omak", "kess ommak", "kos ommak", "kosom", "nik omak",
+  "nik mok", "nikomak", "manyak", "zebi", "zebbi", "ya sharmouta", "ya kahba", "ya manyak", "ya ayre"
+]

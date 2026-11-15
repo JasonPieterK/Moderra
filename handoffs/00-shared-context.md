@@ -1,12 +1,12 @@
-# AntiBadWords: shared context for the next feature round
+# Moderra: shared context for the next feature round
 
 Read this file completely before starting any session prompt. Every session prompt (`session-1-easy.md` ... `session-5-hard.md`)
 assumes it. If this file is missing in your checkout, run `git pull` on `main` first.
 
 ## 1. What the product is
 
-AntiBadWords blocks profanity in Minecraft chat, commands, signs, books and anvil renames and punishes repeat offenders.
-It ships as **24 jars** = 4 server types x 6 Minecraft versions:
+Moderra blocks profanity in Minecraft chat, commands, signs, books and anvil renames and punishes repeat offenders.
+It ships as **36 jars** = 6 server types (Bukkit, Spigot, Paper, Purpur, Fabric, Forge) x 6 Minecraft versions:
 
 | Server type | Folder | Notes |
 |---|---|---|
@@ -17,14 +17,14 @@ It ships as **24 jars** = 4 server types x 6 Minecraft versions:
 
 Minecraft versions (the 6 newest full releases, verified against Mojang on 2026-11-08):
 **26.3, 26.2, 26.1.2, 26.1.1, 26.1, 1.21.11.** 26.x needs Java 25; 1.21.11 needs Java 21. There is no Minecraft 26.0.
-Jar naming (do not change): `Antibadwords-RELEASE[LOADER] - 1-<MCVERSION>.jar`, LOADER = Bukkit, Purpur, Fabric or Forge.
+Jar naming (since the rename to Moderra): `Moderra<MCVERSION>-<VERSION>-<loader>.jar`, loader = paper, purpur, fabric or forge (lower case), version `<major>.<minor>`, example `Moderra26.3-1.0-paper.jar`.
 
 Repo map (numbered, plain-language folders; every folder has a README):
-`1-download-jars/` finished jars | `2-plugin-bukkit-purpur/` plugin (`src/main/java/com/jason/plugins/antibadwords/`, `src/test/`,
-`build-all-versions.sh`) | `3-mod-fabric/` | `4-mod-forge/` | `5-shared-mod-code/` (pure-Java `src/main/java/.../mod/`, Minecraft layer
+`1-download-jars/` README only (the jars are on GitHub Releases) | `2-plugin-bukkit-purpur/` plugin (`src/main/java/com/jason/plugins/moderra/`, `src/test/`,
+`build-all-versions.sh`) | `3-mod-fabric/` | `4-mod-forge/` | `5-shared-engine/` (pure-Java `src/main/java/.../mod/`, Minecraft layer
 `src/mc/java/`, per-version shims `src/mc-variants/`, tests, `live-player-test/` bot) | `6-guides/` docs | `build-everything.sh`.
-The plugin's pure classes (`WordMatcher`, `Placeholders`, `PunishmentAction`, `AntiBadWordsSettings`) are compiled into the mods
-as a source root. Fabric/Forge also compile `5-shared-mod-code/src/{main,mc}/java` plus `src/mc-variants/sign-<array|record>`.
+The plugin's pure classes (`WordMatcher`, `Placeholders`, `PunishmentAction`, `ModerraSettings`) are compiled into the mods
+as a source root. Fabric/Forge also compile `5-shared-engine/src/{main,mc}/java` plus `src/mc-variants/sign-<array|record>`.
 
 ## 2. Hard rules for every session
 
@@ -36,7 +36,7 @@ as a source root. Fabric/Forge also compile `5-shared-mod-code/src/{main,mc}/jav
    (automatic, non-destructive migration; the old file is backed up, never deleted).
 4. **Never claim something works unless you ran it.** Report what you tested and what you could not. The honest test matrix lives in
    `README.md` and `6-guides/FABRIC-AND-FORGE-STATUS.md`; update it for what you add.
-5. **Do not break the 24-jar build** or the jar names. Do not commit build output (`build/`, `target/`, `run/`, `node_modules/`).
+5. **Do not break the 36-jar build** or the jar names. Do not commit build output (`build/`, `target/`, `run/`, `node_modules/`).
 6. Docs are ELI5: plain words, short sentences, a README in any folder you add, update `CHANGELOG.md` and `6-guides/CONFIGURATION.md`.
 7. Never put secrets (webhook URLs, bot tokens) in code, tests, logs, chat messages, history files or the GUI; mask them everywhere.
 8. Offensive-word lists are moderation data; handle them as data. Do not repeat slurs in commit messages, PR text or logs beyond what a
@@ -44,29 +44,37 @@ as a source root. Fabric/Forge also compile `5-shared-mod-code/src/{main,mc}/jav
 
 ## 3. Build, test and environment (learned the hard way)
 
-* Unit tests: `cd 5-shared-mod-code && mvn test` and `cd 2-plugin-bukkit-purpur && mvn clean test -Dmc.version=26.3 -Dmc.api.version=26.3 -Dspigot.api.version=26.3-R0.1-SNAPSHOT -Djava.release=25`.
+* Unit tests: `cd 5-shared-engine && mvn test` and `cd 2-plugin-bukkit-purpur && mvn clean test -Dmc.version=26.3 -Dmc.api.version=26.3 -Dspigot.api.version=26.3-R0.1-SNAPSHOT -Djava.release=25`.
 * All jars: `./build-everything.sh [mc versions...]`; add `TEST=1` to also start real Fabric/Forge servers with each jar and check them
   (`3-mod-fabric/test-on-real-server.sh`, `4-mod-forge/test-on-real-server.sh`). A full `TEST=1` run takes about one hour. During development
   use a subset such as `26.3 26.1 1.21.11`; run the full set once before opening the final PR.
-* Scripted player: `5-shared-mod-code/live-player-test/bot.js` joins a real server and checks chat, `/msg`, book, sign, anvil (supports
+* Scripted player: `5-shared-engine/live-player-test/bot.js` joins a real server and checks chat, `/msg`, book, sign, anvil (supports
   26.1, 26.1.1, 26.1.2, 1.21.11; not 26.2/26.3 yet). Extend it for every new feature that a player can trigger.
 * Toolchain: Maven 3.9, **Gradle 9.8+** (Loom 1.19 needs it, running on JDK 25), **JDK 25, 21 and 8** (ForgeGradle needs an old JDK 8 for one
   tool). Set `GRADLE=/path/to/gradle`, `JAVA8_HOME`, `JAVA21_HOME`, `JAVA25_HOME` if they are not under `/usr/lib/jvm`.
 * If Maven Central answers HTTP 429, retry, or use `https://repo1.maven.org/maven2/`; Maven needs the proxy in `~/.m2/settings.xml`
   (it ignores JVM proxy properties). Gradle caches what it downloaded, so retries make progress.
 * Mixin pitfalls: a Mixin cannot `@Shadow` a field that belongs to the target's parent class (use an `@Accessor` mixin on the parent, see
-  `ItemCombinerMenuAccessor`); Minecraft APIs differ between versions (see the `SignLines` shims in `5-shared-mod-code/src/mc-variants/`).
+  `ItemCombinerMenuAccessor`); Minecraft APIs differ between versions (see the `SignLines` shims in `5-shared-engine/src/mc-variants/`).
   Fabric and Forge APIs changed a lot in 26.x (Forge: events have a static `BUS`, a `Predicate` listener returns true to cancel; the mod
   constructor takes `FMLJavaModLoadingContext`). Read the real API with `javap` from the Gradle cache, do not guess.
 * Real-server test of the Bukkit/Purpur jars has never been done. Try to get a Paper or Purpur server jar for 26.x and add
   `2-plugin-bukkit-purpur/test-on-real-server.sh` plus a bot run; if you cannot download a server, say so in your report.
+
+## 3b. State after session 2 (read this too)
+
+Session 2 is done: the engine exists in `5-shared-engine/` (API overview in `5-shared-engine/README.md`), the plugin's pure classes and all
+unit tests moved there (`cd 5-shared-engine && mvn test`; the plugin folder has no tests of its own any more), and the plugin and the mods are
+thin adapters. **It was written without access to the Spigot, Minecraft, Fabric and Forge artifacts**, so the adapters were never compiled
+against the real APIs or run on a server. `handoffs/BUILD-VERIFICATION-TODO.md` lists exactly what still has to be compiled, run and fixed;
+append to it when you leave something unverified, and tick things off when you verify them.
 
 ## 4. Architecture contracts (the sessions build on these names)
 
 Session 2 creates the foundation; sessions 3-5 build on it. Keep these names so parallel work merges cleanly.
 
 * **Engine**: a platform-neutral Java library, folder `5-shared-engine/` (session 2 renames `5-shared-mod-code/` to this with `git mv` and
-  fixes every script/doc/Gradle/Maven reference). It has **no** Bukkit/Minecraft imports. Package `com.jason.plugins.antibadwords.engine.*`.
+  fixes every script/doc/Gradle/Maven reference). It has **no** Bukkit/Minecraft imports. Package `com.jason.plugins.moderra.engine.*`.
   Moved-in existing pure classes may keep their current package. It is compiled into every loader's jar as a source root (no separate jar).
   Allowed third-party libs: SnakeYAML and Gson only (both exist on every server).
 * `Platform` (interface the loaders implement): online players, send/broadcast message, run console command, kick, permission check
@@ -86,7 +94,7 @@ Session 2 creates the foundation; sessions 3-5 build on it. Keep these names so 
   Kinds include `violation`, `punishment`, `mute`, `unmute`, `mute-expired`, `spam`, `link`, `evasion`, `admin-command`, `discord-in`.
   Subscribers: `engine.events().subscribe(Consumer<ModerationEvent>)`. History (session 4) and Discord (session 5) are subscribers.
 * `StrikeService` interface: session 2 provides the current in-memory behaviour behind it; session 4 swaps in the persistent, weighted, decaying one.
-* **Config folder** (same layout on every loader; plugin: `plugins/AntiBadWords/`, mods: `config/antibadwords/`):
+* **Config folder** (same layout on every loader; plugin: `plugins/Moderra/`, mods: `config/moderra/`):
   ```
   config.yml                 general: language list on/off, protection level, scan switches, messages, logging   (config-version: 2)
   wordlists/<code>.yml       one file per language (format in 7-wordlists/README.md), plus custom.yml for the admin's own words
@@ -102,7 +110,7 @@ Session 2 creates the foundation; sessions 3-5 build on it. Keep these names so 
   and into the config folder on first start. Tiers: level-1 mild, level-2 rude, level-3 severe; protection level 1 keeps only tier 3,
   2 keeps tiers 2-3, 3 keeps all (this is already how the code works and must not change).
 * **Permissions** (Bukkit nodes; Fabric via the optional Permissions API; Forge as registered permission nodes; defaults in brackets):
-  existing `antibadwords.admin` [op], `.notify` [op], `.bypass` [nobody]. New: `antibadwords.gui` [op], `.mute` [op], `.history` [op],
+  existing `moderra.admin` [op], `.notify` [op], `.bypass` [nobody]. New: `moderra.gui` [op], `.mute` [op], `.history` [op],
   `.bypass.spam` / `.bypass.links` / `.bypass.evasion` [nobody], `.discord` [op], `.profile.<name>` [nobody].
 
 ## 5. Feature to session map
@@ -110,19 +118,19 @@ Session 2 creates the foundation; sessions 3-5 build on it. Keep these names so 
 | # | Feature | Session |
 |---|---|---|
 | word lists, 35 languages | 37 files incl. Indonesian, English, Chinese, Russian, Korean, Japanese, Malay ... | 1 |
-| foundation | engine extraction, folder config, settings registry, migration, events, `/abw lang` | 2 |
+| foundation | engine extraction, folder config, settings registry, migration, events, `/moderra lang` | 2 |
 | 10 | per-world / per-group rule profiles (`worlds.yml`) | 2 |
-| 12 | `/abw whitelist add|remove|list` | 2 |
+| 12 | `/moderra whitelist add|remove|list` | 2 |
 | 1 | anti-spam and flood control (rate, repeats, caps, char flood) | 3 |
 | 2 | invisible-character and look-alike (homoglyph) detection | 3 |
 | 3 | link, IP and Discord-invite filter | 3 |
 | 9 | more scanned sources (join username, command blocks, sign back side, more default scanned commands) | 3 |
 | 4 | escalating punishment ladder | 4 |
 | 5 | built-in mute / unmute | 4 |
-| 6 | violation history log and `/abw history` | 4 |
+| 6 | violation history log and `/moderra history` | 4 |
 | 7 | persistent strikes that survive restarts | 4 |
 | 8 | Discord: webhook alerts, DiscordSRV hook, Discord-to-Minecraft filtering, moderation from Discord | 5 (part A) |
-| GUI | `/abw` opens an in-game chest menu to configure everything, sign/chat text input | 5 (part B) |
+| GUI | `/moderra` opens an in-game chest menu to configure everything, sign/chat text input | 5 (part B) |
 | 11 | word-list browser | covered by the GUI (paginated word lists) |
 
 ## 6. Decisions already made with the project owner (do not re-ask)
@@ -134,7 +142,7 @@ Session 2 creates the foundation; sessions 3-5 build on it. Keep these names so 
     Fabric and Forge document this limit; do not fake it.
 * Language word lists: public openly-licensed lists plus AI-written fill-in, every list marked `review-status: unreviewed` unless a human reviewed it.
   Credit sources in `7-wordlists/NOTICE.md`.
-* Config layout: folder of files (above) **plus an in-game GUI** (session 5). The command is `/abw` (aliases `/antibadwords`, `/antiwords`).
+* Config layout: folder of files (above) **plus an in-game GUI** (session 5). The command is `/moderra` (no aliases).
 
 ## 7. Definition of done (every session)
 

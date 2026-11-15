@@ -1,0 +1,2 @@
+package net.minecraft.network.protocol.game; public class ClientboundBlockEntityDataPacket implements net.minecraft.network.protocol.Packet<Object> {
+  public static ClientboundBlockEntityDataPacket create(net.minecraft.world.level.block.entity.BlockEntity b, java.util.function.BiFunction<net.minecraft.world.level.block.entity.BlockEntity, net.minecraft.core.RegistryAccess, net.minecraft.nbt.CompoundTag> f){return null;} }

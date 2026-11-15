@@ -1,0 +1,243 @@
+# Everyday sentences, one per line: <language code>|<sentence>. Lines starting with # are comments.
+# Part 1: ar bn cs da de el en-gb en es fi fil fr he. Every line must pass the real matcher untouched.
+ar|مرحبا يا صديقي كيف حالك اليوم
+ar|أريد أن أبني بيتا كبيرا بجانب النهر
+ar|هل تريد أن تلعب معي في السيرفر الليلة
+ar|وجدت الماس في الكهف تحت الجبل
+ar|الطقس جميل اليوم والشمس مشرقة
+ar|سأذهب إلى السوق لشراء الخبز والحليب
+ar|أنا أحب اللعب مع أصدقائي بعد المدرسة
+ar|من فضلك أعطني الفأس والمجرفة
+ar|هذا الكتاب مفيد جدا للطلاب
+ar|ذهبنا إلى البحر في الصيف الماضي
+ar|لا أعرف أين وضعت مفاتيحي
+ar|شكرا جزيلا على مساعدتك
+ar|المعلم شرح الدرس بشكل واضح
+ar|اشتريت سيارة جديدة الأسبوع الماضي
+ar|أمي تطبخ طعاما لذيذا كل يوم
+ar|ana ahebb el la3b ma3 asdeqaa2i
+ar|marhaba kif halak el yom
+bn|আমি আজ বাজারে যাব
+bn|তুমি কেমন আছো বন্ধু
+bn|আমার একটি নতুন বই আছে
+bn|আজকের আবহাওয়া খুব সুন্দর
+bn|আমরা একসাথে খেলতে পারি
+bn|আমি ভাত এবং মাছ খেতে ভালোবাসি
+bn|শিক্ষক আমাদের গণিত শেখান
+bn|নদীর পাশে একটি বড় গাছ আছে
+bn|আমি কাল স্কুলে যাব
+bn|তোমার নাম কী
+bn|আমার মা খুব ভালো রান্না করেন
+bn|এই সার্ভারে অনেক খেলোয়াড় আছে
+bn|আমি হীরা খুঁজে পেয়েছি
+bn|আমরা সবাই বাড়ি ফিরে যাচ্ছি
+bn|ধন্যবাদ তোমার সাহায্যের জন্য
+bn|ami aj bazare jabo
+bn|tumi kemon acho bondhu
+bn|amar ekta notun boi ache
+cs|Dobrý den, jak se dnes máte
+cs|Půjdeme spolu do obchodu koupit chleba
+cs|Dnes je krásné počasí a svítí slunce
+cs|Postavil jsem velký dům vedle řeky
+cs|Našel jsem diamanty v jeskyni pod horou
+cs|Chceš si se mnou zahrát na serveru
+cs|Moje maminka vaří výborný oběd
+cs|Učitel nám vysvětlil novou látku
+cs|Včera jsme byli v Praze na výletě
+cs|Prosím tě, podej mi tu sekeru
+cs|Ten film byl opravdu zajímavý
+cs|Mám rád zimu a sníh
+cs|Kde je nejbližší autobusová zastávka
+cs|Děkuji vám za pomoc
+cs|V neděli pojedeme na hory
+da|Goddag, hvordan har du det i dag
+da|Jeg skal i supermarkedet og købe brød og mælk
+da|Vejret er rigtig flot i dag
+da|Jeg har bygget et stort hus ved åen
+da|Vi fandt diamanter i hulen under bjerget
+da|Vil du spille med mig på serveren i aften
+da|Min mor laver dejlig mad hver dag
+da|Læreren forklarede lektien meget tydeligt
+da|Vi var i København i sommer
+da|Kan du give mig øksen og skovlen
+da|Den bog er virkelig spændende
+da|Jeg kan godt lide vinter og sne
+da|Hvor ligger den nærmeste busstation
+da|Tak for hjælpen
+da|På søndag tager vi på tur til Aarhus
+de|Guten Tag, wie geht es dir heute
+de|Ich gehe gleich einkaufen und kaufe Brot und Milch
+de|Das Wetter ist heute wunderschön
+de|Ich habe ein großes Haus am Fluss gebaut
+de|Wir haben Diamanten in der Höhle unter dem Berg gefunden
+de|Willst du heute Abend mit mir auf dem Server spielen
+de|Meine Mutter kocht jeden Tag etwas Leckeres
+de|Der Lehrer hat die Aufgabe sehr klar erklärt
+de|Letzten Sommer waren wir in Hamburg
+de|Gib mir bitte die Axt und die Schaufel
+de|Das Buch ist wirklich spannend
+de|Ich mag den Winter und den Schnee
+de|Wo ist die nächste Bushaltestelle
+de|Vielen Dank für deine Hilfe
+de|Am Sonntag fahren wir in die Berge
+de|Der Hausmeister hat den Schlüssel gefunden
+el|Γεια σου, τι κάνεις σήμερα
+el|Θα πάω στο σούπερ μάρκετ να αγοράσω ψωμί και γάλα
+el|Ο καιρός είναι πολύ όμορφος σήμερα
+el|Έχτισα ένα μεγάλο σπίτι δίπλα στο ποτάμι
+el|Βρήκαμε διαμάντια στη σπηλιά κάτω από το βουνό
+el|Θέλεις να παίξεις μαζί μου στον διακομιστή απόψε
+el|Η μητέρα μου μαγειρεύει νόστιμο φαγητό κάθε μέρα
+el|Ο δάσκαλος εξήγησε το μάθημα πολύ καθαρά
+el|Πέρσι το καλοκαίρι πήγαμε στην Αθήνα
+el|Δώσε μου το τσεκούρι και το φτυάρι παρακαλώ
+el|Αυτό το βιβλίο είναι πολύ ενδιαφέρον
+el|Μου αρέσει ο χειμώνας και το χιόνι
+el|Πού είναι η πιο κοντινή στάση λεωφορείου
+el|Ευχαριστώ πολύ για τη βοήθεια
+el|Την Κυριακή θα πάμε στο βουνό
+el|Kalimera, ti kaneis simera
+el|Tha paw sto souper market gia psomi
+en-gb|Lovely weather we are having, shall we put the kettle on
+en-gb|I am popping to the shops to buy some biscuits and a pint of milk
+en-gb|We went to Scunthorpe on the train last Saturday
+en-gb|My mum is making a roast dinner with potatoes and gravy
+en-gb|Pass me the torch, it is getting dark in the cave
+en-gb|The lads are building a castle next to the river
+en-gb|He lives in Penistone near Barnsley
+en-gb|We drove through Essex and Sussex on the way to Brighton
+en-gb|Cheers mate, that was brilliant
+en-gb|The queue for the bus was very long this morning
+en-gb|I need a new jumper because it is freezing outside
+en-gb|Have you seen my wellies, they are by the front door
+en-gb|The teacher gave us a lot of homework again
+en-gb|We found a load of diamonds under the hill
+en-gb|The pub on the corner serves a lovely Sunday lunch
+en-gb|Mind the gap when you get off the Tube
+en-gb|She studied at Cockermouth and her gran lives in Orkney
+en|Hello everyone, how are you doing today
+en|I am going to the shop to buy some bread and milk
+en|The weather is really nice today
+en|I built a huge house next to the river
+en|We found diamonds in the cave under the mountain
+en|Do you want to play on the server with me tonight
+en|My mother cooks delicious food every day
+en|The teacher explained the lesson very clearly
+en|Last summer we went to London
+en|Please give me the axe and the shovel
+en|That book is really exciting
+en|I like winter and snow
+en|Where is the nearest bus stop
+en|Thank you so much for your help
+en|On Sunday we are going to the mountains
+en|The assistant manager passed the class a glass of water
+en|He studied at Scunthorpe and later moved to Penistone, then Essex and Sussex
+en|The cockpit of the airplane was classic and the peacock sat on the grass
+en|Randy and Fanny and Willy and Hancock are all common old names
+en|The shiitake mushrooms are in the bass and the cocktail glass, said the therapist
+en|Compass Arsenal Cumbria Cockburn Middlesex Wiener Analysis Dickinson Titmuss Lightwater
+en|The pheasant and the hell of a drill and the snowball are fine words
+en|A rooster, a hen and a donkey live on the farm
+en|He was bitten by a cobra and then stung by a bee, so he drank hot cocoa
+en|I will shoot the arrow at the target and hit the bullseye
+en|Kill the zombie, then smelt the iron ore in the furnace
+en|The creeper blew up my house, so I rebuilt it with oak planks
+en|Craft a pickaxe with sticks and cobblestone, then mine coal
+en|The Ender Dragon lives in The End and the Wither spawns from soul sand
+en|Take the nether portal to the fortress and find a blaze rod
+en|Trade emeralds with the villager for a diamond sword
+en|Put the lava bucket next to the obsidian and light the portal with flint and steel
+en|I tamed a wolf and fed my cat some raw fish
+en|The pigs and cows and sheep are inside the fence with the chickens
+en|We need more redstone, hoppers, pistons and a comparator
+en|The end of the world is near, so grab your enchanted book and anvil
+en|The server restarts in five minutes, so please save your builds
+en|Give me a stack of wood, a stack of glass and ten torches
+en|Who stole my chest? Check the logs with CoreProtect
+en|Type slash home to go back to your base and slash spawn to teleport
+en|He is such a nice guy and a real pro at parkour
+en|The mod adds new biomes, mobs, tools and a lot of dirt blocks
+en|I am new but I will get better, gg everyone
+en|Great game, well played, see you tomorrow
+es|Hola a todos, cómo estáis hoy
+es|Voy a la tienda a comprar pan y leche
+es|El tiempo está muy bonito hoy
+es|Construí una casa enorme junto al río
+es|Encontramos diamantes en la cueva bajo la montaña
+es|Quieres jugar conmigo en el servidor esta noche
+es|Mi madre cocina comida deliciosa todos los días
+es|El profesor explicó la lección muy claramente
+es|El verano pasado fuimos a Madrid y a Sevilla
+es|Dame el hacha y la pala por favor
+es|Ese libro es realmente emocionante
+es|Me gusta el invierno y la nieve
+es|Dónde está la parada de autobús más cercana
+es|Muchas gracias por tu ayuda
+es|El domingo vamos a la montaña
+es|El burro come paja y el conejo come zanahoria
+es|La cabra y la oveja están en el campo con el caballo
+es|Mi abuelo tiene un pollo, un pato y una vaca en la granja
+fi|Hyvää päivää, mitä kuuluu tänään
+fi|Menen kauppaan ostamaan leipää ja maitoa
+fi|Sää on tänään todella kaunis
+fi|Rakensin ison talon joen viereen
+fi|Löysimme timantteja luolasta vuoren alta
+fi|Haluatko pelata kanssani palvelimella tänä iltana
+fi|Äitini laittaa herkullista ruokaa joka päivä
+fi|Opettaja selitti oppitunnin hyvin selvästi
+fi|Viime kesänä kävimme Helsingissä
+fi|Anna minulle kirves ja lapio kiitos
+fi|Se kirja on todella jännittävä
+fi|Pidän talvesta ja lumesta
+fi|Missä on lähin bussipysäkki
+fi|Kiitos paljon avusta
+fi|Sunnuntaina menemme vuorille
+fil|Magandang umaga sa inyong lahat
+fil|Pupunta ako sa tindahan para bumili ng tinapay at gatas
+fil|Napakaganda ng panahon ngayon
+fil|Nagtayo ako ng malaking bahay sa tabi ng ilog
+fil|Nakakita kami ng diyamante sa yungib sa ilalim ng bundok
+fil|Gusto mo bang maglaro kasama ko sa server mamayang gabi
+fil|Nagluluto ang nanay ko ng masarap na pagkain araw-araw
+fil|Malinaw na ipinaliwanag ng guro ang aralin
+fil|Noong tag-init pumunta kami sa Maynila at Cebu
+fil|Pakibigay mo sa akin ang palakol at pala
+fil|Napakaganda ng librong iyon
+fil|Gusto ko ang taglamig at niyebe
+fil|Nasaan ang pinakamalapit na hintuan ng bus
+fil|Maraming salamat sa tulong mo
+fil|Sa Linggo pupunta kami sa bundok
+fil|Kumain na ba kayo, ang sarap ng adobo at sinigang
+fil|Ang bata ay naglalaro sa bakuran kasama ang aso at pusa
+fr|Bonjour tout le monde, comment allez-vous aujourd'hui
+fr|Je vais au magasin acheter du pain et du lait
+fr|Il fait très beau aujourd'hui
+fr|J'ai construit une grande maison près de la rivière
+fr|Nous avons trouvé des diamants dans la grotte sous la montagne
+fr|Tu veux jouer avec moi sur le serveur ce soir
+fr|Ma mère cuisine de bons plats tous les jours
+fr|Le professeur a expliqué la leçon très clairement
+fr|L'été dernier nous sommes allés à Paris et à Lyon
+fr|Donne-moi la hache et la pelle s'il te plaît
+fr|Ce livre est vraiment passionnant
+fr|J'aime l'hiver et la neige
+fr|Où est l'arrêt de bus le plus proche
+fr|Merci beaucoup pour ton aide
+fr|Dimanche nous allons à la montagne
+he|שלום לכולם מה שלומכם היום
+he|אני הולך לחנות לקנות לחם וחלב
+he|מזג האוויר היום ממש יפה
+he|בניתי בית גדול ליד הנהר
+he|מצאנו יהלומים במערה מתחת להר
+he|רוצה לשחק איתי בשרת הערב
+he|אמא שלי מבשלת אוכל טעים כל יום
+he|המורה הסביר את השיעור בצורה ברורה
+he|בקיץ שעבר טיילנו בירושלים ובתל אביב
+he|תן לי בבקשה את הגרזן ואת האת
+he|הספר הזה מעניין מאוד
+he|אני אוהב את החורף ואת השלג
+he|איפה תחנת האוטובוס הקרובה
+he|תודה רבה על העזרה
+he|ביום ראשון נסע להרים
+he|שבת שלום ויום טוב
+he|הילדים משחקים בגינה עם הכלב והחתול

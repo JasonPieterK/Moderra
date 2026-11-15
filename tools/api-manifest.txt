@@ -1,0 +1,267 @@
+# API manifest for tools/verify-apis.py. Built by grepping 2-plugin-bukkit-purpur/src (reflection + shims).
+#
+# @jar <name> | <source> ; <fallback source> ; ...     sources: "url <https://...jar>" or
+#                                                         "ghrelease <owner/repo> <asset-name-regex>" (newest release asset .jar) or
+#                                                         "mvn <repo> <group> <artifact> [version]" (no version = newest release;
+#                                                         X-SNAPSHOT is resolved through its maven-metadata.xml)
+# <jarname> | <fully.qualified.Class> | <member>       member: "-" = class must exist
+#                                                        "name(type,type)" = method (types matched on the simple name, "*" = any)
+#                                                        "name()" = method without parameters;  "field name" = field
+#                                                        "annotation" = must be an annotation
+# A leading "?" on the jar name makes the entry advisory (WARN instead of FAIL): used where the code does not rely on the name.
+
+@jar essentials | mvn https://repo.essentialsx.net/releases net.essentialsx EssentialsX ; mvn https://repo.essentialsx.net/snapshots net.essentialsx EssentialsX
+@jar papi | mvn https://repo.extendedclip.com/releases me.clip placeholderapi ; mvn https://repo.extendedclip.com/content/repositories/placeholderapi me.clip placeholderapi
+@jar discordsrv | mvn https://nexus.scarsz.me/content/groups/public com.discordsrv discordsrv ; mvn https://nexus.scarsz.me/content/repositories/releases com.discordsrv discordsrv
+@jar vault | url https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7.1/VaultAPI-1.7.1.jar ; url https://jitpack.io/com/github/MilkBowl/VaultAPI/1.7/VaultAPI-1.7.jar
+@jar luckperms | mvn https://repo1.maven.org/maven2 net.luckperms api
+@jar protocollib | mvn https://repo.dmulloy2.net/repository/public com.comphenix.protocol ProtocolLib
+@jar packetevents | mvn https://repo.codemc.io/repository/maven-releases com.github.retrooper packetevents-spigot
+@jar packetevents-api | mvn https://repo.codemc.io/repository/maven-releases com.github.retrooper packetevents-api
+@jar coreprotect | mvn https://maven.playpro.com net.coreprotect coreprotect
+@jar plan | mvn https://repo.playeranalytics.net/releases com.djrapitops Plan-api ; mvn https://repo.codemc.io/repository/maven-public com.djrapitops Plan-api ; ghrelease plan-player-analytics/Plan (?i)^plan.*\.jar$ ; url https://jitpack.io/com/github/plan-player-analytics/Plan/5.6-build-2965/Plan-5.6-build-2965.jar
+@jar citizens | mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizens-main ; mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizensapi
+@jar decentholograms | ghrelease DecentSoftware-eu/DecentHolograms (?i)decentholograms.*\.jar$ ; mvn https://repo.codemc.io/repository/maven-public com.github.decentsoftware-eu decentholograms ; url https://jitpack.io/com/github/decentsoftware-eu/decentholograms/2.9.5/decentholograms-2.9.5.jar
+@jar advancedban | ghrelease DevLeoko/AdvancedBan (?i)advancedban.*\.jar$ ; url https://jitpack.io/com/github/DevLeoko/AdvancedBan/2.3.0/AdvancedBan-2.3.0.jar
+@jar libertybans | mvn https://mvn-repo.arim.space/lesser-gpl3 space.arim.libertybans bans-api ; mvn https://repo1.maven.org/maven2 space.arim.libertybans bans-api ; ghrelease A248/LibertyBans (?i)libertybans.*\.jar$
+@jar floodgate | mvn https://repo.opencollab.dev/maven-releases org.geysermc.floodgate api ; mvn https://repo.opencollab.dev/maven-snapshots org.geysermc.floodgate api 2.2.4-SNAPSHOT
+# --- extra jars only for tools/plugin-dump-classes.txt (plugin-api-dump job); no manifest entries, failures are not fatal ---
+@jar chatcontrol | ghrelease kangarko/ChatControl-Red (?i)chatcontrol.*\.jar$
+@jar venturechat | ghrelease Aust1n46/VentureChat (?i)venturechat.*\.jar$ ; mvn https://repo.codemc.io/repository/maven-public mineverse.Aust1n46.chat VentureChat
+@jar huskchat | ghrelease WiIliam278/HuskChat (?i)huskchat.*(bukkit|paper|spigot).*\.jar$ ; ghrelease WiIliam278/HuskChat (?i)huskchat.*\.jar$ ; mvn https://repo.william278.net/releases net.william278.huskchat huskchat-bukkit
+@jar carbonchat | mvn https://repo1.maven.org/maven2 net.draycia.carbon api ; mvn https://s01.oss.sonatype.org/content/repositories/snapshots net.draycia.carbon api ; mvn https://jitpack.io com.github.Hexaoxide Carbon ; mvn https://jitpack.io com.github.Hexaoxide.Carbon api ; ghrelease Hexaoxide/Carbon (?i).*\.jar$
+@jar tab | ghrelease NEZNAMY/TAB (?i)^tab.*\.jar$ ; mvn https://repo1.maven.org/maven2 me.neznamy tab-api
+@jar nametagedit | ghrelease sgtcaze/NametagEdit (?i)nametagedit.*\.jar$ ; url https://jitpack.io/com/github/sgtcaze/NametagEdit/4.5.19/NametagEdit-4.5.19.jar
+@jar mcmmo | mvn https://nexus.neetgames.com/repository/maven-public com.gmail.nossr50.mcMMO mcMMO
+@jar townychat | ghrelease TownyAdvanced/TownyChat (?i)townychat.*\.jar$
+@jar factionsuuid | mvn https://ci.ender.zone/plugin/repository/everything com.massivecraft Factions ; ghrelease drtshock/Factions (?i)factions.*\.jar$ ; mvn https://jitpack.io com.github.drtshock.Factions factions ; mvn https://jitpack.io com.github.drtshock Factions
+@jar placeholderapi-fabric | mvn https://maven.nucleoid.xyz eu.pb4 placeholder-api
+@jar spigot-1.21.11 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 1.21.11-R0.1-SNAPSHOT
+@jar spigot-26.3 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 26.3-R0.1-SNAPSHOT
+
+# --- EssentialsHook (reflection; getUser found by name + 1 parameter) ---
+essentials | com.earth2me.essentials.Essentials | getUser(org.bukkit.entity.Player)
+essentials | com.earth2me.essentials.Essentials | getUser(java.util.UUID)
+essentials | com.earth2me.essentials.User | isMuted()
+essentials | com.earth2me.essentials.User | setMuted(boolean)
+essentials | com.earth2me.essentials.User | getMuteTimeout()
+essentials | com.earth2me.essentials.User | setMuteTimeout(long)
+?essentials | com.earth2me.essentials.User | getMuteReason()
+?essentials | com.earth2me.essentials.User | setMuteReason(String)
+?essentials | com.earth2me.essentials.User | getNickname()
+?essentials | com.earth2me.essentials.User | setNickname(String)
+?essentials | com.earth2me.essentials.User | setDisplayNick()
+?essentials | com.earth2me.essentials.User | isVanished()
+
+# --- PlaceholderApiHook + papi-shim (ModerraPlaceholderExpansion extends PlaceholderExpansion; static PlaceholderAPI.setPlaceholders) ---
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | -
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getIdentifier()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getAuthor()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getVersion()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | persist()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | canRegister()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | register()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | unregister()
+papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | onRequest(org.bukkit.OfflinePlayer,String)
+papi | me.clip.placeholderapi.PlaceholderAPI | setPlaceholders(org.bukkit.OfflinePlayer,String)
+
+# --- DiscordSrvHook / DiscordSrvListener + discordsrv-shim ---
+discordsrv | github.scarsz.discordsrv.DiscordSRV | getPlugin()
+discordsrv | github.scarsz.discordsrv.DiscordSRV | field api
+discordsrv | github.scarsz.discordsrv.DiscordSRV | getDestinationTextChannelForGameChannelName(String)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | subscribe(Object)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | unsubscribe(Object)
+discordsrv | github.scarsz.discordsrv.api.Subscribe | annotation
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | -
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getAuthor()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getChannel()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getMessage()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | getMember()
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent | setCancelled(boolean)
+discordsrv | github.scarsz.discordsrv.util.DiscordUtil | privateMessage(*,String)
+discordsrv | github.scarsz.discordsrv.util.DiscordUtil | sendMessage(*,String)
+
+# --- VaultHook (Permission/Chat found through the ServicesManager) ---
+vault | net.milkbowl.vault.permission.Permission | getPrimaryGroup(String,org.bukkit.OfflinePlayer)
+vault | net.milkbowl.vault.permission.Permission | playerInGroup(String,org.bukkit.OfflinePlayer,String)
+vault | net.milkbowl.vault.chat.Chat | getPlayerPrefix(String,org.bukkit.OfflinePlayer)
+
+# --- LuckPermsHook (compiled against net.luckperms:api) ---
+luckperms | net.luckperms.api.LuckPerms | -
+luckperms | net.luckperms.api.LuckPermsProvider | get()
+luckperms | net.luckperms.api.LuckPerms | getUserManager()
+luckperms | net.luckperms.api.model.user.User | getCachedData()
+luckperms | net.luckperms.api.cacheddata.CachedDataManager | getMetaData()
+
+# --- ExtraHooks: CoreProtect (getAPI, isEnabled, logChat/logCommand(Player,String)) ---
+coreprotect | net.coreprotect.CoreProtect | getAPI()
+coreprotect | net.coreprotect.CoreProtectAPI | isEnabled()
+coreprotect | net.coreprotect.CoreProtectAPI | logChat(org.bukkit.entity.Player,String)
+coreprotect | net.coreprotect.CoreProtectAPI | logCommand(org.bukkit.entity.Player,String)
+
+# --- Detected by plugin name only; main API classes listed advisory ---
+protocollib | com.comphenix.protocol.ProtocolLibrary | getProtocolManager()
+protocollib | com.comphenix.protocol.ProtocolManager | addPacketListener(*)
+protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketReceiving(*)
+protocollib | com.comphenix.protocol.events.PacketEvent | getPacket()
+protocollib | com.comphenix.protocol.events.PacketEvent | getPacketType()
+protocollib | com.comphenix.protocol.events.PacketEvent | getPlayer()
+protocollib | com.comphenix.protocol.events.PacketEvent | isCancelled()
+protocollib | com.comphenix.protocol.events.PacketEvent | setCancelled(boolean)
+protocollib | com.comphenix.protocol.events.PacketContainer | getModifier()
+protocollib | com.comphenix.protocol.reflect.StructureModifier | withType(*)
+protocollib | com.comphenix.protocol.reflect.StructureModifier | read(int)
+protocollib | com.comphenix.protocol.reflect.StructureModifier | size()
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field UPDATE_SIGN
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field B_EDIT
+protocollib | com.comphenix.protocol.PacketType$Play$Client | field ITEM_NAME
+?packetevents-api | com.github.retrooper.packetevents.PacketEvents | getAPI()
+plan | com.djrapitops.plan.capability.CapabilityService | getInstance()
+plan | com.djrapitops.plan.capability.CapabilityService | registerEnableListener(*)
+plan | com.djrapitops.plan.extension.ExtensionService | getInstance()
+plan | com.djrapitops.plan.extension.ExtensionService | register(*)
+plan | com.djrapitops.plan.extension.DataExtension | callExtensionMethodsOn()
+plan | com.djrapitops.plan.extension.annotation.PluginInfo | annotation
+plan | com.djrapitops.plan.extension.annotation.NumberProvider | annotation
+plan | com.djrapitops.plan.extension.annotation.StringProvider | annotation
+?citizens | net.citizensnpcs.api.CitizensAPI | getNPCRegistry()
+?decentholograms | eu.decentsoftware.holograms.api.DHAPI | -
+?advancedban | me.leoko.advancedban.utils.Punishment | -
+?libertybans | space.arim.libertybans.api.LibertyBans | -
+?floodgate | org.geysermc.floodgate.api.FloodgateApi | getInstance()
+
+# --- Bukkit events used by name (both Spigot jars) ---
+spigot-1.21.11 | org.bukkit.event.block.SignChangeEvent | -
+spigot-1.21.11 | org.bukkit.event.inventory.PrepareAnvilEvent | -
+spigot-1.21.11 | org.bukkit.event.player.PlayerEditBookEvent | -
+spigot-1.21.11 | org.bukkit.Bukkit | getServicesManager()
+spigot-26.3 | org.bukkit.event.block.SignChangeEvent | -
+spigot-26.3 | org.bukkit.event.inventory.PrepareAnvilEvent | -
+spigot-26.3 | org.bukkit.event.player.PlayerEditBookEvent | -
+spigot-26.3 | org.bukkit.Bukkit | getServicesManager()
+
+# --- ChannelChatEvents (TownyChat, reflection) ---
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getPlayer()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getMessage()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setMessage(String)
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setCancelled(boolean)
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | isCancelled()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getChannel()
+townychat | com.palmergames.bukkit.TownyChat.channels.Channel | getName()
+
+# --- ChannelChatEvents (mcMMO party chat, task 45; verified in plugin-api-dump) ---
+mcmmo | com.gmail.nossr50.events.chat.McMMOPartyChatEvent | -
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | getMessage()
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setMessage(String)
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | setCancelled(boolean)
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | isCancelled()
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent | getAuthor()
+# --- Task 44: PacketEvents client scan + outgoing-text scan (ProtocolLib and PacketEvents); signatures seen in the plugin-api-dump job 132707156612 ---
+packetevents-api | com.github.retrooper.packetevents.PacketEvents | getAPI()
+packetevents-api | com.github.retrooper.packetevents.PacketEventsAPI | getEventManager()
+packetevents-api | com.github.retrooper.packetevents.event.EventManager | registerListener(PacketListenerCommon)
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerAbstract | onPacketReceive(PacketReceiveEvent)
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerAbstract | onPacketSend(PacketSendEvent)
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | getPacketType()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | getPlayer()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | isCancelled()
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | setCancelled(boolean)
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | markForReEncode(boolean)
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field UPDATE_SIGN
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field EDIT_BOOK
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client | field NAME_ITEM
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field SYSTEM_CHAT_MESSAGE
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateSign | getTextLines()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEditBook | getPages()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEditBook | getTitle()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientNameItem | getItemName()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage | getMessageJson()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage | setMessageJson(String)
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field SYSTEM_CHAT
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field CHAT
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field DISGUISED_CHAT
+protocollib | com.comphenix.protocol.events.PacketAdapter | onPacketSending(*)
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | fromHandle(Object)
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | getJson()
+# --- Fabric Text Placeholder API (FabricPlaceholders, compile-only; not reflection, listed so CI checks the names we call) ---
+placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | value(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | invalid(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | hasPlayer()
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | player()
+# --- task 46: DiscordSrvSlashCommands + discordsrv-shim (slash commands; names seen in the plugin-api-dump of run 43679610992) ---
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | annotation
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | path()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | priority()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | deferReply()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | deferEphemeral()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand | ignoreAcknowledged()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommandProvider | getSlashCommands()
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommandPriority | -
+discordsrv | github.scarsz.discordsrv.api.commands.PluginSlashCommand | -
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.build.CommandData | addOption(OptionType,String,String,boolean)
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionType | -
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.SlashCommandEvent | getName()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.SlashCommandEvent | getOptions()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.SlashCommandEvent | getChannel()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionMapping | getName()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionMapping | getAsString()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.ReplyAction | setEphemeral(boolean)
+# --- task 49: real names seen in the plugin-api-dump of run 43691650981 ---
+discordsrv | github.scarsz.discordsrv.api.ApiManager | addSlashCommandProvider(*)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | removeSlashCommandProvider(*)
+discordsrv | github.scarsz.discordsrv.api.ApiManager | updateSlashCommands()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | getUser()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | getMember()
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction | reply(String)
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.RestAction | queue()
+mcmmo | com.gmail.nossr50.mcmmo.kyori.adventure.identity.Identity | uuid()
+
+# --- Fabric Text Placeholder API for the other Minecraft versions (task 51): ADVISORY candidates. CI downloads the first version that exists;
+# the report shows which one. A version is enabled in 3-mod-fabric/build-all-versions.sh only after this shows PASS for it. ---
+@jar placeholderapi-fabric-1.21.11 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/2.8.1+1.21.11/placeholder-api-2.8.1+1.21.11.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/2.8.0+1.21.11/placeholder-api-2.8.0+1.21.11.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/2.7.2+1.21.11/placeholder-api-2.7.2+1.21.11.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/2.7.1+1.21.11/placeholder-api-2.7.1+1.21.11.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/2.7.0+1.21.11/placeholder-api-2.7.0+1.21.11.jar
+@jar placeholderapi-fabric-26.1 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.1/placeholder-api-3.0.0+26.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.1+26.1/placeholder-api-3.0.1+26.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.1/placeholder-api-3.1.0+26.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.1/placeholder-api-3.1.1+26.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.1/placeholder-api-3.2.0+26.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.1/placeholder-api-3.2.1+26.1.jar
+@jar placeholderapi-fabric-26.1.1 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.1.1/placeholder-api-3.0.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.1+26.1.1/placeholder-api-3.0.1+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.1.1/placeholder-api-3.1.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.1.1/placeholder-api-3.1.1+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.1.1/placeholder-api-3.2.0+26.1.1.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.1.1/placeholder-api-3.2.1+26.1.1.jar
+@jar placeholderapi-fabric-26.1.2 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.1.2/placeholder-api-3.0.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.1+26.1.2/placeholder-api-3.0.1+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.1.2/placeholder-api-3.1.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.1.2/placeholder-api-3.1.1+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.1.2/placeholder-api-3.2.0+26.1.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.1.2/placeholder-api-3.2.1+26.1.2.jar
+@jar placeholderapi-fabric-26.2 | url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.0+26.2/placeholder-api-3.1.0+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.1.1+26.2/placeholder-api-3.1.1+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.0+26.2/placeholder-api-3.2.0+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.2.1+26.2/placeholder-api-3.2.1+26.2.jar ; url https://maven.nucleoid.xyz/eu/pb4/placeholder-api/3.0.0+26.2/placeholder-api-3.0.0+26.2.jar
+?placeholderapi-fabric-1.21.11 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1.1 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.1.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+?placeholderapi-fabric-26.2 | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,*)
+# --- task 50: outgoing scan of team prefix/suffix, tab-list names, PacketEvents player chat, ProtocolLib write-back (names seen in plugin-api-dump run 43691650981) ---
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field CHAT_MESSAGE
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field TEAMS
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Server | field PLAYER_INFO_UPDATE
+packetevents-api | com.github.retrooper.packetevents.event.ProtocolPacketEvent | getClientVersion()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerSystemChatMessage | getMessage()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChatMessage | getMessage()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerChatMessage | setMessage(*)
+packetevents-api | com.github.retrooper.packetevents.protocol.chat.message.ChatMessage | getChatContentJson(ClientVersion)
+packetevents-api | com.github.retrooper.packetevents.protocol.chat.message.ChatMessage | setChatContentJson(ClientVersion,String)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams | getTeamInfo()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams | setTeamInfo(*)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | getDisplayName()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | setDisplayName(Component)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | getPrefix()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | setPrefix(Component)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | getSuffix()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerTeams$ScoreBoardTeamInfo | setSuffix(Component)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate | getEntries()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate | setEntries(List)
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate$PlayerInfo | getDisplayName()
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerPlayerInfoUpdate$PlayerInfo | setDisplayName(Component)
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field SCOREBOARD_TEAM
+protocollib | com.comphenix.protocol.PacketType$Play$Server | field PLAYER_INFO
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent | fromJson(String)
+protocollib | com.comphenix.protocol.wrappers.AbstractWrapper | getHandle()
+protocollib | com.comphenix.protocol.reflect.StructureModifier | write(*)
+protocollib | com.comphenix.protocol.events.PacketContainer | getOptionalStructures()
+protocollib | com.comphenix.protocol.events.AbstractStructure | getChatComponents()
+protocollib | com.comphenix.protocol.events.AbstractStructure | getPlayerInfoDataLists()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | getProfileId()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | getProfile()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | getLatency()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | isListed()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | getGameMode()
+protocollib | com.comphenix.protocol.wrappers.PlayerInfoData | getDisplayName()

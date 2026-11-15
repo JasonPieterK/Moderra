@@ -1,0 +1,1 @@
+package org.bukkit.event.inventory; public class PrepareAnvilEvent { public org.bukkit.inventory.InventoryView getView(){return null;} public org.bukkit.inventory.AnvilInventory getInventory(){return null;} public org.bukkit.inventory.ItemStack getResult(){return null;} public void setResult(org.bukkit.inventory.ItemStack s){} }

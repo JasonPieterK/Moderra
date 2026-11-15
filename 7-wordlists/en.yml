@@ -1,0 +1,34 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "en"
+name: English
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Matching is exact-token, so innocent words that merely contain a listed word are safe. Left out on purpose because players use them innocently in Minecraft: creep, hell, hoe, rape, chink, coon, dyke, anal, cock-related farm words are kept only as 'cock' (legacy). 'cock' and 'penis' are legacy entries and can hit biology or chicken talk. Short legacy words fk and mf are kept. False-positive review 2026-11-14: known small risks kept on purpose: 'tits' (the bird), 'cum' (Latin 'with'), 'jerk' (jerk chicken), 'dick' (the name Dick), 'cock' and 'penis' (legacy, always blocked). short-ok: fk mf Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard bitch cretin fuck idiot imbecile loser motherfucker noob Related languages share cognate words on purpose. collisions-ok: en-gb"
+level-1: [
+  "stupid", "dumb", "idiot", "moron", "loser", "noob", "trash", "crap", "damn", "piss", "wtf", "jerk",
+  "scumbag", "douchebag", "dork", "dweeb", "nitwit", "dimwit", "numbskull", "nincompoop", "imbecile",
+  "cretin", "halfwit", "shut up", "screw you", "bonehead", "blockhead", "twit"
+]
+level-2: [
+  "bitch", "bastard", "asshole", "dickhead", "dipshit", "jackass", "dumbass", "bullshit", "horseshit",
+  "stfu", "gtfo", "whore", "slut", "prick", "twat", "wanker", "arse", "arsehole", "sybau", "ass", "asses",
+  "assholes", "bitches", "bastards", "bitchy", "shithead", "shitheads", "dickheads", "douche", "jerkoff",
+  "jackoff", "skank", "skanks", "tits", "bugger", "scumbags", "retard", "retarded", "retards", "kys",
+  "jackasses", "dumbasses", "dipshits", "fuckface", "shitface", "shitbag", "cumbucket", "pisshead",
+  "dickwad", "fuckwit", "twats", "wankers", "whores", "sluts", "slutty", "bullcrap", "bitchass", "jizzface",
+  "tosser", "motherfuckers", "piece of shit", "eat shit", "kill yourself", "go die", "hope you die"
+]
+level-3: [
+  "fuck", "fucking", "fck", "fk", "fuk", "fukin", "fking", "shit", "shitty", "sh1t", "motherfucker", "mf",
+  "dick", "pussy", "cunt", "cock", "penis", "vagina", "bollocks", "nigga", "nigger", "n1gga", "n1gger",
+  "niga", "nword", "fucker", "fuckers", "fucked", "fucks", "fuckin", "fuckoff", "fuck off", "fuck you",
+  "fuck u", "fuckyou", "fuckboy", "fuckwad", "motherfucking", "mothafucka", "mofo", "wtfuck", "cunts",
+  "cocksucker", "cocksuckers", "blowjob", "blowjobs", "handjob", "cumshot", "cum", "jizz", "dildo", "dildos",
+  "porn", "porno", "titties", "faggot", "faggots", "fag", "fags", "tranny", "trannies", "shemale", "niggas",
+  "niggers", "niggaz", "nigguh", "n1ggas", "spic", "spics", "kike", "kikes", "wetback", "beaner", "gook",
+  "gooks", "paki", "cunthead", "pissflaps", "bellend", "twatwaffle", "shitstain", "cumslut", "cumdump"
+]

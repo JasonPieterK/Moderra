@@ -1,0 +1,22 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "sw"
+name: Swahili
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Thin list: Swahili has fewer fixed vulgar words and many insults are phrases or borrowed. Left out on purpose: fala (Portuguese 'speaks'), punda and mbwa alone (donkey, dog), chizi, tako, kinyesi, ngono. 'kuma' is also Japanese 'bear' in romaji and a Turkish word; 'malaya' is also a Filipino word. Strongly needs native review. Extended 2026-11-14 with common insults and phrases (still thin; needs native review).  Note: 'kuma' collides with Japanese romaji 'kuma' (bear)."
+level-1: [
+  "mjinga", "mpumbavu", "kipumbavu", "zezeta", "taahira", "mshamba", "bwege", "pumbavu", "mpuuzi",
+  "zuzu", "kilaza", "mbumbumbu", "mnafiki", "mkorofi", "mjinga wewe", "wewe mjinga", "kichaa", "mwehu",
+  "kimbelembele", "mpumbafu", "kipumbafu", "taahira wewe", "bwege wewe", "mshamba wewe"
+]
+level-2: [
+  "mwanaharamu", "mshenzi", "shenzi", "ushenzi", "mavi", "kumbafu",
+  "mhuni", "nyoko", "mbwa wewe", "mzinzi", "hayawani", "kilema", "mpumbavu wewe", "shenzi wewe", "mkundu",
+  "mwanaharamu wewe", "mavi yako", "nyoko wewe"
+]
+level-3: [
+  "kuma", "malaya", "kahaba", "msenge", "shoga", "kuma yako", "kuma mama yako",
+  "kumamayako", "kuma mamako", "kumamako", "malaya wewe", "kuma ya mama yako", "kuma wewe", "shoga wewe"
+]

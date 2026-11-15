@@ -1,0 +1,1 @@
+package org.bukkit.event.player; public class AsyncPlayerChatEvent extends org.bukkit.event.Event { public org.bukkit.entity.Player getPlayer(){return null;} public java.util.Set<org.bukkit.entity.Player> getRecipients(){return null;} public String getMessage(){return null;} public void setMessage(String m){} public void setCancelled(boolean c){} }

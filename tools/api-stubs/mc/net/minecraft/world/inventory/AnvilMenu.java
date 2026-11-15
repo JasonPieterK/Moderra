@@ -1,0 +1,1 @@
+package net.minecraft.world.inventory; public class AnvilMenu extends ItemCombinerMenu { public static final int INPUT_SLOT=0, ADDITIONAL_SLOT=1, RESULT_SLOT=2; public AnvilMenu(int id, net.minecraft.world.entity.player.Inventory i){} }

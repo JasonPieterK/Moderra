@@ -1,0 +1,26 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "sv"
+name: Swedish
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "Left out on purpose: fan (means 'fan'), slut (means 'end', an English insult), fart (means 'speed'), gift (means 'poison' or 'married'), bög (folds to bog), satan (also a name), lund (a city). Accents are stripped (fåne would match fane 'flag'), so those were left out. False-positive review 2026-11-14: 'dum' was removed (Czech 'dům' folds to 'dum'). collisions-ok: no da en Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bitch idiot mongo Related languages share cognate words on purpose. collisions-ok: da no"
+level-1: [
+  "idiot", "idioten", "tönt", "dumhuvud", "knäppskalle", "knappskalle", "håll truten", "håll käften",
+  "håll tyst", "mongo", "mongolid"
+]
+level-2: [
+  "jävel", "jävla", "jävlar", "jävla idiot", "jävla skit", "dumjävel", "skitstövel", "skitunge", "skithög",
+  "skitjävel", "skithus", "helvete", "fanskap", "fan i helvete", "för helvete", "luder", "slyna", "horunge",
+  "hanrej", "subba", "slampa", "satkäring", "bitch", "röv", "rövhal", "rövslicka", "rövslickare", "bogjavel",
+  "pisshuvud", "pissjävel", "knullade", "knullad", "knullare", "knulla dig", "din hora", "din jävel",
+  "din jävla", "din idiot", "din skit", "din fitta", "din kuk", "din rövhål"
+]
+level-3: [
+  "fitta", "kuk", "kuksugare", "kukhuvud", "kukjävel", "hora", "knulla", "knullar", "knull", "runka",
+  "runkare", "runka av dig", "runka av", "rövknullare", "rövknull", "neger", "negrer", "svartskalle",
+  "svartskallar", "blatte", "blattar", "blattefan", "bögjävel", "fitt jävel", "fittjävel", "fittslicka",
+  "fittslickare"
+]

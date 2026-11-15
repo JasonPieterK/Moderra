@@ -1,0 +1,1 @@
+package net.minecraft.world.inventory; public class ItemCombinerMenu extends AbstractContainerMenu { public net.minecraft.world.item.ItemStack quickMoveStack(net.minecraft.world.entity.player.Player p, int i){return null;} }

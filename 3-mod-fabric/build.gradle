@@ -7,12 +7,14 @@ plugins {
 def remapped = remap.toBoolean()
 apply plugin: remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 
-// Jar name: Antibadwords-RELEASE[Fabric] - 1-<minecraft version>.jar
-base { archivesName = "Antibadwords-RELEASE[Fabric] - ${mod_version}" }
-version = minecraft_version
+// Jar name: Moderra<minecraft version>-<mod_version>-fabric.jar (archivesName + version)
+base { archivesName = "Moderra${minecraft_version}" }
+version = "${mod_version}-fabric"
 
 repositories {
     mavenCentral()
+    // Text Placeholder API (optional at run time: the hook class is only loaded when the mod is installed)
+    maven { url = 'https://maven.nucleoid.xyz' }
 }
 
 dependencies {
@@ -25,29 +27,38 @@ dependencies {
         implementation "net.fabricmc:fabric-loader:${loader_version}"
         implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     }
+    if (placeholders_api == 'api') {
+        compileOnly "eu.pb4:placeholder-api:${placeholder_api_version}"
+    }
     implementation 'org.yaml:snakeyaml:2.3'
     include 'org.yaml:snakeyaml:2.3'
 }
 
-// Shared code: the Bukkit-free classes of the plugin + the loader-independent core + the Minecraft layer.
+// Shared code: the platform-neutral engine (also compiled into the Bukkit plugin) + the Minecraft layer of the mods.
 sourceSets {
     main {
         java {
-            srcDir '../2-plugin-bukkit-purpur/src/main/java'
-            srcDir '../5-shared-mod-code/src/main/java'
-            srcDir '../5-shared-mod-code/src/mc/java'
+            srcDir '../5-shared-engine/src/main/java'
+            srcDir '../5-shared-engine/src/mc/java'
             // Small per-version shims for APIs that changed between Minecraft releases (see build-all-versions.sh).
-            srcDir "../5-shared-mod-code/src/mc-variants/sign-${sign_api}"
-            exclude '**/AntiBadWordsPlugin.java', '**/AntiBadWordsListener.java', '**/AntiBadWordsCommand.java',
-                    '**/PunishmentExecutor.java', '**/PunishmentParser.java'
+            srcDir "../5-shared-engine/src/mc-variants/sign-${sign_api}"
+            // Chest menu click signature: "input" (ContainerInput, 26.3) or "click" (ClickType, 1.21.11 and assumed older 26.x).
+            srcDir "../5-shared-engine/src/mc-variants/menu-${menu_api}"
+            // Text Placeholder API hook: "api" (real hook, compile-only dependency) or "none" (empty hook).
+            srcDir "../5-shared-engine/src/mc-variants/placeholders-${placeholders_api}"
         }
-        resources.srcDir '../5-shared-mod-code/src/mc/resources'
+        // The engine's own files (default punishment sections, word-list index) and the mixin config.
+        resources.srcDir '../5-shared-engine/src/main/resources'
+        resources.srcDir '../5-shared-engine/src/mc/resources'
     }
 }
 
 processResources {
-    // The plugin's own config.yml, so the mod and the plugin read exactly the same file.
-    from('../2-plugin-bukkit-purpur/src/main/resources') { include 'config.yml' }
+    // The word lists (data source of truth: 7-wordlists/) go into the jar as wordlists/<code>.yml.
+    from('../7-wordlists') {
+        include '*.yml'
+        into 'wordlists'
+    }
     inputs.property 'version', mod_version
     inputs.property 'minecraft_version', minecraft_version
     inputs.property 'java_release', java_release

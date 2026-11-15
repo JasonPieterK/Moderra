@@ -1,0 +1,1 @@
+package net.minecraft.server.players; import net.minecraft.server.level.ServerPlayer; public class PlayerList { public java.util.List<ServerPlayer> getPlayers(){return null;} public ServerPlayer getPlayer(java.util.UUID u){return null;} public ServerPlayer getPlayerByName(String n){return null;} }

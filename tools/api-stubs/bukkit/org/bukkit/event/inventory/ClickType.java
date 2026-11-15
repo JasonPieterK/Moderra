@@ -1,0 +1,1 @@
+package org.bukkit.event.inventory; public enum ClickType { LEFT, RIGHT, SHIFT_LEFT, SHIFT_RIGHT, MIDDLE, DROP, CONTROL_DROP, NUMBER_KEY, DOUBLE_CLICK, WINDOW_BORDER_LEFT, UNKNOWN }

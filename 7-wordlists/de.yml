@@ -1,0 +1,40 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "de"
+name: German
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+  - "Legacy word-lists section of Moderra 1.x config.yml (project's own list, all rights reserved), kept as a superset"
+  - "LDNOOBW (CC BY 4.0, https://github.com/LDNOOBW/List-of-Dirty-Naughty-Obscene-and-Otherwise-Bad-Words) licence verified 2026-11-12; list downloaded for reference only, no entries copied"
+notes: "German chat spellings (scheisse, scheiss, ae/oe/ue). Left out on purpose: mist, schwanz (also 'tail'), muschi (cat), nazi, kacke is tier 2 only. Because the matcher strips accents, blöd becomes blod, which is also the Scandinavian word for blood; the same goes for 'bloed'. short-ok: collisions-ok: en fr da sv no nl pt-br Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: bastard idiot loser mongo motherfucker noob"
+level-1: [
+  "dumm", "idiot", "loser", "trottel", "noob", "doof", "dämlich", "daemlich", "blöd", "bloed", "blödmann",
+  "bloedmann", "dummkopf", "schwachkopf", "spinner", "vollpfosten", "dumme kuh", "dumme gans", "blöde kuh",
+  "bloede kuh", "blöde sau", "bloede sau", "volltrottel", "hohlkopf", "hohlbirne", "dummbatz", "dummbeutel",
+  "saudumm"
+]
+level-2: [
+  "arsch", "wichser", "spast", "depp", "vollidiot", "arschloch", "arschlöcher", "arschloecher",
+  "arschgesicht", "wixer", "wixxer", "schlampe", "schlampen", "nutte", "nutten", "miststück", "miststueck",
+  "mistkerl", "dreckssau", "drecksau", "scheißkerl", "scheisskerl", "scheißkerle", "kacke", "kackbratze",
+  "kackvogel", "schweinehund", "pisser", "mongo", "missgeburt", "hure", "huren", "fresse", "halt die fresse",
+  "halt die klappe", "halt die schnauze", "halts maul", "halt's maul", "verpiss dich", "verpiss",
+  "leck mich", "leck mich am arsch", "geh sterben", "geh sterben du", "scheiß", "scheiss", "scheiße",
+  "drecksack", "dreckskerl", "dreckskind", "sackgesicht", "fotzenfresse", "dummes schwein", "saftsack",
+  "saukerl", "sauhund", "miese ratte", "hundesohn", "hundsfott", "schweinebacke", "blödes schwein",
+  "bloedes schwein", "bastarde", "bastarden", "wichsvorlage"
+]
+level-3: [
+  "scheisse", "bastard", "hurensohn", "hurensöhne", "hurensoehne", "hurensohnes", "hurenkind", "fotze",
+  "fotzen", "fotzig", "ficken", "fick", "ficker", "fick dich", "gefickt", "verfickt", "verfickte",
+  "verfickter", "verfickten", "verficktes", "ficksau", "wichsen", "wichs", "gewichst", "möse", "moese",
+  "mösenlecker", "moesenlecker", "fotzenlecker", "arschlecker", "schwuchtel", "schwuchteln", "schwuchtl",
+  "kanake", "kanaken", "tittenfick", "fick deine mutter", "fick deine mama", "ich ficke deine mutter",
+  "mutterficker", "motherfucker", "schwanzlutscher", "schwanzlutscherin", "schwanzgesicht", "schwanzfresse",
+  "arschfick", "arschficker", "arschgeige", "fotzenkopf", "wichsbirne", "wichskopf", "spermafresse",
+  "spermaschlampe", "spermaschleuder", "pimmel", "pimmelkopf", "pimmelfresse", "pimmelmann", "hodensohn",
+  "hodenkobold", "nuttensohn", "nuttenbock", "flittchen", "hurenschlampe", "schlampenfotze", "drecksfotze",
+  "drecksnutte", "dreckshure", "dreckshurensohn", "scheißhure", "scheisshure", "scheißnutte", "scheissnutte",
+  "scheißfotze", "scheissfotze", "scheißschlampe", "scheissschlampe", "scheißhurensohn", "scheisshurensohn"
+]

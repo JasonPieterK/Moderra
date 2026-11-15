@@ -1,0 +1,1 @@
+package net.minecraft.server.network; public class ServerGamePacketListenerImpl { public net.minecraft.server.level.ServerPlayer player; public void send(net.minecraft.network.protocol.Packet<?> p){} public net.minecraft.server.level.ServerPlayer getPlayer(){return null;} public java.net.SocketAddress getRemoteAddress(){return null;} }

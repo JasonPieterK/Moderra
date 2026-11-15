@@ -1,0 +1,12 @@
+# Your own words. Same format as the other files, see 7-wordlists/README.md.
+# Add words between the brackets, lower-case, one entry per item, for example: ["badword", "two words"]
+language: custom
+name: Custom words (the admin's own list)
+script: latin
+review-status: unreviewed
+sources:
+  - "Written by the server admin"
+notes: "Empty by default. Put the words your community needs here."
+level-1: []
+level-2: []
+level-3: []

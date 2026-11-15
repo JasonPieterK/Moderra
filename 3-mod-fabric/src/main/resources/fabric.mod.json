@@ -1,19 +1,20 @@
 {
   "schemaVersion": 1,
-  "id": "antibadwords",
+  "id": "moderra",
   "version": "${version}",
-  "name": "AntiBadWords",
+  "name": "Moderra",
   "description": "Blocks profanity in chat, commands, signs, books and anvils and punishes repeat offenders.",
   "authors": ["Jason"],
-  "license": "MIT",
+  "license": "All-Rights-Reserved",
+  "icon": "assets/moderra/icon.png",
   "environment": "server",
-  "entrypoints": { "main": ["com.jason.plugins.antibadwords.fabric.AntiBadWordsFabric"] },
-  "mixins": ["antibadwords.mixins.json"],
+  "entrypoints": { "main": ["com.jason.plugins.moderra.fabric.ModerraFabric"] },
+  "mixins": ["moderra.mixins.json"],
   "depends": {
     "fabricloader": ">=0.17.0",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}",
     "java": ">=${java_release}"
   },
-  "suggests": { "fabric-permissions-api-v0": "*" }
+  "suggests": { "fabric-permissions-api-v0": "*", "placeholder-api": "*" }
 }

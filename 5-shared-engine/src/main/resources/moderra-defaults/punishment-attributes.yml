@@ -1,0 +1,72 @@
+# Temporarily SETS an attribute to a value, then restores the original value automatically
+# (also when the player leaves, the server stops, or after a crash).
+# structured format:
+#   attribute-name: minecraft:movement_speed   (old names like minecraft:generic.movement_speed also work)
+#   value: 0.05
+#   duration: 8        (seconds)
+reduce_speed:
+  enabled: false
+  # Normal walking speed is 0.1. Lower movement speed heavily.
+  attribute-name: "minecraft:movement_speed"
+  value: 0.05
+  duration: 8
+very_slow_speed:
+  enabled: false
+  # Extreme slow movement.
+  attribute-name: "minecraft:movement_speed"
+  value: 0.02
+  duration: 5
+reduce_attack:
+  enabled: false
+  # Normal attack damage is 1.0 (bare hand). 0 = no melee damage.
+  attribute-name: "minecraft:attack_damage"
+  value: 0.0
+  duration: 8
+low_max_health:
+  enabled: false
+  # Temporarily lower max HP (normal is 20.0 = 10 hearts). Careful: low values can be lethal.
+  attribute-name: "minecraft:max_health"
+  value: 8.0
+  duration: 10
+no_knockback_resistance:
+  enabled: false
+  # Remove knockback resistance (players normally have 0, netherite armor adds some).
+  attribute-name: "minecraft:knockback_resistance"
+  value: 0.0
+  duration: 8
+reduce_armor:
+  enabled: false
+  # Remove all armor points temporarily.
+  attribute-name: "minecraft:armor"
+  value: 0.0
+  duration: 8
+reduce_armor_toughness:
+  enabled: false
+  # Remove armor toughness temporarily.
+  attribute-name: "minecraft:armor_toughness"
+  value: 0.0
+  duration: 8
+reduce_attack_speed:
+  enabled: false
+  # Normal attack speed is 4.0. Lower value = slower hits.
+  attribute-name: "minecraft:attack_speed"
+  value: 1.0
+  duration: 8
+short_entity_reach:
+  enabled: false
+  # Normal reach for attacking entities is 3.0 blocks.
+  attribute-name: "minecraft:entity_interaction_range"
+  value: 1.0
+  duration: 8
+short_block_reach:
+  enabled: false
+  # Normal reach for breaking/placing blocks is 4.5 blocks.
+  attribute-name: "minecraft:block_interaction_range"
+  value: 1.5
+  duration: 8
+weak_jump:
+  enabled: false
+  # Normal jump strength is 0.42.
+  attribute-name: "minecraft:jump_strength"
+  value: 0.2
+  duration: 8

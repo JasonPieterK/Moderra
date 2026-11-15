@@ -1,0 +1,24 @@
+# Moderra word list. Format: see 7-wordlists/README.md. Offensive words are moderation data.
+language: "ro"
+name: Romanian
+script: latin
+review-status: unreviewed
+sources:
+  - "AI-written from general knowledge, no third-party list copied, unreviewed"
+notes: "Diacritics are stripped by the matcher. 'pizda' is shared with the Russian transliteration list; 'curva' is close to Czech/Polish kurva. Left out: bou, gunoi, boschetar, ma-ta forms. collisions-ok: ru uk cs pl Words shared with unrelated languages are cognates or borrowings with the same meaning. collisions-ok: cretin idiot pizda puta"
+level-1: [
+  "prost", "proasta", "idiot", "cretin", "tâmpit", "tampit", "nătărău", "natarau", "fraier", "dobitoc",
+  "prostanac", "tâmpită", "tampita", "prostule", "idiotule"
+]
+level-2: [
+  "dracu", "dracului", "du te dracu", "du-te dracu", "rahat", "puta", "javra", "labagiu", "scârbă", "scarba",
+  "tarfe", "futu ti mama", "pizda mă-sii", "pizda matii", "în pula mea", "in pula mea", "în pizda mă-sii",
+  "in pizda masii", "pederasti", "rahatule", "căcatule", "cacatule"
+]
+level-3: [
+  "pizda", "pizdă", "pula", "pulă", "muie", "sugi pula", "sugi muie", "futu-ți", "futu ti", "fut", "futut",
+  "futui", "futu", "curva", "curvă", "curve", "târfă", "tarfa", "poponar", "poponari", "pederast", "muist",
+  "muistule", "cacat", "căcat", "suge pula", "suge muie", "pula mea", "pizda mea", "pizda ma-tii",
+  "futu-ti mama", "futu-ți mama", "futu-ți morții", "futu-ti mortii", "du-te-n pizda", "du-te in pizda",
+  "du-te-n pula mea", "du-te in pula mea"
+]

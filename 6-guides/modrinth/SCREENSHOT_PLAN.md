@@ -12,7 +12,7 @@ You take these in Minecraft; the page text in [PAGE_TEXT.md](PAGE_TEXT.md) refer
   brightness/time = day, no shaders. Keep each image under Modrinth's gallery size limit (about 5 MiB;
   PNG is fine, JPG if too big).
 - Use a short, readable chat history: clear it with a relog between shots. Use `F3 + D` to wipe chat.
-- For the punishment shots, enable these in `config.yml` first, then `/abw reload`:
+- For the punishment shots, enable these in `config.yml` first, then `/moderra reload`:
   `punishment.effects.blindness`, `slowness`, `nausea`, `punishment.attributes.reduce_speed`,
   `punishment.sounds.villager_no` (already on), `violations-before-punish: 2`.
 - Keep the real bad words in shots **readable but not gratuitous**. Use mild words (`stupid`, `idiot`,
@@ -29,23 +29,23 @@ You take these in Minecraft; the page text in [PAGE_TEXT.md](PAGE_TEXT.md) refer
 | 05 | `05-book-blocked.png` | Book filtering. | Book & quill, bad word on page 1, press Done/Sign. Capture the book plus the warning. |
 | 06 | `06-anvil-blocked.png` | Anvil rename blocked. | Rename a sword with a bad word. Capture the anvil GUI with the **empty result slot** and the warning. |
 | 07 | `07-command-whisper.png` | Command arguments scanned. | `/msg Admin <bad word>` as Player. Capture the cancelled command and warning. |
-| 08 | `08-bypass-attempts.png` | Smart matching. | Admin runs `/abw check` on several tricks one after another (see below) so all results show in one chat screen. |
-| 09 | `09-no-false-positives.png` | No Scunthorpe problem. | Admin: `/abw check closer`, `/abw check scrap metal`, `/abw check peacock`, `/abw check class`. All "Clean". |
-| 10 | `10-multilingual.png` | Multi-language. | Admin: `/abw check` with one word per language: `bodoh` (id), `idiota` (pt), `дурак` (ru), `dumm` (de), `傻逼` (zh). Needs a client font that shows Chinese/Cyrillic (vanilla does). |
-| 11 | `11-staff-notify.png` | Staff alerts. | Admin window while Player swears: the grey `[AntiBadWords] Blocked '...' from ... (1/2)` line. |
-| 12 | `12-admin-commands.png` | Admin command set. | Admin: `/abw` then `/abw info`. Capture tab-completion list (type `/abw ` and press Tab) plus the `info` output. |
+| 08 | `08-bypass-attempts.png` | Smart matching. | Admin runs `/moderra check` on several tricks one after another (see below) so all results show in one chat screen. |
+| 09 | `09-no-false-positives.png` | No Scunthorpe problem. | Admin: `/moderra check closer`, `/moderra check scrap metal`, `/moderra check peacock`, `/moderra check class`. All "Clean". |
+| 10 | `10-multilingual.png` | Multi-language. | Admin: `/moderra check` with one word per language: `bodoh` (id), `idiota` (pt), `дурак` (ru), `dumm` (de), `傻逼` (zh). Needs a client font that shows Chinese/Cyrillic (vanilla does). |
+| 11 | `11-staff-notify.png` | Staff alerts. | Admin window while Player swears: the grey `[Moderra] Blocked '...' from ... (1/2)` line. |
+| 12 | `12-admin-commands.png` | Admin command set. | Admin: `/moderra` then `/moderra info`. Capture tab-completion list (type `/moderra ` and press Tab) plus the `info` output. |
 | 13 | `13-config-file.png` | Config. | Screenshot of `config.yml` open in an editor (VS Code / Notepad++, dark theme) at the `punishment` section. |
 | 14 | `14-console-startup.png` | Console banner + log. | Server console right after start: the ASCII banner, "Loaded N blocked words" and a blocked-word log line. |
 | 15 (optional GIF) | `15-demo.gif` | 10-15 s demo. | Screen-record: type bad word, warning, type again, punishment effects. Keep under ~8 MB. |
 
-### Strings for shot 08 (`/abw check ...`)
+### Strings for shot 08 (`/moderra check ...`)
 
 ```
-/abw check f u c k
-/abw check f*ck
-/abw check sh1t
-/abw check fuuuuuck
-/abw check ＳＨＩＴ    (full-width letters)
+/moderra check f u c k
+/moderra check f*ck
+/moderra check sh1t
+/moderra check fuuuuuck
+/moderra check ＳＨＩＴ    (full-width letters)
 ```
 
 Only use ones that your own test confirms are "Blocked". If one isn't, don't show it, and tell Bram so
@@ -68,5 +68,5 @@ it can be fixed.
 5. 09 - "No false alarms" / "Whole-word matching: `closer`, `scrap` and `class` are fine."
 6. 10 - "7 languages" / "English, Indonesian, Portuguese, Russian, UK English, German, Chinese."
 7. 07, 04, 05, 06 - "Everywhere players type" / chat, commands, signs, books and anvils.
-8. 11, 12 - "Made for staff" / alerts, `/abw check`, violations.
+8. 11, 12 - "Made for staff" / alerts, `/moderra check`, violations.
 9. 13, 14 - "Simple to configure" / one `config.yml`, reload without restart.

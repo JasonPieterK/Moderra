@@ -1,0 +1,1 @@
+package net.minecraft.world.level; public abstract class Level implements BlockGetter { public net.minecraft.world.level.block.entity.BlockEntity getBlockEntity(net.minecraft.core.BlockPos p){return null;}  public net.minecraft.resources.ResourceKey<Level> dimension(){return null;} }

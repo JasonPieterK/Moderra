@@ -1,0 +1,1 @@
+package net.minecraftforge.event.server; public class ServerStoppingEvent { public static final net.minecraftforge.Bus<ServerStoppingEvent> BUS=null; public net.minecraft.server.MinecraftServer getServer(){return null;} }
