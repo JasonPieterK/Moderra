@@ -1,0 +1,9 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="common.css"><style>
+.stairs{position:relative;height:660px;margin:0 40px 40px}
+.step{position:absolute;bottom:0;width:372px;border:12px solid #111;padding:20px 24px;margin-left:-0px}
+.step .at{font-size:22px}.step .at b{font-size:54px;vertical-align:-6px}
+.step h3{font-size:40px;margin:6px 0}.step p{font-size:21px;line-height:1.25}
+.man{position:absolute;left:1180px;bottom:672px}
+.cap{position:absolute;left:0;top:14px;font-size:30px;line-height:1.3;text-transform:uppercase;width:640px}
+.cap span{background:#F2C230;padding:0 8px}
+</style></head><body><div class="frame"><div class="head"><div class="t">Escalation ladder</div><div class="s">Example ladder. You write your own.</div><div class="n">4</div></div><div class="stairs"><div class="cap">Every blocked message is a <span>strike</span>.<br>Strikes fade with time.<br>Each step runs once, or again every N strikes.</div><div class="step" style="left:0px;height:240px;background:#F2C230;color:#111111"><div class="at">AT <b>2</b> STRIKES</div><h3>Warn</h3><p>Watch your language.</p></div><div class="step" style="left:372px;height:350px;background:#1E4FA3;color:#F4EFE6"><div class="at">AT <b>4</b> STRIKES</div><h3>Mute 10m</h3><p>No chat for 10 minutes.</p></div><div class="step" style="left:744px;height:460px;background:#D6352B;color:#F4EFE6"><div class="at">AT <b>6</b> STRIKES</div><h3>Kick</h3><p>Removed from the server.</p></div><div class="step" style="left:1116px;height:570px;background:#111111;color:#F4EFE6"><div class="at">AT <b>8</b> STRIKES</div><h3>Tempban 7d</h3><p>Needs a ban plugin, or vanilla ban.</p></div></div><div class="note">Actions: warn, mute, kick, ban, tempban, ipban, command, effect, sound. File: moderation/ladder.yml</div></div></body></html>
