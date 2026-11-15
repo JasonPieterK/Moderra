@@ -57,11 +57,12 @@ if [ "$WHAT" = all ] || [ "$WHAT" = plugin ]; then
 fi
 
 if [ "$WHAT" = all ] || [ "$WHAT" = mods ]; then
-  for sign in sign-array sign-record; do
-    menu=menu-click; [ "$sign" = sign-record ] && menu=menu-input   # 26.3: ContainerInput; older: ClickType
-    compile "fabric-$sign" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
+  # the same pairs the build scripts use: 1.21.11 sign-array+menu-click, 26.1-26.2 sign-array+menu-input, 26.3 sign-record+menu-input
+  for pair in sign-array:menu-click sign-array:menu-input sign-record:menu-input; do
+    sign="${pair%%:*}" menu="${pair##*:}"
+    compile "fabric-$sign-$menu" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
       "$ROOT/3-mod-fabric/src/main/java"
-    compile "forge-$sign" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
+    compile "forge-$sign-$menu" "$SNAKEYAML" "$STUBS/mc" "$ENGINE/main/java" "$ENGINE/mc/java" "$ENGINE/mc-variants/$sign" "$ENGINE/mc-variants/$menu" \
       "$ROOT/4-mod-forge/src/main/java"
   done
 fi
