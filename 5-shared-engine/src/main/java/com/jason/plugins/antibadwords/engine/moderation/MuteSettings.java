@@ -45,19 +45,19 @@ public final class MuteSettings {
         .description("Used for {reason} when a mute has no reason.").build();
 
     public static final Setting<String> MSG_BLOCKED = Setting.string("mute.messages.blocked",
-            "&cYou are muted. Time left: {remaining}. Reason: {reason}").file(FILE).category(CATEGORY).title("Message: blocked")
+            "&8[&6&lAntiBadWords&8]&r &c&lMuted. &7You cannot write now. Time left: &f{remaining}&7. Reason: &f{reason}&7.").file(FILE).category(CATEGORY).title("Message: blocked")
         .description("Sent when a muted player tries to chat or use a blocked command. " + PLACEHOLDERS).build();
     public static final Setting<String> MSG_JOIN = Setting.string("mute.messages.join",
-            "&cYou are still muted. Time left: {remaining}. Reason: {reason}").file(FILE).category(CATEGORY).title("Message: on join")
+            "&8[&6&lAntiBadWords&8]&r &c&lMuted. &7Your mute is still active. Time left: &f{remaining}&7. Reason: &f{reason}&7.").file(FILE).category(CATEGORY).title("Message: on join")
         .description("Sent when a muted player joins. " + PLACEHOLDERS).build();
     public static final Setting<String> MSG_MUTED = Setting.string("mute.messages.muted",
-            "&cYou have been muted for {remaining}. Reason: {reason}").file(FILE).category(CATEGORY).title("Message: muted")
+            "&8[&6&lAntiBadWords&8]&r &c&lMuted. &7You cannot write for &f{remaining}&7. Reason: &f{reason}&7.").file(FILE).category(CATEGORY).title("Message: muted")
         .description("Sent to the player (when online) at the moment they are muted. " + PLACEHOLDERS).build();
     public static final Setting<String> MSG_UNMUTED = Setting.string("mute.messages.unmuted",
-            "&aYou are no longer muted.").file(FILE).category(CATEGORY).title("Message: unmuted")
+            "&8[&6&lAntiBadWords&8]&r &a&lUnmuted. &7You can write again.").file(FILE).category(CATEGORY).title("Message: unmuted")
         .description("Sent to the player (when online) when a staff member lifts the mute. " + PLACEHOLDERS).build();
     public static final Setting<String> MSG_EXPIRED = Setting.string("mute.messages.expired",
-            "&aYour mute has run out. You can chat again.").file(FILE).category(CATEGORY).title("Message: expired")
+            "&8[&6&lAntiBadWords&8]&r &a&lMute ended. &7You can write again.").file(FILE).category(CATEGORY).title("Message: expired")
         .description("Sent to the player (when online) when the mute runs out. " + PLACEHOLDERS).build();
 
     private MuteSettings() {

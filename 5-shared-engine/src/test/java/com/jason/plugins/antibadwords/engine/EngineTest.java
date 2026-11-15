@@ -65,7 +65,7 @@ class EngineTest {
         assertEquals(1, enabled.size());
         assertEquals(List.of("entity.villager.no", "1.0", "1.0"), enabled.get(0).args());
         assertEquals(List.of("minecraft:blindness", "0", "3"), s.punishmentActions().get(0).args());
-        assertEquals("§c{PLAYER} SAID THE WORD §f{WORD}§c WHICH IS NOT ALLOWED.", s.warningBroadcastMessage());
+        assertEquals("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §f{player}§7 used a word that is not permitted: §c§o{word}§7.", s.warningBroadcastMessage());
 
         // a second start changes nothing on disk
         String before = TestFiles.read(f.file("config.yml"));
@@ -229,9 +229,9 @@ class EngineTest {
 
         assertTrue(f.say(bob, Message.CHAT, "fuck this").blocked());
         assertEquals(1, engine.strikes().get(bob));
-        assertEquals(List.of("§cBob SAID THE WORD §ffuck§c WHICH IS NOT ALLOWED."), f.platform.broadcasts);
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f1§e BADWORDS AGAIN."), f.platform.sentTo(bob));
-        assertEquals(List.of("§8[§cAntiBadWords§8] §7Blocked '§ffuck§7' from §fBob§7 in §fchat§7 (§f1§7/§f2§7)."), f.platform.sentTo(staff));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §fBob§7 used a word that is not permitted: §c§ofuck§7."), f.platform.broadcasts);
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f1§7 more violations, a penalty is applied."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §6§lStaff notice. §7Blocked §c§ofuck§7 from §fBob§7 in §fchat§7. Violations: §f1§7 of §f2§7."), f.platform.sentTo(staff));
         assertTrue(f.platform.sentTo(other).isEmpty());
         assertTrue(f.platform.infos.contains("Bob said blocked word 'fuck' in chat (violation 1/2)"));
         assertEquals(1, events.size());
@@ -254,9 +254,9 @@ class EngineTest {
         f.platform.sentTo(bob).clear();
         assertTrue(f.say(bob, Message.SIGN, "shit").blocked());
         assertEquals(List.of("sound:villager_no"), f.platform.appliedActions);
-        assertEquals(List.of("§cBob SAID THE WORD §fshit§c WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH §fvillager no sound§c."),
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §fBob§7 used a word that is not permitted: §c§oshit§7. The penalty is: §fvillager no sound§7."),
             f.platform.broadcasts);
-        assertEquals(List.of("§cFOR YOUR BADWORDS, YOU ARE PUNISHED WITH §fvillager no sound§c."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §7You used too many words that are not permitted. The penalty is: §fvillager no sound§7."), f.platform.sentTo(bob));
         assertEquals(0, engine.strikes().get(bob), "strikes start again after a punishment");
         assertTrue(f.platform.consoleCommands.isEmpty());
         assertEquals(List.of("violation", "violation", "punishment"), events.stream().map(ModerationEvent::kind).toList());
@@ -278,7 +278,7 @@ class EngineTest {
         f.say(bob, Message.CHAT, "fuck");
         f.say(bob, Message.CHAT, "fuck");
         assertEquals(2, f.platform.sentTo(bob).size());
-        assertTrue(f.platform.sentTo(bob).get(1).contains("PUNISHMENT IS CURRENTLY DISABLED"));
+        assertTrue(f.platform.sentTo(bob).get(1).contains("No penalty is applied at this time"));
         assertTrue(f.platform.broadcasts.isEmpty());
         assertTrue(f.platform.sentTo(staff).isEmpty());
         assertTrue(f.platform.infos.isEmpty(), f.platform.infos.toString());
@@ -328,7 +328,7 @@ class EngineTest {
         f.say(bob, Message.CHAT, "fuck");
         assertEquals(List.of("say Bob was warned", "kick Bob fuck"), f.platform.consoleCommands);
         assertEquals(List.of("effect:blindness", "sound:villager_no"), f.platform.appliedActions);
-        assertTrue(f.platform.sentTo(bob).get(1).contains("§fblindness, villager no sound, and server command§c"), f.platform.sentTo(bob).get(1));
+        assertTrue(f.platform.sentTo(bob).get(1).contains("§fblindness, villager no sound, and server command§7"), f.platform.sentTo(bob).get(1));
         assertEquals(0, engine.strikes().get(bob));
     }
 
@@ -521,7 +521,7 @@ class EngineTest {
         assertEquals("§cStop it, {player}!", engine.settings().legacy().warningPlayerMessage());
         String after = TestFiles.read(f.file("config.yml"));
         assertEquals(before.replace("protection-level: 3", "protection-level: 2")
-            .replace("\"&EWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY &F{REMAINING}&E BADWORDS AGAIN.\"", "\"&cStop it, {player}!\""), after);
+            .replace("\"&8[&6&lAntiBadWords&8]&r &e&lWarning. &7Your message contains a word that is not permitted. After &f{remaining}&7 more violations, a penalty is applied.\"", "\"&cStop it, {player}!\""), after);
         try {
             engine.set(CoreSettings.PROTECTION_LEVEL, 9);
             throw new AssertionError("9 must be refused");

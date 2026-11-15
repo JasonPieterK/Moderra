@@ -67,7 +67,7 @@ public final class LinkSettings {
             + "Bukkit/Spigot/Paper/Purpur; everywhere else the message is blocked); log-only = it goes through and is only noted."));
     public static final Setting<String> REPLACEMENT = s(Setting.string(P + "censor-replacement", "[link]").title("Censor: replacement")
         .description("What a caught link is replaced with when the action is censor."));
-    public static final Setting<String> MESSAGE = s(Setting.string(P + "message", "&cLinks are not allowed here.").title("Message when blocked")
+    public static final Setting<String> MESSAGE = s(Setting.string(P + "message", "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7Links are not permitted on this server.").title("Message when blocked")
         .description("Sent to the player when the message was blocked for a link. Empty = no message. Colours: & codes."));
     public static final Setting<Integer> WEIGHT = s(Setting.integer(P + "strike-weight", 0).range(0, 100).title("Strikes for a link")
         .description("How many strikes a caught link adds. 0 = none."));

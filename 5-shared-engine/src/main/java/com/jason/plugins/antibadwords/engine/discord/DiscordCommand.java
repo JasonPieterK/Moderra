@@ -48,20 +48,20 @@ final class DiscordCommand implements SubCommand {
 
     private void test(CommandContext c) {
         if (!service.active()) {
-            c.send(Chat.YELLOW + "Note: Discord alerts are switched off in discord.yml (enabled / mode); sending the test anyway.");
+            c.send(Chat.warn("Note: Discord alerts are switched off in discord.yml (enabled / mode); sending the test anyway."));
         }
         Map<String, CompletableFuture<String>> results = service.sendTest(c.sender().name());
         if (results.isEmpty()) {
-            c.send(Chat.RED + "No usable webhook URL is set (discord.webhook.alerts-url / log-url). Use https://... or ${ENV:NAME}.");
+            c.send(Chat.error("No usable webhook URL is set (discord.webhook.alerts-url / log-url). Use https://... or ${ENV:NAME}."));
             return;
         }
-        c.send(Chat.GRAY + "Sending the test message to: " + String.join(", ", results.keySet()) + " ...");
+        c.send(Chat.info("The plugin sends the test message to: " + Chat.val(String.join(", ", results.keySet())) + "."));
         // the answer arrives from the sender thread; hand it back to the server thread before talking to the player
         results.forEach((target, result) -> result.orTimeout(GIVE_UP_SECONDS, TimeUnit.SECONDS)
             .exceptionally(ex -> "No answer from Discord.")
             .thenAccept(text -> c.engine().platform().runSync(() -> {
                 boolean ok = text.startsWith("OK");
-                c.send((ok ? Chat.GREEN : Chat.RED) + "Discord " + target + ": " + service.mask(text));
+                c.send(ok ? Chat.ok("Discord " + Chat.val(target) + ": " + service.mask(text)) : Chat.error("Discord " + Chat.val(target) + ": " + service.mask(text)));
             })));
     }
 }

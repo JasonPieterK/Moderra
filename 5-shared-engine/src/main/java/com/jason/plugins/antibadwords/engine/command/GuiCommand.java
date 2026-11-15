@@ -45,18 +45,18 @@ public final class GuiCommand implements SubCommand {
 
     static void open(Engine engine, CommandSender sender, String page) {
         if (sender.id() == null) {
-            sender.send(RED + "The menu can only be opened by a player.");
+            sender.send(Chat.error("The menu can only be opened by a player."));
         } else if (!sender.has(Menu.PERMISSION)) {
-            sender.send(RED + "No permission.");
+            sender.send(Chat.error("No permission."));
         } else if (!engine.platform().supportsMenu()) {
-            sender.send(YELLOW + "The settings menu is not available on this server. Edit the files in the config folder instead.");
+            sender.send(Chat.warn("The settings menu is not available on this server. Edit the files in the config folder instead."));
         } else {
             if (!page.isBlank() && !Menu.opensPage(new com.jason.plugins.antibadwords.engine.gui.EngineConfigAccess(engine), page)) {
-                sender.send(YELLOW + "Unknown menu page \"" + page + "\"; opening the main menu. Pages: a category name, languages, words, ladder, "
-                    + "mutes, profiles, rules, a setting key or a number.");
+                sender.send(Chat.warn("Unknown menu page \"" + page + "\". The main menu opens. Valid pages: a category name, languages, words, ladder, "
+                    + "mutes, profiles, rules, a setting key or a number."));
             }
             if (!engine.platform().openMenu(sender.id(), page)) {
-                sender.send(YELLOW + "The settings menu is not available on this server. Edit the files in the config folder instead.");
+                sender.send(Chat.warn("The settings menu is not available on this server. Edit the files in the config folder instead."));
             }
         }
     }

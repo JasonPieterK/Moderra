@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords.engine.command;
 
 import static com.jason.plugins.antibadwords.engine.command.Chat.GOLD;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GRAY;
+import static com.jason.plugins.antibadwords.engine.command.Chat.WHITE;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GREEN;
 import static com.jason.plugins.antibadwords.engine.command.Chat.RED;
 import static com.jason.plugins.antibadwords.engine.command.Chat.YELLOW;
@@ -57,15 +58,15 @@ public final class LangCommand implements SubCommand {
             count += active ? 1 : 0;
             parts.add((active ? GREEN : GRAY) + code);
         }
-        c.send(GOLD + "Languages (" + count + " of " + parts.size() + " on, green = on):");
+        c.send(Chat.heading("Languages") + GRAY + " (" + WHITE + count + GRAY + " of " + WHITE + parts.size() + GRAY + " on; green = on):");
         c.send(String.join(GRAY + ", ", parts));
-        c.send(GRAY + "Change with /" + c.label() + " lang enable <code> or /" + c.label() + " lang disable <code>.");
+        c.send(Chat.hint("Use /" + c.label() + " lang enable <code> or /" + c.label() + " lang disable <code> to change a language."));
     }
 
     private static void change(CommandContext c, boolean enable, String code) {
         Engine engine = c.engine();
         if (code.equals(WordLists.CUSTOM)) {
-            c.send(YELLOW + "The custom list is always on.");
+            c.send(Chat.warn("The custom list is always on."));
             return;
         }
         WordList list = engine.wordLists().get(code);
@@ -73,27 +74,26 @@ public final class LangCommand implements SubCommand {
         try {
             if (enable) {
                 if (list == null) {
-                    c.send(RED + "Unknown language: " + code + ". See /" + c.label() + " lang list.");
+                    c.send(Chat.error("This language is not known: " + Chat.val(code) + ". Use /" + c.label() + " lang list."));
                     return;
                 }
                 if (isOn) {
-                    c.send(YELLOW + "Language " + code + " is already on.");
+                    c.send(Chat.warn("The language " + Chat.val(code) + " is already on."));
                     return;
                 }
                 engine.addToList(CoreSettings.ENABLED_LANGUAGES, code);
-                c.send(GREEN + "Language " + code + " (" + list.name() + ") switched on. " + engine.settings().matcher().size()
-                    + " blocked words active.");
+                c.send(Chat.ok("The language " + Chat.val(code) + " (" + list.name() + ") is on. Blocked words: " + Chat.val(engine.settings().matcher().size()) + "."));
             } else {
                 if (!isOn) {
-                    c.send(YELLOW + "Language " + code + " is not on.");
+                    c.send(Chat.warn("The language " + Chat.val(code) + " is not on."));
                     return;
                 }
                 engine.removeFromList(CoreSettings.ENABLED_LANGUAGES, name -> WordLists.canonicalCode(name).equals(code));
-                c.send(GREEN + "Language " + code + " switched off. " + engine.settings().matcher().size() + " blocked words active.");
+                c.send(Chat.ok("The language " + Chat.val(code) + " is off. Blocked words: " + Chat.val(engine.settings().matcher().size()) + "."));
             }
             c.audit();
         } catch (IOException | RuntimeException ex) {
-            c.send(RED + "Could not save config.yml: " + ex.getMessage());
+            c.send(Chat.error("The plugin cannot save config.yml: " + ex.getMessage()));
         }
     }
 

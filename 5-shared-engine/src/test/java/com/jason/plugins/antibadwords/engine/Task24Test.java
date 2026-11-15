@@ -135,7 +135,7 @@ class Task24Test {
         Engine engine = f.start();
         List<String> info = run(engine, "info");
         assertTrue(info.stream().anyMatch(l -> l.contains("Integrations detected: ") && l.endsWith("none")), info.toString());
-        assertTrue(info.stream().anyMatch(l -> l.contains("DiscordSRV features") && l.contains("Bukkit/Paper/Purpur only")
+        assertTrue(info.stream().anyMatch(l -> l.contains("DiscordSRV features") && l.contains("Bukkit, Paper and Purpur")
             && l.contains("not available on Fake")), info.toString());
         f.platform.plugins.add("DiscordSRV");
         f.platform.plugins.add("LuckPerms");

@@ -89,7 +89,7 @@ class SpamFilterTest {
         assertTrue(fourth.blocked());
         assertEquals("spam-rate", fourth.primary().check());
         assertEquals("too many messages", fourth.primary().detail());
-        assertEquals(List.of("§cYou are sending messages too fast. Please slow down."), f.platform.sentTo(bob));
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7You send messages too fast. §7§oWait a moment before you write again."), f.platform.sentTo(bob));
         assertEquals(0, engine.strikes().get(bob), "strike weight 0 by default: spam never punishes");
         assertTrue(f.platform.broadcasts.isEmpty());
         assertEquals(List.of("spam", "violation"), events.stream().map(ModerationEvent::kind).toList());
@@ -159,7 +159,7 @@ class SpamFilterTest {
         Verdict third = chat("buy cheap diamonds at my shop!!");
         assertTrue(third.blocked(), "nearly the same text a third time");
         assertEquals("spam-repeat", third.primary().check());
-        assertEquals("§cPlease do not repeat the same message.", f.platform.sentTo(bob).get(0));
+        assertEquals("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7You repeat the same message. §7§oWrite a different message.", f.platform.sentTo(bob).get(0));
         assertTrue(chat("something completely different").allowed());
         assertTrue(chat("ok").allowed() && chat("ok").allowed() && chat("ok").allowed() && chat("ok").allowed(), "short messages are not counted");
 
@@ -202,7 +202,7 @@ class SpamFilterTest {
         set(SpamSettings.CAPS.sources(), List.of("*"));
         sign = f.say(bob, Message.SIGN, "STOP SHOUTING AT ME");
         assertTrue(sign.blocked(), "a sign cannot be rewritten, so censor becomes block there");
-        assertEquals("§cPlease do not write in capital letters.", f.platform.sentTo(bob).get(0));
+        assertEquals("§8[§6§lAntiBadWords§8]§r §e§lNotice. §7Your message contains too many capital letters. §7§oUse lower-case letters.", f.platform.sentTo(bob).get(0));
 
         set(SpamSettings.CAPS_MAX, 100);
         assertTrue(chat("STOP SHOUTING AT ME").allowed());
@@ -249,7 +249,7 @@ class SpamFilterTest {
         Verdict v = chat("Buy buy BUY buy, buy! now");
         assertTrue(v.blocked());
         assertEquals("repeated word 'buy'", v.primary().detail());
-        assertEquals("§cPlease do not repeat the same word so often.", f.platform.sentTo(bob).get(0));
+        assertEquals("§8[§6§lAntiBadWords§8]§r §c§lMessage blocked. §7Your message repeats the same word too many times. §7§oUse different words.", f.platform.sentTo(bob).get(0));
         assertTrue(chat("a a a a a a a a").allowed(), "words shorter than min-word-length are not counted");
         set(SpamSettings.WORDS.action(), "censor");
         set(SpamSettings.WORDS_MAX, 2);
@@ -270,7 +270,7 @@ class SpamFilterTest {
         Verdict v = f.say(bob, Message.COMMAND, "/home");
         assertTrue(v.blocked(), "a bare command that is never scanned for words still counts");
         assertEquals("spam-commands", v.primary().check());
-        assertEquals("§cYou are using commands too fast. Please slow down.", f.platform.sentTo(bob).get(0));
+        assertEquals("§8[§6§lAntiBadWords§8]§r §c§lCommand blocked. §7You use commands too fast. §7§oWait a moment before you use a command again.", f.platform.sentTo(bob).get(0));
         assertEquals("/home", events.get(0).data().get("text"));
         assertTrue(chat("chat is counted separately").allowed());
 
@@ -375,8 +375,8 @@ class SpamFilterTest {
         TestFiles.edit(f.file("filters/spam.yml"), "window: \"5s\"\n    repeat:", "window: \"soon\"\n    repeat:");
         TestFiles.edit(f.file("filters/spam.yml"), "max-percent: 70", "max-percent: 700");
         TestFiles.edit(f.file("filters/spam.yml"), "action: censor\n      # Sent to the player when the message was blocked by this rule. "
-            + "Empty = no message. Colours: & codes.\n      message: \"&cPlease do not write", "action: explode\n      # Sent to the player when the "
-            + "message was blocked by this rule. Empty = no message. Colours: & codes.\n      message: \"&cPlease do not write");
+            + "Empty = no message. Colours: & codes.\n      message: \"&8[&6&lAntiBadWords&8]&r &e&lNotice. &7Your message contains too many capital", "action: explode\n      # Sent to the player when the "
+            + "message was blocked by this rule. Empty = no message. Colours: & codes.\n      message: \"&8[&6&lAntiBadWords&8]&r &e&lNotice. &7Your message contains too many capital");
         List<String> problems = engine.reload().stream().map(Object::toString).toList();
         assertEquals(4, problems.size(), problems.toString());
         assertTrue(problems.stream().anyMatch(p -> p.contains("filters/spam.yml") && p.contains("filters.spam.rate.max-messages") && p.contains("'lots'")), problems.toString());

@@ -25,8 +25,8 @@ class LadderMigrationTest {
             legacy:
               at: 3
               repeat: 1
-              message: "&CFOR YOUR BADWORDS, YOU ARE PUNISHED WITH &F{PUNISHMENTS}&C."
-              broadcast: "&C{PLAYER} SAID THE WORD &F{WORD}&C WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH &F{PUNISHMENTS}&C."
+              message: "&8[&6&lAntiBadWords&8]&r &c&lPenalty. &7You used too many words that are not permitted. The penalty is: &f{PUNISHMENTS}&7."
+              broadcast: "&8[&6&lAntiBadWords&8]&r &c&lPenalty. &f{PLAYER}&7 used a word that is not permitted: &c&o{WORD}&7. The penalty is: &f{PUNISHMENTS}&7."
               final-command: "/tempmute {player} 30s {word}"
               actions: [punishments, reset-strikes]
         """;
@@ -95,14 +95,14 @@ class LadderMigrationTest {
         assertEquals(before, after);
 
         // the flat behaviour itself, as it was before the ladder existed (golden values)
-        assertEquals(List.of("§eWATCH YOUR WORDS. YOU ARE PUNISHED IF YOU SAY §f2§e BADWORDS AGAIN."), before.get(0).toPlayer());
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §e§lWarning. §7Your message contains a word that is not permitted. After §f2§7 more violations, a penalty is applied."), before.get(0).toPlayer());
         assertEquals(1, before.get(0).strikes());
         Round punished = before.get(2);
         assertEquals(0, punished.strikes(), "strikes start again at 0");
-        assertEquals(List.of("§cFOR YOUR BADWORDS, YOU ARE PUNISHED WITH §f"
-            + punished.events().get(0).get("punishments") + "§c."), punished.toPlayer());
-        assertEquals(List.of("§cBob SAID THE WORD §ffuck§c WHICH IS NOT ALLOWED. FOR THEIR ACTION THEY'LL BE PUNISHED WITH §f"
-            + punished.events().get(0).get("punishments") + "§c."), punished.broadcasts());
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §7You used too many words that are not permitted. The penalty is: §f"
+            + punished.events().get(0).get("punishments") + "§7."), punished.toPlayer());
+        assertEquals(List.of("§8[§6§lAntiBadWords§8]§r §c§lPenalty. §fBob§7 used a word that is not permitted: §c§ofuck§7. The penalty is: §f"
+            + punished.events().get(0).get("punishments") + "§7."), punished.broadcasts());
         assertEquals("tempmute Bob 30s fuck", punished.commands().get(punished.commands().size() - 1), "the final command runs last");
         assertEquals(1, punished.events().size());
         assertEquals("0", punished.events().get(0).get("remaining"));

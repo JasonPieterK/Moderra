@@ -69,24 +69,24 @@ public final class HistoryCommand implements SubCommand {
         }
         Optional<PlayerRef> ref = c.engine().resolvePlayer(c.args()[0]);
         if (ref.isEmpty()) {
-            c.send(RED + "Player not found (not online and never seen on this server).");
+            c.send(Chat.error("Player not found (not online and never seen on this server)."));
             return;
         }
         int size = pageSize(c.engine());
         HistoryStore.Page first = c.engine().history().find(ref.get().id(), 1, size);
         if (first.total() == 0) {
-            c.send(YELLOW + "No history for " + ref.get().name() + ".");
+            c.send(Chat.warn("No history exists for " + Chat.val(ref.get().name()) + "."));
             return;
         }
         int pages = (first.total() + size - 1) / size;
         page = Math.max(1, Math.min(pages, page));
         HistoryStore.Page shown = page == 1 ? first : c.engine().history().find(ref.get().id(), page, size);
-        c.send(GOLD + "History of " + ref.get().name() + " (" + first.total() + " entries, newest first, UTC) - page " + page + "/" + pages + ":");
+        c.send(Chat.heading("History of " + ref.get().name()) + GRAY + " (" + WHITE + first.total() + GRAY + " entries, newest first, UTC), page " + WHITE + page + GRAY + " of " + WHITE + pages + GRAY + ":");
         for (HistoryStore.Entry e : shown.entries()) {
             c.send(line(e, false));
         }
         if (page < pages) {
-            c.send(GRAY + "Next page: /" + c.label() + " history " + ref.get().name() + " " + (page + 1));
+            c.send(Chat.hint("Next page: /" + c.label() + " history " + ref.get().name() + " " + (page + 1)));
         }
     }
 
@@ -103,10 +103,10 @@ public final class HistoryCommand implements SubCommand {
         n = Math.max(1, Math.min(100, n));
         List<HistoryStore.Entry> entries = c.engine().history().recent(n);
         if (entries.isEmpty()) {
-            c.send(YELLOW + "The history is empty.");
+            c.send(Chat.warn("The history is empty."));
             return;
         }
-        c.send(GOLD + "The " + entries.size() + " newest entries (UTC):");
+        c.send(Chat.heading("Newest entries") + GRAY + " (" + WHITE + entries.size() + GRAY + ", UTC):");
         for (HistoryStore.Entry e : entries) {
             c.send(line(e, true));
         }
@@ -114,7 +114,7 @@ public final class HistoryCommand implements SubCommand {
 
     private static void purge(CommandContext c) {
         if (!c.sender().has(Engine.PERMISSION_ADMIN)) {
-            c.send(RED + "Only admins (antibadwords.admin) can delete history.");
+            c.send(Chat.error("Only admins (antibadwords.admin) can delete history."));
             return;
         }
         boolean confirmed = c.args().length >= 3 && c.args()[2].equalsIgnoreCase("confirm");
@@ -124,22 +124,22 @@ public final class HistoryCommand implements SubCommand {
         }
         Optional<PlayerRef> ref = c.engine().resolvePlayer(c.args()[1]);
         if (ref.isEmpty()) {
-            c.send(RED + "Player not found (not online and never seen on this server).");
+            c.send(Chat.error("Player not found (not online and never seen on this server)."));
             return;
         }
         HistoryStore history = c.engine().history();
         if (!confirmed) {
             int count = history.count(ref.get().id());
             if (count == 0) {
-                c.send(YELLOW + "No history for " + ref.get().name() + ".");
+                c.send(Chat.warn("No history exists for " + Chat.val(ref.get().name()) + "."));
             } else {
-                c.send(YELLOW + "This permanently deletes " + count + " history entries of " + ref.get().name() + ". Run it again to confirm: /"
-                    + c.label() + " history purge " + ref.get().name() + " confirm");
+                c.send(Chat.warn("This action permanently deletes " + Chat.val(count) + " history entries of " + Chat.val(ref.get().name()) + ". To confirm, enter: " + WHITE + "/"
+                    + c.label() + " history purge " + ref.get().name() + " confirm"));
             }
             return;
         }
         int removed = history.purge(ref.get().id());
-        c.send(GREEN + "Deleted " + removed + " history entries of " + ref.get().name() + ".");
+        c.send(Chat.ok("Deleted " + Chat.val(removed) + " history entries of " + Chat.val(ref.get().name()) + "."));
         c.audit();
     }
 

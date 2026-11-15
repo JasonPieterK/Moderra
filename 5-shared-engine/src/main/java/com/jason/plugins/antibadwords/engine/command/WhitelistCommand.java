@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords.engine.command;
 
 import static com.jason.plugins.antibadwords.engine.command.Chat.GOLD;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GRAY;
+import static com.jason.plugins.antibadwords.engine.command.Chat.WHITE;
 import static com.jason.plugins.antibadwords.engine.command.Chat.GREEN;
 import static com.jason.plugins.antibadwords.engine.command.Chat.RED;
 import static com.jason.plugins.antibadwords.engine.command.Chat.YELLOW;
@@ -43,16 +44,16 @@ public final class WhitelistCommand implements SubCommand {
         if (word.isEmpty()) {
             c.usage("add <word or phrase>");
         } else if (!WordMatcher.isValidEntry(word)) {
-            c.send(RED + "That is not a valid word (use at least 2 letters or digits).");
+            c.send(Chat.error("That is not a valid word (use at least 2 letters or digits)."));
         } else if (contains(c.engine(), word)) {
-            c.send(RED + "Already on the whitelist: " + word);
+            c.send(Chat.error("This word is already on the whitelist: " + Chat.val(word) + "."));
         } else {
             try {
                 c.engine().addToList(CoreSettings.WHITELIST, word);
-                c.send(GREEN + "Added to the whitelist: " + word);
+                c.send(Chat.ok("The word is added to the whitelist: " + Chat.val(word) + "."));
                 c.audit();
             } catch (IOException | RuntimeException ex) {
-                c.send(RED + "Could not save config.yml: " + ex.getMessage());
+                c.send(Chat.error("The plugin cannot save config.yml: " + ex.getMessage()));
             }
         }
     }
@@ -65,20 +66,20 @@ public final class WhitelistCommand implements SubCommand {
         }
         try {
             if (c.engine().removeFromList(CoreSettings.WHITELIST, w -> w.trim().equalsIgnoreCase(word))) {
-                c.send(GREEN + "Removed from the whitelist: " + word);
+                c.send(Chat.ok("The word is removed from the whitelist: " + Chat.val(word) + "."));
                 c.audit();
             } else {
-                c.send(RED + "Not on the whitelist: " + word);
+                c.send(Chat.error("This word is not on the whitelist: " + Chat.val(word) + "."));
             }
         } catch (IOException | RuntimeException ex) {
-            c.send(RED + "Could not save config.yml: " + ex.getMessage());
+            c.send(Chat.error("The plugin cannot save config.yml: " + ex.getMessage()));
         }
     }
 
     private static void list(CommandContext c) {
         List<String> words = c.engine().value(CoreSettings.WHITELIST);
         if (words.isEmpty()) {
-            c.send(YELLOW + "The whitelist is empty.");
+            c.send(Chat.warn("The whitelist is empty."));
             return;
         }
         int pageSize = c.engine().value(CoreSettings.LIST_PAGE_SIZE);
@@ -93,10 +94,10 @@ public final class WhitelistCommand implements SubCommand {
             }
         }
         page = Math.max(1, Math.min(pages, page));
-        c.send(GOLD + "Whitelist (" + words.size() + " words) - page " + page + "/" + pages + ":");
+        c.send(Chat.heading("Whitelist") + GRAY + " (" + WHITE + words.size() + GRAY + " words), page " + WHITE + page + GRAY + " of " + WHITE + pages + GRAY + ":");
         c.send(GRAY + String.join(", ", words.subList((page - 1) * pageSize, Math.min(words.size(), page * pageSize))));
         if (page < pages) {
-            c.send(GRAY + "Next page: /" + c.label() + " whitelist list " + (page + 1));
+            c.send(Chat.hint("Next page: /" + c.label() + " whitelist list " + (page + 1)));
         }
     }
 

@@ -83,7 +83,7 @@ class MuteServiceTest {
         assertTrue(v.blocked());
         assertFalse(v.hasHits(), "no hits, so the loaders count no strikes");
         List<String> sent = f.platform.sentTo(bob);
-        assertTrue(sent.stream().anyMatch(s -> s.contains("You are muted") && s.contains("10m") && s.contains("spam")), sent.toString());
+        assertTrue(sent.stream().anyMatch(s -> s.contains("cannot write") && s.contains("10m") && s.contains("spam")), sent.toString());
         assertEquals(0, f.engine.strikes().get(bob));
         assertTrue(say(f.platform.join("Carl"), Message.CHAT, "hello everyone").allowed());
     }
@@ -152,7 +152,7 @@ class MuteServiceTest {
         f.now.addAndGet(1_000);
         assertTrue(say(bob, Message.CHAT, "hi").allowed());
         assertEquals(List.of("mute", "mute-expired"), kinds());
-        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("has run out")));
+        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("Mute ended")));
         assertEquals(0, f.engine.mutes().size());
         assertTrue(say(bob, Message.CHAT, "hi").allowed());
         assertEquals(List.of("mute", "mute-expired"), kinds(), "expired once");
@@ -201,7 +201,7 @@ class MuteServiceTest {
         assertTrue(f.engine.mutes().isMuted(bob));
         f.engine.onJoin(bob, "Bob");
         List<String> sent = f.platform.sentTo(bob);
-        assertTrue(sent.stream().anyMatch(s -> s.contains("still muted") && s.contains("50m")), sent.toString());
+        assertTrue(sent.stream().anyMatch(s -> s.contains("still active") && s.contains("50m")), sent.toString());
         assertTrue(say(bob, Message.CHAT, "hello").blocked());
         MuteService.Mute m = f.engine.mutes().get(bob).orElseThrow();
         assertEquals("Alice", m.by());
@@ -242,13 +242,13 @@ class MuteServiceTest {
     @Test
     void muteCommandWithDurationAndReason() {
         List<String> out = run("mute Bob 30m too loud");
-        assertTrue(out.get(0).contains("Muted Bob for 30m (too loud)"), out.toString());
+        assertTrue(out.get(0).contains("§fBob§7 is muted for §f30m§7 (too loud)"), out.toString());
         MuteService.Mute m = f.engine.mutes().get(bob).orElseThrow();
         assertEquals("Console", m.by());
         assertEquals("too loud", m.reason());
         assertEquals(f.now.get() + 1_800_000, m.until());
         assertEquals(List.of("mute", "admin-command"), kinds());
-        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("You have been muted for 30m")));
+        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("cannot write for §f30m")));
     }
 
     @Test
@@ -263,7 +263,7 @@ class MuteServiceTest {
     void permanentMuteAndUsage() {
         run("mute Bob perm");
         assertTrue(f.engine.mutes().get(bob).orElseThrow().permanent());
-        assertTrue(run("mute").get(0).contains("Usage: /abw mute <player>"));
+        assertTrue(run("mute").get(0).contains("/abw mute <player>"));
         assertTrue(run("mute Nobody").get(0).contains("Player not found"));
     }
 
@@ -273,12 +273,12 @@ class MuteServiceTest {
         f.engine.onQuit(bob);
         f.platform.players.remove(bob);
         List<String> out = run("mute bob 1h");
-        assertTrue(out.get(0).contains("Muted Bob") && out.get(0).contains("(offline)"), out.toString());
+        assertTrue(out.get(0).contains("§fBob§7 is muted") && out.get(0).contains("(offline)"), out.toString());
         f.platform.players.put(bob, "Bob");
         assertTrue(say(bob, Message.CHAT, "hi").blocked(), "muted before they come back");
         f.platform.players.remove(bob);
         out = run("unmute BOB");
-        assertTrue(out.get(0).contains("Unmuted Bob"), out.toString());
+        assertTrue(out.get(0).contains("§fBob§7 is unmuted"), out.toString());
         assertFalse(f.engine.mutes().isMuted(bob));
         assertEquals(List.of("mute", "admin-command", "unmute", "admin-command"), kinds());
     }
@@ -287,7 +287,7 @@ class MuteServiceTest {
     void mutedPlayerStaysFindableEvenWhenForgottenByTheDirectory() {
         UUID ghost = UUID.randomUUID();
         f.engine.mutes().mute(ghost, "Ghost", 3_600_000, "", "system");
-        assertTrue(run("unmute Ghost").get(0).contains("Unmuted Ghost"));
+        assertTrue(run("unmute Ghost").get(0).contains("§fGhost§7 is unmuted"));
     }
 
     @Test
@@ -296,7 +296,7 @@ class MuteServiceTest {
         assertTrue(run("unmute").get(0).contains("Usage"));
         run("mute Bob 5m");
         run("unmute Bob");
-        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("no longer muted")));
+        assertTrue(f.platform.sentTo(bob).stream().anyMatch(s -> s.contains("You can write again")));
     }
 
     @Test
@@ -308,7 +308,7 @@ class MuteServiceTest {
         }
         List<String> page1 = run("mutes");
         assertEquals(9, page1.size());
-        assertTrue(page1.get(0).contains("11") && page1.get(0).contains("1/2"));
+        assertTrue(page1.get(0).contains("§f11") && page1.get(0).contains("of §f2"));
         assertTrue(page1.get(1).contains("P00") && page1.get(1).contains("1h") && page1.get(1).contains("Alice") && page1.get(1).contains("reason one"));
         List<String> page2 = run("mutes 2");
         assertEquals(4, page2.size());
@@ -365,7 +365,7 @@ class MuteServiceTest {
                 out.add(message);
             }
         }, "abw", new String[] {"mute", "Bob", "1m"});
-        assertTrue(out.get(0).contains("Muted Bob"), out.toString());
+        assertTrue(out.get(0).contains("§fBob§7 is muted"), out.toString());
         out.clear();
         f.engine.commands().execute(new CommandSender() {
             public String name() {

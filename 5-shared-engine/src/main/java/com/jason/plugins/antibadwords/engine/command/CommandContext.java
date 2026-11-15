@@ -24,7 +24,7 @@ public record CommandContext(Engine engine, CommandSender sender, String label, 
 
     /** Sends "Usage: /label sub ..." in yellow. */
     public void usage(String parameters) {
-        sender.send(Chat.YELLOW + "Usage: /" + label + " " + sub + (parameters.isEmpty() ? "" : " " + parameters));
+        sender.send(Chat.usage("/" + label + " " + sub + (parameters.isEmpty() ? "" : " " + parameters)));
     }
 
     /** Records that this command changed something (publishes an {@code admin-command} event). */

@@ -87,7 +87,7 @@ public final class EvasionSettings {
     public static final Setting<Integer> DETECT_WEIGHT = Setting.integer(D + "strike-weight", 0).range(0, 100)
         .file(FILE).category(CATEGORY).title("Strikes for a bypass trick").overridable()
         .description("How many strikes a noticed trick adds. 0 = none (the player is never punished for it).").build();
-    public static final Setting<String> DETECT_MESSAGE = Setting.string(D + "message", "&cPlease write without invisible or look-alike letters.")
+    public static final Setting<String> DETECT_MESSAGE = Setting.string(D + "message", "&8[&6&lAntiBadWords&8]&r &c&lMessage blocked. &7Your message contains hidden or look-alike characters. &7&oUse normal letters.")
         .file(FILE).category(CATEGORY).title("Message when blocked").overridable()
         .description("Sent to the player when the message was blocked for a bypass trick. Empty = no message. Colours: & codes.").build();
 

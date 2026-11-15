@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.engine;
 
+import com.jason.plugins.antibadwords.engine.command.Chat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -73,14 +74,14 @@ class GuiCommandTest {
         Engine engine = f.start();
         Who console = new Who(null);
         run(engine, console);
-        assertTrue(console.out.get(0).startsWith("§eUsage: /abw <reload|"));
+        assertTrue(console.out.get(0).startsWith(Chat.usage("/abw <reload|")));
         run(engine, console, "gui");
-        assertEquals("§cThe menu can only be opened by a player.", console.out.get(1));
+        assertEquals(Chat.error("The menu can only be opened by a player."), console.out.get(1));
         Who admin = new Who(UUID.randomUUID(), "antibadwords.admin");
         run(engine, admin);
-        assertTrue(admin.out.get(0).startsWith("§eUsage: /abw <reload|"));
+        assertTrue(admin.out.get(0).startsWith(Chat.usage("/abw <reload|")));
         run(engine, admin, "gui");
-        assertEquals("§cNo permission.", admin.out.get(1));
+        assertEquals(Chat.error("No permission."), admin.out.get(1));
         assertEquals(List.of(), f.platform.menusOpened);
     }
 
@@ -92,6 +93,6 @@ class GuiCommandTest {
         run(engine, player, "gui");
         assertTrue(player.out.get(0).contains("not available"));
         run(engine, player);
-        assertTrue(player.out.get(1).startsWith("§eUsage: /abw <gui"));
+        assertTrue(player.out.get(1).startsWith(Chat.usage("/abw <gui")));
     }
 }

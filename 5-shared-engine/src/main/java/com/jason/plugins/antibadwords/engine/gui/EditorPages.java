@@ -618,7 +618,7 @@ final class EditorPages {
                     Map<String, Object> step = new LinkedHashMap<>();
                     step.put("at", top + 1);
                     step.put("repeat", "once");
-                    step.put("message", "&eWatch your language, {player}.");
+                    step.put("message", "&e&lWarning. &7{player}, do not use language that is not permitted.");
                     step.put("actions", new ArrayList<Object>(List.of("warn")));
                     steps.put(value, step);
                 });
