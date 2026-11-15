@@ -143,6 +143,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
                 listener.onAsyncChat(chat);
             }
         }, this, true);
+        ChannelChatEvents.register(this, engine);
         getLogger().info("Chat check priority: " + priority + (essentials != null ? " (EssentialsX found)" : "") + ".");
     }
 
