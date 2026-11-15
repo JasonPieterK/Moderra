@@ -65,6 +65,9 @@ jobs:
           rm -f 1-download-jars/*.jar
           ./${{ matrix.loader }}/build-all-versions.sh
           ls -l 1-download-jars
+      - name: Print the end of every build log (the development container reads results from the job log)
+        if: always()
+        run: for f in $(find . -path '*/build-logs/*.log'); do echo "=====LOG $f"; grep -n -E 'error:|ERROR|FAILED|Exception|warning: \[' "$f" | head -60; tail -40 "$f"; done
       - name: Upload build logs
         if: always()
         uses: actions/upload-artifact@v4
