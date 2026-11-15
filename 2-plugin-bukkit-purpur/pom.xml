@@ -4,11 +4,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.jason.plugins</groupId>
-    <artifactId>antibadwords</artifactId>
-    <version>2</version>
+    <artifactId>moderra</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
 
-    <name>AntiBadWords</name>
+    <name>Moderra</name>
     <description>Advanced profanity blocking with punishments and admin tools.</description>
 
     <url>https://github.com/JasonPieterK/AntiBadWordsPlugin</url>
@@ -31,10 +31,9 @@
                                   jar runs on Spigot and Paper)
               java.release       Java language level (Minecraft 26.x requires Java 25)
         -->
-        <!-- Loader name used in the jar file name: Antibadwords-RELEASE[Bukkit] - 2-<mc.version>.jar -->
-        <!-- The version players see in plugin.yml. It is NOT the jar name number (project.version stays 2, so the jars stay "- 2-<mc>.jar"). -->
-        <abw.display.version>2.1</abw.display.version>
-        <loader.name>Bukkit</loader.name>
+        <!-- Loader name used in the jar file name: Moderra<mc.version>-<project.version>-<loader.name>.jar. project.version is the
+             ONE version of the build: it is also the version players see in plugin.yml. -->
+        <loader.name>bukkit</loader.name>
         <mc.version>1.21.11</mc.version>
         <mc.api.version>1.21</mc.api.version>
         <spigot.api.version>1.21.11-R0.1-SNAPSHOT</spigot.api.version>
@@ -80,7 +79,7 @@
     </dependencies>
 
     <build>
-        <finalName>Antibadwords-RELEASE[${loader.name}] - ${project.version}-${mc.version}</finalName>
+        <finalName>Moderra${mc.version}-${project.version}-${loader.name}</finalName>
         <resources>
             <!-- plugin.yml needs ${project.version} / ${mc.api.version}. -->
             <resource>
@@ -90,7 +89,7 @@
                     <include>plugin.yml</include>
                 </includes>
             </resource>
-            <!-- Default icon mapping of the menu (admins override it with plugins/AntiBadWords/gui-icons.yml). -->
+            <!-- Default icon mapping of the menu (admins override it with plugins/Moderra/gui-icons.yml). -->
             <resource>
                 <directory>src/main/resources</directory>
                 <filtering>false</filtering>
@@ -134,7 +133,7 @@
                         <goals><goal>add-source</goal></goals>
                         <configuration><sources><source>src/discordsrv-shim/java</source></sources></configuration>
                     </execution>
-                    <!-- Name-only PlaceholderAPI class (PlaceholderExpansion) for AbwPlaceholderExpansion; NOT packaged (me/**). -->
+                    <!-- Name-only PlaceholderAPI class (PlaceholderExpansion) for ModerraPlaceholderExpansion; NOT packaged (me/**). -->
                     <execution>
                         <id>add-papi-shim</id>
                         <phase>generate-sources</phase>

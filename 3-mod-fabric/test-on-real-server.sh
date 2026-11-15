@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Starts a real Minecraft dedicated server with the mod (Loom's runServer), types some /abw commands into its console
+# Starts a real Minecraft dedicated server with the mod (Loom's runServer), types some /moderra commands into its console
 # and checks the output. Usage: ./test-on-real-server.sh <mc> <fabric api> <remap> <java> <sign api> [menu api] [placeholders api] [placeholder-api version]
 set -uo pipefail
 cd "$(dirname "$0")"
@@ -11,12 +11,12 @@ log="build-logs/server-$mc.log"
 rm -rf run && mkdir -p run && echo "eula=true" > run/eula.txt
 # OLD_CONFIG=1: start with the old single-file config.yml of version 1, to check the automatic migration on a real server.
 if [ "${OLD_CONFIG:-0}" = 1 ]; then
-  mkdir -p run/config/antibadwords && cp ../5-shared-engine/src/test/resources/legacy/config-v1-default.yml run/config/antibadwords/config.yml
+  mkdir -p run/config/antibadwords && cp ../5-shared-engine/src/test/resources/legacy/config-v1-default.yml run/config/antibadwords/config.yml   # old folder name: the mod must move it to config/moderra
 fi
 printf 'online-mode=false\nlevel-type=flat\ngenerate-structures=false\nspawn-protection=0\nview-distance=2\nsimulation-distance=2\nserver-port=25599\n' > run/server.properties
 fifo=$(mktemp -u); mkfifo "$fifo"
-( sleep "${WARMUP:-75}"; for c in "abw info" "abw check what the f.u.c.k" "abw check hello world" "abw addword zorblax" "abw check zorblax" "abw removeword zorblax" "abw lang list" "abw lang enable de" "abw check du arschloch" "abw lang disable de" "abw whitelist add zorbwhite" "abw whitelist list 99" "abw whitelist remove ZORBWHITE" "abw reload" "abw bogus" "stop"; do echo "$c"; sleep 4; done ) > "$fifo" &
-export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Dantibadwords.selftest=1"
+( sleep "${WARMUP:-75}"; for c in "moderra info" "moderra check what the f.u.c.k" "moderra check hello world" "moderra addword zorblax" "moderra check zorblax" "moderra removeword zorblax" "moderra lang list" "moderra lang enable de" "moderra check du arschloch" "moderra lang disable de" "moderra whitelist add zorbwhite" "moderra whitelist list 99" "moderra whitelist remove ZORBWHITE" "moderra reload" "moderra bogus" "stop"; do echo "$c"; sleep 4; done ) > "$fifo" &
+export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Dmoderra.selftest=1"
 for attempt in 1 2 3; do
   timeout 420 "$GRADLE" --no-daemon runServer -Pminecraft_version="$mc" -Pfabric_version="$api" -Premap="$remap" -Pjava_release="$java" -Psign_api="$sign" -Pmenu_api="$menu" -Pplaceholders_api="$ph" -Pplaceholder_api_version="$phv" \
     -Dorg.gradle.java.installations.paths="$JAVA25_HOME,$JAVA21_HOME" < "$fifo" > "$log" 2>&1
@@ -29,28 +29,28 @@ check "SELFTEST loaded+mixed net.minecraft.commands.Commands" "command mixin app
 check "SELFTEST loaded+mixed net.minecraft.server.network.ServerGamePacketListenerImpl" "sign + book mixins applied"
 check "SELFTEST loaded+mixed net.minecraft.world.inventory.AnvilMenu" "anvil mixin applied"
 check "SELFTEST loaded+mixed net.minecraft.world.inventory.ItemCombinerMenu" "anvil-close mixin applied"
-check "Blocked: matches 'fuck'" "/abw check blocks f.u.c.k"
-check "Clean: no blocked word found" "/abw check lets clean text through"
-check "Added custom blocked word" "/abw addword"
-check "Removed custom blocked word" "/abw removeword"
-check "Unknown subcommand" "/abw unknown subcommand message"
-# Added with the shared engine (folder config, /abw lang, /abw whitelist). NOT RUN YET, see handoffs/BUILD-VERIFICATION-TODO.md.
+check "Blocked: matches 'fuck'" "/moderra check blocks f.u.c.k"
+check "Clean: no blocked word found" "/moderra check lets clean text through"
+check "Added custom blocked word" "/moderra addword"
+check "Removed custom blocked word" "/moderra removeword"
+check "Unknown subcommand" "/moderra unknown subcommand message"
+# Added with the shared engine (folder config, /moderra lang, /moderra whitelist). NOT RUN YET, see handoffs/BUILD-VERIFICATION-TODO.md.
 if [ "${OLD_CONFIG:-0}" = 1 ]; then
   check "Old single-file config.yml found" "old config.yml is migrated on first start"
   check "Languages switched on (same as before): en, id, pt-br, ru, en-gb, de, zh, custom" "migration keeps the same languages"
-  check "Language de is already on" "/abw lang enable (German was already on in the old config)"
+  check "Language de is already on" "/moderra lang enable (German was already on in the old config)"
 else
   check "Created config files: config.yml, moderation/ladder.yml, worlds.yml" "first start creates the config folder"
-  check "Language de (German) switched on" "/abw lang enable"
+  check "Language de (German) switched on" "/moderra lang enable"
 fi
 check "Copied [0-9]* word-list files into wordlists/" "word lists are copied out of the jar"
-check "Languages ([0-9]* of [0-9]* on" "/abw lang list"
+check "Languages ([0-9]* of [0-9]* on" "/moderra lang list"
 check "Blocked: matches 'arschloch'" "a German word is blocked while de is on"
-check "Language de switched off" "/abw lang disable"
-check "Added to the whitelist: zorbwhite" "/abw whitelist add"
-check "Whitelist ([0-9]* words)" "/abw whitelist list"
-check "Removed from the whitelist: zorbwhite" "/abw whitelist remove (capital letters do not matter)"
-check "AntiBadWords config reloaded" "/abw reload"
+check "Language de switched off" "/moderra lang disable"
+check "Added to the whitelist: zorbwhite" "/moderra whitelist add"
+check "Whitelist ([0-9]* words)" "/moderra whitelist list"
+check "Removed from the whitelist: zorbwhite" "/moderra whitelist remove (capital letters do not matter)"
+check "Moderra config reloaded" "/moderra reload"
 grep -q "Config problem in" "$log" && { echo "  FAIL config problems reported in log"; bad=1; }
 grep -qE "SELFTEST FAILED|MixinTransformerError|InvalidMixinException" "$log" && { echo "  FAIL mixin errors in log"; bad=1; }
 exit $bad

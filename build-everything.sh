@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One button: builds EVERY jar (Bukkit, Purpur, Fabric, Forge) for every supported Minecraft version
+# One button: builds EVERY jar (Bukkit, Spigot, Paper, Purpur, Fabric, Forge) for every supported Minecraft version
 # into ./1-download-jars
 #
 #   ./build-everything.sh                  everything

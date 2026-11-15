@@ -1,13 +1,13 @@
-# Builds all 24 jars (Bukkit, Purpur, Fabric, Forge x 6 Minecraft versions) on GitHub's runners and,
+# Builds all 36 jars (Bukkit, Spigot, Paper, Purpur, Fabric, Forge x 6 Minecraft versions) on GitHub's runners and,
 # when started with a release tag, publishes them as a GitHub Release.
-#   Actions tab -> "Build jars and release" -> Run workflow (tag empty = build only, tag v2.0.0 = build + release)
+#   Actions tab -> "Build jars and release" -> Run workflow (tag empty = build only, tag v1.0 = build + release)
 name: Build jars and release
 
 on:
   workflow_dispatch:
     inputs:
       tag:
-        description: "Release tag (for example v2.0.0). Empty = only build and upload the jars as a workflow artifact."
+        description: "Release tag (for example v1.0). Empty = only build and upload the jars as a workflow artifact."
         required: false
         default: ""
       server_test:
@@ -95,7 +95,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with: { pattern: "jars-*", path: jars, merge-multiple: true }
       - name: Count jars
-        run: ls -l jars && test "$(ls jars/*.jar | wc -l)" -eq 24
+        run: ls -l jars && test "$(ls jars/Moderra*-*-{bukkit,spigot,paper,purpur,fabric,forge}.jar | wc -l)" -eq 36 && test "$(ls jars/*.jar | wc -l)" -eq 36
       - name: Publish GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -107,7 +107,4 @@ jobs:
           [ -z "$TAG" ] && TAG="${GITHUB_REF_NAME}"
           echo "Release tag: $TAG"
           notes="$(awk '/^## /{n++} n==1' CHANGELOG.md | head -200)"
-          # gh treats [ ] in file names as a glob pattern: escape them (the jar names contain [Bukkit], [Fabric] ...)
-          files=()
-          for f in jars/*.jar; do files+=("$(printf '%s' "$f" | sed 's/\[/\\[/g; s/\]/\\]/g')"); done
-          gh release create "$TAG" "${files[@]}" --target "$GITHUB_SHA" --title "AntiBadWords $TAG" --notes "$notes"
+          gh release create "$TAG" jars/*.jar --target "$GITHUB_SHA" --title "Moderra $TAG" --notes "$notes"

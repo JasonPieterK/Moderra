@@ -4,9 +4,9 @@ plugins {
     id 'net.minecraftforge.jarjar' version '0.2.3'
 }
 
-// Jar name: Antibadwords-RELEASE[Forge] - 2-<minecraft version>.jar
-base.archivesName = "Antibadwords-RELEASE[Forge] - ${mod_version}"
-version = minecraft_version
+// Jar name: Moderra<minecraft version>-<mod_version>-forge.jar (archivesName + version)
+base.archivesName = "Moderra${minecraft_version}"
+version = "${mod_version}-forge"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(java_release.toInteger())
 
@@ -18,7 +18,7 @@ minecraft {
         configureEach {
             workingDir.convention layout.projectDirectory.dir('run')
             // Mixin needs the config named on the command line when running from Gradle.
-            args '--mixin.config=antibadwords.mixins.json'
+            args '--mixin.config=moderra.mixins.json'
         }
         register('server') {
             args '--nogui'
@@ -70,10 +70,10 @@ processResources {
         include '*.yml'
         into 'wordlists'
     }
-    inputs.property 'version', display_version
+    inputs.property 'version', mod_version
     inputs.property 'minecraft_version', minecraft_version
-    filesMatching(['META-INF/mods.toml', 'antibadwords.version']) {
-        expand version: display_version, minecraft_version: minecraft_version, forge_major: forge_major
+    filesMatching(['META-INF/mods.toml', 'moderra.version']) {
+        expand version: mod_version, minecraft_version: minecraft_version, forge_major: forge_major
     }
 }
 
@@ -82,6 +82,6 @@ tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 tasks.named('jar', Jar) {
     manifest {
         // Lets Mixin find our config at runtime.
-        attributes['MixinConfigs'] = 'antibadwords.mixins.json'
+        attributes['MixinConfigs'] = 'moderra.mixins.json'
     }
 }

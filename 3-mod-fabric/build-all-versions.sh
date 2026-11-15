@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Antibadwords-RELEASE[Fabric] - 2-<mc>.jar for every supported Minecraft version into ../1-download-jars
+# Builds Moderra<mc>-<version>-fabric.jar for every supported Minecraft version into ../1-download-jars
 #
 #   ./build-all-versions.sh                 build all versions
 #   ./build-all-versions.sh 26.3 26.2       only these versions
@@ -51,5 +51,5 @@ for entry in "${VERSIONS[@]}"; do
     ./test-on-real-server.sh "$mc" "$api" "$remap" "$java" "$sign" "$menu" "$ph" "$phv" || failed+=("$mc (server test)")
   fi
 done
-echo; ls -1 ../1-download-jars/*Fabric*.jar 2>/dev/null
+echo; ls -1 ../1-download-jars/*-fabric.jar 2>/dev/null
 if [ ${#failed[@]} -gt 0 ]; then echo "FAILED: ${failed[*]}"; exit 1; fi

@@ -7,9 +7,9 @@ plugins {
 def remapped = remap.toBoolean()
 apply plugin: remapped ? 'net.fabricmc.fabric-loom-remap' : 'net.fabricmc.fabric-loom'
 
-// Jar name: Antibadwords-RELEASE[Fabric] - 2-<minecraft version>.jar
-base { archivesName = "Antibadwords-RELEASE[Fabric] - ${mod_version}" }
-version = minecraft_version
+// Jar name: Moderra<minecraft version>-<mod_version>-fabric.jar (archivesName + version)
+base { archivesName = "Moderra${minecraft_version}" }
+version = "${mod_version}-fabric"
 
 repositories {
     mavenCentral()
@@ -59,11 +59,11 @@ processResources {
         include '*.yml'
         into 'wordlists'
     }
-    inputs.property 'version', display_version
+    inputs.property 'version', mod_version
     inputs.property 'minecraft_version', minecraft_version
     inputs.property 'java_release', java_release
     filesMatching('fabric.mod.json') {
-        expand version: display_version, minecraft_version: minecraft_version, java_release: java_release
+        expand version: mod_version, minecraft_version: minecraft_version, java_release: java_release
     }
 }
 

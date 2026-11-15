@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Builds Antibadwords-RELEASE[Forge] - 2-<mc>.jar for every supported Minecraft version into ../1-download-jars
+# Builds Moderra<mc>-<version>-forge.jar for every supported Minecraft version into ../1-download-jars
 #
 #   ./build-all-versions.sh                 build all versions
 #   ./build-all-versions.sh 26.3 26.2       only these versions
@@ -43,7 +43,7 @@ for entry in "${VERSIONS[@]}"; do
     sleep 40
   done
   if [ $ok -eq 1 ]; then
-    cp "build/libs/Antibadwords-RELEASE[Forge] - 2-$mc.jar" ../1-download-jars/   # the full jar, not the "-slim" one
+    cp "build/libs/Moderra${mc}-$(sed -n 's/^mod_version=//p' gradle.properties)-forge.jar" ../1-download-jars/   # the full jar, not the "-slim" one
   else
     echo "!!! build FAILED for $mc (see build-logs/build-$mc.log)"; failed+=("$mc"); continue
   fi
@@ -51,5 +51,5 @@ for entry in "${VERSIONS[@]}"; do
     ./test-on-real-server.sh "$mc" "$forge" "$major" "$java" "$maps" "$sign" "$menu" "$modlist" || failed+=("$mc (server test)")
   fi
 done
-echo; ls -1 ../1-download-jars/*Forge*.jar 2>/dev/null
+echo; ls -1 ../1-download-jars/*-forge.jar 2>/dev/null
 if [ ${#failed[@]} -gt 0 ]; then echo "FAILED: ${failed[*]}"; exit 1; fi
