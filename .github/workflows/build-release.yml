@@ -107,4 +107,7 @@ jobs:
           [ -z "$TAG" ] && TAG="${GITHUB_REF_NAME}"
           echo "Release tag: $TAG"
           notes="$(awk '/^## /{n++} n==1' CHANGELOG.md | head -200)"
-          gh release create "$TAG" jars/*.jar --target "$GITHUB_SHA" --title "AntiBadWords $TAG" --notes "$notes"
+          # gh treats [ ] in file names as a glob pattern: escape them (the jar names contain [Bukkit], [Fabric] ...)
+          files=()
+          for f in jars/*.jar; do files+=("$(printf '%s' "$f" | sed 's/\[/\\[/g; s/\]/\\]/g')"); done
+          gh release create "$TAG" "${files[@]}" --target "$GITHUB_SHA" --title "AntiBadWords $TAG" --notes "$notes"
