@@ -316,7 +316,7 @@ public final class ModRuntime {
             return false;
         }
 
-        /** The text prompt is an anvil rename screen (a fake sign needs API that is not verified, see AnvilPrompt). */
+        /** The text prompt is a fake sign (setting gui.prompt.mode sign or auto) or an anvil rename screen (anvil). */
         @Override
         public boolean supportsSignPrompt() {
             return true;
@@ -326,7 +326,16 @@ public final class ModRuntime {
         public void openSignPrompt(UUID playerId, String title, String hint) {
             ServerPlayer p = player(playerId);
             if (p != null) {
-                com.jason.plugins.antibadwords.mod.gui.AnvilPrompt.open(p, title, hint);
+                String mode = engine == null ? "auto" : engine.value(com.jason.plugins.antibadwords.engine.gui.prompt.PromptSettings.MODE);
+                if ("anvil".equals(mode)) {
+                    com.jason.plugins.antibadwords.mod.gui.AnvilPrompt.open(p, title, hint);
+                } else {
+                    if (p.containerMenu instanceof com.jason.plugins.antibadwords.mod.gui.GuiChestMenu old) {
+                        old.quiet = true; // close the menu on the server; that is not the player leaving
+                        p.closeContainer();
+                    }
+                    FakeSign.open(p);
+                }
             }
         }
 

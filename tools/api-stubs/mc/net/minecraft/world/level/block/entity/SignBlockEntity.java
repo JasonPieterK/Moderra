@@ -1,0 +1,1 @@
+package net.minecraft.world.level.block.entity; public class SignBlockEntity extends BlockEntity { public SignBlockEntity(net.minecraft.core.BlockPos p, net.minecraft.world.level.block.state.BlockState s){} }

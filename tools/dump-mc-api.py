@@ -69,6 +69,8 @@ net.minecraft.world.inventory.AnvilMenu
 net.minecraft.world.inventory.ItemCombinerMenu
 net.minecraft.network.protocol.game.ServerboundRenameItemPacket
 net.minecraft.world.level.block.Blocks
+net.minecraft.world.level.block.Block
+net.minecraft.world.entity.Entity
 net.minecraft.world.level.block.state.BlockState
 net.minecraft.world.level.block.state.BlockBehaviour$BlockStateBase
 net.minecraft.nbt.CompoundTag

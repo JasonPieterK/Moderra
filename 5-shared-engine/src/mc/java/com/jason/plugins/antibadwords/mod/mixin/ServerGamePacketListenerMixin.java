@@ -1,5 +1,6 @@
 package com.jason.plugins.antibadwords.mod.mixin;
 
+import com.jason.plugins.antibadwords.mod.FakeSign;
 import com.jason.plugins.antibadwords.mod.ModRuntime;
 import com.jason.plugins.antibadwords.mod.SignLines;
 import java.util.List;
@@ -23,6 +24,12 @@ public abstract class ServerGamePacketListenerMixin {
 
     @Inject(method = "updateSignText", at = @At("HEAD"), cancellable = true)
     private void antibadwords$sign(ServerboundSignUpdatePacket packet, List<FilteredText> filtered, CallbackInfo ci) {
+        if (ModRuntime.engine != null && FakeSign.answered(player, SignLines.pos(packet))) {
+            // the answer of a text prompt: it is never a real sign, so it is not scanned and never applied
+            ModRuntime.engine.prompts().onSignInput(player.getUUID(), SignLines.of(packet));
+            ci.cancel();
+            return;
+        }
         if (ModRuntime.engine != null && ModRuntime.blockSign(player, SignLines.of(packet), SignLines.isBack(packet))) {
             ci.cancel();
         }

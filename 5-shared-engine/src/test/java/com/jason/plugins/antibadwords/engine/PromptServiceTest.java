@@ -164,6 +164,18 @@ class PromptServiceTest {
     }
 
     @Test
+    void modesSignAnvilAutoUseTheSignPromptWhereSupported() throws java.io.IOException {
+        f.platform.signPrompts = true;
+        for (String mode : new String[] {"auto", "sign", "anvil"}) {
+            f.engine.set(PromptSettings.MODE, mode);
+            assertEquals(PromptKind.SIGN, prompts.start(alice, numberPrompt()), mode);
+        }
+        f.platform.signPrompts = false;
+        f.engine.set(PromptSettings.MODE, "anvil");
+        assertEquals(PromptKind.CHAT, prompts.start(alice, numberPrompt()));
+    }
+
+    @Test
     void newPromptReplacesOldAndQuitCancels() {
         prompts.start(alice, numberPrompt());
         prompts.start(alice, numberPrompt());
