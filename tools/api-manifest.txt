@@ -138,3 +138,12 @@ spigot-26.3 | org.bukkit.event.block.SignChangeEvent | -
 spigot-26.3 | org.bukkit.event.inventory.PrepareAnvilEvent | -
 spigot-26.3 | org.bukkit.event.player.PlayerEditBookEvent | -
 spigot-26.3 | org.bukkit.Bukkit | getServicesManager()
+
+# --- ChannelChatEvents (TownyChat, reflection) ---
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getPlayer()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getMessage()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setMessage(String)
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setCancelled(boolean)
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | isCancelled()
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getChannel()
+townychat | com.palmergames.bukkit.TownyChat.channels.Channel | getName()

@@ -43,6 +43,11 @@ public final class ChatChannels {
     public static final Setting<Boolean> HUSKCHAT = plugin("huskchat", "HuskChat");
     public static final Setting<Boolean> CARBONCHAT = plugin("carbonchat", "CarbonChat");
 
+    public static final Setting<Boolean> CHANNEL_EVENTS = s(Setting.bool(C + "channel-events", true).title("Read channel events of party/town chat plugins")
+        .description(BUKKIT + "Listen to the real chat events of TownyChat (AsyncChatHookEvent: the channel name goes to the engine, a blocked line\n"
+            + "is cancelled, a censored one rewritten). Only when the plugin is installed. mcMMO, VentureChat, HuskChat, ChatControl,\n"
+            + "CarbonChat and FactionsUUID have no usable event (see the docs), they stay covered by the normal chat check and commands."));
+
     public static final Section CHANNEL_PROFILES = new Section(C + "channel-profiles", FILE, CATEGORY, "Profile by chat channel",
         "Which rule profile (see worlds.yml) a chat channel gets: channel name (or pattern with *) on the left, profile on the right.\n"
             + "The first line that matches wins. Order of choosing a profile: permission antibadwords.profile.<name>, LuckPerms\n"
@@ -76,7 +81,7 @@ public final class ChatChannels {
     }
 
     public static void register(SettingsRegistry r) {
-        List.of(ENABLED, PRIORITY, CHATCONTROL, VENTURECHAT, HUSKCHAT, CARBONCHAT).forEach(r::register);
+        List.of(ENABLED, PRIORITY, CHANNEL_EVENTS, CHATCONTROL, VENTURECHAT, HUSKCHAT, CARBONCHAT).forEach(r::register);
         r.register(CHANNEL_PROFILES);
         r.register(CHANNEL_COMMANDS);
     }

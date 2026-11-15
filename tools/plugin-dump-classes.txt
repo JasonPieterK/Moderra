@@ -101,3 +101,9 @@ discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.Sl
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.OptionType
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.InteractionHook
 discordsrv | github.scarsz.discordsrv.util.DiscordUtil
+# --- task 39: needed to read the author of mcMMO party chat and the VentureChat channel ---
+mcmmo | com.gmail.nossr50.chat.author.Author
+mcmmo | com.gmail.nossr50.chat.message.ChatMessage
+mcmmo | com.gmail.nossr50.chat.message.PartyChatMessage
+venturechat | mineverse.Aust1n46.chat.channel.ChatChannel
+venturechat | mineverse.Aust1n46.chat.api.MineverseChatPlayer
