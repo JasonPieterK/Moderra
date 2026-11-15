@@ -52,7 +52,16 @@ public final class MessageDefaults {
             "&8[&6&lAntiBadWords&8]&r &b&lInput needed. &7Write the new value for &f{title}&7 on the sign. The lines are joined with spaces. &7&o{hint}\\n&7Leave the sign empty to cancel. Time limit: &f{seconds}&7 seconds."),
         e("gui.prompt.messages.error", "&c{error} &7Try again, or type &f{cancel}&7."),
         e("gui.prompt.messages.cancelled", "&7Input cancelled."),
-        e("gui.prompt.messages.timeout", "&7Input cancelled: no answer in time.")
+        e("gui.prompt.messages.timeout", "&7Input cancelled: no answer in time."),
+        e("discord.templates.violation", "{player} used a blocked word in {source}: {word} ({count}/{limit}, {action})"),
+        e("discord.templates.punishment", "{player} was punished ({action}) at {count} strikes, step {step}"),
+        e("discord.templates.mute", "{player} was muted for {duration}: {reason}"),
+        e("discord.templates.unmute", "{player} was unmuted"),
+        e("discord.templates.spam", "{player} triggered the spam filter ({check}: {detail}) in {source}, action {action}"),
+        e("discord.templates.link", "{player} posted a link in {source}: {detail} (action {action})"),
+        e("discord.templates.evasion", "{player} tried to dodge the filter in {source}: {detail} (action {action})"),
+        e("discord.templates.admin-command", "{player} ran /{command}"),
+        e("discord.inbound.notify-text", "Your message was not delivered to the Minecraft chat because it contains words that are not allowed on this server.")
     );
 
     private MessageDefaults() {

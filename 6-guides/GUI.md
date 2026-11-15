@@ -1,6 +1,6 @@
 # Settings menu (GUI) guide
 
-*Verified: engine unit tests (clicks are simulated against the real menu logic). Bukkit chest code: compiled on GitHub against the real Bukkit API, never run on a server. Fabric/Forge chest code: compiled on GitHub, never run, and less complete (see the end).*
+*Verified: engine unit tests (clicks are simulated against the real menu logic). Bukkit, Fabric and Forge chest code: compiled against the real APIs, never run on a server.*
 
 ## The idea
 Type `/abw` as a player who has the permission `antibadwords.gui` (operators have it). A chest opens. Every setting of every config file is a button. Click to change, click **Done** to save. Nothing is saved before Done. The console still gets the normal text help. `/abw gui` also opens it.
@@ -33,8 +33,19 @@ The title gets a `*` while you have unsaved changes. Closing with changes opens 
 Comments inside a ladder or profile section are lost when you save that section from the menu (the rest of the file stays as it was).
 
 ## Text prompts
-Settings that need text (a message, a webhook URL, a new list item) ask you in **chat**: the menu closes, you type the answer, the menu opens again. The answer is not shown to other players, not scanned, not counted as a violation. Type `cancel` (setting `gui.prompt.cancel-word`) to stop. It stops by itself after `gui.prompt.timeout` (60s). Secret values (webhook URLs) are never shown in the menu or echoed back.
-`gui.prompt.mode` can be `auto`, `sign` or `chat`; right now every server type uses chat (a sign-editor prompt is not done).
+Settings that need text (a message, a webhook URL, a new list item) ask you for the value. The answer is not shown to other players, not scanned, not counted as a violation. The prompt stops by itself after `gui.prompt.timeout` (60s). Secret values (webhook URLs) are never shown in the menu or echoed back. If the value is not valid, the error text tells you why and you can try again.
+`gui.prompt.mode` chooses how you type:
+| Mode | What happens | Where |
+|---|---|---|
+| `chat` | The menu closes, you type the answer in chat, the menu opens again. Type `cancel` (setting `gui.prompt.cancel-word`) to stop. | all server types; the only way on Bukkit |
+| `sign` | A sign editor opens. Only you see the fake sign; the real block is restored. The lines are joined with spaces. An empty sign cancels. | Fabric and Forge, all six Minecraft versions |
+| `anvil` | A rename screen opens. Type in the name field and click the result item. No item is given and no XP is used. | Fabric and Forge |
+| `auto` (default) | `sign` where the server software supports it, otherwise `chat`. A mode that is not available uses the chat. | |
+The sign or anvil input is removed from the screen when the time limit ends, when you cancel and when you leave the server.
+The texts of the prompt are settings (`gui.prompt.messages.*`, formal style, `{title}`, `{hint}`, `{seconds}`, `{cancel}`, `{error}`).
+
+## How the texts look
+Item names are gold, the lines below are gray. Results of a click (saved, error, discarded) come in chat with the standard prefix: `[AntiBadWords] Done. The plugin saved 2 settings and reloaded the configuration.` Titles stay short because old Bukkit versions allow only 32 characters.
 
 ## Permissions
 | Node | Default | Meaning |
@@ -49,8 +60,8 @@ Everyone who may open the menu may edit everything, until you take a node away (
 `gui-icons.yml` in the plugin folder maps icon names to item names. Change one line to change an icon; unknown names show paper.
 
 ## Fabric and Forge: differences
-* The chest shows **names only: no lore (description lines) yet**. The text commands and the files stay the full way to see and change everything.
-* Prompts are **chat only** (no sign editor).
+* The items show their help as lore, as on Bukkit (`DataComponents.LORE`, the same call on all six Minecraft versions).
+* Text input uses a fake sign by default (see the table above). Bukkit has no sign prompt (Paper-only API); it uses the chat.
 * Fewer icon kinds (paper, book, barrier, arrow, name tag, writable book).
-* Click types are mapped per Minecraft version (1.21.11 and 26.2 and older use one API, 26.3 another). Never run on a real server.
+* Click types are mapped per Minecraft version (1.21.11 uses `ClickType`, the 26.x versions use `ContainerInput`). Never run on a real server.
 * Edit nodes: everybody who may open the menu may edit, until a permission mod (LuckPerms) says no. Forge does not list the edit nodes in its own permission list; the fallback applies.

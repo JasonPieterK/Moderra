@@ -112,8 +112,8 @@ public final class BanService {
         if (!temp && template.toLowerCase(Locale.ROOT).contains("{ip}")) {
             String ip = ipOf(id);
             if (ip == null) {
-                engine.platform().logger().warn("Ladder action ipban for " + name + ": no IP address known (player offline and none stored, or "
-                    + "known-players.store-ip is off); {ip} was replaced by the player name.");
+                engine.platform().logger().warn("Ladder action ipban for " + name + ": notice. No IP address is known. The player is offline and no IP is stored, "
+                    + "or known-players.store-ip is off. The plugin uses the player name instead of {ip}.");
                 ip = engine.bedrock().commandName(name);
             }
             values.put("ip", ip);
@@ -136,8 +136,8 @@ public final class BanService {
             return new Result("a tempban (" + shown + ")", () -> engine.platform().runConsoleCommand(line));
         }
         String fallback = engine.value(BanBedrockSettings.FALLBACK);
-        engine.platform().logger().warn("Ladder action tempban for " + name + ": provider '" + provider + "' has no tempban command"
-            + " (integrations.bans." + provider + ".tempban is empty); fallback: " + fallback + ".");
+        engine.platform().logger().warn("Ladder action tempban for " + name + ": notice. The provider '" + provider + "' has no tempban command"
+            + " (integrations.bans." + provider + ".tempban is empty). The fallback is: " + fallback + ".");
         switch (fallback) {
             case BanBedrockSettings.FALLBACK_KICK:
                 return new Result("a kick", () -> engine.platform().kick(id, Names.colour(clean(reason))));
@@ -156,8 +156,8 @@ public final class BanService {
         String provider = provider();
         String line = command(provider, false, id, name, 0, reason);
         if (line == null) {
-            engine.platform().logger().warn("Ladder action ipban for " + name + ": provider '" + provider.toLowerCase(Locale.ROOT)
-                + "' has no ipban command (integrations.bans." + provider + ".ipban is empty); nothing was done.");
+            engine.platform().logger().warn("Ladder action ipban for " + name + ": notice. The provider '" + provider.toLowerCase(Locale.ROOT)
+                + "' has no ipban command (integrations.bans." + provider + ".ipban is empty). The plugin does nothing.");
             return new Result(null, null);
         }
         return new Result("an IP ban", () -> engine.platform().runConsoleCommand(line));

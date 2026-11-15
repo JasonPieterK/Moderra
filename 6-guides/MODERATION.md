@@ -1,6 +1,6 @@
 # Moderation guide: strikes, ladder, mute, history
 
-*Verified: engine unit tests. The plugin and mod code was compiled on GitHub against the real APIs. It was NOT run on a real server in this round.*
+*Verified: engine unit tests. The plugin and mod code was compiled against the real APIs. It was NOT run on a real server.*
 
 ## The idea in five sentences
 Every time a player says a bad word they get a **strike** (a point). Strikes are written down per player, so they survive
@@ -80,7 +80,8 @@ If strikes are NOT kept (clear on quit is true, or saving is off) and an old `da
 `strikes.json.discarded` at start and at shutdown, so old strikes never come back by surprise. Nothing is deleted.
 
 ## More ways to moderate
-* **From Discord:** `!abw mute`, `unmute`, `history`, `strikes` with allow-lists: [DISCORD.md](DISCORD.md).
+* **From Discord:** `!abw mute`, `unmute`, `history`, `strikes` or the slash commands `/abw-mute` ... with allow-lists: [DISCORD.md](DISCORD.md).
+* **Ban plugin without a timed ban:** when the provider has no `tempban` command, the setting `integrations.bans.fallback` (`kick`, `mute`, `none`) runs and the console shows a notice that names the provider, the empty setting and the fallback. An `ipban` without a command logs a notice and does nothing. Without a known IP, `{ip}` becomes the player name and the log says so.
 * **EssentialsX mute:** `integrations.essentials.mute-mode` (`own`, `essentials`, `both`).
 * **Several servers:** mutes and strikes can be shared, see "Network sync" in [INTEGRATIONS.md](INTEGRATIONS.md).
 * **Placeholders** for scoreboards (`%antibadwords_strikes%`, `%antibadwords_muted%`): PlaceholderAPI section there.

@@ -66,11 +66,11 @@ public final class ChestBackend implements GuiBackend {
 
     private static ItemStack stack(Slot slot) {
         ItemStack stack = new ItemStack(item(slot.icon()), 1);
-        stack.set(DataComponents.CUSTOM_NAME, Component.literal(slot.name()));
+        stack.set(DataComponents.CUSTOM_NAME, Component.literal("\u00a76" + slot.name()));
         if (!slot.lore().isEmpty()) {
             List<Component> lines = new ArrayList<>();
             for (String line : slot.lore()) {
-                lines.add(Component.literal(line));
+                lines.add(Component.literal("\u00a77" + line));
             }
             stack.set(DataComponents.LORE, new ItemLore(lines));
         }

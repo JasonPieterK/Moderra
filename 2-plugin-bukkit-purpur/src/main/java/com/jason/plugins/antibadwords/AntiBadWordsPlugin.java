@@ -68,7 +68,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
         try {
             com.jason.plugins.antibadwords.integrations.ExtraHooks.start(engine);
         } catch (Throwable ex) {
-            getLogger().warning("The CoreProtect/packet hooks could not start (" + ex.getClass().getSimpleName() + ").");
+            getLogger().warning("CoreProtect and packet hooks: error. They did not start (" + ex.getClass().getSimpleName() + ").");
         }
         logStartupBanner();
     }
@@ -180,7 +180,7 @@ public final class AntiBadWordsPlugin extends JavaPlugin {
                 if (platform.hasPlugin(name) && engine.value(name.equals("TAB")
                     ? com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.TAB
                     : com.jason.plugins.antibadwords.engine.integrations.NameplateSettings.NAMETAGEDIT)) {
-                    getLogger().info(name + " found: its commands (integrations." + name.toLowerCase(Locale.ROOT) + ".scan-commands) are scanned.");
+                    getLogger().info(name + ": found. The plugin scans its commands (integrations." + name.toLowerCase(Locale.ROOT) + ".scan-commands).");
                 }
             }
             if (!platform.hasPlugin(VaultHook.PLUGIN_NAME)) {

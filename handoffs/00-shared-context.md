@@ -20,7 +20,7 @@ Minecraft versions (the 6 newest full releases, verified against Mojang on 2026-
 Jar naming (do not change): `Antibadwords-RELEASE[LOADER] - 1-<MCVERSION>.jar`, LOADER = Bukkit, Purpur, Fabric or Forge.
 
 Repo map (numbered, plain-language folders; every folder has a README):
-`1-download-jars/` finished jars | `2-plugin-bukkit-purpur/` plugin (`src/main/java/com/jason/plugins/antibadwords/`, `src/test/`,
+`1-download-jars/` README only (the jars are on GitHub Releases) | `2-plugin-bukkit-purpur/` plugin (`src/main/java/com/jason/plugins/antibadwords/`, `src/test/`,
 `build-all-versions.sh`) | `3-mod-fabric/` | `4-mod-forge/` | `5-shared-engine/` (pure-Java `src/main/java/.../mod/`, Minecraft layer
 `src/mc/java/`, per-version shims `src/mc-variants/`, tests, `live-player-test/` bot) | `6-guides/` docs | `build-everything.sh`.
 The plugin's pure classes (`WordMatcher`, `Placeholders`, `PunishmentAction`, `AntiBadWordsSettings`) are compiled into the mods

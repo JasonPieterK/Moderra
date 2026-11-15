@@ -61,7 +61,7 @@ public final class ExtraHooks {
         PacketScanPlan.Decision d = PacketScanPlan.choose(events, engine.value(ExtraIntegrationSettings.PACKET_ONLY_WHEN_MISSING),
             engine.value(ExtraIntegrationSettings.PROTOCOLLIB), lib, engine.value(ExtraIntegrationSettings.PACKETEVENTS), pe);
         if (d.backend() == PacketScanPlan.Backend.NONE) {
-            log.info("Packet scan: not used (" + d.reason() + ").");
+            log.info("Packet scan: off. Reason: " + d.reason() + ".");
         } else if (d.backend() == PacketScanPlan.Backend.PROTOCOLLIB) {
             Plugin self = Bukkit.getPluginManager().getPlugin("AntiBadWords");
             try {
@@ -69,16 +69,16 @@ public final class ExtraHooks {
                     throw new IllegalStateException("own plugin not found");
                 }
                 ProtocolLibScan.start(self, engine);
-                log.info("Packet scan: " + d.reason() + "; sign, book and anvil packets are scanned through ProtocolLib.");
+                log.info("Packet scan: on. Reason: " + d.reason() + ". ProtocolLib scans the sign, book and anvil packets.");
             } catch (Throwable ex) {
-                log.warn("Packet scan: ProtocolLib listener could not start (" + ex.getClass().getSimpleName() + ").");
+                log.warn("Packet scan: error. The ProtocolLib listener did not start (" + ex.getClass().getSimpleName() + ").");
             }
         } else {
             try {
                 PacketEventsScan.start(engine);
-                log.info("Packet scan: " + d.reason() + "; sign, book and anvil packets are scanned through PacketEvents.");
+                log.info("Packet scan: on. Reason: " + d.reason() + ". PacketEvents scans the sign, book and anvil packets.");
             } catch (Throwable ex) {
-                log.warn("Packet scan: PacketEvents listener could not start (" + ex.getClass().getSimpleName() + ").");
+                log.warn("Packet scan: error. The PacketEvents listener did not start (" + ex.getClass().getSimpleName() + ").");
             }
         }
     }
@@ -100,17 +100,17 @@ public final class ExtraHooks {
                     throw new IllegalStateException("own plugin not found");
                 }
                 ProtocolLibOutgoing.start(self, scan);
-                log.info("Outgoing scan: on through ProtocolLib (action: " + engine.value(OutgoingScanSettings.ACTION)
-                    + "; sources: " + engine.value(OutgoingScanSettings.SOURCES) + ").");
+                log.info("Outgoing scan: on. ProtocolLib is the packet library. Action: " + engine.value(OutgoingScanSettings.ACTION)
+                    + ". Sources: " + engine.value(OutgoingScanSettings.SOURCES) + ".");
             } else if (d.backend() == PacketScanPlan.Backend.PACKETEVENTS) {
                 PacketEventsOutgoing.start(scan);
-                log.info("Outgoing scan: on through PacketEvents (action: " + engine.value(OutgoingScanSettings.ACTION)
-                    + "; sources: " + engine.value(OutgoingScanSettings.SOURCES) + ").");
+                log.info("Outgoing scan: on. PacketEvents is the packet library. Action: " + engine.value(OutgoingScanSettings.ACTION)
+                    + ". Sources: " + engine.value(OutgoingScanSettings.SOURCES) + ".");
             } else {
-                log.warn("Outgoing scan: switched on, but " + d.reason() + ". Nothing is scanned.");
+                log.warn("Outgoing scan: error. The scan is on, but " + d.reason() + ". Nothing is scanned.");
             }
         } catch (Throwable ex) {
-            log.warn("Outgoing scan: the packet listener could not start (" + ex.getClass().getSimpleName() + ").");
+            log.warn("Outgoing scan: error. The packet listener did not start (" + ex.getClass().getSimpleName() + ").");
         }
     }
 

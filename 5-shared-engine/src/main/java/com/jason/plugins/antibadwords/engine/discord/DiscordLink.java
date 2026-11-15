@@ -91,13 +91,13 @@ public final class DiscordLink {
         String text = "**[" + event.kind() + "]** " + service.render(event);
         try {
             if (toAlerts && !bridge.sendToChannel(alerts, text)) {
-                engine.platform().logger().warn("DiscordSRV has no usable channel named '" + alerts + "' (discord.discordsrv.alert-channel).");
+                engine.platform().logger().warn("DiscordSRV: error. It has no usable channel named '" + alerts + "' (discord.discordsrv.alert-channel).");
             }
             if (toLog && !bridge.sendToChannel(log, text)) {
-                engine.platform().logger().warn("DiscordSRV has no usable channel named '" + log + "' (discord.discordsrv.log-channel).");
+                engine.platform().logger().warn("DiscordSRV: error. It has no usable channel named '" + log + "' (discord.discordsrv.log-channel).");
             }
         } catch (RuntimeException ex) {
-            engine.platform().logger().warn("Sending to DiscordSRV failed: " + ex.getClass().getSimpleName());
+            engine.platform().logger().warn("DiscordSRV: error. The plugin cannot send the message: " + ex.getClass().getSimpleName());
         }
     }
 
@@ -169,7 +169,7 @@ public final class DiscordLink {
             try {
                 bridge.notifyUser(in.userId(), engine.value(DiscordSrvSettings.NOTIFY_TEXT));
             } catch (RuntimeException ex) {
-                engine.platform().logger().warn("Could not notify a Discord user: " + ex.getClass().getSimpleName());
+                engine.platform().logger().warn("DiscordSRV: error. The plugin cannot tell the Discord user: " + ex.getClass().getSimpleName());
             }
         }
         return decision;
@@ -240,7 +240,8 @@ public final class DiscordLink {
     }
 
     /** Reply for a slash command that is refused for any reason before the allow-list passed. It says nothing about why. */
-    static final String SLASH_REFUSED = "This command is not available to you here.";
+    static final String PREFIX = "[AntiBadWords] ";
+    static final String SLASH_REFUSED = PREFIX + "Error. You cannot use this command here.";
 
     /**
      * Handles one DiscordSRV slash command with the same rules as a prefix command (command channel, allow-list, switch, rate limit,
@@ -275,18 +276,18 @@ public final class DiscordLink {
     /** Shared by prefix and slash commands; the caller has already checked the channel and the allow-list. */
     private void runCommand(Incoming in, String rest, Consumer<String> reply) {
         if (rateLimited(in.userId())) {
-            reply.accept("Slow down: too many commands, try again in a moment.");
+            reply.accept(PREFIX + "Notice. You send too many commands. Try again in a moment.");
             return;
         }
         String[] words = rest.isEmpty() ? new String[0] : rest.split("\\s+");
         String word = words.length == 0 ? "" : words[0].toLowerCase(Locale.ROOT);
         var enabled = DiscordSrvSettings.commandSwitch(word);
         if (enabled == null) {
-            reply.accept("Commands you can use here: " + String.join(", ", enabledWords()) + ".");
+            reply.accept(PREFIX + "Info. Commands you can use here: " + String.join(", ", enabledWords()) + ".");
             return;
         }
         if (!engine.value(enabled)) {
-            reply.accept("The command '" + word + "' is switched off on this server.");
+            reply.accept(PREFIX + "Error. The command '" + word + "' is switched off on this server.");
             return;
         }
         List<String> args = new ArrayList<>();
@@ -297,7 +298,7 @@ public final class DiscordLink {
         }
         SubCommand command = engine.commands().find(word);
         if (command == null) {
-            reply.accept("That command does not exist on this server.");
+            reply.accept(PREFIX + "Error. This command does not exist on this server.");
             return;
         }
         String who = "Discord:" + safeName(in.userName()) + "(" + safeId(in.userId()) + ")";
@@ -315,7 +316,7 @@ public final class DiscordLink {
             try {
                 engine.commands().execute(sender, "abw", prepend(word, argArray));
             } catch (RuntimeException ex) {
-                sender.send("The command failed.");
+                sender.send(PREFIX + "Error. The command failed.");
             }
             reply.accept(sender.text());
         });
@@ -335,11 +336,11 @@ public final class DiscordLink {
     private String buildArguments(String word, String[] words, String rest, List<String> out) {
         switch (word) {
             case "reload":
-                return words.length > 1 ? "Usage: reload" : null;
+                return words.length > 1 ? PREFIX + "Usage: reload" : null;
             case "check": {
                 String text = clean(rest.substring(word.length()).trim());
                 if (text.isEmpty()) {
-                    return "Usage: check <text>";
+                    return PREFIX + "Usage: check <text>";
                 }
                 out.add(text);
                 return null;
@@ -349,15 +350,15 @@ public final class DiscordLink {
         }
         // the rest take a player first
         if (words.length < 2) {
-            return "Usage: " + word + " <player>" + ("mute".equals(word) ? " [time] [reason]" : "history".equals(word) ? " [page]" : "");
+            return PREFIX + "Usage: " + word + " <player>" + ("mute".equals(word) ? " [time] [reason]" : "history".equals(word) ? " [page]" : "");
         }
         String name = words[1];
         if (!PLAYER_NAME.matcher(name).matches() || ("history".equals(word) && (name.equalsIgnoreCase("recent") || name.equalsIgnoreCase("purge")))) {
-            return "That is not a valid player name.";
+            return PREFIX + "Error. The player name is not valid.";
         }
         Optional<PlayerRef> ref = engine.resolvePlayer(name);
         if (ref.isEmpty()) {
-            return "Player not found (not online and never seen on this server).";
+            return PREFIX + "Error. The plugin does not know this player. The player is not online and never joined this server.";
         }
         out.add(ref.get().name());
         switch (word) {
@@ -370,14 +371,14 @@ public final class DiscordLink {
             case "history" -> {
                 if (words.length > 2) {
                     if (words.length > 3 || !words[2].matches("\\d{1,4}")) {
-                        return "Usage: history <player> [page]";
+                        return PREFIX + "Usage: history <player> [page]";
                     }
                     out.add(words[2]);
                 }
             }
             default -> {
                 if (words.length > 2) {
-                    return "Usage: " + word + " <player>";
+                    return PREFIX + "Usage: " + word + " <player>";
                 }
             }
         }
@@ -460,7 +461,7 @@ public final class DiscordLink {
         }
 
         String text() {
-            return forDiscord(out.length() == 0 ? "Done." : out.toString());
+            return forDiscord(out.length() == 0 ? PREFIX + "Done. The command ran." : out.toString());
         }
     }
 }

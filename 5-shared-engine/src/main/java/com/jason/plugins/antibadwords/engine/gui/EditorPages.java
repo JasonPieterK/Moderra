@@ -167,7 +167,7 @@ final class EditorPages {
             return mutateStep(s, name, m -> m.put("at", (int) Math.max(1, Math.min(1_000_000, (long) Sections.intOf(m.get("at"), 1) + delta))));
         }));
         entries.add(new Entry(Icons.NUMBER, repeat > 0 ? "Repeat: every " + repeat + " strikes" : "Repeat: once", withNote(state, ladderCategory(), List.of(
-            "once = only at the number above; a number N = again every N strikes after it.",
+            "once: the step runs only at the number above.", "N: the step runs again every N strikes after it.",
             "Left click: +1   Right click: -1 (0 = once)", "Shift: x5   Middle click or drop: once")), false, (s, t) -> {
             if (!t.isLeft() && !t.isRight() && !t.isReset()) {
                 return MenuAction.none();
@@ -323,7 +323,7 @@ final class EditorPages {
             return MenuAction.error("The profile \"default\" cannot be deleted.");
         }
         if (name.equalsIgnoreCase(String.valueOf(state.value(WorldProfiles.DEFAULT_PROFILE)).trim())) {
-            return MenuAction.error("That is the default profile (setting default-profile). Choose another default first.");
+            return MenuAction.error("This is the default profile (setting default-profile). Choose another default first.");
         }
         int rules = rulesUsing(state, name);
         if (rules > 0) {

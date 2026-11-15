@@ -88,7 +88,7 @@ public final class GuiManager {
      */
     public void open(Player player, String page) {
         if (!player.hasPermission(Menu.PERMISSION)) {
-            player.sendMessage("\u00a7cNo permission.");
+            player.sendMessage(com.jason.plugins.antibadwords.engine.command.Chat.error("You do not have permission to use the menu."));
             return;
         }
         reloadIcons();
@@ -97,8 +97,8 @@ public final class GuiManager {
         }
         String wanted = page == null ? "" : page.trim();
         if (!wanted.isEmpty() && !Menu.opensPage(new com.jason.plugins.antibadwords.engine.gui.EngineConfigAccess(engine()), wanted)) {
-            player.sendMessage("\u00a7eUnknown menu page \"" + wanted + "\"; opening the main menu. Pages: a category name, languages, words, "
-                + "ladder, mutes, profiles, rules, a setting key or a number.");
+            player.sendMessage(com.jason.plugins.antibadwords.engine.command.Chat.warn("The menu page \"" + wanted + "\" does not exist. The main menu opens. Valid pages: a category name, languages, words, "
+                + "ladder, mutes, profiles, rules, a setting key or a number."));
         }
         Session session = new Session(Menu.open(engine(), wanted), player.getUniqueId());
         sessions.put(player.getUniqueId(), session);
@@ -144,8 +144,10 @@ public final class GuiManager {
         ItemStack stack = new ItemStack(icons.material(slot.icon()));
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
-            meta.setDisplayName(slot.name());
-            meta.setLore(new ArrayList<>(slot.lore()));
+            meta.setDisplayName("\u00a76" + slot.name());
+            List<String> lore = new ArrayList<>();
+            slot.lore().forEach(line -> lore.add("\u00a77" + line));
+            meta.setLore(lore);
             if (slot.glowing()) {
                 meta.addEnchant(Enchantment.LURE, 1, true);
             }
@@ -230,7 +232,7 @@ public final class GuiManager {
             case REFRESH -> show(player, session, false);
             case ERROR -> {
                 if (action.message() != null) {
-                    player.sendMessage("§c" + action.message());
+                    player.sendMessage(action.message());
                 }
                 show(player, session, false);
             }
@@ -240,7 +242,7 @@ public final class GuiManager {
                 session.internal = true;
                 player.closeInventory();
                 if (action.message() != null) {
-                    player.sendMessage((action.kind() == MenuAction.Kind.SAVED ? "§a" : "§e") + action.message());
+                    player.sendMessage(action.message());
                 }
             }
         }
@@ -288,7 +290,7 @@ public final class GuiManager {
             return;
         }
         if (action.kind() == MenuAction.Kind.ERROR && action.message() != null) {
-            player.sendMessage("§c" + action.message());
+            player.sendMessage(action.message());
         }
         show(player, session, true);
     }

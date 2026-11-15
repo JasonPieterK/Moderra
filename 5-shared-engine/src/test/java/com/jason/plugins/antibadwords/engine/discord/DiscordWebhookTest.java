@@ -132,7 +132,7 @@ class DiscordWebhookTest {
         assertEquals("AntiBadWords", json.get("username"));
         @SuppressWarnings("unchecked")
         Map<String, Object> embed = ((List<Map<String, Object>>) json.get("embeds")).get(0);
-        assertEquals("Bob was punished (a mute (10m)) at 4 strikes, step short-mute", embed.get("description"));
+        assertEquals("Bob received a penalty at 4 strikes. Step: short-mute. Action: a mute (10m).", embed.get("description"));
         assertEquals(0xE74C3C, embed.get("color"));
         assertEquals("2023-11-14T22:13:20Z", embed.get("timestamp"));
         assertEquals("AntiBadWords: punishment", embed.get("title"));
@@ -399,10 +399,10 @@ class DiscordWebhookTest {
         for (int i = 0; i < 11; i++) {
             seen.add(next().body());
         }
-        assertTrue(seen.get(0).contains("P0 was"), "the one in flight was kept");
-        assertTrue(seen.get(1).contains("P20 was"), "the oldest waiting ones were dropped");
-        assertTrue(seen.get(10).contains("P29 was"));
-        assertTrue(seen.stream().noneMatch(b -> b.contains("P5 was")));
+        assertTrue(seen.get(0).contains("P0 received"), "the one in flight was kept");
+        assertTrue(seen.get(1).contains("P20 received"), "the oldest waiting ones were dropped");
+        assertTrue(seen.get(10).contains("P29 received"));
+        assertTrue(seen.stream().noneMatch(b -> b.contains("P5 received")));
     }
 
     int queuedAlerts() {

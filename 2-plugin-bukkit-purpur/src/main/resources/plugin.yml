@@ -1,5 +1,5 @@
 name: AntiBadWords
-version: '${project.version}'
+version: '${abw.display.version}'
 main: com.jason.plugins.antibadwords.AntiBadWordsPlugin
 api-version: '${mc.api.version}'
 authors:

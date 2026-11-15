@@ -66,12 +66,12 @@ final class ChannelChatEvents {
                     }
                     engine.onViolation(message, verdict);
                 } catch (ReflectiveOperationException | ClassCastException ex) {
-                    plugin.getLogger().warning("TownyChat channel event could not be read (" + ex.getClass().getSimpleName() + ").");
+                    plugin.getLogger().warning("TownyChat: error. The channel chat event cannot be read (" + ex.getClass().getSimpleName() + ").");
                 }
             }, plugin, false);
-            plugin.getLogger().info("TownyChat found: scanning its channel chat events (AsyncChatHookEvent).");
+            plugin.getLogger().info("TownyChat: found. The plugin scans its channel chat events (AsyncChatHookEvent).");
         } catch (ReflectiveOperationException | LinkageError ex) {
-            plugin.getLogger().info("TownyChat found but its AsyncChatHookEvent is not available (" + ex.getClass().getSimpleName() + "); chat covered by the normal chat check.");
+            plugin.getLogger().info("TownyChat: found. AsyncChatHookEvent is not available (" + ex.getClass().getSimpleName() + "). The normal chat check covers the chat.");
         }
     }
 
@@ -109,7 +109,7 @@ final class ChannelChatEvents {
                     if (player == null || text == null) {
                         if (!warned[0]) {
                             warned[0] = true;
-                            plugin.getLogger().warning("mcMMO party chat: the sender could not be found; these lines are not checked here.");
+                            plugin.getLogger().warning("mcMMO: notice. The plugin cannot find the sender of a party chat line. It does not check these lines here.");
                         }
                         return;
                     }
@@ -123,12 +123,12 @@ final class ChannelChatEvents {
                     }
                     engine.onViolation(message, verdict);
                 } catch (ReflectiveOperationException | ClassCastException ex) {
-                    plugin.getLogger().warning("mcMMO party chat event could not be read (" + ex.getClass().getSimpleName() + ").");
+                    plugin.getLogger().warning("mcMMO: error. The party chat event cannot be read (" + ex.getClass().getSimpleName() + ").");
                 }
             }, plugin, false);
-            plugin.getLogger().info("mcMMO found: scanning its party chat events (McMMOPartyChatEvent).");
+            plugin.getLogger().info("mcMMO: found. The plugin scans its party chat events (McMMOPartyChatEvent).");
         } catch (ReflectiveOperationException | LinkageError ex) {
-            plugin.getLogger().info("mcMMO found but McMMOPartyChatEvent is not available (" + ex.getClass().getSimpleName() + "); party chat is not scanned.");
+            plugin.getLogger().info("mcMMO: found. McMMOPartyChatEvent is not available (" + ex.getClass().getSimpleName() + "). The plugin does not scan party chat.");
         }
     }
 

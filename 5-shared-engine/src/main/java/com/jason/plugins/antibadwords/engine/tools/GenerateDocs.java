@@ -57,6 +57,7 @@ public final class GenerateDocs {
 
             > This page is **generated** from the settings registry in the code (`GenerateDocs`). Do not edit it by hand:
             > change the setting's description in the code and run the generator again (see `5-shared-engine/README.md`).
+            > It describes version 2.1 (the jar names keep the major number `2`).
 
             ## The short version
 
@@ -223,7 +224,7 @@ public final class GenerateDocs {
             | `/abw listwords [code\\|custom\\|active]` | show a word list |
             | `/abw check <text>` | would this text be blocked? Names the check that fires (badword, link, spam-caps ...) and why |
             | `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
-            | `/abw info` | short status |
+            | `/abw info` | short status, including the plugins (Bukkit) or mods (Fabric, Forge) it found |
             | `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off |
             | `/abw whitelist add <word>` / `remove <word>` / `list [page]` | words that are never blocked |
             | `/abw gui [page]` | open the settings menu (needs `antibadwords.gui`; plain `/abw` does the same for players) |

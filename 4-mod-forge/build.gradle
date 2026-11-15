@@ -70,10 +70,10 @@ processResources {
         include '*.yml'
         into 'wordlists'
     }
-    inputs.property 'version', mod_version
+    inputs.property 'version', display_version
     inputs.property 'minecraft_version', minecraft_version
     filesMatching(['META-INF/mods.toml', 'antibadwords.version']) {
-        expand version: mod_version, minecraft_version: minecraft_version, forge_major: forge_major
+        expand version: display_version, minecraft_version: minecraft_version, forge_major: forge_major
     }
 }
 

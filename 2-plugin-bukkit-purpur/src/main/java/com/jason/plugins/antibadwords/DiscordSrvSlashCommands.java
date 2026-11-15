@@ -24,7 +24,7 @@ import org.bukkit.plugin.Plugin;
  */
 public final class DiscordSrvSlashCommands implements SlashCommandProvider {
     /** The answer to a refused call; the same text as the engine uses. */
-    static final String REFUSED = "This command is not available to you here.";
+    static final String REFUSED = "[AntiBadWords] Error. You cannot use this command here.";
 
     private final DiscordSrvHook hook;
     private final Plugin plugin;

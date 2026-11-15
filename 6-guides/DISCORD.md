@@ -1,12 +1,12 @@
 # Discord guide: alerts, DiscordSRV, commands from Discord
 
-*Verified: engine unit tests (against a local fake web server and a fake DiscordSRV bridge). The plugin code was compiled on GitHub against the real DiscordSRV names (`verify-apis.yml`). It was NOT run on a real server and NOT tested with a real Discord bot in this round.*
+*Verified: engine unit tests (against a local fake web server and a fake DiscordSRV bridge). The plugin code was compiled against the real DiscordSRV names (every name is in `tools/api-manifest.txt`). It was NOT run on a real server and NOT tested with a real Discord bot.*
 
 ## The idea in five sentences
 AntiBadWords can tell your staff on Discord when something happens: a bad word, a punishment, a mute, spam, a link.
 There are two ways. A **webhook** is a secret web address for one Discord channel; it works on all four server types.
 **DiscordSRV** is a separate Bukkit plugin that links your server to a Discord bot; AntiBadWords can use it (Bukkit, Spigot, Paper, Purpur only).
-With DiscordSRV you can also filter what people type **in Discord** before it reaches Minecraft, and run a few staff commands from Discord.
+With DiscordSRV you can also filter what people type **in Discord** before it reaches Minecraft, and run a few staff commands from Discord (typed `!abw` commands or slash commands).
 Everything is off until you set `discord.enabled: true` in `discord.yml`.
 
 ## 1. Webhook alerts (all server types)
@@ -26,7 +26,7 @@ Only `https://` URLs are accepted (plain `http://` only for localhost).
 | `discord.routing.alerts` / `discord.routing.log` | which kinds go to which webhook. Kinds: `violation`, `punishment`, `mute`, `unmute`, `spam`, `link`, `evasion`, `admin-command`. `*` = all |
 | `discord.style` | `embed` (coloured card) or `plain` |
 | `discord.colors.<kind>` | colour per kind, like `#E74C3C` |
-| `discord.templates.<kind>` | the text. Placeholders: `{player} {word} {source} {world} {count} {limit} {action} {kind} {check} {detail} {step} {reason} {duration} {command} {text}` |
+| `discord.templates.<kind>` | the text. Placeholders: `{player} {word} {source} {world} {count} {limit} {action} {kind} {check} {detail} {step} {reason} {duration} {command} {text}`. The defaults are plain sentences (formal style, no colour codes), for example `{player} cannot write for {duration}. Reason: {reason}.` The card title or the `[kind]` tag in plain style names the event. |
 | `discord.mention` / `discord.mention-kinds` | ping a role or user for chosen kinds (alerts webhook only) |
 | `discord.queue.size`, `discord.rate.*`, `discord.http.*` | queue size, rate limits, timeouts and retries |
 
@@ -48,17 +48,22 @@ If DiscordSRV is missing or fails, one log line is written and the rest of the p
 * No strikes or punishments: there is no Minecraft player to punish. One `violation` event with source `discord-in` goes to the alerts instead.
 * The link and bypass-trick filters also look at Discord messages (`discord-in` is in their `sources` lists for new installs).
 
-### Commands from Discord (`!abw`)
-These are **text commands, not slash commands** (slash commands are not done, see below). Everything is off by default.
+### Commands from Discord (`!abw` text commands and slash commands)
+Everything is off by default.
 1. `discord.commands.channels`: where the bot listens (empty = nowhere).
-2. `discord.commands.allowed-roles` and `allowed-users`: who may use them (both empty = nobody). People not on the list get no answer at all.
+2. `discord.commands.allowed-roles` and `allowed-users`: who may use them (both empty = nobody). A person on no list gets no answer to a typed `!abw` line.
 3. Switch on each command you want: `discord.commands.mute.enabled`, `unmute`, `history`, `strikes`, `check`, `reload`.
-4. Use them like `!abw mute Steve 10m spam`, `!abw unmute Steve`, `!abw history Steve`, `!abw strikes Steve`, `!abw check some text`.
+4. Choose the style with `discord.commands.style`: `prefix` (default: typed `!abw ...` lines), `slash` (only slash commands) or `both`.
+5. Typed commands: `!abw mute Steve 10m spam`, `!abw unmute Steve`, `!abw history Steve`, `!abw strikes Steve`, `!abw check some text`.
+6. Slash commands: `/abw-mute player [details]`, `/abw-unmute player`, `/abw-history player [page]`, `/abw-strikes player`, `/abw-check text`, `/abw-reload`.
+   They are registered with DiscordSRV when it starts, so **restart the server** after you change the style. Discord can take up to a minute to show them.
 
-Safety: the command runs with only the one permission it needs. Player names are checked against known players. `history purge` and `history recent` are refused. Answers are cleaned of colour codes. A rate limit applies (`discord.commands.rate.max` per `discord.commands.rate.window`). Every command writes one `admin-command` event (who, which Discord channel).
+Both ways use the same code: command channel, allow-list, per-command switch, one shared rate limit (`discord.commands.rate.max` per `discord.commands.rate.window`) and one `admin-command` event (who, which Discord channel).
+A slash command must always be answered. A refused call (style `prefix`, channel not listed, person not allowed) gets one neutral answer, "[AntiBadWords] Error. You cannot use this command here.", that does not tell which rule refused it.
+Other answers start with `[AntiBadWords]` and a key word (`Error.`, `Notice.`, `Info.`, `Done.`). The command runs with only the one permission it needs. Player names are checked against known players. `history purge` and `history recent` are refused. Answers are cleaned of colour codes and nobody can be pinged.
 
 ## 3. Limits (honest)
 * DiscordSRV features (mode `discordsrv`, inbound filter, `!abw`) exist only on Bukkit, Spigot, Paper and Purpur. Fabric and Forge have webhooks only. `/abw info` says so.
-* DiscordSRV slash commands: not done (they need Discord library classes that were not available to check). Use the `!abw` text commands.
-* DiscordSRV method names used for sending and censoring were checked by name on GitHub, never run with a real bot. If one is missing you get a single warning line.
+* Slash commands need a DiscordSRV 1.x that shades JDA 4.x. The reply path uses `Interaction.reply(String)` by reflection (the shaded JDA is not a build dependency). If a name is missing you get one warning and Discord shows "application did not respond".
+* DiscordSRV method names used for sending, slash commands and censoring were read from an API dump, never run with a real bot. If one is missing you get a single warning line.
 * You can use both ways: `discord.mode: webhook` keeps DiscordSRV only for commands and filtering.

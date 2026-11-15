@@ -21,10 +21,9 @@ start. The unit tests moved to the engine too (`cd ../5-shared-engine && mvn tes
 
 `mvn clean package` builds one jar for 1.21.11. `./build-all-versions.sh` builds all of them into `../1-download-jars/`.
 
-**Honest status:** the code in this folder was rewritten for the shared engine without access to the Spigot API. It was
-compiled only against a hand-written stand-in for the Bukkit classes it uses, and it has never run on a server. The jars
-in `../1-download-jars/` are older builds from before this change. See
-[`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
+**Honest status:** GitHub Actions compiles this code against the real Spigot API. It has never run on a real server.
+The finished jars are on GitHub Releases (see [`../1-download-jars/README.md`](../1-download-jars/README.md)). What still needs a real-server
+test: [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
 
 ## What is new in this round
 

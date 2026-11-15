@@ -2,6 +2,7 @@
 
 > This page is **generated** from the settings registry in the code (`GenerateDocs`). Do not edit it by hand:
 > change the setting's description in the code and run the generator again (see `5-shared-engine/README.md`).
+> It describes version 2.1 (the jar names keep the major number `2`).
 
 ## The short version
 
@@ -347,14 +348,14 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.colors.link` | text | `#9B59B6` | no | Colour of the link card (embed style) as #RRGGBB. |
 | `discord.colors.evasion` | text | `#1ABC9C` | no | Colour of the evasion card (embed style) as #RRGGBB. |
 | `discord.colors.admin-command` | text | `#95A5A6` | no | Colour of the admin-command card (embed style) as #RRGGBB. |
-| `discord.templates.violation` | text | `{player} used a blocked word in {source}: {word} ({count}/{limit}, {action})` | no | Text for violation events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.punishment` | text | `{player} was punished ({action}) at {count} strikes, step {step}` | no | Text for punishment events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.mute` | text | `{player} was muted for {duration}: {reason}` | no | Text for mute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.unmute` | text | `{player} was unmuted` | no | Text for unmute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.spam` | text | `{player} triggered the spam filter ({check}: {detail}) in {source}, action {action}` | no | Text for spam events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.link` | text | `{player} posted a link in {source}: {detail} (action {action})` | no | Text for link events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.evasion` | text | `{player} tried to dodge the filter in {source}: {detail} (action {action})` | no | Text for evasion events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
-| `discord.templates.admin-command` | text | `{player} ran /{command}` | no | Text for admin-command events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.violation` | text | `{player} used a word that is not permitted in {source}: {word}. Violations: {count} of {limit}. Action: {action}.` | no | Text for violation events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.punishment` | text | `{player} received a penalty at {count} strikes. Step: {step}. Action: {action}.` | no | Text for punishment events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.mute` | text | `{player} cannot write for {duration}. Reason: {reason}.` | no | Text for mute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.unmute` | text | `{player} can write again.` | no | Text for unmute events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.spam` | text | `{player} triggered the spam filter in {source}. Check: {check}. Detail: {detail}. Action: {action}.` | no | Text for spam events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.link` | text | `{player} posted a link in {source}: {detail}. Action: {action}.` | no | Text for link events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.evasion` | text | `{player} tried to avoid the filter in {source}: {detail}. Action: {action}.` | no | Text for evasion events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
+| `discord.templates.admin-command` | text | `{player} ran /{command}.` | no | Text for admin-command events. Placeholders: {player} {word} {source} {world} {count} {limit} {action}<br>and {kind} {check} {detail} {step} {reason} {duration} {command} {text} (empty when it does not apply). |
 | `discord.discordsrv.alert-channel` | text | `alerts` | no | BUKKIT FAMILY ONLY, needs DiscordSRV. The DiscordSRV channel NAME (from DiscordSRV's config.yml, option Channels,<br>for example global) that receives the kinds listed in discord.routing.alerts. Empty = none. |
 | `discord.discordsrv.log-channel` | text | (empty) | no | Same for the kinds listed in discord.routing.log (a quiet log channel). Empty = none. |
 | `discord.inbound.enabled` | true or false | `false` | no | BUKKIT FAMILY ONLY, needs DiscordSRV. Check messages that arrive from Discord with the same word lists before<br>they are shown in the game (source discord-in). The link and bypass-trick filters only look at it when<br>discord-in is added to their sources list. Default off. |
@@ -364,7 +365,7 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.inbound.bypass-roles` | list of texts | (empty) | no | Discord ROLE ids (numbers). People with one of these roles are never filtered. |
 | `discord.inbound.bypass-users` | list of texts | (empty) | no | Discord USER ids (numbers). |
 | `discord.inbound.notify-sender` | true or false | `true` | no | Send the person a direct message in Discord when their message was blocked or cleaned. |
-| `discord.inbound.notify-text` | text | `Your message was not delivered to the Minecraft chat because it contains words that are not allowed on this server.` | no | The direct message. No placeholders; never put the blocked word in it. |
+| `discord.inbound.notify-text` | text | `[AntiBadWords] Notice. The plugin did not send your message to the Minecraft chat. It contains a word that is not permitted.` | no | The direct message. No placeholders; never put the blocked word in it. |
 | `discord.commands.prefix` | text | `!abw` | no | Moderation from Discord works by typing a message that starts with this prefix, for example: !abw mute Steve 1h spam<br>(DiscordSRV slash commands are not used by this plugin.) A prefix message is never relayed to Minecraft. |
 | `discord.commands.style` | one of: prefix, slash, both | `prefix` | no | prefix = typed messages that start with the prefix (the old behaviour), slash = DiscordSRV slash<br>commands /abw-mute, /abw-unmute, /abw-history, /abw-strikes, /abw-check, /abw-reload, both = the two ways. Slash commands are<br>registered with DiscordSRV when the server starts, so a change needs a restart. The same allow-lists, switches,<br>channels and rate limit apply to both ways. |
 | `discord.commands.mute.enabled` | true or false | `false` | no | Allow "<prefix> mute <player> [time] [reason]" from Discord (only for the allowed roles / users). Default off. |
@@ -578,7 +579,7 @@ Most commands need the permission `antibadwords.admin` (operators have it by def
 | `/abw listwords [code\|custom\|active]` | show a word list |
 | `/abw check <text>` | would this text be blocked? Names the check that fires (badword, link, spam-caps ...) and why |
 | `/abw violations <player>` / `resetviolations <player>` | see or clear someone's strikes |
-| `/abw info` | short status |
+| `/abw info` | short status, including the plugins (Bukkit) or mods (Fabric, Forge) it found |
 | `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off |
 | `/abw whitelist add <word>` / `remove <word>` / `list [page]` | words that are never blocked |
 | `/abw gui [page]` | open the settings menu (needs `antibadwords.gui`; plain `/abw` does the same for players) |

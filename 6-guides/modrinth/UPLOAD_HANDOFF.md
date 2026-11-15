@@ -37,7 +37,7 @@ only about the project settings and the six version uploads.
 
 ## Versions to publish (one upload per jar)
 
-Version number `1`, release channel **Release**, files from `1-download-jars/`. Do not upload the same jar to multiple
+Version number `2` (release 2.1), release channel **Release**. Download the files from the GitHub Release (see `1-download-jars/README.md`). Do not upload the same jar to multiple
 Minecraft versions it was not built for.
 
 | Jar | Game version(s) to tick | Loader |
@@ -67,7 +67,7 @@ Minecraft versions it was not built for.
 | `Antibadwords-RELEASE[Forge] - 2-26.1.jar` | 26.1 | Forge |
 | `Antibadwords-RELEASE[Forge] - 2-1.21.11.jar` | 1.21.11 | Forge |
 
-The version 2 jars are built by GitHub Actions (download them from the GitHub Release `v2.0.0`). They were NOT started on a real server yet; only the version 1 Fabric and Forge jars were. Say so in the upload notes or test them first.
+The version 2 jars are built by GitHub Actions (download them from the newest GitHub Release, for example `v2.1.0`). They were NOT started on a real server yet; only the version 1 Fabric and Forge jars were (that was a different code base). Say so in the upload notes or test them first.
 
 Version name pattern: `AntiBadWords 2 for Minecraft 26.3`.
 

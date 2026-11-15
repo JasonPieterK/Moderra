@@ -225,7 +225,7 @@ final class SpecialPages {
                             return MenuAction.none();
                         }
                         Engine e = engine(s);
-                        return e.removeCustomWord(word) ? MenuAction.refresh() : MenuAction.error("Could not remove that word.");
+                        return e.removeCustomWord(word) ? MenuAction.refresh() : MenuAction.error("The plugin cannot remove that word.");
                     }));
             } else {
                 entries.add(info(Icons.WORD, Menu.shorten(word, 60), List.of("Bundled list: read-only",
@@ -248,10 +248,10 @@ final class SpecialPages {
             return MenuAction.error("Nothing typed. Type the new word or cancel.");
         }
         if (engine == null || !WordMatcher.isValidEntry(raw)) {
-            return MenuAction.error("That is not a valid word (use at least 2 letters or digits).");
+            return MenuAction.error("That is not a valid word. Use at least 2 letters or digits.");
         }
         if (!engine.addCustomWord(raw)) {
-            return MenuAction.error("Already in the custom list or could not be saved: " + WordMatcher.cleanEntry(raw));
+            return MenuAction.error("The word is already in the custom list, or the plugin cannot save it: " + WordMatcher.cleanEntry(raw));
         }
         state.setPending(null);
         return MenuAction.refresh();

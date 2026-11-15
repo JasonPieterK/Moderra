@@ -191,7 +191,7 @@ class NetworkJournalTest {
     }
 
     private static boolean bridgeWarning(Fixture f) {
-        return f.platform.warnings.stream().anyMatch(w -> w.contains("no other server answered"));
+        return f.platform.warnings.stream().anyMatch(w -> w.contains("No other server answered"));
     }
 
     @Test
@@ -212,7 +212,7 @@ class NetworkJournalTest {
         a.engine.network().poll();
         assertTrue(bridgeWarning(a));
         a.engine.network().poll();
-        assertEquals(1, a.platform.warnings.stream().filter(w -> w.contains("no other server answered")).count());
+        assertEquals(1, a.platform.warnings.stream().filter(w -> w.contains("No other server answered")).count());
     }
 
     @Test

@@ -1,10 +1,10 @@
 # Fabric and Forge: what works, what was tested
 
-## Version 2: what works on Fabric and Forge, what was tested
+## Version 2.1: what works on Fabric and Forge, what was tested
 
 All 24 jars are built on GitHub (`.github/workflows/build-release.yml`) and the Fabric and Forge code compiles against the **real**
-Minecraft, Fabric and Forge APIs (Minecraft 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3). The engine has 410 unit tests.
-**Nothing of version 2 was run on a real server, and the scripted player was not used in this round.**
+Minecraft, Fabric and Forge APIs (Minecraft 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3). The engine has 435 unit tests.
+**Nothing of version 2.1 was run on a real server, and the scripted player was not used in this round.**
 
 | Feature on Fabric / Forge | Engine tests | On a real server |
 |---|:---:|:---:|
@@ -16,21 +16,30 @@ Minecraft, Fabric and Forge APIs (Minecraft 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2,
 | Spam, link and bypass-trick filters; `censor` becomes **block** (mods cannot change chat text) | pass | not run |
 | Moderation: strikes, ladder, mute, history; kick through the vanilla `/kick` command | pass | not run |
 | Discord **webhook** alerts | pass | not run |
-| Settings menu (chest): names, glow, click blocking; **no lore**, chat prompts only | pass (menu logic) | not run |
+| Settings menu (chest): names, **lore**, glow, click blocking; text input by fake sign (default), anvil or chat (`gui.prompt.mode`) | pass (menu logic) | not run |
+| `hasPlugin` by mod id (`/abw info` lists installed mods that match known plugin names) | - | not run |
+| Fabric Text Placeholder API values `%antibadwords:<name>%` (Minecraft 26.3 only) | - | not run |
+| Styled Chat (works through the vanilla chat event we filter) | - | not run |
 | Permissions: Fabric asks the Fabric Permissions API (LuckPerms), Forge registers nodes; defaults as on Bukkit | - | not run |
 | Network sync in shared-folder mode | pass | not run |
 
-Not available on Fabric/Forge by design: DiscordSRV features, all plugin integrations (EssentialsX, PlaceholderAPI, Vault, ...), because
+Not available on Fabric/Forge by design: DiscordSRV features, the outgoing-text scan, all plugin integrations (EssentialsX, Vault, ...), because
 those are Bukkit-family plugins. LuckPerms for Fabric/Forge works through the permission nodes only.
 
-### Open items for 2.0
+### What changed in 2.1 (Fabric and Forge)
+* Menu items show lore on all six versions.
+* The text input of the menu is a fake sign by default (blocks and packets are sent to the player only, the real block is sent again afterwards, the answer is caught in the sign mixin only for that player). `gui.prompt.mode: anvil` uses a rename screen, `chat` keeps the old input. Behaviour change: `auto` now means the sign on the mods.
+* `Platform.hasPlugin` by mod id: Fabric `FabricLoader.isModLoaded`; Forge `ModList.get().isLoaded` on 1.21.11 and the static `ModList.isLoaded` on the 26.x versions.
+* Fabric Placeholder API on 26.3 (compile-only library `eu.pb4:placeholder-api:3.2.0+26.3`, loaded only when the mod is present). The other versions use an empty hook until a matching library version is proven (candidates are listed at the end of `tools/api-manifest.txt`).
+
+### Open items
 The one complete list is in [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md). Fabric and Forge parts:
 * Test every jar on a real server (`TEST=1 ./build-everything.sh`, scripted player `bot.js`).
-* Menu: item lore, sign-editor prompt (chat prompt only now).
-* `hasPlugin` on mods (so `integrations.bans.provider: auto` and Bedrock `auto` always mean vanilla / off).
-* Styled Chat and Text Placeholder API (eu.pb4) support.
-* Forge: permission nodes of profiles added after server start need a restart.
+* Test the sign prompt and the anvil prompt (the anvil result slot for a player with 0 XP).
+* Test the lore on every version.
+* Forge: permission nodes of profiles added after server start need a restart (hard limit: no API for late registration).
 * The 26.3 sign-back check relies on a class that was not in the API dump (`SignTextSlot.toString()` giving "BACK").
+* Placeholder API library versions for 1.21.11 to 26.2.
 
 ---
 
@@ -97,7 +106,7 @@ Differences you can see (none remove a feature):
 ```bash
 ./build-everything.sh                     # all 24 jars -> 1-download-jars/
 TEST=1 ./build-everything.sh 26.3         # one version, and start real servers to check the Fabric/Forge jars
-cd 5-shared-engine && mvn test            # unit tests of the shared engine (410 tests)
+cd 5-shared-engine && mvn test            # unit tests of the shared engine (435 tests)
 ```
 Needs Maven, Gradle 9.8+ (`GRADLE=/path/to/gradle`) and JDKs 8, 21 and 25. The scripted player needs Node.js:
 `cd 5-shared-engine/live-player-test && npm install && node bot.js <host> <port> <minecraft version> extras`

@@ -36,5 +36,12 @@ Each code ends the previous formatting, so the text after a bold key word starts
 ## For upgrades
 When you upgrade, a message text that is still exactly the old default is replaced by the new default (one info line in the log). **A text you changed is never touched.** Comments in the file stay. To get the new text, delete your line or copy it from [CONFIGURATION.md](CONFIGURATION.md).
 
-## Not restyled yet
-GUI titles and item names, Discord webhook templates and bot replies (`discord.templates.*`), `mute.no-reason-text` and the example commands in the punishment section.
+## Other texts
+* **Log lines** (console) use the same sentences without colour codes: `Area: error. The plugin cannot ...` (key word first, one fact per sentence).
+* **Discord** texts are plain text, no `&` codes, markdown safe. Webhook templates (`discord.templates.*`) are sentences without a prefix (the sender name and the card title show it).
+  Bot replies start with `[AntiBadWords] ` and then `Error.`, `Notice.`, `Info.` or `Done.`. A value that a player typed is escaped before it is inserted.
+* **GUI**: item names are gold, lore lines are gray (set where the item is drawn). Results of a click (saved, error, discarded) use the standard prefix. Titles are short because of the 32-character limit of old Bukkit versions.
+* Every changed default is recorded in `MessageDefaults.OLD_DEFAULTS`, so an unchanged install gets the new text.
+
+## Not restyled
+`mute.no-reason-text` and the example commands in the punishment section.

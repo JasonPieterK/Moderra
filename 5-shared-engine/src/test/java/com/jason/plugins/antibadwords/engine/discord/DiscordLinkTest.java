@@ -111,7 +111,7 @@ class DiscordLinkTest {
         assertFalse(engine.discord().active(), "webhooks are suppressed while DiscordSRV carries the alerts");
         engine.events().publish(new ModerationEvent("punishment", 1L, bob, "Bob", "world", "chat", Map.of("step", "s1", "count", "3")));
         assertEquals(1, bridge.channelMessages.size());
-        assertTrue(bridge.channelMessages.get(0).startsWith("alerts|**[punishment]** Bob was punished"), bridge.channelMessages.get(0));
+        assertTrue(bridge.channelMessages.get(0).startsWith("alerts|**[punishment]** Bob received a penalty"), bridge.channelMessages.get(0));
     }
 
     @Test
@@ -248,7 +248,7 @@ class DiscordLinkTest {
         openCommands();
         // channel + user allowed but the command itself is off: told so, nothing run
         assertEquals(DiscordLink.Decision.Type.BLOCK, cmd("42", Set.of(), "!abw mute Bob 1h spam").type());
-        assertEquals(List.of("The command 'mute' is switched off on this server."), replies);
+        assertEquals(List.of("[AntiBadWords] Error. The command 'mute' is switched off on this server."), replies);
         assertFalse(engine.mutes().isMuted(bob));
     }
 
@@ -306,7 +306,7 @@ class DiscordLinkTest {
         assertTrue(replies.get(2).contains("reloaded"), replies.get(2));
         // a command that is not on the list cannot be reached even though the registry knows it
         cmd("42", Set.of(), "!abw addword evil");
-        assertTrue(replies.get(3).startsWith("Commands you can use here: strikes, check, reload"), replies.get(3));
+        assertTrue(replies.get(3).startsWith("[AntiBadWords] Info. Commands you can use here: strikes, check, reload"), replies.get(3));
         assertFalse(engine.customWords().contains("evil"));
     }
 
@@ -320,11 +320,11 @@ class DiscordLinkTest {
         cmd("42", Set.of(), "!abw mute Nobody 1h");
         cmd("42", Set.of(), "!abw history purge");
         cmd("42", Set.of(), "!abw mute");
-        assertEquals("That is not a valid player name.", replies.get(0));
-        assertEquals("That is not a valid player name.", replies.get(1));
-        assertTrue(replies.get(2).startsWith("Player not found"));
-        assertEquals("That is not a valid player name.", replies.get(3));
-        assertTrue(replies.get(4).startsWith("Usage: mute <player>"));
+        assertEquals("[AntiBadWords] Error. The player name is not valid.", replies.get(0));
+        assertEquals("[AntiBadWords] Error. The player name is not valid.", replies.get(1));
+        assertTrue(replies.get(2).startsWith("[AntiBadWords] Error. The plugin does not know this player"));
+        assertEquals("[AntiBadWords] Error. The player name is not valid.", replies.get(3));
+        assertTrue(replies.get(4).startsWith("[AntiBadWords] Usage: mute <player>"));
         assertEquals(0, engine.mutes().size());
     }
 
@@ -344,7 +344,7 @@ class DiscordLinkTest {
         cmd("42", Set.of(), "!abw reload");
         cmd("42", Set.of(), "!abw reload");
         cmd("42", Set.of(), "!abw reload");
-        assertTrue(replies.get(2).startsWith("Slow down"));
+        assertTrue(replies.get(2).startsWith("[AntiBadWords] Notice. You send too many commands"));
         cmd("43", Set.of("900"), "!abw reload");
         assertTrue(replies.get(3).contains("reloaded"), "another user has their own budget");
         now.addAndGet(31_000);

@@ -32,6 +32,8 @@
               java.release       Java language level (Minecraft 26.x requires Java 25)
         -->
         <!-- Loader name used in the jar file name: Antibadwords-RELEASE[Bukkit] - 2-<mc.version>.jar -->
+        <!-- The version players see in plugin.yml. It is NOT the jar name number (project.version stays 2, so the jars stay "- 2-<mc>.jar"). -->
+        <abw.display.version>2.1</abw.display.version>
         <loader.name>Bukkit</loader.name>
         <mc.version>1.21.11</mc.version>
         <mc.api.version>1.21</mc.api.version>
