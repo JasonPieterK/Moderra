@@ -1,0 +1,569 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AntiBadWords 2 - description preview</title><style>body{margin:0;background:#1b1b1b;font:16px/1.55 system-ui,sans-serif;color:#e6e6e6}
+.page{max-width:900px;margin:0 auto;padding:24px 16px 80px}
+h2{border-bottom:3px solid #F2C230;padding-bottom:4px;margin-top:2em}
+img{max-width:100%;height:auto;display:block;margin:16px 0}
+table{border-collapse:collapse;width:100%;margin:12px 0;display:block;overflow-x:auto}
+td,th{border:1px solid #555;padding:6px 10px;text-align:left}th{background:#2c2c2c}
+code{background:#2c2c2c;padding:1px 5px;border-radius:4px}pre{background:#2c2c2c;padding:12px;overflow-x:auto}pre code{padding:0}
+blockquote{border-left:6px solid #D6352B;margin:12px 0;padding:2px 14px;background:#262626}
+details{border:1px solid #555;padding:8px 12px;margin:8px 0}summary{cursor:pointer;font-weight:700}a{color:#7fb0ff}</style></head><body><div class="page"><p><img alt="AntiBadWords 2: chat filter, moderation, 4 server types, 6 Minecraft versions" src="images/01-hero.png" /></p>
+<p><strong>AntiBadWords 2 keeps your server chat clean.</strong> It blocks bad words before players see them. It warns, mutes, kicks or bans repeat offenders. It works on Bukkit, Spigot, Paper, Purpur, Fabric and Forge.</p>
+<blockquote>
+<p><strong>Please read the honest status first.</strong> Version 2 is compiled against the real Minecraft, Spigot, Fabric and Forge APIs. Nobody has run it on a live server yet. Please test it on a copy of your world before you use it on your main server. Details are in the section <a href="#honest-status">Honest status</a>.</p>
+</blockquote>
+<p><img alt="" src="images/09-divider.png" /></p>
+<h2 id="summary">Summary</h2>
+<ul>
+<li><strong>Word filter.</strong> 37 word lists, 3 strength levels, a whitelist and your own words.</li>
+<li><strong>Bypass tricks.</strong> It finds invisible letters, look-alike letters, leetspeak and <code>f*ck</code>.</li>
+<li><strong>Spam and links.</strong> Spam control, a link filter and a player-name check (you switch them on).</li>
+<li><strong>Checks everywhere.</strong> Chat, commands, signs (both sides), books, anvils, join names and command blocks.</li>
+<li><strong>Moderation.</strong> Strikes, an escalation ladder, a built-in mute and a history log.</li>
+<li><strong>Discord.</strong> Webhook alerts on all server types. DiscordSRV features on Bukkit.</li>
+<li><strong>In-game menu.</strong> Type <code>/abw</code> and change every setting in a chest menu.</li>
+<li><strong>Integrations.</strong> EssentialsX, LuckPerms, PlaceholderAPI, Vault, ban plugins and more (Bukkit family).</li>
+<li><strong>Same brain everywhere.</strong> All four server types use one shared engine. They make the same decisions.</li>
+</ul>
+<h2 id="what-it-does">What it does</h2>
+<p>A player types a bad word. AntiBadWords blocks the message. The player gets a strike. At a number of strikes that you choose, the player is punished. You decide what the punishment is.</p>
+<p>The plugin starts with safe defaults. English and your custom list are on. Spam, link and bypass-trick filters are off or only note what they see, until you switch them on. After the first start, open <code>/abw</code> and look around.</p>
+<p>A version 1 <code>config.yml</code> is converted automatically. The plugin keeps a backup named <code>config.yml.bak-&lt;date&gt;</code>.</p>
+<h2 id="where-it-checks">Where it checks</h2>
+<p><img alt="The nine places where AntiBadWords checks text" src="images/02-where.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Place</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Chat</td>
+<td>The message is blocked or cleaned. The player gets a strike.</td>
+</tr>
+<tr>
+<td>Commands</td>
+<td>The text of <code>/msg</code>, <code>/tell</code>, <code>/me</code>, <code>/say</code>, <code>/mail</code>, <code>/nick</code> and more is checked. You can change the list, or scan all commands.</td>
+</tr>
+<tr>
+<td>Signs</td>
+<td>Front side and back side.</td>
+</tr>
+<tr>
+<td>Books</td>
+<td>Every page and the title.</td>
+</tr>
+<tr>
+<td>Anvils</td>
+<td>The text of an item rename.</td>
+</tr>
+<tr>
+<td>Join names</td>
+<td>The player name is checked when the player joins.</td>
+</tr>
+<tr>
+<td>Command blocks</td>
+<td>A command with a blocked word does not run. Bukkit family only.</td>
+</tr>
+<tr>
+<td>Discord</td>
+<td>Messages typed in Discord are checked before they reach Minecraft. Needs DiscordSRV (Bukkit family only).</td>
+</tr>
+<tr>
+<td>Outgoing text</td>
+<td>Team and tab-list text. Needs ProtocolLib (optional, Bukkit family only).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="filters">Filters</h2>
+<p><img alt="The filter pipeline: evasion, bad words, links, spam" src="images/03-pipeline.png" /></p>
+<p>A message passes four checks in this order. You can change the order with <code>filters.check-order</code>.</p>
+<ol>
+<li><strong>Evasion.</strong> Removes invisible characters. Maps look-alike letters and leetspeak back to normal letters. Finds <code>f*ck</code>, <code>f u c k</code> and <code>fuuuuuck</code>.</li>
+<li><strong>Bad words.</strong> Compares whole words with your word lists. <code>class</code>, <code>closer</code> and <code>cocktail</code> stay safe. A whitelist protects more words. You can turn on partial matching for strict servers.</li>
+<li><strong>Links.</strong> Finds links, hidden links, IP addresses and invites. You choose the mode.</li>
+<li><strong>Spam.</strong> Six rules: rate, repeat, caps, flood, words and commands.</li>
+</ol>
+<p>The first check that blocks a message ends the search. A check can also clean a message. The next check then reads the cleaned text.</p>
+<p>Use <code>/abw check &lt;text&gt;</code> to test a text. The answer names the check that fired.</p>
+<p>Speed: in the engine speed test, 99 of 100 messages took less than 0.3 ms with every filter on.</p>
+<h2 id="moderation">Moderation</h2>
+<p><img alt="The escalation ladder: warn, mute, kick, tempban" src="images/04-ladder.png" /></p>
+<p>Every blocked message adds strikes. The <strong>escalation ladder</strong> is a list of steps. Each step has a strike number and a list of actions. The picture shows an example. You write your own ladder in <code>moderation/ladder.yml</code>.</p>
+<pre><code class="language-yaml">ladder:
+  steps:
+    warn:
+      at: 2
+      repeat: once
+      actions: [warn]
+    short-mute:
+      at: 4
+      repeat: once
+      actions: [&quot;mute 10m Bad language&quot;]
+    kick:
+      at: 6
+      repeat: once
+      actions: [&quot;kick Too much bad language&quot;]
+    long-ban:
+      at: 8
+      repeat: once
+      actions: [&quot;tempban 7d Repeated bad language&quot;]
+</code></pre>
+<ul>
+<li><strong>Actions:</strong> <code>warn</code>, <code>mute</code>, <code>kick</code>, <code>ban</code>, <code>tempban</code>, <code>ipban</code>, <code>command</code>, <code>effect</code>, <code>attribute</code>, <code>sound</code>, <code>reset-strikes</code>.</li>
+<li><strong>Strikes fade</strong> with time (<code>strikes.decay</code>). Strikes can survive a restart.</li>
+<li><strong>Built-in mute:</strong> <code>/abw mute &lt;player&gt; [time] [reason]</code>. Offline players work too.</li>
+<li><strong>History:</strong> a log of every event. By default it does not keep the chat text. Old months are deleted after 90 days.</li>
+<li><strong>Ban plugins:</strong> <code>tempban</code> and <code>ipban</code> use LiteBans, AdvancedBan, LibertyBans or EssentialsX if found. Minecraft itself cannot ban for a limited time. Without a ban plugin, use the <code>command</code> action.</li>
+<li><strong>Rules per world or group:</strong> <code>worlds.yml</code> gives a world, a permission or a group its own rules.</li>
+</ul>
+<h2 id="languages">Languages</h2>
+<p><img alt="37 word lists grouped by script" src="images/06-languages.png" /></p>
+<p>The plugin has 37 word lists for 35 languages. They cover Latin, Cyrillic, Arabic, Han, Greek, Hebrew, Devanagari, Bengali, Kana, Hangul and Thai scripts. Every list has three strength levels:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Mild insults</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Rude or vulgar words</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Severe words</td>
+</tr>
+</tbody>
+</table>
+<p><code>filters.protection-level</code> picks what is used: level 1 uses tier 3 only, level 2 uses tiers 2 and 3, level 3 uses all tiers.</p>
+<p>English and your <code>custom</code> list start on. Turn on more languages with <code>/abw lang enable de</code>. Add your own words with <code>/abw addword &lt;word&gt;</code>.</p>
+<p><strong>Important:</strong> An AI wrote the first drafts of all lists. A native speaker has not reviewed them. Every list is marked <code>unreviewed</code>. Please ask a native speaker to read the lists for your languages. A false-positive test checks normal sentences in all 37 languages, but it cannot replace a human reader.</p>
+<h2 id="in-game-menu">In-game menu</h2>
+<p><img alt="Map of the in-game chest menu" src="images/07-menu.png" /></p>
+<p>Type <code>/abw</code> to open a chest menu. Every setting of every config file is a button. Click to change a value. Click <strong>Done</strong> to save. Nothing is saved before you click Done.</p>
+<ul>
+<li>Pages: categories, language lists, word browser, ladder editor, muted players, world profiles, world rules and a settings search.</li>
+<li>Settings that need text ask you in chat. The answer is not shown to other players and gets no strike. Type <code>cancel</code> to stop.</li>
+<li>Permission <code>antibadwords.gui</code> opens the menu. Permission <code>antibadwords.gui.edit.&lt;category&gt;</code> allows changes in one category. Take it away to lock that category.</li>
+<li>Give <code>antibadwords.gui</code> only to people you trust. A change in the menu is as strong as a change in the files.</li>
+<li>On Fabric and Forge, the chest shows names only. It has no description lines yet.</li>
+</ul>
+<h2 id="discord">Discord</h2>
+<p>Everything is off until you set <code>discord.enabled: true</code> in <code>discord.yml</code>.</p>
+<ul>
+<li><strong>Webhook alerts (all server types).</strong> Staff see violations, punishments, mutes, spam and links in a Discord channel. You can use a second channel for a full log. Use <code>/abw discord test</code> to try it.</li>
+<li><strong>Safe by design.</strong> The plugin never prints the webhook URL. You can keep the URL in an environment variable (<code>${ENV:NAME}</code>). Players cannot make the bot ping people. Messages are queued, so Discord rate limits are respected.</li>
+<li><strong>DiscordSRV (Bukkit family only).</strong> Send alerts through DiscordSRV. Filter what people type in Discord before it reaches Minecraft (block, censor or log only). Run staff commands from Discord with the prefix <code>!abw</code> (<code>mute</code>, <code>unmute</code>, <code>history</code>, <code>strikes</code>, <code>check</code>, <code>reload</code>). Only listed roles and users can use them. Every command is off by default.</li>
+<li>Fabric and Forge have webhook alerts only.</li>
+</ul>
+<h2 id="integrations">Integrations</h2>
+<p><img alt="Optional integrations with other plugins" src="images/08-integrations.png" /></p>
+<p>All integrations are optional. If the other plugin is missing, nothing happens. If something fails, the plugin writes one log line and keeps working. All integration settings are in <code>integrations.yml</code>. <code>/abw info</code> lists what the plugin found.</p>
+<table>
+<thead>
+<tr>
+<th>Plugin</th>
+<th>What AntiBadWords does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EssentialsX and EssentialsX Chat</td>
+<td>Checks chat before Essentials formats it. Checks <code>/msg</code>, <code>/mail</code>, <code>/nick</code> and more. Checks nicknames on join. Can share the Essentials mute.</td>
+</tr>
+<tr>
+<td>LuckPerms</td>
+<td>Chooses a rule profile by group. Knows the permissions of offline players.</td>
+</tr>
+<tr>
+<td>PlaceholderAPI</td>
+<td>Gives placeholders such as <code>%antibadwords_strikes%</code> and <code>%antibadwords_muted%</code>.</td>
+</tr>
+<tr>
+<td>Vault</td>
+<td>Gives the group and prefix when LuckPerms is missing.</td>
+</tr>
+<tr>
+<td>LiteBans, AdvancedBan, LibertyBans</td>
+<td>Run the <code>tempban</code> and <code>ipban</code> ladder actions.</td>
+</tr>
+<tr>
+<td>ChatControl, VentureChat, HuskChat, CarbonChat, TownyChat</td>
+<td>Channel-based rule profiles. Earlier checks. Some have no usable chat event yet, so only their commands are scanned.</td>
+</tr>
+<tr>
+<td>Floodgate and Geyser</td>
+<td>Handle Bedrock player names.</td>
+</tr>
+<tr>
+<td>ProtocolLib</td>
+<td>Scans packets for signs, books and anvil names when Bukkit events are missing. Optional outgoing scan.</td>
+</tr>
+<tr>
+<td>PacketEvents</td>
+<td>Detected only. There is no listener yet.</td>
+</tr>
+<tr>
+<td>CoreProtect</td>
+<td>Records blocked sign and book text.</td>
+</tr>
+<tr>
+<td>Plan</td>
+<td>Adds strike and mute data to Plan.</td>
+</tr>
+<tr>
+<td>mcMMO, Towny, Factions, Citizens, DecentHolograms</td>
+<td>Check party, town and faction chat commands, NPC names and hologram lines.</td>
+</tr>
+<tr>
+<td>TAB and NametagEdit</td>
+<td>Their commands are scanned like chat.</td>
+</tr>
+<tr>
+<td>BungeeCord and Velocity</td>
+<td>Network sync shares mutes and strikes between servers. Off by default.</td>
+</tr>
+</tbody>
+</table>
+<p>Fabric and Forge cannot see other plugins. They have no plugin integrations. LuckPerms works there through permission nodes.</p>
+<h2 id="platforms-and-versions">Platforms and versions</h2>
+<p><img alt="Platform and version matrix" src="images/05-matrix.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Minecraft</th>
+<th style="text-align: center;">Bukkit / Spigot / Paper</th>
+<th style="text-align: center;">Purpur</th>
+<th style="text-align: center;">Fabric</th>
+<th style="text-align: center;">Forge</th>
+<th>Java on the server</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>26.3</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>26.2</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>26.1.2</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>26.1.1</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>26.1</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>25</td>
+</tr>
+<tr>
+<td>1.21.11</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td style="text-align: center;">yes</td>
+<td>21 or newer</td>
+</tr>
+</tbody>
+</table>
+<p>That is 24 jars. There is no Minecraft 26.0. The 2026 numbering starts at 26.1. Players install nothing. The mod or plugin goes on the server only. Folia is not supported.</p>
+<h2 id="installation">Installation</h2>
+<p><img alt="" src="images/09-divider.png" /></p>
+<ol>
+<li>Pick the jar for your server type and your Minecraft version. The name tells you both:
+   <code>Antibadwords-RELEASE[Bukkit] - 2-26.3.jar</code>
+   The server type is in the brackets (<code>Bukkit</code>, <code>Purpur</code>, <code>Fabric</code> or <code>Forge</code>). Then comes the version <code>2</code>. Then comes the Minecraft version.</li>
+<li>Use <code>[Bukkit]</code> for Bukkit, Spigot and Paper. Use <code>[Purpur]</code> for Purpur.</li>
+<li>Put the jar in the <code>plugins/</code> folder (Bukkit family) or the <code>mods/</code> folder (Fabric, Forge).</li>
+<li>Restart the server.</li>
+<li>Look at the config folder. It is <code>plugins/AntiBadWords/</code> or <code>config/antibadwords/</code>. Every file has a comment above every option.</li>
+<li>Change settings with <code>/abw</code> or edit the files. Then run <code>/abw reload</code>.</li>
+</ol>
+<p>On Fabric, the mod asks the Fabric Permissions API for permission nodes (LuckPerms for Fabric uses it). Check on your copy of the server that your permission setup works.</p>
+<h2 id="commands">Commands</h2>
+<p>Most commands need <code>antibadwords.admin</code>. Operators have it by default. In game, <code>/abw</code> opens the menu. The console gets text help.</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/abw</code> or <code>/abw gui [page]</code></td>
+<td>Opens the settings menu.</td>
+</tr>
+<tr>
+<td><code>/abw reload</code></td>
+<td>Reads the config folder again. Shows what is wrong.</td>
+</tr>
+<tr>
+<td><code>/abw addword &lt;word&gt;</code></td>
+<td>Adds a word to your custom list.</td>
+</tr>
+<tr>
+<td><code>/abw removeword &lt;word&gt;</code></td>
+<td>Removes a word from your custom list.</td>
+</tr>
+<tr>
+<td><code>/abw listwords</code></td>
+<td>Shows your words.</td>
+</tr>
+<tr>
+<td><code>/abw check &lt;text&gt;</code></td>
+<td>Shows if a text is blocked and which check fires.</td>
+</tr>
+<tr>
+<td><code>/abw lang list</code>, <code>enable &lt;code&gt;</code>, <code>disable &lt;code&gt;</code></td>
+<td>Controls the language lists.</td>
+</tr>
+<tr>
+<td><code>/abw whitelist add &lt;word&gt;</code>, <code>remove &lt;word&gt;</code>, <code>list</code></td>
+<td>Words that are never blocked.</td>
+</tr>
+<tr>
+<td><code>/abw violations &lt;player&gt;</code>, <code>resetviolations &lt;player&gt;</code></td>
+<td>Shows or clears strikes (classic commands).</td>
+</tr>
+<tr>
+<td><code>/abw strikes &lt;player&gt;</code>, <code>/abw ladder</code></td>
+<td>Shows strikes and the ladder.</td>
+</tr>
+<tr>
+<td><code>/abw mute &lt;player&gt; [time] [reason]</code>, <code>unmute &lt;player&gt;</code>, <code>mutes</code></td>
+<td>The built-in mute. Times: <code>30s</code>, <code>10m</code>, <code>2h</code>, <code>1d</code>, <code>perm</code>.</td>
+</tr>
+<tr>
+<td><code>/abw history &lt;player&gt;</code>, <code>recent</code>, <code>purge &lt;player&gt; confirm</code></td>
+<td>The history log.</td>
+</tr>
+<tr>
+<td><code>/abw discord test</code>, <code>status</code></td>
+<td>Tests Discord alerts.</td>
+</tr>
+<tr>
+<td><code>/abw network</code>, <code>/abw info</code></td>
+<td>Status of network sync and of the plugin.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="permissions">Permissions</h2>
+<table>
+<thead>
+<tr>
+<th>Permission</th>
+<th>Default</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>antibadwords.admin</code></td>
+<td>op</td>
+<td>All admin sub-commands</td>
+</tr>
+<tr>
+<td><code>antibadwords.notify</code></td>
+<td>op</td>
+<td>See every blocked word</td>
+</tr>
+<tr>
+<td><code>antibadwords.mute</code></td>
+<td>op</td>
+<td><code>/abw mute</code>, <code>unmute</code>, <code>mutes</code></td>
+</tr>
+<tr>
+<td><code>antibadwords.history</code></td>
+<td>op</td>
+<td><code>/abw history</code> (purge also needs admin)</td>
+</tr>
+<tr>
+<td><code>antibadwords.discord</code></td>
+<td>op</td>
+<td><code>/abw discord</code></td>
+</tr>
+<tr>
+<td><code>antibadwords.gui</code></td>
+<td>op</td>
+<td>Open the settings menu</td>
+</tr>
+<tr>
+<td><code>antibadwords.gui.edit.&lt;category&gt;</code></td>
+<td>true</td>
+<td>Change that category in the menu</td>
+</tr>
+<tr>
+<td><code>antibadwords.bypass</code></td>
+<td>nobody</td>
+<td>Never checked</td>
+</tr>
+<tr>
+<td><code>antibadwords.bypass.spam</code>, <code>.links</code>, <code>.evasion</code></td>
+<td>nobody</td>
+<td>Exempt from that filter</td>
+</tr>
+<tr>
+<td><code>antibadwords.bypass.mute</code></td>
+<td>nobody</td>
+<td>Never muted</td>
+</tr>
+<tr>
+<td><code>antibadwords.profile.&lt;name&gt;</code></td>
+<td>nobody</td>
+<td>Puts the player on that <code>worlds.yml</code> profile</td>
+</tr>
+</tbody>
+</table>
+<p>The same defaults apply on Bukkit (<code>plugin.yml</code>), Fabric (Fabric Permissions API) and Forge (Forge permission nodes).</p>
+<h2 id="configuration">Configuration</h2>
+<p>The settings are in a folder that looks the same on every server type:</p>
+<pre><code>config.yml               general: languages, strength, where to look, messages
+wordlists/&lt;code&gt;.yml     one file per language, plus custom.yml for your words
+moderation/ladder.yml    strikes and the escalation ladder
+moderation/mute.yml      the built-in mute
+moderation/history.yml   the history log
+filters/spam.yml         spam and flood control
+filters/links.yml        links, IP addresses, invites
+filters/evasion.yml      invisible characters, look-alike letters, leetspeak
+filters/confusables.yml  the look-alike and leetspeak tables
+worlds.yml               rules per world or group
+discord.yml              Discord alerts and commands
+integrations.yml         other plugins and network sync
+</code></pre>
+<p>Mistakes in a config file never break the server. A wrong value falls back to the default. The plugin reports the file and the key. Messages use a calm, formal style with Minecraft <code>&amp;</code> colour codes. Every option has a row in the guide <code>6-guides/CONFIGURATION.md</code> in the source repository.</p>
+<h2 id="faq">FAQ</h2>
+<details>
+<summary>Which file do I download?</summary>
+<p>Pick the server type and the Minecraft version. Example: <code>Antibadwords-RELEASE[Purpur] - 2-26.2.jar</code> for Purpur on Minecraft 26.2.</p>
+</details>
+<details>
+<summary>Does it work with my chat plugin?</summary>
+<p>It works with the standard chat event. It also has special support for EssentialsX Chat and for some chat-channel plugins. A plugin that sends chat without a chat event cannot be filtered. Test your chat plugin on a copy of your server.</p>
+</details>
+<details>
+<summary>Can staff swear?</summary>
+<p>Yes. Give them <code>antibadwords.bypass</code>.</p>
+</details>
+<details>
+<summary>A normal word is blocked. What do I do?</summary>
+<p>Run <code>/abw check &lt;word&gt;</code> to see the check that fired. Add the word with <code>/abw whitelist add &lt;word&gt;</code>.</p>
+</details>
+<details>
+<summary>Can I use only my own words?</summary>
+<p>Yes. Turn off the languages with <code>/abw lang disable en</code> and add words with <code>/abw addword</code>.</p>
+</details>
+<details>
+<summary>Does it store player data?</summary>
+<p>Yes, a little. It keeps strikes, mutes, a list of known player names and the history log in the <code>data/</code> folder. By default the history does not keep chat text. The last IP address of a player is kept for IP bans. You can turn it off with <code>known-players.store-ip</code>. IP addresses are personal data in many countries.</p>
+</details>
+<details>
+<summary>Does it slow my server?</summary>
+<p>The engine speed test shows less than 0.3 ms for 99 of 100 messages with every filter on. This is a test of the engine, not of a live server.</p>
+</details>
+<details>
+<summary>Can I upgrade from version 1?</summary>
+<p>Yes. The first start converts your old <code>config.yml</code>. The plugin keeps a backup. Check the result and test it.</p>
+</details>
+<details>
+<summary>Why is Discord missing on Fabric and Forge?</summary>
+<p>Webhook alerts work on all server types. DiscordSRV is a Bukkit plugin, so its features exist only on the Bukkit family.</p>
+</details>
+<h2 id="honest-status">Honest status</h2>
+<p><img alt="" src="images/09-divider.png" /></p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Engine unit tests</td>
+<td><strong>410 tests pass.</strong></td>
+</tr>
+<tr>
+<td>All 24 jars built on GitHub against the <strong>real</strong> Spigot, Minecraft, Fabric and Forge APIs</td>
+<td><strong>Yes.</strong></td>
+</tr>
+<tr>
+<td>Names of third-party plugins checked against the real jars</td>
+<td><strong>64 names, 0 failures.</strong></td>
+</tr>
+<tr>
+<td>A real server started with a version 2 jar and <code>/abw</code> commands tried</td>
+<td><strong>Not done.</strong></td>
+</tr>
+<tr>
+<td>A scripted player that swears in chat, signs, books and anvils</td>
+<td><strong>Not done in this round.</strong></td>
+</tr>
+<tr>
+<td>Any integration tried with the real plugin (EssentialsX, LuckPerms, DiscordSRV and others)</td>
+<td><strong>Not done.</strong></td>
+</tr>
+<tr>
+<td>Discord alerts sent to a real Discord</td>
+<td><strong>Not done.</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>What this means.</strong> The logic has automatic tests. The code fits the real APIs because it compiles against them. Nobody has watched version 2 work on a live server. Version 1 jars ran on real Fabric and Forge servers, but version 2 is a large rewrite.</p>
+<p><strong>What we ask you to do.</strong></p>
+<ol>
+<li>Install the jar on a <strong>copy of your world</strong>.</li>
+<li>Test chat, commands, signs, books, anvils, mute, the ladder and the menu.</li>
+<li>Test each plugin that you use with AntiBadWords.</li>
+<li>Ask a native speaker to read the word lists of your languages.</li>
+<li>Report problems on GitHub.</li>
+</ol>
+<p><strong>Known gaps in version 2.0.</strong></p>
+<ul>
+<li>The chest menu on Fabric and Forge has no description lines.</li>
+<li>The text prompt of the menu uses chat. A sign-editor prompt is not available.</li>
+<li>PacketEvents is detected but not used.</li>
+<li>CarbonChat, ChatControl and FactionsUUID events are not used. VentureChat, HuskChat, TAB and NametagEdit have no usable events. The plugin scans their commands only.</li>
+<li>On Fabric and Forge, a censored message becomes a blocked message. Mods cannot change chat text.</li>
+<li>Minecraft 26.2 and 26.3 were never played with the scripted player, even in version 1.</li>
+</ul>
+<h2 id="licence-and-support">Licence and support</h2>
+<p><strong>All Rights Reserved.</strong> Copyright (c) 2026 Jason P. Version 2 replaces the MIT licence of version 1. Read the <code>LICENSE</code> file in the source repository before you copy or share the files.</p>
+<ul>
+<li>Source code, guides and releases: https://github.com/JasonPieterK/AntiBadWordsPlugin</li>
+<li>Report a bug or ask a question: GitHub Issues in the same repository.</li>
+<li>Changelog: <code>CHANGELOG.md</code> in the repository.</li>
+<li>Test list for real servers: <code>handoffs/BUILD-VERIFICATION-TODO.md</code> in the repository.</li>
+</ul></div></body></html>
