@@ -1,6 +1,7 @@
 # API manifest for tools/verify-apis.py. Built by grepping 2-plugin-bukkit-purpur/src (reflection + shims).
 #
 # @jar <name> | <source> ; <fallback source> ; ...     sources: "url <https://...jar>" or
+#                                                         "ghrelease <owner/repo> <asset-name-regex>" (newest release asset .jar) or
 #                                                         "mvn <repo> <group> <artifact> [version]" (no version = newest release;
 #                                                         X-SNAPSHOT is resolved through its maven-metadata.xml)
 # <jarname> | <fully.qualified.Class> | <member>       member: "-" = class must exist
@@ -16,13 +17,24 @@
 @jar luckperms | mvn https://repo1.maven.org/maven2 net.luckperms api
 @jar protocollib | mvn https://repo.dmulloy2.net/repository/public com.comphenix.protocol ProtocolLib
 @jar packetevents | mvn https://repo.codemc.io/repository/maven-releases com.github.retrooper packetevents-spigot
+@jar packetevents-api | mvn https://repo.codemc.io/repository/maven-releases com.github.retrooper packetevents-api
 @jar coreprotect | mvn https://maven.playpro.com net.coreprotect coreprotect
-@jar plan | mvn https://repo.codemc.io/repository/maven-public com.djrapitops Plan-api ; url https://jitpack.io/com/github/plan-player-analytics/Plan/5.6-build-2965/Plan-5.6-build-2965.jar
+@jar plan | mvn https://repo.playeranalytics.net/releases com.djrapitops Plan-api ; mvn https://repo.codemc.io/repository/maven-public com.djrapitops Plan-api ; ghrelease plan-player-analytics/Plan (?i)^plan.*\.jar$ ; url https://jitpack.io/com/github/plan-player-analytics/Plan/5.6-build-2965/Plan-5.6-build-2965.jar
 @jar citizens | mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizens-main ; mvn https://maven.citizensnpcs.co/repo net.citizensnpcs citizensapi
-@jar decentholograms | mvn https://repo.codemc.io/repository/maven-public com.github.decentsoftware-eu decentholograms ; url https://jitpack.io/com/github/decentsoftware-eu/decentholograms/2.9.5/decentholograms-2.9.5.jar
-@jar advancedban | url https://jitpack.io/com/github/DevLeoko/AdvancedBan/2.3.0/AdvancedBan-2.3.0.jar
-@jar libertybans | mvn https://repo1.maven.org/maven2 space.arim.libertybans bans-api
+@jar decentholograms | ghrelease DecentSoftware-eu/DecentHolograms (?i)decentholograms.*\.jar$ ; mvn https://repo.codemc.io/repository/maven-public com.github.decentsoftware-eu decentholograms ; url https://jitpack.io/com/github/decentsoftware-eu/decentholograms/2.9.5/decentholograms-2.9.5.jar
+@jar advancedban | ghrelease DevLeoko/AdvancedBan (?i)advancedban.*\.jar$ ; url https://jitpack.io/com/github/DevLeoko/AdvancedBan/2.3.0/AdvancedBan-2.3.0.jar
+@jar libertybans | mvn https://mvn-repo.arim.space/lesser-gpl3 space.arim.libertybans bans-api ; mvn https://repo1.maven.org/maven2 space.arim.libertybans bans-api ; ghrelease A248/LibertyBans (?i)libertybans.*\.jar$
 @jar floodgate | mvn https://repo.opencollab.dev/maven-releases org.geysermc.floodgate api ; mvn https://repo.opencollab.dev/maven-snapshots org.geysermc.floodgate api 2.2.4-SNAPSHOT
+# --- extra jars only for tools/plugin-dump-classes.txt (plugin-api-dump job); no manifest entries, failures are not fatal ---
+@jar chatcontrol | ghrelease kangarko/ChatControl-Red (?i)chatcontrol.*\.jar$
+@jar venturechat | ghrelease Aust1n46/VentureChat (?i)venturechat.*\.jar$ ; mvn https://repo.codemc.io/repository/maven-public mineverse.Aust1n46.chat VentureChat
+@jar huskchat | ghrelease WiIliam278/HuskChat (?i)huskchat.*(bukkit|paper|spigot).*\.jar$ ; ghrelease WiIliam278/HuskChat (?i)huskchat.*\.jar$ ; mvn https://repo.william278.net/releases net.william278.huskchat huskchat-bukkit
+@jar carbonchat | mvn https://repo1.maven.org/maven2 net.draycia.carbon api ; mvn https://repo.draycia.dev/releases net.draycia.carbon api ; ghrelease Hexaoxide/Carbon (?i)carbon.*(paper|bukkit).*\.jar$
+@jar tab | ghrelease NEZNAMY/TAB (?i)^tab.*\.jar$ ; mvn https://repo1.maven.org/maven2 me.neznamy tab-api
+@jar nametagedit | ghrelease sgtcaze/NametagEdit (?i)nametagedit.*\.jar$ ; url https://jitpack.io/com/github/sgtcaze/NametagEdit/4.5.19/NametagEdit-4.5.19.jar
+@jar mcmmo | mvn https://nexus.neetgames.com/repository/maven-public com.gmail.nossr50.mcMMO mcMMO
+@jar townychat | ghrelease TownyAdvanced/TownyChat (?i)townychat.*\.jar$
+@jar factionsuuid | ghrelease drtshock/Factions (?i)factions.*\.jar$ ; mvn https://ci.ender.zone/plugin/repository/everything com.massivecraft Factions
 @jar spigot-1.21.11 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 1.21.11-R0.1-SNAPSHOT
 @jar spigot-26.3 | mvn https://hub.spigotmc.org/nexus/content/repositories/snapshots org.spigotmc spigot-api 26.3-R0.1-SNAPSHOT
 
@@ -88,7 +100,7 @@ coreprotect | net.coreprotect.CoreProtectAPI | logCommand(org.bukkit.entity.Play
 
 # --- Detected by plugin name only; main API classes listed advisory ---
 ?protocollib | com.comphenix.protocol.ProtocolLibrary | getProtocolManager()
-?packetevents | com.github.retrooper.packetevents.PacketEvents | getAPI()
+?packetevents-api | com.github.retrooper.packetevents.PacketEvents | getAPI()
 ?plan | com.djrapitops.plan.capability.CapabilityService | -
 ?citizens | net.citizensnpcs.api.CitizensAPI | getNPCRegistry()
 ?decentholograms | eu.decentsoftware.holograms.api.DHAPI | -

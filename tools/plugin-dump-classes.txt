@@ -1,0 +1,86 @@
+# Classes printed (javap -public, full classpath = every jar from api-manifest.txt) by the plugin-api-dump job.
+# Format: <jar name from api-manifest.txt> | <class>   (nested classes: dots or $ both work)
+# Run: python3 tools/verify-apis.py tools/api-manifest.txt --jars plugin-jars --dump tools/plugin-dump-classes.txt
+
+# --- ProtocolLib: packet listening (sign update, book edit, anvil rename) ---
+protocollib | com.comphenix.protocol.ProtocolLibrary
+protocollib | com.comphenix.protocol.ProtocolManager
+protocollib | com.comphenix.protocol.events.PacketAdapter
+protocollib | com.comphenix.protocol.events.PacketEvent
+protocollib | com.comphenix.protocol.events.PacketContainer
+protocollib | com.comphenix.protocol.PacketType$Play$Client
+protocollib | com.comphenix.protocol.reflect.StructureModifier
+protocollib | com.comphenix.protocol.wrappers.WrappedChatComponent
+
+# --- PacketEvents ---
+packetevents-api | com.github.retrooper.packetevents.PacketEvents
+packetevents-api | com.github.retrooper.packetevents.PacketEventsAPI
+packetevents-api | com.github.retrooper.packetevents.event.PacketListener
+packetevents-api | com.github.retrooper.packetevents.event.PacketListenerAbstract
+packetevents-api | com.github.retrooper.packetevents.event.PacketReceiveEvent
+packetevents-api | com.github.retrooper.packetevents.event.EventManager
+packetevents-api | com.github.retrooper.packetevents.protocol.packettype.PacketType$Play$Client
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientUpdateSign
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientEditBook
+packetevents-api | com.github.retrooper.packetevents.wrapper.play.client.WrapperPlayClientNameItem
+packetevents | io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder
+
+# --- Plan DataExtension API ---
+plan | com.djrapitops.plan.extension.DataExtension
+plan | com.djrapitops.plan.extension.annotation.PluginInfo
+plan | com.djrapitops.plan.extension.annotation.NumberProvider
+plan | com.djrapitops.plan.extension.annotation.StringProvider
+plan | com.djrapitops.plan.extension.ExtensionService
+plan | com.djrapitops.plan.extension.CallEvents
+plan | com.djrapitops.plan.capability.CapabilityService
+
+# --- Chat plugins ---
+chatcontrol | org.mineacademy.chatcontrol.api.ChatControlAPI
+chatcontrol | org.mineacademy.chatcontrol.api.PlayerMessageEvent
+chatcontrol | org.mineacademy.chatcontrol.api.ChatChannelEvent
+venturechat | mineverse.Aust1n46.chat.api.MineverseChatAPI
+venturechat | mineverse.Aust1n46.chat.api.events.VentureChatEvent
+venturechat | mineverse.Aust1n46.chat.api.events.ChannelJoinEvent
+huskchat | net.william278.huskchat.api.HuskChatAPI
+huskchat | net.william278.huskchat.event.ChatMessageEvent
+huskchat | net.william278.huskchat.event.PrivateMessageEvent
+carbonchat | net.draycia.carbon.api.CarbonChat
+carbonchat | net.draycia.carbon.api.CarbonChatProvider
+carbonchat | net.draycia.carbon.api.event.CarbonEventHandler
+carbonchat | net.draycia.carbon.api.event.events.CarbonChatEvent
+carbonchat | net.draycia.carbon.api.event.CarbonEvent
+
+# --- TAB / NametagEdit ---
+tab | me.neznamy.tab.api.TabAPI
+tab | me.neznamy.tab.api.TabPlayer
+tab | me.neznamy.tab.api.event.EventBus
+tab | me.neznamy.tab.api.event.TabEvent
+tab | me.neznamy.tab.api.event.player.PlayerLoadEvent
+tab | me.neznamy.tab.api.nametag.NameTagManager
+tab | me.neznamy.tab.api.tablist.TabListFormatManager
+nametagedit | com.nametagedit.plugin.api.INametagApi
+nametagedit | com.nametagedit.plugin.NametagEdit
+
+# --- mcMMO / Towny / Factions chat events ---
+mcmmo | com.gmail.nossr50.events.chat.McMMOChatEvent
+mcmmo | com.gmail.nossr50.events.chat.McMMOPartyChatEvent
+mcmmo | com.gmail.nossr50.events.chat.McMMOAdminChatEvent
+townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent
+townychat | com.palmergames.bukkit.TownyChat.events.PlayerJoinChatChannelEvent
+townychat | com.palmergames.bukkit.TownyChat.channels.Channel
+factionsuuid | com.massivecraft.factions.event.FPlayerChatEvent
+factionsuuid | com.massivecraft.factions.FPlayer
+
+# --- DiscordSRV ---
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommandProvider
+discordsrv | github.scarsz.discordsrv.api.commands.PluginSlashCommand
+discordsrv | github.scarsz.discordsrv.api.commands.SlashCommand
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessagePreProcessEvent
+discordsrv | github.scarsz.discordsrv.api.events.DiscordGuildMessageReceivedEvent
+
+# --- EssentialsX mute API (User extends UserData, implements IUser) ---
+essentials | com.earth2me.essentials.User
+essentials | com.earth2me.essentials.UserData
+essentials | net.ess3.api.IUser
+essentials | com.earth2me.essentials.IConf
