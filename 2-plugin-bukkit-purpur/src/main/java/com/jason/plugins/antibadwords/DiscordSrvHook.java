@@ -33,7 +33,8 @@ import org.bukkit.plugin.java.JavaPlugin;
  * </ul>
  * Censor (rewrite): {@code DiscordGuildMessagePostProcessEvent#getProcessedMessage()} / {@code #setProcessedMessage(String)} (unverified; if
  * missing, {@code censor} blocks) and the same event's {@code setCancelled(boolean)} as emergency fallback. Listed in BUILD-VERIFICATION-TODO.
- * Not used: slash commands (annotation based, cannot be done by reflection).
+ * Slash commands: {@link DiscordSrvSlashCommands} (annotation based, compiled against name-only shims); registered only when
+ * {@code discord.commands.style} is {@code slash} or {@code both}.
  * Nothing here ever logs a webhook URL or any other secret.
  */
 final class DiscordSrvHook implements DiscordBridge {
@@ -52,6 +53,7 @@ final class DiscordSrvHook implements DiscordBridge {
     private DiscordLink link;
     private DiscordSrvListener listener;
     private DiscordSrvPostListener postListener;
+    private DiscordSrvSlashCommands slash;
     /** The Minecraft-bound text can be rewritten (post-process event with a processed-text getter and setter exists). */
     private boolean rewrite;
     /** Censored texts waiting for DiscordSRV's post-process event: original raw text to {censored text, time added}. */
@@ -116,6 +118,7 @@ final class DiscordSrvHook implements DiscordBridge {
             api.getClass().getMethod("subscribe", Object.class).invoke(api, listener);
             inbound = true;
             subscribeRewrite();
+            subscribeSlash();
         } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
             listener = null;
             log.warn("Could not subscribe to DiscordSRV events (" + ex.getClass().getSimpleName()
@@ -126,7 +129,9 @@ final class DiscordSrvHook implements DiscordBridge {
         log.info("Discord to Minecraft filter: " + (inbound ? (engine.value(DiscordSrvSettings.INBOUND_ENABLED) ? "ON" : "off (discord.inbound.enabled)")
             : "unavailable") + "; commands typed in Discord: " + (inbound ? "prefix '" + engine.value(DiscordSrvSettings.PREFIX)
             + "' (each command is off until switched on and a role/user is listed)" : "unavailable") + ".");
-        log.info("Not supported in this version: DiscordSRV slash commands (use the prefix commands). Censoring the text of a Discord message: "
+        log.info("Slash commands (discord.commands.style: " + engine.value(DiscordSrvSettings.STYLE) + "): "
+            + (slash != null ? "registered with DiscordSRV (/abw-mute, /abw-unmute, /abw-history, /abw-strikes, /abw-check, /abw-reload)."
+            : "not registered.") + " Censoring the text of a Discord message: "
             + (rewrite ? "available (rewrites DiscordSRV's processed message)." : "unavailable, action 'censor' blocks instead."));
     }
 
@@ -164,6 +169,7 @@ final class DiscordSrvHook implements DiscordBridge {
         }
         listener = null;
         postListener = null;
+        unsubscribeSlash();
         synchronized (pending) {
             pending.clear();
         }
@@ -350,8 +356,162 @@ final class DiscordSrvHook implements DiscordBridge {
         }
     }
 
+    // ------------------------------------------------------------------------------------------
+    // Slash commands (DiscordSrvSlashCommands)
+    // ------------------------------------------------------------------------------------------
+
+    /**
+     * Registers the slash commands with DiscordSRV when {@code discord.commands.style} is {@code slash} or {@code both}. The method of
+     * DiscordSRV's {@code ApiManager} that takes a {@code SlashCommandProvider} is found by its parameter type (its name is not in the
+     * verified dump yet); when there is none, one log line says so and the prefix commands stay the way.
+     */
+    private void subscribeSlash() {
+        String style = engine.value(DiscordSrvSettings.STYLE);
+        if (DiscordSrvSettings.STYLE_PREFIX.equals(style)) {
+            return;
+        }
+        try {
+            DiscordSrvSlashCommands provider = new DiscordSrvSlashCommands(this, discordSrv);
+            Method add = null;
+            for (Method m : api.getClass().getMethods()) {
+                Class<?>[] p = m.getParameterTypes();
+                String n = m.getName().toLowerCase(java.util.Locale.ROOT);
+                if (p.length == 1 && p[0] != Object.class && p[0].isInstance(provider) && n.contains("slash") && n.startsWith("add")) {
+                    add = m;
+                    break;
+                }
+            }
+            if (add == null) {
+                log.warn("discord.commands.style is '" + style + "' but this DiscordSRV has no method to add a slash command provider: "
+                    + "slash commands are OFF, use the prefix commands.");
+                return;
+            }
+            add.invoke(api, provider);
+            api.getClass().getMethod("subscribe", Object.class).invoke(api, provider); // the @SlashCommand methods are found like @Subscribe methods
+            slash = provider;
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
+            slash = null;
+            log.warn("Could not register the DiscordSRV slash commands (" + ex.getClass().getSimpleName() + "): they are OFF, use the prefix commands.");
+        }
+    }
+
+    private void unsubscribeSlash() {
+        Object provider = slash;
+        slash = null;
+        if (provider == null) {
+            return;
+        }
+        try {
+            for (Method m : api.getClass().getMethods()) {
+                Class<?>[] p = m.getParameterTypes();
+                String n = m.getName().toLowerCase(java.util.Locale.ROOT);
+                if (p.length == 1 && p[0] != Object.class && p[0].isInstance(provider) && n.contains("slash")
+                    && (n.startsWith("remove") || n.startsWith("unregister"))) {
+                    m.invoke(api, provider);
+                }
+            }
+            api.getClass().getMethod("unsubscribe", Object.class).invoke(api, provider);
+        } catch (ReflectiveOperationException | RuntimeException | LinkageError ex) {
+            // DiscordSRV may already be shutting down
+        }
+    }
+
+    /**
+     * Called by {@link DiscordSrvSlashCommands} for one slash command. {@code event} is DiscordSRV's (shaded JDA) SlashCommandEvent.
+     * The engine decides ({@link DiscordLink#onSlashCommand}); the answer is sent as an ephemeral reply when the event has
+     * {@code reply(String)}, otherwise into the channel of the command.
+     */
+    void onSlash(Object event, String word) {
+        DiscordLink current = link;
+        try {
+            Object user = call(event, "getUser");
+            Object channel = call(event, "getChannel");
+            Set<String> roles = new HashSet<>();
+            Object member = call(event, "getMember");
+            if (member != null && call(member, "getRoles") instanceof List<?> list) {
+                for (Object role : list) {
+                    roles.add(String.valueOf(call(role, "getId")));
+                }
+            }
+            Map<String, String> options = new LinkedHashMap<>();
+            if (call(event, "getOptions") instanceof List<?> list) {
+                for (Object option : list) {
+                    options.put(String.valueOf(call(option, "getName")), String.valueOf(call(option, "getAsString")));
+                }
+            }
+            String userId = user == null ? "" : String.valueOf(call(user, "getId"));
+            DiscordLink.Incoming in = new DiscordLink.Incoming(channel == null ? "" : String.valueOf(call(channel, "getId")),
+                channel == null ? "" : String.valueOf(call(channel, "getName")), userId, user == null ? "" : String.valueOf(call(user, "getName")),
+                roles, "");
+            java.util.function.Consumer<String> reply = text -> answer(event, channel, text);
+            if (current == null) {
+                reply.accept(DiscordSrvSlashCommands.REFUSED);
+                return;
+            }
+            current.onSlashCommand(in, word, DiscordSrvSlashCommands.arguments(word, options), reply);
+        } catch (ReflectiveOperationException | RuntimeException ex) {
+            warnOnce("slash", "A DiscordSRV slash command could not be handled (" + ex.getClass().getSimpleName()
+                + "). Does this DiscordSRV version differ from 1.x?");
+            answer(event, null, DiscordSrvSlashCommands.REFUSED);
+        }
+    }
+
+    private void answer(Object event, Object channel, String text) {
+        try {
+            Object action = invoke(event, "reply", cut(text));
+            if (action != null) {
+                Object ephemeral = null;
+                try {
+                    ephemeral = invoke(action, "setEphemeral", Boolean.TRUE);
+                } catch (ReflectiveOperationException ex) {
+                    // an answer that everybody sees is acceptable; it has no secrets
+                }
+                call(ephemeral != null ? ephemeral : action, "queue");
+                return;
+            }
+        } catch (ReflectiveOperationException | RuntimeException ex) {
+            warnOnce("slash-reply", "This DiscordSRV version has no usable reply(String) on the slash command event ("
+                + ex.getClass().getSimpleName() + "): answers go to the channel and Discord may show 'application did not respond'.");
+        }
+        try {
+            if (channel != null) {
+                send(channel, text);
+            }
+        } catch (ReflectiveOperationException | RuntimeException ex) {
+            warnOnce("slash-channel", "Could not answer a slash command in Discord (" + ex.getClass().getSimpleName() + ").");
+        }
+    }
+
+    /** Calls a public one-argument method by name (the argument type is matched by instance). */
+    private static Object invoke(Object target, String name, Object argument) throws ReflectiveOperationException {
+        ArrayDeque<Class<?>> todo = new ArrayDeque<>();
+        todo.add(target.getClass());
+        Set<Class<?>> seen = new HashSet<>();
+        while (!todo.isEmpty()) {
+            Class<?> c = todo.poll();
+            if (c == null || !seen.add(c)) {
+                continue;
+            }
+            if (Modifier.isPublic(c.getModifiers())) {
+                for (Method m : c.getMethods()) {
+                    Class<?>[] p = m.getParameterTypes();
+                    if (m.getName().equals(name) && p.length == 1 && wrap(p[0]).isInstance(argument)) {
+                        return m.invoke(target, argument);
+                    }
+                }
+            }
+            todo.add(c.getSuperclass());
+            todo.addAll(List.of(c.getInterfaces()));
+        }
+        throw new NoSuchMethodException(name);
+    }
+
+    private static Class<?> wrap(Class<?> c) {
+        return c == boolean.class ? Boolean.class : c;
+    }
+
     /** Calls a public no-argument method by name; looks at public interfaces and classes first (JDA's implementations are not public). */
-    private static Object call(Object target, String name) throws ReflectiveOperationException {
+    static Object call(Object target, String name) throws ReflectiveOperationException {
         if (target == null) {
             return null;
         }

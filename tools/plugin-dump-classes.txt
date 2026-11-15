@@ -140,3 +140,10 @@ protocollib | com.comphenix.protocol.events.AbstractStructure
 protocollib | com.comphenix.protocol.events.InternalStructure
 protocollib | com.comphenix.protocol.wrappers.AbstractWrapper
 protocollib | com.comphenix.protocol.wrappers.PlayerInfoData
+# --- task 46: members the slash command reply needs that the first dump did not list (reply, getUser, getMember, ApiManager add/remove provider) ---
+discordsrv | github.scarsz.discordsrv.api.ApiManager
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.events.interaction.GenericInteractionCreateEvent
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands.CommandInteraction
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.InteractionCallbackAction
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.RestAction

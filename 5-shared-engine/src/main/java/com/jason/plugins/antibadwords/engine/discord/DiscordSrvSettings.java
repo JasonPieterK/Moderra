@@ -15,6 +15,9 @@ public final class DiscordSrvSettings {
     public static final String ACTION_LOG_ONLY = "log-only";
     /** The source name of messages that come from Discord. */
     public static final String SOURCE = "discord-in";
+    public static final String STYLE_PREFIX = "prefix";
+    public static final String STYLE_SLASH = "slash";
+    public static final String STYLE_BOTH = "both";
     private static final String CATEGORY = "Discord";
     private static final String D = "discord.discordsrv.";
     private static final String I = "discord.inbound.";
@@ -52,6 +55,11 @@ public final class DiscordSrvSettings {
     public static final Setting<String> PREFIX = s(Setting.string(C + "prefix", "!abw").title("Command prefix in Discord")
         .description("Moderation from Discord works by typing a message that starts with this prefix, for example: !abw mute Steve 1h spam\n"
             + "(DiscordSRV slash commands are not used by this plugin.) A prefix message is never relayed to Minecraft."));
+    public static final Setting<String> STYLE = s(Setting.choice(C + "style", STYLE_PREFIX, STYLE_PREFIX, STYLE_SLASH, STYLE_BOTH)
+        .title("Discord command style").description("prefix = typed messages that start with the prefix (the old behaviour), slash = DiscordSRV slash\n"
+            + "commands /abw-mute, /abw-unmute, /abw-history, /abw-strikes, /abw-check, /abw-reload, both = the two ways. Slash commands are\n"
+            + "registered with DiscordSRV when the server starts, so a change needs a restart. The same allow-lists, switches,\n"
+            + "channels and rate limit apply to both ways."));
     public static final Setting<Boolean> MUTE = command("mute", "mute <player> [time] [reason]");
     public static final Setting<Boolean> UNMUTE = command("unmute", "unmute <player>");
     public static final Setting<Boolean> HISTORY = command("history", "history <player> [page]");
@@ -98,7 +106,7 @@ public final class DiscordSrvSettings {
 
     public static void register(SettingsRegistry r) {
         List.of(ALERT_CHANNEL, LOG_CHANNEL, INBOUND_ENABLED, INBOUND_ACTION, INBOUND_CHANNELS, INBOUND_EXCEPT, BYPASS_ROLES, BYPASS_USERS,
-            NOTIFY_SENDER, NOTIFY_TEXT, PREFIX, MUTE, UNMUTE, HISTORY, STRIKES, CHECK, RELOAD, ALLOWED_ROLES, ALLOWED_USERS, COMMAND_CHANNELS,
+            NOTIFY_SENDER, NOTIFY_TEXT, PREFIX, STYLE, MUTE, UNMUTE, HISTORY, STRIKES, CHECK, RELOAD, ALLOWED_ROLES, ALLOWED_USERS, COMMAND_CHANNELS,
             RATE_MAX, RATE_WINDOW).forEach(r::register);
     }
 }

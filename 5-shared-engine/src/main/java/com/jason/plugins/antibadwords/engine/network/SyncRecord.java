@@ -9,7 +9,7 @@ import org.yaml.snakeyaml.constructor.SafeConstructor;
 
 /**
  * One change of shared state, one JSON line. Kinds: {@code mute} (name, until, reason, by), {@code unmute},
- * {@code strike} (weight), {@code reset}.
+ * {@code strike} (weight), {@code reset}; {@code hello} and {@code ack} for the bridge check.
  *
  * @param origin the server that made the change
  * @param ts     wall clock milliseconds of the change (decides conflicts)
@@ -20,6 +20,18 @@ public record SyncRecord(String origin, long ts, String kind, UUID player, Strin
     public static final String UNMUTE = "unmute";
     public static final String STRIKE = "strike";
     public static final String RESET = "reset";
+    /** Start-up check of the plugin messaging bridge: "is anybody there?" and the answer. Carry no state. */
+    public static final String HELLO = "hello";
+    public static final String ACK = "ack";
+    private static final UUID NOBODY = new UUID(0L, 0L);
+
+    public static SyncRecord hello(String origin, long ts) {
+        return new SyncRecord(origin, ts, HELLO, NOBODY, "", 0, "", "", 0);
+    }
+
+    public static SyncRecord ack(String origin, long ts) {
+        return new SyncRecord(origin, ts, ACK, NOBODY, "", 0, "", "", 0);
+    }
 
     public static SyncRecord mute(String origin, long ts, UUID player, String name, long until, String reason, String by) {
         return new SyncRecord(origin, ts, MUTE, player, name, until, reason, by, 0);
@@ -94,7 +106,8 @@ public record SyncRecord(String origin, long ts, String kind, UUID player, Strin
                 return null;
             }
             String kind = String.valueOf(m.get("k"));
-            if (!MUTE.equals(kind) && !UNMUTE.equals(kind) && !STRIKE.equals(kind) && !RESET.equals(kind)) {
+            if (!MUTE.equals(kind) && !UNMUTE.equals(kind) && !STRIKE.equals(kind) && !RESET.equals(kind)
+                && !HELLO.equals(kind) && !ACK.equals(kind)) {
                 return null;
             }
             return new SyncRecord(String.valueOf(m.get("o")), ((Number) m.get("t")).longValue(), kind,

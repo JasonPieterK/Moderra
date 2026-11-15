@@ -42,6 +42,19 @@ public final class NetworkSettings {
         .description("Strike points add up over the whole network, and a reset (for example after a punishment) resets everywhere.\n"
             + "Conflict rule: points are added, never overwritten; points older than the newest reset of that player are dropped."));
 
+    public static final Setting<Boolean> CHECK = s(Setting.bool(N + "check-bridge", true)
+        .title("Check the plugin messaging bridge")
+        .description("Mode plugin-messaging: after start, send one \"hello\" and wait for any answer of another server. When nothing answers,\n"
+            + "one warning names the likely causes (the BungeeCord plugin message bridge of the proxy is off, or no other server runs this plugin)."));
+    public static final Setting<Duration> CHECK_TIMEOUT = s(Setting.duration(N + "check-timeout", Duration.ofSeconds(90)).range(5, 3600)
+        .title("Bridge check time")
+        .description("How long to wait for an answer before the warning. The time starts when a player is online and the hello was sent."));
+    public static final Setting<Integer> JOURNAL_MAX_KB = s(Setting.integer(N + "journal-max-kb", 0).range(0, 1048576)
+        .title("Journal size limit (KB)")
+        .description("Mode shared-folder: when the journal of this server is larger than this, the part that every other server has read is\n"
+            + "replaced by a short summary (active mutes, last resets). 0 = never shrink (default).\n"
+            + "Every server of the network needs this version of the plugin before you switch it on."));
+
     private NetworkSettings() {
     }
 
@@ -50,7 +63,7 @@ public final class NetworkSettings {
     }
 
     public static void register(SettingsRegistry registry) {
-        for (Setting<?> setting : new Setting<?>[] {MODE, FOLDER, SERVER_ID, POLL, SYNC_MUTES, SYNC_STRIKES}) {
+        for (Setting<?> setting : new Setting<?>[] {MODE, FOLDER, SERVER_ID, POLL, SYNC_MUTES, SYNC_STRIKES, CHECK, CHECK_TIMEOUT, JOURNAL_MAX_KB}) {
             registry.register(setting);
         }
     }

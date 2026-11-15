@@ -48,6 +48,8 @@ public final class NetworkSync {
     private volatile long lastSync;
     private volatile MuteService mutes;
     private volatile PersistentStrikeService strikes;
+    /** Bridge check (plugin-messaging): engine time when the wait started, 0 = no check running. */
+    private volatile long checkStart;
 
     public NetworkSync(Engine engine) {
         this.engine = engine;
@@ -163,7 +165,7 @@ public final class NetworkSync {
         }
         SyncChannel created = null;
         if (NetworkSettings.SHARED_FOLDER.equals(wanted)) {
-            created = new SharedFolderChannel(folder(), id, log);
+            created = new SharedFolderChannel(folder(), id, log, () -> engine.value(NetworkSettings.JOURNAL_MAX_KB) * 1024L, engine::now);
         } else if (transport == null) {
             log.warn("integrations.network.mode is plugin-messaging but this loader provides no plugin messaging transport: "
                 + "nothing is synced. Use shared-folder instead.");
@@ -173,6 +175,11 @@ public final class NetworkSync {
         }
         channel = created;
         log.info("Network sync: " + created.describe() + " (mutes " + (syncMutes ? "on" : "off") + ", strikes " + (syncStrikes ? "on" : "off") + ").");
+        checkStart = 0;
+        if (created instanceof PluginMessagingChannel && engine.value(NetworkSettings.CHECK)) {
+            checkStart = Math.max(1, engine.now());
+            created.send(SyncRecord.hello(id, engine.now()));
+        }
         schedule(generation);
     }
 
@@ -217,9 +224,36 @@ public final class NetworkSync {
             return;
         }
         try {
+            boolean wasQueued = c.queued() > 0;
             c.poll(r -> apply(r, true), r -> apply(r, false));
+            if (wasQueued && checkStart != 0) {
+                checkStart = Math.max(1, engine.now()); // the hello left the queue just now: the wait starts now
+            }
+            checkBridge(c);
         } catch (RuntimeException ex) {
             engine.platform().logger().warn("Network sync failed: " + ex);
+        }
+    }
+
+    /** Plugin messaging only: warns once when no other server answered the hello within the check time. */
+    private void checkBridge(SyncChannel c) {
+        long started = checkStart;
+        if (started == 0) {
+            return;
+        }
+        var log = engine.platform().logger();
+        if (!peers.isEmpty()) {
+            checkStart = 0;
+            log.info("Network sync: bridge check passed. Another server answered: " + String.join(", ", peers().keySet()) + ".");
+        } else if (c.queued() > 0) {
+            checkStart = Math.max(1, engine.now()); // nobody is online yet: the hello is not sent, so the wait has not started
+        } else if (engine.now() - started >= engine.value(NetworkSettings.CHECK_TIMEOUT).toMillis()) {
+            checkStart = 0;
+            log.warn("Network sync: no other server answered within " + engine.value(NetworkSettings.CHECK_TIMEOUT).toSeconds()
+                + " seconds. The plugin messaging bridge could be off. Check: (1) the BungeeCord plugin message channel of the proxy is on "
+                + "(Velocity: bungee-plugin-message-channel in velocity.toml), (2) the proxy forwards the channel "
+                + NetworkSettings.CHANNEL + ", (3) the other servers run this plugin with mode plugin-messaging. "
+                + "If this is the only server of the network, ignore this message. Switch it off with integrations.network.check-bridge.");
         }
     }
 
@@ -252,6 +286,12 @@ public final class NetworkSync {
                     return;
                 }
                 strikes.addRemote(r.player(), r.weight());
+            }
+            case SyncRecord.HELLO -> {
+                SyncChannel c = channel;
+                if (live && c instanceof PluginMessagingChannel) {
+                    c.send(SyncRecord.ack(origin, engine.now()));
+                }
             }
             case SyncRecord.RESET -> {
                 if (!syncStrikes || !stamp.newerThan(resetStamps.get(r.player()))) {

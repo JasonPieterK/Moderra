@@ -366,6 +366,7 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `discord.inbound.notify-sender` | true or false | `true` | no | Send the person a direct message in Discord when their message was blocked or cleaned. |
 | `discord.inbound.notify-text` | text | `Your message was not delivered to the Minecraft chat because it contains words that are not allowed on this server.` | no | The direct message. No placeholders; never put the blocked word in it. |
 | `discord.commands.prefix` | text | `!abw` | no | Moderation from Discord works by typing a message that starts with this prefix, for example: !abw mute Steve 1h spam<br>(DiscordSRV slash commands are not used by this plugin.) A prefix message is never relayed to Minecraft. |
+| `discord.commands.style` | one of: prefix, slash, both | `prefix` | no | prefix = typed messages that start with the prefix (the old behaviour), slash = DiscordSRV slash<br>commands /abw-mute, /abw-unmute, /abw-history, /abw-strikes, /abw-check, /abw-reload, both = the two ways. Slash commands are<br>registered with DiscordSRV when the server starts, so a change needs a restart. The same allow-lists, switches,<br>channels and rate limit apply to both ways. |
 | `discord.commands.mute.enabled` | true or false | `false` | no | Allow "<prefix> mute <player> [time] [reason]" from Discord (only for the allowed roles / users). Default off. |
 | `discord.commands.unmute.enabled` | true or false | `false` | no | Allow "<prefix> unmute <player>" from Discord (only for the allowed roles / users). Default off. |
 | `discord.commands.history.enabled` | true or false | `false` | no | Allow "<prefix> history <player> [page]" from Discord (only for the allowed roles / users). Default off. |
@@ -464,6 +465,9 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `integrations.network.poll-interval` | time such as 30s, 10m, 2h or 1d | `2s` | no | Mode shared-folder: how often the journals of the other servers are read. |
 | `integrations.network.sync-mutes` | true or false | `true` | no | A mute or unmute on one server applies on all. Conflict rule: the newest change of a player wins (clock time, the larger server id wins a tie). |
 | `integrations.network.sync-strikes` | true or false | `true` | no | Strike points add up over the whole network, and a reset (for example after a punishment) resets everywhere.<br>Conflict rule: points are added, never overwritten; points older than the newest reset of that player are dropped. |
+| `integrations.network.check-bridge` | true or false | `true` | no | Mode plugin-messaging: after start, send one "hello" and wait for any answer of another server. When nothing answers,<br>one warning names the likely causes (the BungeeCord plugin message bridge of the proxy is off, or no other server runs this plugin). |
+| `integrations.network.check-timeout` | time such as 30s, 10m, 2h or 1d, at least 5s, at most 1h | `1m30s` | no | How long to wait for an answer before the warning. The time starts when a player is online and the hello was sent. |
+| `integrations.network.journal-max-kb` | whole number from 0 to 1048576 | `0` | no | Mode shared-folder: when the journal of this server is larger than this, the part that every other server has read is<br>replaced by a short summary (active mutes, last resets). 0 = never shrink (default).<br>Every server of the network needs this version of the plugin before you switch it on. |
 
 ## The extra filters in plain words
 
