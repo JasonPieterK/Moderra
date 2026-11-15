@@ -7,7 +7,7 @@ import com.jason.plugins.antibadwords.engine.config.SettingsRegistry;
  * Settings of the ban-plugin and Bedrock integrations ({@code integrations.yml}, keys under {@code integrations.bans.}
  * and {@code integrations.bedrock.}).
  */
-public final class IntegrationsSettings {
+public final class BanBedrockSettings {
     public static final String FILE = "integrations.yml";
     public static final String CATEGORY = "Integrations";
 
@@ -85,7 +85,7 @@ public final class IntegrationsSettings {
         .description("A Bedrock name can contain spaces, which would split a console command. In {player} every space is replaced by this\n"
             + "text (Floodgate itself uses _). Empty = keep spaces. Looking up a player by name also accepts _ for a space and a missing prefix."));
 
-    private IntegrationsSettings() {
+    private BanBedrockSettings() {
     }
 
     private static <T> Setting<T> s(Setting.Builder<T> builder) {
@@ -93,8 +93,6 @@ public final class IntegrationsSettings {
     }
 
     public static void register(SettingsRegistry registry) {
-        registry.fileHeader(FILE, "AntiBadWords - integrations with other plugins\n"
-            + "Ban plugins for the ladder actions tempban and ipban, and Bedrock players (Geyser / Floodgate). Reload with /abw reload.");
         for (Setting<?> setting : new Setting<?>[] {PROVIDER, FALLBACK, DURATION_FORMAT, ESSENTIALS_TEMPBAN, ESSENTIALS_IPBAN, LITEBANS_TEMPBAN,
             LITEBANS_IPBAN, ADVANCEDBAN_TEMPBAN, ADVANCEDBAN_IPBAN, LIBERTYBANS_TEMPBAN, LIBERTYBANS_IPBAN, VANILLA_TEMPBAN, VANILLA_IPBAN,
             CUSTOM_TEMPBAN, CUSTOM_IPBAN, BEDROCK_MODE, BEDROCK_PREFIX, BEDROCK_STRIP, BEDROCK_SPACE}) {

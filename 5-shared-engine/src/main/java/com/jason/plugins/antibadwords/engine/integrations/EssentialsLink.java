@@ -47,13 +47,13 @@ public final class EssentialsLink {
 
     /** Whether EssentialsX is connected and the hook is switched on. */
     public boolean active() {
-        return bridge != null && engine.value(IntegrationSettings.ESSENTIALS);
+        return bridge != null && engine.value(EssentialsSettings.ESSENTIALS);
     }
 
     private void checkSettings() {
-        if (!warnedMode && bridge == null && !IntegrationSettings.MUTE_OWN.equals(engine.value(IntegrationSettings.MUTE_MODE))) {
+        if (!warnedMode && bridge == null && !EssentialsSettings.MUTE_OWN.equals(engine.value(EssentialsSettings.MUTE_MODE))) {
             warnedMode = true;
-            engine.platform().logger().warn("integrations.essentials.mute-mode is '" + engine.value(IntegrationSettings.MUTE_MODE)
+            engine.platform().logger().warn("integrations.essentials.mute-mode is '" + engine.value(EssentialsSettings.MUTE_MODE)
                 + "' but EssentialsX is not connected: the built-in mute is used.");
         }
     }
@@ -64,17 +64,17 @@ public final class EssentialsLink {
 
     /** The mute mode in effect: {@code own} unless Essentials is connected. */
     public String muteMode() {
-        return active() ? engine.value(IntegrationSettings.MUTE_MODE) : IntegrationSettings.MUTE_OWN;
+        return active() ? engine.value(EssentialsSettings.MUTE_MODE) : EssentialsSettings.MUTE_OWN;
     }
 
     /** Whether mutes are written to Essentials ({@code essentials} or {@code both}). */
     public boolean writesEssentialsMute() {
-        return !IntegrationSettings.MUTE_OWN.equals(muteMode());
+        return !EssentialsSettings.MUTE_OWN.equals(muteMode());
     }
 
     /** Whether the built-in mute list is also kept ({@code own} or {@code both}). */
     public boolean keepsOwnMute() {
-        return !IntegrationSettings.MUTE_ESSENTIALS.equals(muteMode());
+        return !EssentialsSettings.MUTE_ESSENTIALS.equals(muteMode());
     }
 
     /** The Essentials mute of a player; only asked in modes {@code essentials} and {@code both}. */
@@ -122,15 +122,15 @@ public final class EssentialsLink {
 
     /** The name to show in broadcasts and staff notices, according to {@code nickname-in-messages}. */
     public String displayName(UUID player, String realName) {
-        String how = engine.value(IntegrationSettings.NICKNAME_IN_MESSAGES);
-        if (!active() || player == null || IntegrationSettings.NICK_OFF.equals(how)) {
+        String how = engine.value(EssentialsSettings.NICKNAME_IN_MESSAGES);
+        if (!active() || player == null || EssentialsSettings.NICK_OFF.equals(how)) {
             return realName;
         }
         String nick = plainNickname(player);
         if (nick.isEmpty() || nick.equalsIgnoreCase(realName)) {
             return realName;
         }
-        return IntegrationSettings.NICK_BOTH.equals(how) ? nick + " (" + realName + ")" : nick;
+        return EssentialsSettings.NICK_BOTH.equals(how) ? nick + " (" + realName + ")" : nick;
     }
 
     private String plainNickname(UUID player) {
@@ -145,7 +145,7 @@ public final class EssentialsLink {
 
     /** Checks the nickname of a player who just joined (see {@code check-nickname-on-join}). Main thread. */
     public void onJoin(UUID player, String name) {
-        if (!active() || !engine.value(IntegrationSettings.CHECK_NICKNAME)) {
+        if (!active() || !engine.value(EssentialsSettings.CHECK_NICKNAME)) {
             return;
         }
         String nick = plainNickname(player);
@@ -156,7 +156,7 @@ public final class EssentialsLink {
         if (!(verdict.blocked() || verdict.censored()) || verdict.primary() == null) {
             return;
         }
-        String action = engine.value(IntegrationSettings.NICKNAME_ACTION);
+        String action = engine.value(EssentialsSettings.NICKNAME_ACTION);
         String word = verdict.primary().detail() == null ? "" : verdict.primary().detail();
         engine.platform().logger().info(name + " has a nickname that is not allowed (" + verdict.primary().check() + ": '" + word
             + "'), action: " + action);
@@ -168,13 +168,13 @@ public final class EssentialsLink {
         data.put("text", nick);
         engine.events().publish(new ModerationEvent(ModerationEvent.VIOLATION, engine.now(), player, name, engine.platform().worldName(player),
             "nick", data));
-        if (!IntegrationSettings.NICK_LOG.equals(action)) {
-            String text = engine.value(IntegrationSettings.NICKNAME_MESSAGE);
+        if (!EssentialsSettings.NICK_LOG.equals(action)) {
+            String text = engine.value(EssentialsSettings.NICKNAME_MESSAGE);
             if (text != null && !text.isBlank()) {
                 engine.platform().sendMessage(player, Names.colour(text));
             }
         }
-        if (IntegrationSettings.NICK_RESET.equals(action)) {
+        if (EssentialsSettings.NICK_RESET.equals(action)) {
             try {
                 if (!bridge.resetNickname(player)) {
                     engine.platform().logger().warn("The nickname of " + name + " could not be removed.");
@@ -191,7 +191,7 @@ public final class EssentialsLink {
 
     /** Whether lines about this player must be hidden from normal players (vanished and {@code hide-vanished} on). */
     public boolean vanished(UUID player) {
-        if (!active() || player == null || !engine.value(IntegrationSettings.HIDE_VANISHED)) {
+        if (!active() || player == null || !engine.value(EssentialsSettings.HIDE_VANISHED)) {
             return false;
         }
         try {
@@ -239,7 +239,7 @@ public final class EssentialsLink {
             return null;
         }
         Set<String> labels = new HashSet<>();
-        for (String raw : engine.value(IntegrationSettings.SCAN_COMMANDS)) {
+        for (String raw : engine.value(EssentialsSettings.SCAN_COMMANDS)) {
             labels.add(raw.strip().toLowerCase(Locale.ROOT));
         }
         return labels.contains(label) ? commandLine.substring(space + 1) : null;

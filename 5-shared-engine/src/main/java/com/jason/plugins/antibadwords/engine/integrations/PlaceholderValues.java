@@ -1,4 +1,4 @@
-package com.jason.plugins.antibadwords.engine.integration;
+package com.jason.plugins.antibadwords.engine.integrations;
 
 import com.jason.plugins.antibadwords.engine.EffectiveSettings;
 import com.jason.plugins.antibadwords.engine.Engine;

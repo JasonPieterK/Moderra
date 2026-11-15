@@ -1,7 +1,7 @@
 package com.jason.plugins.antibadwords;
 
 import com.jason.plugins.antibadwords.engine.EngineLog;
-import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
+import com.jason.plugins.antibadwords.engine.integrations.PermissionSource;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;

@@ -3,7 +3,7 @@ package com.jason.plugins.antibadwords.engine;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
+import com.jason.plugins.antibadwords.engine.integrations.PermissionSource;
 import com.jason.plugins.antibadwords.engine.integrations.PluginCommandScan;
 import java.nio.file.Path;
 import java.util.HashMap;

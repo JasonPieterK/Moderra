@@ -1,4 +1,4 @@
-package com.jason.plugins.antibadwords.engine.integration;
+package com.jason.plugins.antibadwords.engine.integrations;
 
 import java.util.Locale;
 import java.util.Map;
@@ -53,7 +53,7 @@ public final class ExternalProfiles {
         for (Map.Entry<String, Object> e : groupMap.entrySet()) {
             String profile = String.valueOf(e.getValue()).trim().toLowerCase(Locale.ROOT);
             if (!profileNames.contains(profile)) {
-                warn.accept(IntegrationSettings.GROUP_PROFILES.key() + "." + e.getKey() + ": profile '" + e.getValue()
+                warn.accept(PapiLuckPermsSettings.GROUP_PROFILES.key() + "." + e.getKey() + ": profile '" + e.getValue()
                     + "' does not exist in worlds.yml; this line is ignored.");
             }
         }

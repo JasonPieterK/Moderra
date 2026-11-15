@@ -1,7 +1,6 @@
 package com.jason.plugins.antibadwords.engine.integrations;
 
 import com.jason.plugins.antibadwords.engine.Engine;
-import com.jason.plugins.antibadwords.engine.integration.PermissionSource;
 import com.jason.plugins.antibadwords.mod.Names;
 import java.util.List;
 import java.util.Locale;

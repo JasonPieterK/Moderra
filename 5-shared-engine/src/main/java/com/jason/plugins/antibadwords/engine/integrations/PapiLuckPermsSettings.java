@@ -1,4 +1,4 @@
-package com.jason.plugins.antibadwords.engine.integration;
+package com.jason.plugins.antibadwords.engine.integrations;
 
 import com.jason.plugins.antibadwords.engine.config.Section;
 import com.jason.plugins.antibadwords.engine.config.Setting;
@@ -10,7 +10,7 @@ import java.util.List;
  * Bukkit family only; the keys are read everywhere but do nothing on Fabric and Forge (there LuckPerms is reached through the
  * permission nodes the loaders already use).
  */
-public final class IntegrationSettings {
+public final class PapiLuckPermsSettings {
     public static final String FILE = "integrations.yml";
     private static final String CATEGORY = "Integrations";
     private static final String P = "integrations.placeholderapi.";
@@ -52,7 +52,7 @@ public final class IntegrationSettings {
             + "A profile name that does not exist in worlds.yml is reported at start and ignored.",
         "{}\n", false);
 
-    private IntegrationSettings() {
+    private PapiLuckPermsSettings() {
     }
 
     private static <T> Setting<T> s(Setting.Builder<T> builder) {
@@ -62,10 +62,5 @@ public final class IntegrationSettings {
     public static void register(SettingsRegistry r) {
         List.of(PAPI_ENABLED, PAPI_PARSE, LP_ENABLED, LP_USE_META, LP_META_KEY, LP_PRIMARY_ONLY, LP_OFFLINE).forEach(r::register);
         r.register(GROUP_PROFILES);
-        if (r.fileHeader(FILE).isEmpty()) {
-            r.fileHeader(FILE, "AntiBadWords - integrations with other plugins (PlaceholderAPI, LuckPerms)\n"
-                + "All of these are optional. A plugin that is not installed is simply skipped. Reload with /abw reload\n"
-                + "(switches that say \"restart\" need a server restart).");
-        }
     }
 }

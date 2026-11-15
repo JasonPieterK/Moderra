@@ -28,24 +28,24 @@ public final class BanService {
 
     /** The provider in use: the setting, or for {@code auto} the first installed ban plugin, otherwise vanilla. */
     public String provider() {
-        String chosen = engine.value(IntegrationsSettings.PROVIDER);
-        if (!IntegrationsSettings.AUTO.equals(chosen)) {
+        String chosen = engine.value(BanBedrockSettings.PROVIDER);
+        if (!BanBedrockSettings.AUTO.equals(chosen)) {
             return chosen;
         }
         Platform platform = engine.platform();
         if (platform.hasPlugin("LiteBans")) {
-            return IntegrationsSettings.LITEBANS;
+            return BanBedrockSettings.LITEBANS;
         }
         if (platform.hasPlugin("AdvancedBan")) {
-            return IntegrationsSettings.ADVANCEDBAN;
+            return BanBedrockSettings.ADVANCEDBAN;
         }
         if (platform.hasPlugin("LibertyBans")) {
-            return IntegrationsSettings.LIBERTYBANS;
+            return BanBedrockSettings.LIBERTYBANS;
         }
         if (platform.hasPlugin("Essentials")) {
-            return IntegrationsSettings.ESSENTIALS;
+            return BanBedrockSettings.ESSENTIALS;
         }
-        return IntegrationsSettings.VANILLA;
+        return BanBedrockSettings.VANILLA;
     }
 
     /** Writes a time the way a ban plugin reads it: compound {@code 1d2h30m} or one unit {@code 90m}. At least one second. */
@@ -72,18 +72,18 @@ public final class BanService {
     }
 
     private boolean singleUnit(String provider) {
-        String format = engine.value(IntegrationsSettings.DURATION_FORMAT);
-        return "single".equals(format) || (IntegrationsSettings.AUTO.equals(format) && IntegrationsSettings.ADVANCEDBAN.equals(provider));
+        String format = engine.value(BanBedrockSettings.DURATION_FORMAT);
+        return "single".equals(format) || (BanBedrockSettings.AUTO.equals(format) && BanBedrockSettings.ADVANCEDBAN.equals(provider));
     }
 
     private String template(String provider, boolean temp) {
         return switch (provider) {
-            case IntegrationsSettings.ESSENTIALS -> engine.value(temp ? IntegrationsSettings.ESSENTIALS_TEMPBAN : IntegrationsSettings.ESSENTIALS_IPBAN);
-            case IntegrationsSettings.LITEBANS -> engine.value(temp ? IntegrationsSettings.LITEBANS_TEMPBAN : IntegrationsSettings.LITEBANS_IPBAN);
-            case IntegrationsSettings.ADVANCEDBAN -> engine.value(temp ? IntegrationsSettings.ADVANCEDBAN_TEMPBAN : IntegrationsSettings.ADVANCEDBAN_IPBAN);
-            case IntegrationsSettings.LIBERTYBANS -> engine.value(temp ? IntegrationsSettings.LIBERTYBANS_TEMPBAN : IntegrationsSettings.LIBERTYBANS_IPBAN);
-            case IntegrationsSettings.CUSTOM -> engine.value(temp ? IntegrationsSettings.CUSTOM_TEMPBAN : IntegrationsSettings.CUSTOM_IPBAN);
-            default -> engine.value(temp ? IntegrationsSettings.VANILLA_TEMPBAN : IntegrationsSettings.VANILLA_IPBAN);
+            case BanBedrockSettings.ESSENTIALS -> engine.value(temp ? BanBedrockSettings.ESSENTIALS_TEMPBAN : BanBedrockSettings.ESSENTIALS_IPBAN);
+            case BanBedrockSettings.LITEBANS -> engine.value(temp ? BanBedrockSettings.LITEBANS_TEMPBAN : BanBedrockSettings.LITEBANS_IPBAN);
+            case BanBedrockSettings.ADVANCEDBAN -> engine.value(temp ? BanBedrockSettings.ADVANCEDBAN_TEMPBAN : BanBedrockSettings.ADVANCEDBAN_IPBAN);
+            case BanBedrockSettings.LIBERTYBANS -> engine.value(temp ? BanBedrockSettings.LIBERTYBANS_TEMPBAN : BanBedrockSettings.LIBERTYBANS_IPBAN);
+            case BanBedrockSettings.CUSTOM -> engine.value(temp ? BanBedrockSettings.CUSTOM_TEMPBAN : BanBedrockSettings.CUSTOM_IPBAN);
+            default -> engine.value(temp ? BanBedrockSettings.VANILLA_TEMPBAN : BanBedrockSettings.VANILLA_IPBAN);
         };
     }
 
@@ -135,13 +135,13 @@ public final class BanService {
         if (line != null) {
             return new Result("a tempban (" + shown + ")", () -> engine.platform().runConsoleCommand(line));
         }
-        String fallback = engine.value(IntegrationsSettings.FALLBACK);
+        String fallback = engine.value(BanBedrockSettings.FALLBACK);
         engine.platform().logger().warn("Ladder action tempban for " + name + ": provider '" + provider + "' has no tempban command"
             + " (integrations.bans." + provider + ".tempban is empty); fallback: " + fallback + ".");
         switch (fallback) {
-            case IntegrationsSettings.FALLBACK_KICK:
+            case BanBedrockSettings.FALLBACK_KICK:
                 return new Result("a kick", () -> engine.platform().kick(id, Names.colour(clean(reason))));
-            case IntegrationsSettings.FALLBACK_MUTE:
+            case BanBedrockSettings.FALLBACK_MUTE:
                 if (engine.muteHandler().mute(id, name, millis, clean(reason), MuteHandler.SYSTEM)) {
                     return new Result("a mute (" + shown + ")", null);
                 }

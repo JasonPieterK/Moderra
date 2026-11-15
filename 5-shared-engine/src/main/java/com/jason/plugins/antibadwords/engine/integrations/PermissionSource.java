@@ -1,4 +1,4 @@
-package com.jason.plugins.antibadwords.engine.integration;
+package com.jason.plugins.antibadwords.engine.integrations;
 
 import java.util.Optional;
 import java.util.UUID;
