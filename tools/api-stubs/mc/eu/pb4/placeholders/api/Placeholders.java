@@ -1,0 +1,1 @@
+package eu.pb4.placeholders.api; public final class Placeholders { public static <T> void registerCommon(net.minecraft.resources.Identifier id, Placeholder.Handler<PlaceholderContext, String> handler){} }

@@ -19,6 +19,8 @@ public final class AntiBadWordsFabric implements ModInitializer {
     public void onInitialize() {
         String version = FabricLoader.getInstance().getModContainer("antibadwords")
             .map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("1");
+        // Platform.hasPlugin on Fabric = a mod with that id (see ModPluginIds for the name mapping)
+        ModRuntime.setModLookup(id -> FabricLoader.getInstance().isModLoaded(id));
         ModRuntime.init(FabricLoader.getInstance().getConfigDir().resolve("antibadwords"), version, "Fabric", new FabricPermissions(),
             new EngineLog() {
                 @Override
@@ -32,6 +34,9 @@ public final class AntiBadWordsFabric implements ModInitializer {
                 }
             });
 
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+            FabricPlaceholders.register(); // %antibadwords:<name>%; the class is only loaded when the mod is there
+        }
         com.jason.plugins.antibadwords.mod.gui.ModGui.install(new com.jason.plugins.antibadwords.mod.gui.ChestBackend());
         // Returning false from ALLOW_CHAT_MESSAGE cancels the message.
         ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> !ModRuntime.blockChat(sender, message.signedContent()));

@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Starts a real Minecraft dedicated server with the mod (Loom's runServer), types some /abw commands into its console
-# and checks the output. Usage: ./test-on-real-server.sh <mc> <fabric api> <remap> <java> <sign api> [menu api]
+# and checks the output. Usage: ./test-on-real-server.sh <mc> <fabric api> <remap> <java> <sign api> [menu api] [placeholders api] [placeholder-api version]
 set -uo pipefail
 cd "$(dirname "$0")"
-mc=$1; api=$2; remap=$3; java=$4; sign=${5:-record}; menu=${6:-input}
+mc=$1; api=$2; remap=$3; java=$4; sign=${5:-record}; menu=${6:-input}; ph=${7:-none}; phv=${8:-}
 GRADLE="${GRADLE:-gradle}"
 JAVA21_HOME="${JAVA21_HOME:-/usr/lib/jvm/java-21-openjdk-amd64}"; JAVA25_HOME="${JAVA25_HOME:-/usr/lib/jvm/java-25-openjdk-amd64}"
 export JAVA_HOME="$JAVA25_HOME" PATH="$JAVA25_HOME/bin:$PATH"
@@ -18,7 +18,7 @@ fifo=$(mktemp -u); mkfifo "$fifo"
 ( sleep "${WARMUP:-75}"; for c in "abw info" "abw check what the f.u.c.k" "abw check hello world" "abw addword zorblax" "abw check zorblax" "abw removeword zorblax" "abw lang list" "abw lang enable de" "abw check du arschloch" "abw lang disable de" "abw whitelist add zorbwhite" "abw whitelist list 99" "abw whitelist remove ZORBWHITE" "abw reload" "abw bogus" "stop"; do echo "$c"; sleep 4; done ) > "$fifo" &
 export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} -Dantibadwords.selftest=1"
 for attempt in 1 2 3; do
-  timeout 420 "$GRADLE" --no-daemon runServer -Pminecraft_version="$mc" -Pfabric_version="$api" -Premap="$remap" -Pjava_release="$java" -Psign_api="$sign" -Pmenu_api="$menu" \
+  timeout 420 "$GRADLE" --no-daemon runServer -Pminecraft_version="$mc" -Pfabric_version="$api" -Premap="$remap" -Pjava_release="$java" -Psign_api="$sign" -Pmenu_api="$menu" -Pplaceholders_api="$ph" -Pplaceholder_api_version="$phv" \
     -Dorg.gradle.java.installations.paths="$JAVA25_HOME,$JAVA21_HOME" < "$fifo" > "$log" 2>&1
   grep -q " 429 " "$log" && { sleep 40; continue; }; break
 done

@@ -20,6 +20,7 @@ public final class AntiBadWordsForge {
 
     public AntiBadWordsForge(FMLJavaModLoadingContext context) {
         com.jason.plugins.antibadwords.mod.gui.ModGui.install(new com.jason.plugins.antibadwords.mod.gui.ChestBackend());
+        ModRuntime.setModLookup(ForgeMods::isLoaded); // Platform.hasPlugin on Forge = a mod with that id
         String version = readVersion();
         ModRuntime.init(FMLPaths.CONFIGDIR.get().resolve("antibadwords"), version, "Forge", new ForgePermissions(),
             new EngineLog() {

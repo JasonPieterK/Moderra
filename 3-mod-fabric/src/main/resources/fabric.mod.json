@@ -15,5 +15,5 @@
     "minecraft": "${minecraft_version}",
     "java": ">=${java_release}"
   },
-  "suggests": { "fabric-permissions-api-v0": "*" }
+  "suggests": { "fabric-permissions-api-v0": "*", "placeholder-api": "*" }
 }

@@ -2,6 +2,7 @@ package com.jason.plugins.antibadwords.mod.gui;
 
 import com.jason.plugins.antibadwords.engine.gui.Icons;
 import com.jason.plugins.antibadwords.engine.gui.Slot;
+import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
@@ -12,13 +13,14 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ItemLore;
 
 /**
  * The vanilla 9x6 chest menu behind {@link ModGui}: a server-side {@link GuiChestMenu} (a {@code ChestMenu} whose clicks
  * never reach the normal item logic) over a {@link SimpleContainer}. No client mod is needed.
  *
- * <p>Only item names are shown: the lore of a slot is not set yet because the {@code ItemLore} class is not in the API
- * dumps (it is on the list in tools/dump-mc-api.py). Icons use only items present in the 1.21.11 and 26.3 dumps.
+ * <p>Name, lore (the help text: {@code DataComponents.LORE} with {@code new ItemLore(List)}, same signature on all six Minecraft
+ * versions in the API dumps) and glow come from the engine's {@link Slot}. Icons use only items present in the dumps.
  */
 public final class ChestBackend implements GuiBackend {
     private static final int SIZE = 54;
@@ -65,6 +67,13 @@ public final class ChestBackend implements GuiBackend {
     private static ItemStack stack(Slot slot) {
         ItemStack stack = new ItemStack(item(slot.icon()), 1);
         stack.set(DataComponents.CUSTOM_NAME, Component.literal(slot.name()));
+        if (!slot.lore().isEmpty()) {
+            List<Component> lines = new ArrayList<>();
+            for (String line : slot.lore()) {
+                lines.add(Component.literal(line));
+            }
+            stack.set(DataComponents.LORE, new ItemLore(lines));
+        }
         if (slot.glowing()) {
             stack.set(DataComponents.ENCHANTMENT_GLINT_OVERRIDE, Boolean.TRUE);
         }

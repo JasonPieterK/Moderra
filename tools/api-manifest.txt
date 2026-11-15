@@ -148,3 +148,10 @@ townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | setCanc
 townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | isCancelled()
 townychat | com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent | getChannel()
 townychat | com.palmergames.bukkit.TownyChat.channels.Channel | getName()
+
+# --- Fabric Text Placeholder API (FabricPlaceholders, compile-only; not reflection, listed so CI checks the names we call) ---
+placeholderapi-fabric | eu.pb4.placeholders.api.Placeholders | registerCommon(Identifier,Handler)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | value(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderResult | invalid(String)
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | hasPlayer()
+placeholderapi-fabric | eu.pb4.placeholders.api.PlaceholderContext | player()
