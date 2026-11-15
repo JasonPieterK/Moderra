@@ -1,87 +1,76 @@
 # Changelog
 
-## Unreleased (source code only - no new jars yet)
+## 2.0 (jar names `Antibadwords-RELEASE[X] - 2-<mc>.jar`)
 
-**Honest status:** everything below is in the source code and covered by the engine's 130 unit tests. The plugin and mod
-code that connects the engine to a real server could not be compiled against Spigot, Minecraft, Fabric or Forge where it
-was written, and has never run on a server. The jars in `1-download-jars/` are still version 1. To-do list:
-`handoffs/BUILD-VERIFICATION-TODO.md`.
+**Honest status:** all 24 jars are built by GitHub Actions (`build-release.yml`) and published as a GitHub Release for the tag
+`v2.0.0`. The plugin and mod code was compiled on GitHub against the real Spigot, Minecraft, Fabric and Forge APIs, and
+third-party plugin names were checked against the real jars (`verify-apis.yml`: 64 names, 0 failures). The shared engine has
+410 unit tests. **Nothing of version 2 was run on a real server and nothing was tested with the scripted player in this
+round.** The open list is in `handoffs/BUILD-VERIFICATION-TODO.md`.
 
-### What is new
-* **One shared engine for all four server types.** `5-shared-mod-code/` became `5-shared-engine/`. It holds every rule
-  (checking text, strikes, messages, commands, config). The Bukkit plugin, the Fabric mod and the Forge mod are now thin
-  adapters: build a message, ask the engine, apply the answer.
-* **Config folder instead of one big file**: `config.yml`, `wordlists/<code>.yml`, `moderation/ladder.yml`, `worlds.yml`
-  and a `data/` folder. All files are generated with a comment above every option.
-* **Automatic migration.** An old `config.yml` is converted on the first start. The old file is kept as
-  `config.yml.bak-<date>`. Your old word lists become `wordlists/*.yml` with exactly your old words, the same languages
-  stay on, and a test compares every decision before and after: nothing changes.
-* **37 language files** from `7-wordlists/` are shipped in the jar. New installs start with English plus your custom
-  list. `/abw lang list`, `/abw lang enable <code>`, `/abw lang disable <code>`.
-* **`/abw whitelist add <word> | remove <word> | list [page]`**: words that are never blocked. Works at once.
-* **Different rules per world or group** (`worlds.yml`): named profiles that change any "per world" setting, picked by
-  world name (with `*`), dimension name or the permission `antibadwords.profile.<name>`.
-  Limit: on Fabric and Forge the world name is not available yet, so only the permission and the default profile work there.
-* **Mistakes in the config do not break the server.** A wrong value is replaced by the default (or the nearest allowed
-  number) and reported with file and key; unknown keys are reported; a file that cannot be read keeps the settings from before.
-* Programmatic edits (custom words, whitelist, languages) change only the lines they must: comments and order stay.
-* `6-guides/CONFIGURATION.md` is now generated from the code, so it cannot drift from the real options.
+### Licence
+* The licence changed from MIT to **All Rights Reserved** (`LICENSE`). Version 1 stays under the licence it was published with.
 
-### Moderation (session 4)
-* **Persistent strikes** (`data/strikes.json`, decay, cap), **escalation ladder** (`ladder.steps`: warn, mute, kick, ban, command),
-  **built-in mute** (`/abw mute|unmute|mutes`, blocks chat, chosen commands, signs, books) and **history**
-  (`/abw history`, monthly JSONL, retention, privacy defaults). Guide: `6-guides/MODERATION.md`.
-* New permissions: `antibadwords.mute`, `.history`, `.discord`, `.gui` (operators), `.bypass.mute` (nobody), declared in
-  `plugin.yml` and the Forge permission nodes; Fabric passes them to the Permissions API.
-* Bukkit kicks now always run on the main thread. `bot.js` has `moderation` and `moderation-again` modes (never run).
-* Fixed a flaky test failure ("Failed to delete temp directory"): tests now shut their engines down; `Engine.shutdown()` is idempotent.
+### Core
+* **One shared engine for all four server types** (`5-shared-mod-code/` became `5-shared-engine/`). Plugin and mods are thin adapters.
+* **Config folder instead of one big file**: `config.yml`, `wordlists/<code>.yml`, `moderation/*.yml`, `filters/*.yml`, `worlds.yml`,
+  `discord.yml`, `integrations.yml` and a `data/` folder. Every option has a comment. `6-guides/CONFIGURATION.md` is generated from the code.
+* **Automatic migration** of an old `config.yml` (backup `config.yml.bak-<date>`; a test proves the same decisions before and after).
+* **37 language files**; new installs start with English plus the custom list. `/abw lang`, `/abw whitelist`.
+* **Rule profiles** (`worlds.yml`) by permission, group, chat channel, world name or dimension. On Fabric and Forge the world name is the dimension id.
+* Mistakes in the config never break the server: wrong values fall back to defaults and are reported with file and key.
+* **Faster matching** (indexed): 99 of 100 messages under 0.3 ms with every filter on (engine speed test).
+* **Word lists:** thin lists (Swahili, Filipino, Hebrew, Bengali) extended, many false positives fixed, a false-positive test over all 37 languages.
+  The whitelist now also protects Chinese, Japanese and Thai text.
 
-### New filters (second step of this round) - all off or silent until you switch them on
-* **Bypass tricks** (`filters/evasion.yml`, `filters/confusables.yml`). Before a message is compared with the word lists
-  it is cleaned up: invisible characters removed, full-width and other special letter forms folded, accents ignored,
-  look-alike letters of other alphabets read as Latin (and the other way round), small capitals and leetspeak read as
-  letters. Every step has its own switch; accents can be kept per writing system. The look-alike table comes from the
-  Unicode confusables data and can be extended. Normal text gives the same result as before (tested per language family).
-  The trick itself can also be noted, cleaned or blocked (`detect.action`, default `log-only`).
-* **Spam and flood control** (`filters/spam.yml`, default off): too many messages, repeated or nearly identical
-  messages, capital letters, character and symbol floods, repeated words, too many commands. Each rule: on/off, limits,
-  action (block / censor / log-only), message, strike weight (default 0 = never punishes), sources.
-  Permission `antibadwords.bypass.spam`.
-* **Link filter** (`filters/links.yml`, default off): URLs, bare domains, IPv4/IPv6, invite links and hidden forms
-  (`example dot com`, `example(dot)com`, `example[.]com`, `example .com`, Unicode dots). Modes `block-all`,
-  `allow-list`, `block-list`; own switches for IP addresses and invites. Permission `antibadwords.bypass.links`.
-* **More places are scanned**: player names on join (`log`, `warn` or `kick`; off by default), the back side of signs
-  (own switch on Bukkit), command blocks (Bukkit only, off by default), and new installs scan more commands
-  (`team`, `title`, `tellraw`, `bossbar`, `scoreboard`, `rename`). An updated server keeps its old command list.
-* **Check order** is a setting (`filters.check-order`, default `evasion, badword, link, spam`).
-* **`/abw check <text>`** now names the check that fired and why; `/abw info` lists the filters and the check order.
-* **Faster with big word lists**: masked (`f*ck`) and partial matching use an index instead of scanning every word.
-  Measured with 10 000 words and 256-character messages (4-core test machine, JDK 21): 99 of 100 messages take under
-  0.1 ms in the word matcher (the old code: about 3 ms with partial-match on) and under 0.3 ms with every filter on.
-  The budget (under 1 ms) is a unit test.
-* Limits: "censor" changes the text only in chat on Bukkit/Spigot/Paper/Purpur and blocks everywhere else. On Fabric
-  and Forge command blocks are not scanned and the sign-back switch has no effect (both sides are always scanned).
-  None of this has run on a real server yet.
+### Filters (spam, links and bypass tricks are off or only noting until switched on)
+* Bypass tricks (invisible characters, look-alike letters, leetspeak), spam and flood control, link filter, check order setting.
+* More scanned places: player names on join, back of signs, command blocks (now also on Fabric and Forge).
+* `/abw check <text>` names the check that fired.
+
+### Moderation
+* Persistent weighted strikes, escalation ladder (`warn`, `mute`, `kick`, `ban`, `tempban`, `ipban`, `command`, effects ...), built-in mute, history diary
+  (`6-guides/MODERATION.md`).
+* Ban plugins: LiteBans, AdvancedBan, LibertyBans, EssentialsX or vanilla for `tempban` / `ipban`, with templates and `{ip}`
+  (last IP stored in `data/players.json`; turn off with `known-players.store-ip`).
+* Bedrock (Floodgate / Geyser) name handling.
+
+### Discord (`6-guides/DISCORD.md`)
+* Webhook alerts and a log channel (secrets by `${ENV:NAME}`, queue, rate limits, no pings by players), `/abw discord test|status`.
+* DiscordSRV mode (Bukkit family only): alerts, filter for Discord-to-Minecraft messages (block, censor, log-only), `!abw` commands with allow-lists.
+
+### In-game menu (`6-guides/GUI.md`)
+* `/abw` or `/abw gui [page]`: every setting, language lists, word browser, ladder editor, mutes, profile and world-rule editors, search, chat prompts.
+* Edit rights per category: `antibadwords.gui.edit.<category>` (default true).
+* Fabric and Forge: names only (no lore yet), chat prompts only.
+
+### Integrations (`6-guides/INTEGRATIONS.md`, Bukkit family)
+EssentialsX and EssentialsX Chat, PlaceholderAPI (placeholders), LuckPerms, Vault, TAB, NametagEdit, ProtocolLib packet scan, CoreProtect, Plan,
+chat-channel plugins (TownyChat event, others by detection), mcMMO / Towny / Factions / Citizens / DecentHolograms command scanning,
+network sync between servers (shared folder, plugin messaging).
+
+### Messages
+* All built-in messages and command output use one calm style (`6-guides/MESSAGE-STYLE.md`).
+
+### Behaviour changes when you upgrade
+* **Message texts:** a message that is still exactly the old default is replaced by the new default text (one log line). A message you changed is never touched.
+* **New installs only:** the default whitelist is bigger; new installs scan more commands (`team`, `title`, `tellraw`, `bossbar`, `scoreboard`, `rename`);
+  `link` and `evasion` sources include `discord-in`. Migrated installs keep the version 1 lists (written into their config).
+* **Stale `data/strikes.json`:** when strikes are not kept (clear on quit true, or saving off) the file is renamed to `strikes.json.discarded` at start and shutdown. Nothing is deleted.
+* New permissions: `antibadwords.mute`, `.history`, `.discord`, `.gui` (op), `.bypass.mute` (nobody), `.gui.edit.<category>` (true). Table in `README.md`.
+* The console and `/abw check` print a few more lines; `/abw` lists more sub-commands.
+* **Licence:** All Rights Reserved (see above).
+
+### Not done / known limits (full list: `handoffs/BUILD-VERIFICATION-TODO.md`)
+* Real-server tests of everything above; the scripted player was not run.
+* Fabric/Forge: item lore in the menu, sign-editor prompt, `hasPlugin` (so no plugin detection), Styled Chat and Text Placeholder API.
+* PacketEvents listener, DiscordSRV slash commands, mcMMO party chat event, CarbonChat / ChatControl / FactionsUUID events; VentureChat and HuskChat cannot be hooked; TAB and NametagEdit have no events.
+* "censor" changes text only in chat on Bukkit (and Discord with DiscordSRV); everywhere else it blocks.
 
 ### For developers
-* Settings registry (`SettingsRegistry`, `Setting`), pipeline of checks (`TextCheck`, `Hit`, `Verdict`), event stream
-  (`ModerationEvent`), replaceable strike counter (`StrikeService`), one-class sub-commands (`SubCommand`),
-  comment-preserving `YamlEditor`. See `5-shared-engine/README.md`.
-* The plugin's unit tests moved into the engine; the old code is kept in the tests as an oracle for the migration.
-* New/extended test scripts that have **not been run yet**: `2-plugin-bukkit-purpur/test-on-real-server.sh`, more checks
-  in the Fabric/Forge `test-on-real-server.sh` (`OLD_CONFIG=1` tests the migration), more checks in the scripted player.
-
-### Things that behave differently on purpose
-* New installs scan six more commands by default; migrated installs keep the old list (it is written into their config).
-* The console gets a line for hits of the new checks (for example `Bob triggered evasion (invisible characters) in chat:
-  noted only`) when `logging.console` is on. The `evasion` check is the only new check that is active by default.
-* `/abw check` prints a second line naming the check; `/abw info` prints two more lines.
-* Long comments in the generated config files wrap a little differently.
-* `/abw` with no arguments lists two more sub-commands (`lang`, `whitelist`).
-* `/abw reload` also prints config problems, if there are any.
-* `/abw listwords <language>` uses the new codes (`en`, `de` ...); the old names (`english`, `german` ...) still work.
-* Fabric/Forge only: a setting that is missing from the file now uses its default (like the plugin always did);
-  the version-1 mods treated missing lists as empty.
+* Settings registry, check pipeline, event stream, replaceable strike counter, one-class sub-commands, comment-preserving `YamlEditor` (`5-shared-engine/README.md`).
+* `tools/stub-compile.sh` (hand-written stubs, a quick sanity check only), `.github/workflows/build-release.yml`, `.github/workflows/verify-apis.yml`.
+* The old plugin code is kept in the tests as an oracle for the migration.
 
 ## 1 (numbering restarted)
 

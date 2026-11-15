@@ -42,40 +42,41 @@ Minecraft versions it was not built for.
 
 | Jar | Game version(s) to tick | Loader |
 |-----|-------------------------|--------|
-| `Antibadwords-RELEASE[Bukkit] - 1-26.3.jar` | 26.3 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Bukkit] - 1-26.2.jar` | 26.2 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Bukkit] - 1-26.1.2.jar` | 26.1.2 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Bukkit] - 1-26.1.1.jar` | 26.1.1 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Bukkit] - 1-26.1.jar` | 26.1 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Bukkit] - 1-1.21.11.jar` | 1.21.11 | Paper, Spigot, Bukkit |
-| `Antibadwords-RELEASE[Purpur] - 1-26.3.jar` | 26.3 | Purpur |
-| `Antibadwords-RELEASE[Purpur] - 1-26.2.jar` | 26.2 | Purpur |
-| `Antibadwords-RELEASE[Purpur] - 1-26.1.2.jar` | 26.1.2 | Purpur |
-| `Antibadwords-RELEASE[Purpur] - 1-26.1.1.jar` | 26.1.1 | Purpur |
-| `Antibadwords-RELEASE[Purpur] - 1-26.1.jar` | 26.1 | Purpur |
-| `Antibadwords-RELEASE[Purpur] - 1-1.21.11.jar` | 1.21.11 | Purpur |
-| `Antibadwords-RELEASE[Fabric] - 1-26.3.jar` | 26.3 | Fabric |
-| `Antibadwords-RELEASE[Fabric] - 1-26.2.jar` | 26.2 | Fabric |
-| `Antibadwords-RELEASE[Fabric] - 1-26.1.2.jar` | 26.1.2 | Fabric |
-| `Antibadwords-RELEASE[Fabric] - 1-26.1.1.jar` | 26.1.1 | Fabric |
-| `Antibadwords-RELEASE[Fabric] - 1-26.1.jar` | 26.1 | Fabric |
-| `Antibadwords-RELEASE[Fabric] - 1-1.21.11.jar` | 1.21.11 | Fabric |
-| `Antibadwords-RELEASE[Forge] - 1-26.3.jar` | 26.3 | Forge |
-| `Antibadwords-RELEASE[Forge] - 1-26.2.jar` | 26.2 | Forge |
-| `Antibadwords-RELEASE[Forge] - 1-26.1.2.jar` | 26.1.2 | Forge |
-| `Antibadwords-RELEASE[Forge] - 1-26.1.1.jar` | 26.1.1 | Forge |
-| `Antibadwords-RELEASE[Forge] - 1-26.1.jar` | 26.1 | Forge |
-| `Antibadwords-RELEASE[Forge] - 1-1.21.11.jar` | 1.21.11 | Forge |
+| `Antibadwords-RELEASE[Bukkit] - 2-26.3.jar` | 26.3 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 2-26.2.jar` | 26.2 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 2-26.1.2.jar` | 26.1.2 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 2-26.1.1.jar` | 26.1.1 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 2-26.1.jar` | 26.1 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Bukkit] - 2-1.21.11.jar` | 1.21.11 | Paper, Spigot, Bukkit |
+| `Antibadwords-RELEASE[Purpur] - 2-26.3.jar` | 26.3 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 2-26.2.jar` | 26.2 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 2-26.1.2.jar` | 26.1.2 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 2-26.1.1.jar` | 26.1.1 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 2-26.1.jar` | 26.1 | Purpur |
+| `Antibadwords-RELEASE[Purpur] - 2-1.21.11.jar` | 1.21.11 | Purpur |
+| `Antibadwords-RELEASE[Fabric] - 2-26.3.jar` | 26.3 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 2-26.2.jar` | 26.2 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 2-26.1.2.jar` | 26.1.2 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 2-26.1.1.jar` | 26.1.1 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 2-26.1.jar` | 26.1 | Fabric |
+| `Antibadwords-RELEASE[Fabric] - 2-1.21.11.jar` | 1.21.11 | Fabric |
+| `Antibadwords-RELEASE[Forge] - 2-26.3.jar` | 26.3 | Forge |
+| `Antibadwords-RELEASE[Forge] - 2-26.2.jar` | 26.2 | Forge |
+| `Antibadwords-RELEASE[Forge] - 2-26.1.2.jar` | 26.1.2 | Forge |
+| `Antibadwords-RELEASE[Forge] - 2-26.1.1.jar` | 26.1.1 | Forge |
+| `Antibadwords-RELEASE[Forge] - 2-26.1.jar` | 26.1 | Forge |
+| `Antibadwords-RELEASE[Forge] - 2-1.21.11.jar` | 1.21.11 | Forge |
 
-Fabric and Forge jars were started on real servers (see `FABRIC-AND-FORGE-STATUS.md`); the Bukkit and Purpur jars have only unit tests. Say so in the upload notes or test them first.
+The version 2 jars are built by GitHub Actions (download them from the GitHub Release `v2.0.0`). They were NOT started on a real server yet; only the version 1 Fabric and Forge jars were. Say so in the upload notes or test them first.
 
-Version name pattern: `AntiBadWords 1 for Minecraft 26.3`.
+Version name pattern: `AntiBadWords 2 for Minecraft 26.3`.
 
 Changelog text for every upload:
 
 ```
-Version 1
-- 23 bug fixes (inverted protection levels, swapped messages, unsafe attribute punishments, false positives, ...)
+Version 2
+- Shared engine, config folder, moderation (strikes, ladder, mute, history), Discord, in-game menu, plugin integrations (see CHANGELOG)
+- Version 1 notes: 23 bug fixes (inverted protection levels, swapped messages, unsafe attribute punishments, false positives, ...)
 - Now works on both Spigot and Paper (one jar)
 - New word matcher: whole-word, Unicode-aware, catches spaced letters, leetspeak and f*ck
 - New permissions: antibadwords.bypass, antibadwords.notify

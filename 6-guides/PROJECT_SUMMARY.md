@@ -55,6 +55,8 @@ Only full releases (no snapshots, pre-releases or betas): the six newest, checke
 
 ## Honest status
 
+> Out of date. For version 2 read the test table in the main [README](../README.md) and [FABRIC-AND-FORGE-STATUS.md](FABRIC-AND-FORGE-STATUS.md). The notes below describe the first release.
+
 - Compiles against the real Spigot API of all 6 versions (so it uses nothing Paper-only); 22 unit tests pass.
 - **Never run on an actual server** (the sandbox this was built in could not start one). Test on a server
   before publishing: especially the punishment effects/attributes, signs, books and the anvil.
