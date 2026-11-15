@@ -147,3 +147,5 @@ discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.commands
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.interactions.Interaction
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.restaction.interactions.InteractionCallbackAction
 discordsrv | github.scarsz.discordsrv.dependencies.jda.api.requests.RestAction
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.entities.Member
+discordsrv | github.scarsz.discordsrv.dependencies.jda.api.entities.Role
