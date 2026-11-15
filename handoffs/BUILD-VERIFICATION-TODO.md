@@ -198,3 +198,6 @@ Not run against a real EssentialsX / EssentialsX Chat. Check on a real server: `
 - [ ] Bukkit: `antibadwords.gui.edit.<category>` nodes are registered with default TRUE after every reload (`AntiBadWordsPlugin.registerProfilePermissions`, stub-compiled only). Check with LuckPerms that negating one node blocks only that category and that `/abw gui ladder`, `/abw gui spam` open the right page.
 - [ ] Fabric/Forge: edit nodes use `ModPermissions.fallback` (true); Forge does not register them (unregistered nodes use the fallback). `ModGui.open(player, page)` is stub-compiled only; mods still have no chest backend.
 - [ ] Run `tools/stub-compile.sh` (hand-written stubs, see `tools/api-stubs/README.md`): passing it proves nothing about the real APIs. It found a duplicate `case` in `ForgePermissions` (fixed).
+
+## Task 34: plugin messaging network sync
+Test `integrations.network.mode: plugin-messaging` on a real BungeeCord/Velocity network (Velocity: BungeeCord bridge on): `Forward ALL antibadwords:sync` delivery, queue while empty, `sendPluginMessage` from the async poll thread.

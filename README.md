@@ -9,7 +9,7 @@ It also checks commands (`/msg`), signs, books and anvil renames, so there is no
 1. Open the folder **[`1-download-jars/`](1-download-jars/)**.
 2. Pick the file for **your server type** and **your Minecraft version**. The name tells you everything:
 
-   `Antibadwords-RELEASE[` **Bukkit** `] - 1-` **26.3** `.jar`
+   `Antibadwords-RELEASE[` **Bukkit** `] - 2-` **26.3** `.jar`
    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;^ server type &nbsp;&nbsp; ^ Minecraft version
 
 3. Drop it in your server's `plugins/` folder (Bukkit, Spigot, Paper, Purpur) or `mods/` folder (Fabric, Forge). Restart.

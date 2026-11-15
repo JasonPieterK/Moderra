@@ -15,7 +15,7 @@ cd "$(dirname "$0")"
 mc=${1:?usage: SERVER_JAR=/path/to/server.jar ./test-on-real-server.sh <minecraft version>}
 : "${SERVER_JAR:?set SERVER_JAR to a Spigot, Paper or Purpur server jar for Minecraft $mc}"
 server_jar=$(cd "$(dirname "$SERVER_JAR")" && pwd)/$(basename "$SERVER_JAR")
-plugin_jar="../1-download-jars/Antibadwords-RELEASE[Bukkit] - 1-${mc}.jar"
+plugin_jar="../1-download-jars/Antibadwords-RELEASE[Bukkit] - 2-${mc}.jar"
 [ -f "$plugin_jar" ] || { echo "missing $plugin_jar - build it first with ./build-all-versions.sh $mc"; exit 2; }
 java_bin="${JAVA_HOME:+$JAVA_HOME/bin/}java"
 

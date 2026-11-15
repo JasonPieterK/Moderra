@@ -5,7 +5,7 @@
 
     <groupId>com.jason.plugins</groupId>
     <artifactId>antibadwords</artifactId>
-    <version>1</version>
+    <version>2</version>
     <packaging>jar</packaging>
 
     <name>AntiBadWords</name>
@@ -31,7 +31,7 @@
                                   jar runs on Spigot and Paper)
               java.release       Java language level (Minecraft 26.x requires Java 25)
         -->
-        <!-- Loader name used in the jar file name: Antibadwords-RELEASE[Bukkit] - 1-<mc.version>.jar -->
+        <!-- Loader name used in the jar file name: Antibadwords-RELEASE[Bukkit] - 2-<mc.version>.jar -->
         <loader.name>Bukkit</loader.name>
         <mc.version>1.21.11</mc.version>
         <mc.api.version>1.21</mc.api.version>
