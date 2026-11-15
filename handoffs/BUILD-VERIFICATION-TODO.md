@@ -1,3 +1,44 @@
+# Open items for 2.0 (the one clean list - start here)
+
+State: all 24 jars are built by GitHub Actions and the code compiles against the real Spigot, Minecraft, Fabric and Forge APIs;
+third-party plugin names are checked by `verify-apis.yml` (64 names pass); the engine has 410 unit tests. **Nothing was run on a
+real server and the scripted player was not used.** Tick the boxes when done, then update the test table in `README.md` and
+`6-guides/FABRIC-AND-FORGE-STATUS.md`.
+
+## A. Test on a real server (never done)
+- [ ] Start each jar kind once: Bukkit/Paper, Purpur, Fabric, Forge (`TEST=1 ./build-everything.sh <version>`; Paper/Purpur: `2-plugin-bukkit-purpur/test-on-real-server.sh`, never run). `/abw` works, no errors in the log.
+- [ ] Scripted player: `cd 5-shared-engine/live-player-test && node bot.js <host> <port> <version> extras,filters,moderation` and `moderation-again` after a restart (not possible on 26.2 and 26.3, the bot library lacks them).
+- [ ] Migration from a version 1 `config.yml` (`OLD_CONFIG=1`), including the changed message texts and `strikes.json.discarded`.
+- [ ] Menu: open `/abw`, click every kind of entry, number keys, shift-click, drag, Esc with unsaved changes, chat prompt (answer not shown, no strike), `antibadwords.gui.edit.<category>` negated in LuckPerms. On mods the chest is names only.
+- [ ] Discord: webhook test (`/abw discord test`), rate limits, `${ENV:...}` secret; DiscordSRV alerts, inbound filter (block and censor: does the processed message really contain the raw text?), `!abw` commands.
+- [ ] EssentialsX + EssentialsX Chat (chat order, `/mute`, `/nick`, `/vanish`), LuckPerms (meta/group profile), Vault, PlaceholderAPI (all placeholders), ban plugins (check every `tempban` / `ipban` template and `{ip}`), Floodgate/Geyser names, TownyChat event, TAB/NametagEdit commands, mcMMO/Towny/Factions/Citizens/DecentHolograms command lists, CoreProtect (`getAPI/logChat/logCommand`), ProtocolLib scan (sign/book/anvil fields), Plan extension (provider method convention).
+- [ ] Network sync on a real network: shared folder with two servers; plugin messaging through BungeeCord/Velocity (`Forward ALL antibadwords:sync`, queue while empty, `sendPluginMessage` off the main thread).
+- [ ] Fabric/Forge: sign back side on 26.3 (`SignTextSlot.toString()`), command blocks (run and save), world name in `worlds.yml`, player IP, kick message through `/kick`, Forge permission nodes with a permission mod.
+- [ ] Bukkit: `antibadwords.gui.edit.*` default TRUE registration, `ItemFlag` names on 1.21.x (tooltips), `Player#getAddress`, command blocks fire `ServerCommandEvent`, "censor" really rewrites chat.
+- [ ] Re-run `generate-confusables.py` against the official unicode.org file when reachable (diff should be empty).
+
+## B. Not done (needs an API that is not available or not verified)
+- [ ] Fabric/Forge menu: item lore (`ItemLore` not in the dumps; read its signatures from the next dump, it is in `tools/dump-mc-api.py`).
+- [ ] Fabric/Forge sign-editor prompt (`ClientboundBlockUpdatePacket`, `ClientboundOpenSignEditorPacket`, `SignBlockEntity` not in dumps). Bukkit has no sign prompt either (Paper-only API).
+- [ ] `hasPlugin` on mods (`FabricLoader.isModLoaded`, `ModList.isLoaded` not in dumps).
+- [ ] Styled Chat and Text Placeholder API (eu.pb4) on Fabric.
+- [ ] PacketEvents listener (`ProtocolPacketEvent`, `PacketListenerCommon` not in the dump).
+- [ ] DiscordSRV slash commands (need shaded JDA types; `!abw` text commands exist instead).
+- [ ] mcMMO party chat event (needs `chat.author.Author` from the next dump).
+- [ ] CarbonChat, ChatControl, FactionsUUID events (jars missing in the dump).
+- [ ] HuskChat (proxy-side event, cannot cancel) and VentureChat (event not cancellable): limits, not bugs.
+- [ ] TAB and NametagEdit: no event exists for text a player sets; their commands are scanned instead.
+- [ ] Forge: nodes for profiles added after server start need a restart (no API for late registration).
+- [ ] Censoring chat text on Fabric/Forge (needs an event API; it blocks instead).
+- [ ] Bukkit cannot scan the editing of a command block (no event), only its running.
+
+---
+
+# History: the older per-session lists
+
+(Kept for detail. The list above wins where they differ. Closed since these were written: world name, sign back side, command blocks and IP
+on mods, the permission nodes in `plugin.yml`, and the build, which now runs on GitHub.)
+
 # Build and server verification still to do
 
 Some sessions of this feature round ran in a place that **could not download** Minecraft, the Spigot API, Fabric (Loom,

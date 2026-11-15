@@ -22,6 +22,10 @@ filters/links.yml        links, IP addresses and invites (off until you choose a
 filters/evasion.yml      bypass tricks: invisible characters, look-alike letters, leetspeak
 filters/confusables.yml  the tables for look-alike letters and leetspeak
 worlds.yml               different rules per world or per group of players
+moderation/mute.yml      the built-in mute
+moderation/history.yml   the history diary
+discord.yml              Discord alerts, DiscordSRV, commands from Discord (off until you switch it on)
+integrations.yml         other plugins: EssentialsX, PlaceholderAPI, LuckPerms, ban plugins, network sync ...
 data/                    the plugin's own memory - do not edit
 ```
 
@@ -483,8 +487,8 @@ More places that can be scanned (switches under `filters.scan` in config.yml):
 | Source | Switch | Bukkit / Spigot / Paper / Purpur | Fabric / Forge |
 |--------|--------|----------------------------------|----------------|
 | Player name on join | `join-names` (off) + `filters.join-names.action` log / warn / kick | yes | yes (a kick uses the `/kick` command) |
-| Back side of signs | `sign-back` (on) | yes, own switch | both sides are always scanned with `signs`; the extra switch does nothing yet |
-| Command blocks | `command-blocks` (off) | yes: checked when the block **runs** the command (Bukkit has no event for editing one); nobody gets strikes | **not available yet** |
+| Back side of signs | `sign-back` (on) | yes, own switch | yes, own switch |
+| Command blocks | `command-blocks` (off) | yes: checked when the block **runs** the command (Bukkit has no event for editing one); nobody gets strikes | yes: checked when the block runs and when a player saves a new command into it |
 
 ## Punishment actions (`moderation/ladder.yml`)
 
@@ -536,8 +540,8 @@ worlds:
   "minecraft:the_nether": relaxed
 ```
 
-Limits: on Fabric and Forge the world name is not known to the mod yet, so `worlds:` rules do not match there
-(profiles by permission and the default profile work). `/abw check`, `/abw lang`, `/abw whitelist` and
+On Fabric and Forge the world name is the dimension id (for example `minecraft:the_nether`).
+`/abw check`, `/abw lang`, `/abw whitelist` and
 `/abw listwords` always work on the normal files, not on a profile. Strike expiry and "clear on quit" are global.
 
 ## Coming from an older version (one big `config.yml`)
@@ -556,7 +560,7 @@ file in `wordlists/` and run `/abw reload`.
 
 ## Commands
 
-All commands need the permission `antibadwords.admin` (operators have it by default).
+Most commands need the permission `antibadwords.admin` (operators have it by default). The exceptions are named in the table.
 
 | Command | What it does |
 |---------|--------------|
@@ -568,6 +572,12 @@ All commands need the permission `antibadwords.admin` (operators have it by defa
 | `/abw info` | short status |
 | `/abw lang list` / `enable <code>` / `disable <code>` | switch language word lists on and off |
 | `/abw whitelist add <word>` / `remove <word>` / `list [page]` | words that are never blocked |
+| `/abw gui [page]` | open the settings menu (needs `antibadwords.gui`; plain `/abw` does the same for players) |
+| `/abw mute <player> [time] [reason]` / `unmute <player>` / `mutes [page]` | built-in mute (needs `antibadwords.mute`) |
+| `/abw history <player> [page]` / `recent [n]` / `purge <player> [confirm]` | history (needs `antibadwords.history`; purge also admin) |
+| `/abw strikes <player>` / `ladder [profile]` | strike points and the punishment ladder |
+| `/abw discord test` / `status` | test the Discord alerts (needs `antibadwords.discord`) |
+| `/abw network` | state of the network sync (admin) |
 
 ## Permissions
 
@@ -575,7 +585,13 @@ All commands need the permission `antibadwords.admin` (operators have it by defa
 |------------|---------|-----|
 | `antibadwords.admin` | op | All `/abw` sub-commands |
 | `antibadwords.notify` | op | Staff alert for every blocked word |
+| `antibadwords.mute` | op | `/abw mute`, `unmute`, `mutes` |
+| `antibadwords.history` | op | `/abw history` (purge also needs admin) |
+| `antibadwords.discord` | op | `/abw discord` |
+| `antibadwords.gui` | op | open the settings menu |
+| `antibadwords.gui.edit.<category>` | **true** | change the settings of that category in the menu (take it away to lock a category) |
 | `antibadwords.bypass` | nobody | Exempt from all checks |
+| `antibadwords.bypass.mute` | nobody | Never muted (not by the ladder either) |
 | `antibadwords.bypass.spam` | nobody | Exempt from the spam and flood rules |
 | `antibadwords.bypass.links` | nobody | Exempt from the link filter |
 | `antibadwords.bypass.evasion` | nobody | Exempt from the bypass-trick detection (blocked words are still found) |

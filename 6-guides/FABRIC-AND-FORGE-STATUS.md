@@ -1,36 +1,40 @@
 # Fabric and Forge: what works, what was tested
 
-> **Read this first (state after the "shared engine" round).** This page has two parts. Everything from
-> "What was tested, honestly" downwards describes the **version-1 jars** in `1-download-jars/` and is unchanged. Since
-> then the source code was rebuilt around a shared engine (config folder, migration, `/abw lang`, `/abw whitelist`,
-> world profiles). That newer code (now also spam, link and bypass-trick filters) is covered by **130 unit tests of the engine**, but the Fabric and Forge code that
-> connects the engine to the game - and the Bukkit plugin code too - has **not been compiled against Minecraft, Fabric,
-> Forge or Spigot and has never run on a server**, because the place it was written in could not download them. No new
-> jars were built. The jars in `1-download-jars/` are the old ones.
->
-> | New in the source code | Engine unit tests | Bukkit / Purpur | Fabric | Forge |
-> |---|:---:|:---:|:---:|:---:|
-> | Shared engine does the checking, strikes, messages (same behaviour as before) | pass | not compiled, not run | not compiled, not run | not compiled, not run |
-> | Config folder with commented files, `/abw reload` reports mistakes | pass | not run | not run | not run |
-> | Automatic migration of the old `config.yml` (same decisions before and after) | pass | not run | not run | not run |
-> | Word lists from `7-wordlists/` in the jar, `/abw lang list / enable / disable` | pass | not run | not run | not run |
-> | `/abw whitelist add / remove / list` | pass | not run | not run | not run |
-> | World profiles (`worlds.yml`): by permission | pass | not run | not run (needs the Fabric Permissions API) | not run (nodes are registered at server start) |
-> | World profiles: by world name | pass | not run | **not implemented** (the mod does not pass the world name yet) | **not implemented** |
-> | Bypass-trick clean-up before word matching (invisible characters, look-alikes, full-width, leetspeak) | pass | not run | not run | not run |
-> | Spam and flood rules, link filter, bypass-trick detection: action `block` and `log-only` | pass | not run | not run | not run |
-> | The same with action `censor` (deliver a cleaned text) | pass | not run; chat only, other places block | **blocks instead** (the mods cannot change chat text yet) | **blocks instead** |
-> | Player-name check on join (log / warn / kick) | pass | not run | not run (kick through the `/kick` command) | not run (same) |
-> | Sign back side with its own switch | pass | not run (uses `SignChangeEvent#getSide`, Bukkit 1.20+) | **switch has no effect**: both sides are scanned with `scan.signs` | **switch has no effect** |
-> | Command blocks | pass | not run; checked when the block runs the command (assumes the server fires `ServerCommandEvent` for command blocks) | **not implemented** | **not implemented** |
-> | New permissions `antibadwords.bypass.spam` / `.links` / `.evasion` | pass | in `plugin.yml`, not run | default nobody; needs the Fabric Permissions API to grant | registered as Forge nodes, not run |
-> | Moderation: strikes, ladder, mute, history (join/quit, mute for chat/commands/signs/books go through the same engine calls as before) | pass | permissions in `plugin.yml`, stub-compiled, not run | nodes pass through to the Permissions API, stub-compiled, not run | nodes `mute history discord gui bypass.mute` registered, stub-compiled, not run; kick via `/kick` |
-> | Scripted player `bot.js ... moderation` / `moderation-again` | - | never run | never run | never run |
-> | Scripted player `bot.js ... filters` (14 checks) | - | never run | never run | never run |
->
-> "Not compiled" means: only compiled against a small hand-written stand-in for the API classes, which proves that the
-> code fits the engine but not that it fits the real game. The exact to-do list for someone with network access is
-> [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
+## Version 2: what works on Fabric and Forge, what was tested
+
+All 24 jars are built on GitHub (`.github/workflows/build-release.yml`) and the Fabric and Forge code compiles against the **real**
+Minecraft, Fabric and Forge APIs (Minecraft 1.21.11, 26.1, 26.1.1, 26.1.2, 26.2, 26.3). The engine has 410 unit tests.
+**Nothing of version 2 was run on a real server, and the scripted player was not used in this round.**
+
+| Feature on Fabric / Forge | Engine tests | On a real server |
+|---|:---:|:---:|
+| Checking (chat, commands, signs both sides, books, anvils), strikes, messages, `/abw` | pass | not run |
+| Config folder, migration, word lists, `/abw lang`, `/abw whitelist` | pass | not run |
+| World profiles by permission, default and **world name** (dimension id, e.g. `minecraft:the_nether`) | pass | not run |
+| Command blocks (running and saving a command) and sign back side | pass | not run |
+| Player IP for `{ip}` (ban templates) | pass | not run |
+| Spam, link and bypass-trick filters; `censor` becomes **block** (mods cannot change chat text) | pass | not run |
+| Moderation: strikes, ladder, mute, history; kick through the vanilla `/kick` command | pass | not run |
+| Discord **webhook** alerts | pass | not run |
+| Settings menu (chest): names, glow, click blocking; **no lore**, chat prompts only | pass (menu logic) | not run |
+| Permissions: Fabric asks the Fabric Permissions API (LuckPerms), Forge registers nodes; defaults as on Bukkit | - | not run |
+| Network sync in shared-folder mode | pass | not run |
+
+Not available on Fabric/Forge by design: DiscordSRV features, all plugin integrations (EssentialsX, PlaceholderAPI, Vault, ...), because
+those are Bukkit-family plugins. LuckPerms for Fabric/Forge works through the permission nodes only.
+
+### Open items for 2.0
+The one complete list is in [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md). Fabric and Forge parts:
+* Test every jar on a real server (`TEST=1 ./build-everything.sh`, scripted player `bot.js`).
+* Menu: item lore, sign-editor prompt (chat prompt only now).
+* `hasPlugin` on mods (so `integrations.bans.provider: auto` and Bedrock `auto` always mean vanilla / off).
+* Styled Chat and Text Placeholder API (eu.pb4) support.
+* Forge: permission nodes of profiles added after server start need a restart.
+* The 26.3 sign-back check relies on a class that was not in the API dump (`SignTextSlot.toString()` giving "BACK").
+
+---
+
+# Older notes (version 1 jars)
 
 ## The version-1 jars
 
@@ -38,7 +42,7 @@ The Fabric and Forge versions do exactly what the Bukkit plugin does. In version
 (copied to `config/antibadwords/config.yml` on first start), use the same `WordMatcher`, the same word lists, protection
 levels, messages, strike system and punishments, and the same `/abw` command. Players install nothing.
 
-Jar names: `Antibadwords-RELEASE[Fabric] - 1-26.3.jar` and `Antibadwords-RELEASE[Forge] - 1-26.3.jar`
+Jar names (version 1): `Antibadwords-RELEASE[Fabric] - 1-26.3.jar` and `Antibadwords-RELEASE[Forge] - 1-26.3.jar`
 (one per Minecraft version: 26.3, 26.2, 26.1.2, 26.1.1, 26.1, 1.21.11).
 
 ## What was tested, honestly
@@ -93,7 +97,7 @@ Differences you can see (none remove a feature):
 ```bash
 ./build-everything.sh                     # all 24 jars -> 1-download-jars/
 TEST=1 ./build-everything.sh 26.3         # one version, and start real servers to check the Fabric/Forge jars
-cd 5-shared-engine && mvn test            # unit tests of the shared engine (88 tests)
+cd 5-shared-engine && mvn test            # unit tests of the shared engine (410 tests)
 ```
 Needs Maven, Gradle 9.8+ (`GRADLE=/path/to/gradle`) and JDKs 8, 21 and 25. The scripted player needs Node.js:
 `cd 5-shared-engine/live-player-test && npm install && node bot.js <host> <port> <minecraft version> extras`
