@@ -81,3 +81,23 @@ jobs:
           name: logs-${{ matrix.loader }}-${{ matrix.mc }}
           path: "**/build-logs/**"
           if-no-files-found: ignore
+
+  # The development container cannot download artifacts (blob storage is blocked there), but it can fetch git
+  # branches. So the results are also committed to the branch ci-results (force-pushed, no history kept).
+  publish-results:
+    needs: [plugin-apis, mc-api-dump]
+    if: always() && (github.event_name != 'push' || contains(github.event.head_commit.message, '[verify]'))
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with: { path: results }
+      - name: Push results to branch ci-results
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd results
+          git init -q -b ci-results
+          git config user.name "ci" && git config user.email "ci@users.noreply.github.com"
+          echo "Results of run ${{ github.run_id }} for commit ${{ github.sha }}" > README.md
+          git add -A && git commit -q -m "CI results for ${{ github.sha }}"
+          git push -f "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git" ci-results
