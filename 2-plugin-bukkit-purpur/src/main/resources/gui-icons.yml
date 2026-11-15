@@ -1,7 +1,7 @@
-# AntiBadWords menu icons: which item stands for which abstract icon name.
+# Moderra menu icons: which item stands for which abstract icon name.
 #
 # The menu (shared engine) only knows icon NAMES like "toggle_on". This file says which Bukkit Material shows for each
-# name. Admins can change it: copy this file to plugins/AntiBadWords/gui-icons.yml and edit; keys you leave out keep the
+# name. Admins can change it: copy this file to plugins/Moderra/gui-icons.yml and edit; keys you leave out keep the
 # default below. Names are Bukkit Material names (e.g. LIME_DYE), see the Material list of your server version.
 # A name that does not exist on your server version (or is not an item) shows the "fallback" material instead.
 # The file is read again every time a menu opens.

@@ -1,6 +1,6 @@
 # live-player-test - a robot player that swears
 
-`bot.js` joins a test server (offline mode) as "Tester" and checks, with 15 checks, that AntiBadWords reacts correctly to:
+`bot.js` joins a test server (offline mode) as "Tester" and checks, with 15 checks, that Moderra reacts correctly to:
 clean and swearing chat, a disguised `f.u.c.k`, `/msg` with and without a swear word, a book, a sign and an anvil rename.
 It prints `LIVE PLAYER TEST PASSED` or `FAILED`.
 
@@ -16,7 +16,7 @@ Limits: it only works for Minecraft versions the `mineflayer` library supports. 
 work (use `26.1` as the version for the two hotfixes); 26.2 and 26.3 do not yet.
 
 New in this round (written but **not run yet**, see `handoffs/BUILD-VERIFICATION-TODO.md`): with "extras" the bot also
-tries `/abw lang list`, `/abw lang enable de` / `disable de` and `/abw whitelist add` / `list` / `remove` (7 more checks).
+tries `/moderra lang list`, `/moderra lang enable de` / `disable de` and `/moderra whitelist add` / `list` / `remove` (7 more checks).
 A world-profile test is not in the bot (it would need two worlds and a prepared `worlds.yml`); profile rules are covered
 by the engine's unit tests.
 
@@ -32,7 +32,7 @@ invisible character without a swear word, a plain link, `example dot com`, `exam
 letters, a character flood, the same message four times, eight messages in two seconds, and the join-name warning.
 
 The new filters are **off** by default, so before the server starts put this into its config folder
-(`plugins/AntiBadWords/` or `config/antibadwords/`); start the server once first so the files exist:
+(`plugins/Moderra/` or `config/moderra/`); start the server once first so the files exist:
 
 | File | Change |
 |------|--------|
@@ -54,9 +54,9 @@ node bot.js localhost 25565 26.1 moderation          # part 1; needs operator ri
 node bot.js localhost 25565 26.1 moderation-again    # part 2: still muted? strikes still there? history kept?
 ```
 
-Part 1 checks `/abw strikes`, the ladder steps (warn, mute), the mute blocking chat, `/msg` and a sign, the notice with the
-time left, `/abw mutes`, `/abw history`, the mute ending by itself and a manual `/abw mute`. Part 2 checks the notice on
-join, that the mute and the strikes survive the reconnect or restart, `/abw unmute` and that the history is kept.
+Part 1 checks `/moderra strikes`, the ladder steps (warn, mute), the mute blocking chat, `/msg` and a sign, the notice with the
+time left, `/moderra mutes`, `/moderra history`, the mute ending by itself and a manual `/moderra mute`. Part 2 checks the notice on
+join, that the mute and the strikes survive the reconnect or restart, `/moderra unmute` and that the history is kept.
 Prepare the server before it starts (config folder as above):
 
 | File | Change |

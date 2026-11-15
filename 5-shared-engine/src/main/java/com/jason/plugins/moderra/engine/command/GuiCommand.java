@@ -1,0 +1,63 @@
+package com.jason.plugins.moderra.engine.command;
+
+import static com.jason.plugins.moderra.engine.command.Chat.RED;
+import static com.jason.plugins.moderra.engine.command.Chat.YELLOW;
+
+import com.jason.plugins.moderra.engine.Engine;
+import com.jason.plugins.moderra.engine.gui.Menu;
+
+/**
+ * {@code /moderra gui}: opens the settings menu for a player who has {@code moderra.gui}. A bare {@code /moderra} does the
+ * same (see {@link CommandRegistry#execute}). {@code /moderra gui <page>} opens at a page: a category name, a special
+ * page (ladder, profiles, rules, languages, words, mutes), a setting key or a number; see {@link Menu#open(Engine, String)}.
+ */
+public final class GuiCommand implements SubCommand {
+    @Override
+    public String name() {
+        return "gui";
+    }
+
+    @Override
+    public String permission() {
+        return Menu.PERMISSION;
+    }
+
+    @Override
+    public void execute(CommandContext c) {
+        open(c.engine(), c.sender(), String.join(" ", c.args()));
+    }
+
+    @Override
+    public java.util.List<String> complete(CommandContext c) {
+        if (c.args().length != 1) {
+            return java.util.List.of();
+        }
+        java.util.List<String> pages = new java.util.ArrayList<>(java.util.List.of("languages", "words", "ladder", "mutes", "profiles", "rules"));
+        for (String category : c.engine().registry().categories()) {
+            pages.add(category.toLowerCase(java.util.Locale.ROOT).replace(' ', '-'));
+        }
+        return CommandRegistry.prefix(pages, c.args()[0]);
+    }
+
+    static void open(Engine engine, CommandSender sender) {
+        open(engine, sender, "");
+    }
+
+    static void open(Engine engine, CommandSender sender, String page) {
+        if (sender.id() == null) {
+            sender.send(Chat.error("The menu can only be opened by a player."));
+        } else if (!sender.has(Menu.PERMISSION)) {
+            sender.send(Chat.error("You do not have permission to use the menu."));
+        } else if (!engine.platform().supportsMenu()) {
+            sender.send(Chat.warn("The settings menu is not available on this server. Edit the files in the config folder instead."));
+        } else {
+            if (!page.isBlank() && !Menu.opensPage(new com.jason.plugins.moderra.engine.gui.EngineConfigAccess(engine), page)) {
+                sender.send(Chat.warn("Unknown menu page \"" + page + "\". The main menu opens. Valid pages: a category name, languages, words, ladder, "
+                    + "mutes, profiles, rules, a setting key or a number."));
+            }
+            if (!engine.platform().openMenu(sender.id(), page)) {
+                sender.send(Chat.warn("The settings menu is not available on this server. Edit the files in the config folder instead."));
+            }
+        }
+    }
+}

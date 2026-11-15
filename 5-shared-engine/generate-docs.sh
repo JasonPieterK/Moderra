@@ -8,4 +8,4 @@ set -euo pipefail
 cd "$(dirname "$0")"
 mvn -q -B compile
 snakeyaml="${SNAKEYAML_JAR:-$HOME/.m2/repository/org/yaml/snakeyaml/2.3/snakeyaml-2.3.jar}"
-java -cp "target/classes:$snakeyaml" com.jason.plugins.antibadwords.engine.tools.GenerateDocs ..
+java -cp "target/classes:$snakeyaml" com.jason.plugins.moderra.engine.tools.GenerateDocs ..

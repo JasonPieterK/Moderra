@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Builds the default look-alike table (src/main/resources/abw-defaults/look-alikes.yml) from Unicode's confusables.txt.
+"""Builds the default look-alike table (src/main/resources/moderra-defaults/look-alikes.yml) from Unicode's confusables.txt.
 
-Usage:  python3 -I generate-confusables.py /path/to/confusables.txt > src/main/resources/abw-defaults/look-alikes.yml
+Usage:  python3 -I generate-confusables.py /path/to/confusables.txt > src/main/resources/moderra-defaults/look-alikes.yml
 
 confusables.txt is the data file of Unicode Technical Standard #39 (https://www.unicode.org/Public/security/latest/,
 also mirrored in the ICU repository). It is (c) Unicode, Inc. and used under the Unicode License v3

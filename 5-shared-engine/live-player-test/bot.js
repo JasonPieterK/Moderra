@@ -38,29 +38,29 @@ async function runExtras() {
   console_('execute at Tester run setblock ~-2 ~ ~ minecraft:oak_sign');
   await sleep(5000);
 
-  // ---- admin commands added with the shared engine: /abw lang and /abw whitelist (the bot is an operator now) ----
+  // ---- admin commands added with the shared engine: /moderra lang and /moderra whitelist (the bot is an operator now) ----
   // NOT RUN YET: written without a server to try it on, see handoffs/BUILD-VERIFICATION-TODO.md.
-  bot.chat('/abw lang list');
+  bot.chat('/moderra lang list');
   await sleep(1500);
-  check('/abw lang list shows the languages', seen(/Languages \(\d+ of \d+ on/));
-  bot.chat('/abw lang enable de');
+  check('/moderra lang list shows the languages', seen(/Languages \(\d+ of \d+ on/));
+  bot.chat('/moderra lang enable de');
   await sleep(2000);
-  check('/abw lang enable de switches German on', seen(/Language de \(German\) switched on/));
-  bot.chat('/abw check du arschloch');
+  check('/moderra lang enable de switches German on', seen(/Language de \(German\) switched on/));
+  bot.chat('/moderra check du arschloch');
   await sleep(1500);
   check('a German word is blocked after enabling de', seen(/Blocked: matches 'arschloch'/));
-  bot.chat('/abw lang disable de');
+  bot.chat('/moderra lang disable de');
   await sleep(2000);
-  check('/abw lang disable de switches German off', seen(/Language de switched off/));
-  bot.chat('/abw whitelist add botsafeword');
+  check('/moderra lang disable de switches German off', seen(/Language de switched off/));
+  bot.chat('/moderra whitelist add botsafeword');
   await sleep(2000);
-  check('/abw whitelist add', seen(/Added to the whitelist: botsafeword/));
-  bot.chat('/abw whitelist list 99');
+  check('/moderra whitelist add', seen(/Added to the whitelist: botsafeword/));
+  bot.chat('/moderra whitelist list 99');
   await sleep(1500);
-  check('/abw whitelist list shows the new word on the last page', seen(/Whitelist \(\d+ words\)/) && seen(/botsafeword$/));
-  bot.chat('/abw whitelist remove BOTSAFEWORD');
+  check('/moderra whitelist list shows the new word on the last page', seen(/Whitelist \(\d+ words\)/) && seen(/botsafeword$/));
+  bot.chat('/moderra whitelist remove BOTSAFEWORD');
   await sleep(2000);
-  check('/abw whitelist remove (capital letters do not matter)', seen(/Removed from the whitelist: botsafeword/));
+  check('/moderra whitelist remove (capital letters do not matter)', seen(/Removed from the whitelist: botsafeword/));
   skipped('world-profile difference', 'needs two worlds and a prepared worlds.yml; profile resolution is covered by the engine unit tests');
 
   // ---- books ----
@@ -218,17 +218,17 @@ async function runModeration() {
   await sleep(2000);
 
   // ---- strikes and the ladder ----
-  bot.chat('/abw resetviolations ' + NAME);
+  bot.chat('/moderra resetviolations ' + NAME);
   await sleep(1500);
-  bot.chat('/abw mute ' + NAME + ' 1s clear'); // make sure an old mute from an earlier run cannot disturb: ends after 1s
+  bot.chat('/moderra mute ' + NAME + ' 1s clear'); // make sure an old mute from an earlier run cannot disturb: ends after 1s
   await sleep(2500);
-  bot.chat('/abw unmute ' + NAME);
+  bot.chat('/moderra unmute ' + NAME);
   await sleep(1000);
   bot.chat('you are a shit head');
   await sleep(2500);
-  bot.chat('/abw strikes ' + NAME);
+  bot.chat('/moderra strikes ' + NAME);
   await sleep(1500);
-  check('/abw strikes shows 1 strike and the next step', seen(new RegExp(NAME + ': 1 strike')) && seen(/Next step: .* at 2/));
+  check('/moderra strikes shows 1 strike and the next step', seen(new RegExp(NAME + ': 1 strike')) && seen(/Next step: .* at 2/));
   bot.chat('what the fuck');
   await sleep(2500);
   check('ladder step at 2 strikes (warn) ran', seen(/WATCH YOUR WORDS|warn/i));
@@ -236,9 +236,9 @@ async function runModeration() {
   bot.chat('damn shit again');
   await sleep(3000);
   check('ladder step at 3 strikes: the player is told about the mute', seen(/You have been muted for/i));
-  bot.chat('/abw mutes');
+  bot.chat('/moderra mutes');
   await sleep(1500);
-  check('/abw mutes lists the player', seen(new RegExp(NAME, 'i')) && seen(/mute/i));
+  check('/moderra mutes lists the player', seen(new RegExp(NAME, 'i')) && seen(/mute/i));
 
   // ---- mute enforcement ----
   await sleep(2500);
@@ -261,9 +261,9 @@ async function runModeration() {
   } else {
     skipped('muted sign', 'no sign block near the bot (use "extras" setup)');
   }
-  bot.chat('/abw history ' + NAME);
+  bot.chat('/moderra history ' + NAME);
   await sleep(2000);
-  check('/abw history lists violation and mute entries', seen(/History of /i) && seen(/mute/i));
+  check('/moderra history lists violation and mute entries', seen(/History of /i) && seen(/mute/i));
 
   // ---- the mute ends by itself (20s in the prepared ladder) ----
   await sleep(21000);
@@ -272,9 +272,9 @@ async function runModeration() {
   check('the mute expired by itself and chat works again', said(/I can talk again/) && seen(/no longer muted|run out/i));
 
   // ---- a manual mute and unmute ----
-  bot.chat('/abw mute ' + NAME + ' 5m testing the mute');
+  bot.chat('/moderra mute ' + NAME + ' 5m testing the mute');
   await sleep(2000);
-  check('/abw mute works (player is told)', seen(/You have been muted for 5m/i));
+  check('/moderra mute works (player is told)', seen(/You have been muted for 5m/i));
   bot.chat('anyone there');
   await sleep(2000);
   check('manual mute blocks chat', !said(/anyone there/));
@@ -290,16 +290,16 @@ async function runModerationAgain() {
   bot.chat('am I still muted');
   await sleep(2000);
   check('after reconnect: still muted, chat not delivered', !said(/am I still muted/));
-  bot.chat('/abw strikes ' + NAME);
+  bot.chat('/moderra strikes ' + NAME);
   await sleep(1500);
   check('after reconnect: the strikes are still there (clear-violations-on-quit: false)', seen(new RegExp(NAME + ': [1-9]\\d* strike')));
-  bot.chat('/abw unmute ' + NAME);
+  bot.chat('/moderra unmute ' + NAME);
   await sleep(2000);
-  check('/abw unmute works (player is told)', seen(/no longer muted/i));
+  check('/moderra unmute works (player is told)', seen(/no longer muted/i));
   bot.chat('free again');
   await sleep(2000);
   check('after unmute: chat is delivered', said(/free again/));
-  bot.chat('/abw history ' + NAME);
+  bot.chat('/moderra history ' + NAME);
   await sleep(2000);
   check('the history still has the entries from before the reconnect', seen(/History of /i) && seen(/unmute/i));
 }

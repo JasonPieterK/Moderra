@@ -6,7 +6,7 @@ same files into their jar, so all four server types behave the same.
 
 | Folder | What it is | Tested here? |
 |--------|-----------|--------------|
-| `src/main/java/.../engine/` | the engine (no Bukkit, no Minecraft): checks, strikes, messages, config folder, migration, `/abw` commands | **yes** - `mvn test` |
+| `src/main/java/.../engine/` | the engine (no Bukkit, no Minecraft): checks, strikes, messages, config folder, migration, `/moderra` commands | **yes** - `mvn test` |
 | `src/main/java/.../` (`WordMatcher`, `Placeholders` ...) and `.../mod/` (`Names`, `AttributeLedger`) | older pure classes the engine uses (they kept their package names) | **yes** |
 | `src/main/resources/` | default punishment sections and `wordlists-index.txt` (the list of language files in the jar) | yes |
 | `src/mc/java`, `src/mc-variants` | the parts of the **mods** that touch Minecraft (shared by Fabric and Forge) | only by a real Fabric/Forge build |
@@ -38,7 +38,7 @@ effects/attributes/sounds). Sign lines and book pages go through `engine.inspect
 |------------------|---------|
 | a setting | `Setting.bool("filters.spam.enabled", true).file("filters/spam.yml").category("Spam").title(..).description(..).overridable().build()` as a constant, register it in a `static void register(SettingsRegistry r)` method, and call that method in `Engine.registerSettings`. The file, its comments, validation and `CONFIGURATION.md` follow automatically (run `./generate-docs.sh`). |
 | a check (spam, links ...) | implement `TextCheck` (`id()`, `enabled(settings)`, `check(message, settings)` returning a `Hit`) and call `engine.registerCheck(order, check)` in `Engine.registerBuiltIns`. Read settings with `settings.get(MY_SETTING)`; cache compiled things with `settings.derived("id.what", s -> ...)`. |
-| a `/abw` sub-command | one class implementing `SubCommand`, registered with `commands.register(new MyCommand())` in `CoreCommands.register` |
+| a `/moderra` sub-command | one class implementing `SubCommand`, registered with `commands.register(new MyCommand())` in `CoreCommands.register` |
 | a reaction to events (history, Discord) | `engine.events().subscribe(event -> ...)`; kinds so far: `violation`, `punishment`, `admin-command`, `spam`, `link`, `evasion` |
 | another strike counter | `engine.setStrikeService(new MyStrikeService())` |
 | state file in `data/` | `engine/moderation/DataFile` (JSON, temp file + move, debounced save, `.corrupt-<date>` copy of a damaged file) |
@@ -49,7 +49,7 @@ effects/attributes/sounds). Sign lines and book pages go through `engine.inspect
 ## Moderation (package `engine.moderation`)
 `PersistentStrikeService`, `Ladder`, `MuteService` (`engine.mutes()`), `HistoryStore` (`engine.history()`), `PlayerDirectory`,
 `DurationParser`, `DataFile`. Adapters only need `engine.onJoin/onQuit/shutdown`, `inspect` for every text source and the
-permissions `antibadwords.mute/.history/.bypass.mute`. See `6-guides/MODERATION.md`.
+permissions `moderra.mute/.history/.bypass.mute`. See `6-guides/MODERATION.md`.
 Tests: every test that starts an engine goes through `TestEngines.track` (global JUnit extension) so engines are shut down
 before the `@TempDir` is deleted.
 
@@ -57,7 +57,7 @@ before the `@TempDir` is deleted.
 
 | Class | What it does |
 |-------|--------------|
-| `EvasionNormalizer`, `Confusables` | turn text into canonical tokens for `WordMatcher` (invisible characters, compatibility forms, accents, look-alikes, leetspeak); settings in `EvasionSettings`; default table `abw-defaults/look-alikes.yml`, rebuilt with `generate-confusables.py` from Unicode's `confusables.txt` |
+| `EvasionNormalizer`, `Confusables` | turn text into canonical tokens for `WordMatcher` (invisible characters, compatibility forms, accents, look-alikes, leetspeak); settings in `EvasionSettings`; default table `moderra-defaults/look-alikes.yml`, rebuilt with `generate-confusables.py` from Unicode's `confusables.txt` |
 | `WordIndex` | trie + bit sets so masked and partial matching do not scan every word (`PerformanceTest` holds the 1 ms budget) |
 | `EvasionCheck` (`evasion`), `LinkCheck` + `LinkParser` (`link`), `SpamCheck` (`spam-rate`, `spam-repeat`, `spam-caps`, `spam-flood`, `spam-words`, `spam-commands`) + `SpamState` | the pipeline stages; settings in `EvasionSettings`, `LinkSettings`, `SpamSettings` |
 
@@ -70,7 +70,7 @@ Things later features can use:
   `violation` with source `join` and `action` = `log` / `warn` / `kick`. Command blocks publish with `playerId == null`.
 * `TextCheck.feedback(hit, settings)`: the line a player gets when that check stopped the message.
   `TextCheck.seesEveryCommand()`: the check gets every command line, not only scanned ones.
-* `Message.asProbe()` / `engine.explain(text)`: judge without counting (used by `/abw check`).
+* `Message.asProbe()` / `engine.explain(text)`: judge without counting (used by `/moderra check`).
 * `Platform.canRewrite(source)`: where the loader can deliver a cleaned text; elsewhere the engine turns "censor" into "block".
 * `engine.onJoin(uuid, name)`, `engine.blockCommandBlock(world, where, commandLine)`, `engine.registerSource(source, switch...)`,
   `engine.scans(source, settings)`, `engine.check(id)`, `engine.checkIds()`, `engine.spamState()`.

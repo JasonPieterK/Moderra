@@ -8,7 +8,7 @@ import json, os, re, subprocess, sys, urllib.request, zipfile, xml.etree.Element
 
 
 def fetch(url):
-    req = urllib.request.Request(url, headers={"User-Agent": "abw-api-verify"})
+    req = urllib.request.Request(url, headers={"User-Agent": "moderra-api-verify"})
     with urllib.request.urlopen(req, timeout=60) as r:
         return r.read()
 
@@ -23,7 +23,7 @@ def resolve(src):
         if os.environ.get("GITHUB_TOKEN"):
             hdr["Authorization"] = "Bearer " + os.environ["GITHUB_TOKEN"]
         req = urllib.request.Request("https://api.github.com/repos/%s/releases?per_page=15" % p[1],
-                                     headers=dict(hdr, **{"User-Agent": "abw-api-verify"}))
+                                     headers=dict(hdr, **{"User-Agent": "moderra-api-verify"}))
         rels = json.loads(urllib.request.urlopen(req, timeout=60).read())
         rx = re.compile(p[2])
         for rel in rels:

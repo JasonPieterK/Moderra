@@ -3,10 +3,10 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.jason.plugins</groupId>
-    <artifactId>antibadwords-engine</artifactId>
-    <version>1</version>
+    <artifactId>moderra-engine</artifactId>
+    <version>1.0</version>
     <packaging>jar</packaging>
-    <name>AntiBadWords engine</name>
+    <name>Moderra engine</name>
     <description>Platform-neutral engine shared by the Bukkit plugin and the Fabric and Forge mods. This module exists for the unit tests; every loader compiles the same sources into its own jar.</description>
 
     <properties>

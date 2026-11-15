@@ -1,0 +1,52 @@
+package com.jason.plugins.moderra.fabric;
+
+import com.jason.plugins.moderra.engine.EngineLog;
+import com.jason.plugins.moderra.mod.ModerraCommand;
+import com.jason.plugins.moderra.mod.ModRuntime;
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.message.v1.ServerMessageEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+public final class ModerraFabric implements ModInitializer {
+    private static final Logger LOGGER = LoggerFactory.getLogger("Moderra");
+
+    @Override
+    public void onInitialize() {
+        String version = FabricLoader.getInstance().getModContainer("moderra")
+            .map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("1");
+        // Platform.hasPlugin on Fabric = a mod with that id (see ModPluginIds for the name mapping)
+        ModRuntime.setModLookup(id -> FabricLoader.getInstance().isModLoaded(id));
+        ModRuntime.init(FabricLoader.getInstance().getConfigDir().resolve("moderra"), version, "Fabric", new FabricPermissions(),
+            new EngineLog() {
+                @Override
+                public void info(String message) {
+                    LOGGER.info(message);
+                }
+
+                @Override
+                public void warn(String message) {
+                    LOGGER.warn(message);
+                }
+            });
+
+        if (FabricLoader.getInstance().isModLoaded("placeholder-api")) {
+            FabricPlaceholders.register(); // %moderra:<name>%; the class is only loaded when the mod is there
+        }
+        com.jason.plugins.moderra.mod.gui.ModGui.install(new com.jason.plugins.moderra.mod.gui.ChestBackend());
+        // Returning false from ALLOW_CHAT_MESSAGE cancels the message.
+        ServerMessageEvents.ALLOW_CHAT_MESSAGE.register((message, sender, params) -> !ModRuntime.blockChat(sender, message.signedContent()));
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> ModRuntime.onJoin(handler.getPlayer()));
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> ModRuntime.onQuit(handler.getPlayer()));
+        ServerLifecycleEvents.SERVER_STOPPING.register(ModRuntime::restoreEverything);
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            ModRuntime.remember(server);
+            ModRuntime.selfTestIfRequested();
+        });
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> ModerraCommand.register(dispatcher));
+    }
+}

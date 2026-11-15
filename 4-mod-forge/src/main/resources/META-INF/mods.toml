@@ -3,20 +3,20 @@ loaderVersion = "[${forge_major},)"
 license = "All Rights Reserved"
 
 [[mods]]
-modId = "antibadwords"
+modId = "moderra"
 version = "${version}"
-displayName = "AntiBadWords"
+displayName = "Moderra"
 authors = "Jason"
 description = '''Blocks profanity in chat, commands, signs, books and anvils and punishes repeat offenders.'''
 
-[[dependencies.antibadwords]]
+[[dependencies.moderra]]
 modId = "forge"
 mandatory = true
 versionRange = "[${forge_major},)"
 ordering = "NONE"
 side = "SERVER"
 
-[[dependencies.antibadwords]]
+[[dependencies.moderra]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[${minecraft_version}]"

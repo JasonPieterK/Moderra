@@ -53,7 +53,7 @@ essentials | com.earth2me.essentials.User | setMuteTimeout(long)
 ?essentials | com.earth2me.essentials.User | setDisplayNick()
 ?essentials | com.earth2me.essentials.User | isVanished()
 
-# --- PlaceholderApiHook + papi-shim (AbwPlaceholderExpansion extends PlaceholderExpansion; static PlaceholderAPI.setPlaceholders) ---
+# --- PlaceholderApiHook + papi-shim (ModerraPlaceholderExpansion extends PlaceholderExpansion; static PlaceholderAPI.setPlaceholders) ---
 papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | -
 papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getIdentifier()
 papi | me.clip.placeholderapi.expansion.PlaceholderExpansion | getAuthor()
