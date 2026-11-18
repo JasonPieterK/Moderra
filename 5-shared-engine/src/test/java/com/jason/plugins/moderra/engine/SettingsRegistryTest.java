@@ -89,7 +89,7 @@ class SettingsRegistryTest {
         assertEquals(List.of("config.yml", "moderation/ladder.yml", "worlds.yml", "filters/spam.yml", "filters/links.yml", "filters/evasion.yml",
             "filters/confusables.yml", "moderation/history.yml", "moderation/mute.yml", "discord.yml", "integrations.yml"), r.files());
         assertEquals(List.of("General", "Languages", "Scanning", "Player names", "Matching", "Whitelist", "Messages", "Punishment", "Worlds",
-            "Spam", "Links", "Evasion", "Look-alike tables", "Strikes", "Ladder", "History", "Mute", "Discord", "Integrations"), r.categories());
+            "Spam", "Links", "Evasion", "Look-alike tables", "Strikes", "Ladder", "History", "Mute", "Discord", "Integrations", "Sounds"), r.categories());
         for (ConfigEntry e : r.entries()) {
             assertFalse(e.title().isBlank(), e.key());
             assertFalse(e.description().isBlank(), e.key());

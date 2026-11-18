@@ -19,7 +19,9 @@ public final class MenuState {
         /** Special pages (engine required): languages, word-list index, one word list, ladder, mutes, profiles, search results. */
         LANGUAGES, SOURCES, WORDS, LADDER, MUTES, PROFILES, SEARCH,
         /** Editors: one ladder step (target = step name), one profile (target = profile name), the world rules. */
-        STEP, PROFILE, RULES
+        STEP, PROFILE, RULES,
+        /** Ready-made setups (ladders, filter strength, word lists ...). */
+        PRESETS
     }
 
     /** One entry of the navigation stack. {@code target} is the category name or the list setting's key. */

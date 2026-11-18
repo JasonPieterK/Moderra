@@ -31,6 +31,11 @@ class GuiEngineTest {
         public void send(String m) { }
     };
 
+    /** Slot of the entry with that name in the current view (content is centred, see Page.contentSlot). */
+    private static int slotOf(MenuState state, String name) {
+        return Menu.render(state).stream().filter(s -> name.equals(s.name())).findFirst().orElseThrow().index();
+    }
+
     @Test
     @SuppressWarnings("unchecked")
     void everyCategoryOpensAndDoneWritesTheFile() throws Exception {
@@ -44,7 +49,7 @@ class GuiEngineTest {
 
         // every category opens and all its pages render
         for (int i = 0; i < categories.size(); i++) {
-            assertEquals(MenuAction.Kind.REFRESH, Menu.click(state, i, ClickType.LEFT, ADMIN).kind());
+            assertEquals(MenuAction.Kind.REFRESH, Menu.click(state, slotOf(state, categories.get(i)), ClickType.LEFT, ADMIN).kind());
             for (int page = 0; page < 20 && Menu.render(state).stream().anyMatch(s -> s.index() == 52); page++) {
                 Menu.click(state, 52, ClickType.LEFT, ADMIN);
             }
@@ -63,10 +68,11 @@ class GuiEngineTest {
             }
         }
         boolean before = engine.value(target);
-        Menu.click(state, categoryIndex, ClickType.LEFT, ADMIN);
+        Menu.click(state, slotOf(state, categories.get(categoryIndex)), ClickType.LEFT, ADMIN);
         List<Object> inCategory = engine.registry().inCategory(categories.get(categoryIndex)).stream()
             .filter(e -> e instanceof Setting<?>).map(e -> (Object) e).toList();
-        int slot = inCategory.indexOf(target);
+        assertTrue(inCategory.contains(target));
+        int slot = slotOf(state, target.title());
         assertTrue(slot >= 0 && slot < 45, "the boolean is on the first page");
         Menu.click(state, slot, ClickType.LEFT, ADMIN);
         assertEquals(before, engine.value(target), "nothing written before Done");

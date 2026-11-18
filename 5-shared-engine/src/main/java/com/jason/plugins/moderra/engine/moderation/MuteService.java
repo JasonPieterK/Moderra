@@ -376,7 +376,10 @@ public final class MuteService implements MuteHandler {
         }
         if (notice) {
             Map<String, String> values = values(mute, now);
-            engine.platform().runSync(() -> tell(player, MuteSettings.MSG_BLOCKED, values));
+            engine.platform().runSync(() -> {
+                tell(player, MuteSettings.MSG_BLOCKED, values);
+                com.jason.plugins.moderra.engine.SoundSettings.play(engine, player, com.jason.plugins.moderra.engine.SoundSettings.MUTED);
+            });
         }
         return true;
     }

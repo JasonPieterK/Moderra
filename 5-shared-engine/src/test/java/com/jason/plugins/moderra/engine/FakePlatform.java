@@ -26,6 +26,7 @@ public final class FakePlatform implements Platform {
     public final List<String> consoleCommands = new ArrayList<>();
     public final List<String> kicks = new ArrayList<>();
     public final List<String> appliedActions = new ArrayList<>();
+    public final List<String> feedbackSounds = new ArrayList<>();
     public final List<String> infos = new ArrayList<>();
     public final List<String> warnings = new ArrayList<>();
     public final Set<String> plugins = new HashSet<>();
@@ -199,7 +200,11 @@ public final class FakePlatform implements Platform {
 
     @Override
     public String applyAction(UUID player, PunishmentAction action) {
-        appliedActions.add(action.type() + ":" + action.id());
+        if (action.id() != null && action.id().startsWith("sounds.")) {
+            feedbackSounds.add(action.id()); // Moderra's own feedback sounds (SoundSettings), not punishment actions
+        } else {
+            appliedActions.add(action.type() + ":" + action.id());
+        }
         return switch (action.type()) {
             case "sound" -> Names.soundDescription(action.args().get(0));
             case "boom" -> throw new IllegalStateException("boom");

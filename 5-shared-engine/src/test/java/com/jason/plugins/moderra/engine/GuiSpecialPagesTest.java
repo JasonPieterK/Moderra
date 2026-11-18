@@ -67,8 +67,24 @@ class GuiSpecialPagesTest {
         return Menu.render(state).stream().filter(s -> s.name().startsWith(prefix)).findFirst().orElse(null);
     }
 
+    /** The slot with that exact name, turning pages until it shows up (null when no page has it). */
+    private Slot slotWithPaging(String name) {
+        for (int guard = 0; guard < 20; guard++) {
+            Slot s = Menu.render(state).stream().filter(x -> x.name().equals(name)).findFirst().orElse(null);
+            if (s != null || Menu.render(state).stream().noneMatch(x -> x.index() == Page.NEXT)) {
+                return s;
+            }
+            click(Page.NEXT, ClickType.LEFT);
+        }
+        return null;
+    }
+
     private void open(String name) {
         Slot s = slotNamed(name);
+        for (int guard = 0; s == null && guard < 10 && Menu.render(state).stream().anyMatch(x -> x.index() == Page.NEXT); guard++) {
+            click(Page.NEXT, ClickType.LEFT); // the entry may be on a later page
+            s = slotNamed(name);
+        }
         assertNotNull(s, "no slot named " + name + " in " + Menu.render(state).stream().map(Slot::name).toList());
         assertEquals(MenuAction.Kind.REFRESH, click(s.index(), ClickType.LEFT).kind());
     }
@@ -79,6 +95,11 @@ class GuiSpecialPagesTest {
         assertEquals(MenuAction.Kind.TEXT_INPUT, action.kind());
         assertEquals(PromptKind.CHAT, MenuPrompts.start(engine, state, admin, action.request(), results::add));
         assertTrue(f.say(adminId, Message.CHAT, answer).captured());
+    }
+
+    /** Slot of the i-th content entry (content is centred, see Page.contentSlot). */
+    private int at(int i) {
+        return content().get(i).index();
     }
 
     private List<Slot> content() {
@@ -152,10 +173,10 @@ class GuiSpecialPagesTest {
     void bundledWordsArePagedAndReadOnly() {
         open("Word browser");
         open("en");
-        assertEquals(45, content().size());
+        assertEquals(Page.CONTENT_SLOTS, content().size());
         assertNotNull(slotNamed("Next page"));
-        assertEquals(MenuAction.Kind.NONE, click(0, ClickType.LEFT).kind());
-        assertEquals(MenuAction.Kind.NONE, click(0, ClickType.SHIFT_LEFT).kind());
+        assertEquals(MenuAction.Kind.NONE, click(at(0), ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.NONE, click(at(0), ClickType.SHIFT_LEFT).kind());
         assertNull(slotNamed("Add word"));
         click(Page.NEXT, ClickType.LEFT);
         assertNotNull(slotNamed("Previous page"));
@@ -170,9 +191,9 @@ class GuiSpecialPagesTest {
         assertEquals(List.of("flibbertigibbet"), engine.customWords());
         assertEquals(MenuAction.Kind.REFRESH, results.get(0).kind());
         assertEquals("flibbertigibbet", content().get(0).name());
-        assertEquals(MenuAction.Kind.NONE, click(0, ClickType.LEFT).kind(), "a plain click does not remove");
+        assertEquals(MenuAction.Kind.NONE, click(at(0), ClickType.LEFT).kind(), "a plain click does not remove");
         assertEquals(1, engine.customWords().size());
-        assertEquals(MenuAction.Kind.REFRESH, click(0, ClickType.SHIFT_LEFT).kind());
+        assertEquals(MenuAction.Kind.REFRESH, click(at(0), ClickType.SHIFT_LEFT).kind());
         assertEquals(List.of(), engine.customWords());
         assertFalse(state.hasUnsavedChanges(), "custom words do not use staging");
     }
@@ -199,13 +220,13 @@ class GuiSpecialPagesTest {
         ask(Page.ADD, "zorblax");
         assertEquals(before, engine.value(CoreSettings.WHITELIST).size(), "staged, not written");
         assertTrue(state.hasUnsavedChanges());
-        assertTrue(Menu.render(state).stream().anyMatch(s -> s.name().equals("zorblax")));
+        assertNotNull(slotWithPaging("zorblax"), "the new word is listed (on a later page when the list is long)");
         assertEquals(MenuAction.Kind.SAVED, click(Page.DONE, ClickType.LEFT).kind());
         assertTrue(engine.value(CoreSettings.WHITELIST).contains("zorblax"));
         state = Menu.open(engine);
         open("Word browser");
         open("Whitelist");
-        click(slotNamed("zorblax").index(), ClickType.LEFT);
+        click(slotWithPaging("zorblax").index(), ClickType.LEFT);
         click(Page.DONE, ClickType.LEFT);
         assertFalse(engine.value(CoreSettings.WHITELIST).contains("zorblax"));
     }
@@ -236,7 +257,7 @@ class GuiSpecialPagesTest {
         assertTrue(steps.get(1).lore().get(0).contains("again every 3"));
         assertTrue(steps.get(1).lore().stream().anyMatch(l -> l.contains("mute 10m")));
         assertFalse(state.hasUnsavedChanges(), "looking changes nothing");
-        assertEquals(MenuAction.Kind.REFRESH, click(1, ClickType.LEFT).kind(), "a click opens the step editor (see GuiEditorTest)");
+        assertEquals(MenuAction.Kind.REFRESH, click(at(1), ClickType.LEFT).kind(), "a click opens the step editor (see GuiEditorTest)");
         assertEquals("Step: big-mute", Menu.title(state));
     }
 
@@ -260,17 +281,17 @@ class GuiSpecialPagesTest {
         assertEquals("Permanent", mutes.get(0).lore().get(0));
         assertTrue(mutes.get(1).lore().get(0).startsWith("Remaining: "));
 
-        MenuAction denied = click(0, ClickType.LEFT);
+        MenuAction denied = click(at(0), ClickType.LEFT);
         assertEquals(MenuAction.Kind.ERROR, denied.kind());
         assertTrue(denied.message().contains(MuteService.PERMISSION));
         assertTrue(engine.mutes().isMuted(bob));
 
         perms.add(MuteService.PERMISSION);
-        assertEquals(MenuAction.Kind.REFRESH, click(0, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.REFRESH, click(at(0), ClickType.LEFT).kind());
         assertFalse(engine.mutes().isMuted(bob));
         assertTrue(engine.mutes().isMuted(carl));
         assertEquals(List.of("Carl"), content().stream().map(Slot::name).toList());
-        click(0, ClickType.RIGHT);
+        click(at(0), ClickType.RIGHT);
         assertEquals("Nobody is muted", content().get(0).name());
     }
 
@@ -294,7 +315,7 @@ class GuiSpecialPagesTest {
         assertEquals(List.of("default", "relaxed"), profiles.stream().map(Slot::name).toList());
         assertTrue(profiles.get(0).glowing());
         assertTrue(profiles.get(1).lore().stream().anyMatch(l -> l.contains("2 settings differ")), profiles.get(1).lore().toString());
-        assertEquals(MenuAction.Kind.REFRESH, click(1, ClickType.LEFT).kind(), "a click opens the profile editor (see GuiEditorTest)");
+        assertEquals(MenuAction.Kind.REFRESH, click(at(1), ClickType.LEFT).kind(), "a click opens the profile editor (see GuiEditorTest)");
         assertTrue(Menu.render(state).stream().anyMatch(sl -> sl.name().equals("filters.protection-level")));
     }
 
@@ -388,7 +409,7 @@ class GuiSpecialPagesTest {
     void everySpecialPageRechecksThePermission() {
         open("Language lists");
         perms.clear();
-        assertEquals(MenuAction.Kind.DENIED, click(0, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.DENIED, click(at(0), ClickType.LEFT).kind());
         assertFalse(state.hasUnsavedChanges());
         assertEquals(MenuAction.Kind.DENIED, Menu.submitText(state, "x", admin).kind());
     }

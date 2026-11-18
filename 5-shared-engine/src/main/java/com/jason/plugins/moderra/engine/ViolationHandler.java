@@ -112,6 +112,7 @@ final class ViolationHandler {
             for (PlayerRef other : platform.onlinePlayers()) {
                 if (!other.name().equals(playerName) && platform.has(other.id(), Engine.PERMISSION_NOTIFY)) {
                     platform.sendMessage(other.id(), staff);
+                    SoundSettings.play(engine, other.id(), SoundSettings.STAFF_ALERT);
                 }
             }
         }
@@ -130,6 +131,7 @@ final class ViolationHandler {
             }
             boolean disabled = useLadder ? !s.punishmentEnabled() && count >= ladder.firstThreshold() : count >= limit;
             platform.sendMessage(playerId, Placeholders.apply(disabled ? s.punishmentDisabledMessage() : s.warningPlayerMessage(), values));
+            SoundSettings.play(engine, playerId, SoundSettings.WARNING);
             return;
         }
         if (useLadder) {
@@ -155,6 +157,7 @@ final class ViolationHandler {
         values.put("punishment", values.get("punishments"));
         engine.essentials().broadcastAbout(playerId, Placeholders.apply(s.punishmentBroadcastMessage(), shown(playerId, playerName, values)));
         platform.sendMessage(playerId, Placeholders.apply(s.punishmentPlayerMessage(), values));
+        SoundSettings.play(engine, playerId, SoundSettings.PUNISHED);
         if (s.finalCommandEnabled() && !s.finalCommand().isBlank()) {
             platform.runConsoleCommand(stripSlash(Placeholders.apply(s.finalCommand(), values)));
         }
@@ -259,6 +262,7 @@ final class ViolationHandler {
         if (!step.message().isBlank()) {
             platform.sendMessage(playerId, Names.colour(Placeholders.apply(step.message(), values)));
         }
+        SoundSettings.play(engine, playerId, SoundSettings.PUNISHED);
         if (!step.finalCommand().isBlank()) {
             platform.runConsoleCommand(stripSlash(Placeholders.apply(step.finalCommand(), values)));
         }

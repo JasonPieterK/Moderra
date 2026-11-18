@@ -62,10 +62,17 @@ public final class ChestBackend implements GuiBackend {
                 container.setItem(slot.index(), stack(slot));
             }
         }
+        for (int i = 0; i < SIZE; i++) {
+            if (container.getItem(i).isEmpty()) {
+                ItemStack pane = new ItemStack(Items.GRAY_STAINED_GLASS_PANE, 1);
+                pane.set(DataComponents.CUSTOM_NAME, Component.literal(" "));
+                container.setItem(i, pane);
+            }
+        }
     }
 
     private static ItemStack stack(Slot slot) {
-        ItemStack stack = new ItemStack(item(slot.icon()), 1);
+        ItemStack stack = new ItemStack(item(slot), 1);
         stack.set(DataComponents.CUSTOM_NAME, Component.literal("\u00a76" + slot.name()));
         if (!slot.lore().isEmpty()) {
             List<Component> lines = new ArrayList<>();
@@ -80,13 +87,54 @@ public final class ChestBackend implements GuiBackend {
         return stack;
     }
 
+    private static Item item(Slot slot) {
+        String hint = slot.hint() == null ? "" : slot.hint();
+        if (hint.startsWith("category.")) {
+            Item byCategory = switch (hint.substring(9)) {
+                case "general" -> Items.COMMAND_BLOCK;
+                case "scanning", "search" -> Items.SPYGLASS;
+                case "matching" -> Items.TARGET;
+                case "whitelist" -> Items.WHITE_BANNER;
+                case "messages" -> Items.PAPER;
+                case "punishment" -> Items.IRON_SWORD;
+                case "ladder" -> Items.LADDER;
+                case "strikes" -> Items.TNT;
+                case "mute" -> Items.BELL;
+                case "history" -> Items.KNOWLEDGE_BOOK;
+                case "spam" -> Items.SLIME_BALL;
+                case "links" -> Items.CHAIN;
+                case "evasion" -> Items.ENDER_PEARL;
+                case "player_names" -> Items.NAME_TAG;
+                case "worlds" -> Items.GRASS_BLOCK;
+                case "discord" -> Items.AMETHYST_SHARD;
+                case "integrations" -> Items.PISTON;
+                case "sounds" -> Items.NOTE_BLOCK;
+                case "presets" -> Items.ENCHANTED_BOOK;
+                default -> null;
+            };
+            if (byCategory != null) {
+                return byCategory;
+            }
+        }
+        return item(slot.icon());
+    }
+
     private static Item item(String icon) {
         return switch (icon) {
-            case Icons.CATEGORY, Icons.HOME, Icons.LIST, Icons.LIST_ITEM, Icons.LANGUAGE, Icons.LADDER, Icons.RULE -> Items.BOOK;
+            case Icons.TOGGLE_ON, Icons.DONE -> Items.LIME_CONCRETE;
+            case Icons.TOGGLE_OFF, Icons.CANCEL -> Items.RED_CONCRETE;
+            case Icons.WARNING -> Items.ORANGE_CONCRETE;
+            case Icons.CATEGORY -> Items.BOOKSHELF;
+            case Icons.LADDER -> Items.LADDER;
+            case Icons.MUTE -> Items.BELL;
+            case Icons.DURATION -> Items.CLOCK;
+            case Icons.CYCLE -> Items.COMPARATOR;
+            case Icons.RULE -> Items.COMPASS;
+            case Icons.HOME, Icons.LIST, Icons.LIST_ITEM, Icons.LANGUAGE -> Items.BOOK;
             case Icons.BACK, Icons.PREV_PAGE, Icons.NEXT_PAGE -> Items.ARROW;
-            case Icons.TOGGLE_OFF, Icons.CANCEL, Icons.WARNING, Icons.LANGUAGE_OFF, Icons.MUTE -> Items.BARRIER;
+            case Icons.LANGUAGE_OFF -> Items.BARRIER;
             case Icons.TEXT, Icons.WORD, Icons.SECRET, Icons.SEARCH, Icons.ADD, Icons.PROFILE -> Items.NAME_TAG;
-            case Icons.NUMBER, Icons.DURATION, Icons.CYCLE, Icons.RESET -> Items.WRITABLE_BOOK;
+            case Icons.NUMBER, Icons.RESET -> Items.WRITABLE_BOOK;
             default -> Items.PAPER; // toggle_on, info, done, status, anything new
         };
     }

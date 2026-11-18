@@ -123,6 +123,7 @@ public final class Menu {
                 case "mutes", "muted" -> MenuState.Kind.MUTES;
                 case "profiles", "worldprofiles" -> MenuState.Kind.PROFILES;
                 case "rules", "worldrules" -> MenuState.Kind.RULES;
+                case "presets", "preset" -> MenuState.Kind.PRESETS;
                 default -> null;
             };
             if (special != null) {
@@ -375,6 +376,7 @@ public final class Menu {
             case STEP -> EditorPages.step(state, view);
             case PROFILE -> EditorPages.profile(state, view);
             case RULES -> EditorPages.rules(state, view);
+            case PRESETS -> Presets.page(state, view);
         };
     }
 
@@ -395,7 +397,7 @@ public final class Menu {
             entries.add(new Entry(Icons.CATEGORY, category, lore, changed > 0, (s, t) -> {
                 s.push(new MenuState.View(MenuState.Kind.CATEGORY, category, 0));
                 return MenuAction.refresh();
-            }));
+            }).hinted("category." + Entry.slug(category)));
         }
         entries.addAll(SpecialPages.mainExtras(state));
         Map<Integer, Entry> extra = new TreeMap<>();
@@ -484,8 +486,9 @@ public final class Menu {
         }
         Map<Integer, Entry> slots = new TreeMap<>();
         int from = index * Page.CONTENT_SLOTS;
-        for (int i = from; i < Math.min(entries.size(), from + Page.CONTENT_SLOTS); i++) {
-            slots.put(i - from, entries.get(i));
+        int onPage = Math.min(entries.size(), from + Page.CONTENT_SLOTS) - from;
+        for (int i = from; i < from + onPage; i++) {
+            slots.put(Page.contentSlot(i - from, onPage), entries.get(i));
         }
         if (state.depth() > 1) {
             slots.put(Page.BACK, new Entry(Icons.BACK, "Back", List.of("Go back one step"), false, (s, t) -> {
@@ -618,7 +621,8 @@ public final class Menu {
             MenuAction denied = guard(s, setting.category());
             return denied != null ? denied : inner.click(s, t);
         };
-        return new Entry(icon, setting.title(), lore, staged, guarded);
+        return new Entry(icon, setting.title(), lore, staged, guarded)
+            .hinted(setting.type() == SettingType.BOOLEAN ? null : "setting." + setting.key()); // on/off keeps its colour
     }
 
     private static MenuAction changed(boolean changed) {
