@@ -229,6 +229,7 @@ public final class Engine {
         com.jason.plugins.moderra.engine.discord.DiscordSrvSettings.register(registry);
         com.jason.plugins.moderra.engine.integrations.IntegrationSettings.register(registry);
         PromptSettings.register(registry);
+        SoundSettings.register(registry);
     }
 
     /** Reads the state files in {@code data/} (server start). */

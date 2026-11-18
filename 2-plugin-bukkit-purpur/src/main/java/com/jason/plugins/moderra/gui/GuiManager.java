@@ -138,10 +138,24 @@ public final class GuiManager {
                 inventory.setItem(slot.index(), item(slot));
             }
         }
+        org.bukkit.Material filler = icons.filler();
+        if (filler != null) {
+            ItemStack pane = new ItemStack(filler);
+            ItemMeta meta = pane.getItemMeta();
+            if (meta != null) {
+                meta.setDisplayName(" ");
+                pane.setItemMeta(meta);
+            }
+            for (int i = 0; i < SIZE; i++) {
+                if (inventory.getItem(i) == null) {
+                    inventory.setItem(i, pane);
+                }
+            }
+        }
     }
 
     private ItemStack item(Slot slot) {
-        ItemStack stack = new ItemStack(icons.material(slot.icon()));
+        ItemStack stack = new ItemStack(icons.material(slot.iconCandidates()));
         ItemMeta meta = stack.getItemMeta();
         if (meta != null) {
             meta.setDisplayName("\u00a76" + slot.name());
@@ -175,7 +189,44 @@ public final class GuiManager {
         if (clicked != session.inventory || rawSlot < 0 || rawSlot >= SIZE) {
             return; // the player's own inventory below: cancelled by the listener, nothing to do
         }
-        handle(player, session, Menu.click(session.state, rawSlot, translate(bukkitClick), viewer(player)));
+        String before = iconAt(session, rawSlot);
+        if (before == null) {
+            return; // a filler pane: nothing happens, no sound
+        }
+        MenuAction action = Menu.click(session.state, rawSlot, translate(bukkitClick), viewer(player));
+        handle(player, session, action);
+        clickSound(player, session, rawSlot, before, action);
+    }
+
+    private static String iconAt(Session session, int index) {
+        for (Slot slot : Menu.render(session.state)) {
+            if (slot.index() == index) {
+                return slot.icon();
+            }
+        }
+        return null;
+    }
+
+    /** The configured feedback sound for a click (see SoundSettings). */
+    private void clickSound(Player player, Session session, int index, String before, MenuAction action) {
+        com.jason.plugins.moderra.engine.config.Setting<String> sound = switch (action.kind()) {
+            case ERROR, DENIED -> com.jason.plugins.moderra.engine.SoundSettings.GUI_ERROR;
+            case SAVED -> com.jason.plugins.moderra.engine.SoundSettings.GUI_SAVE;
+            case NONE -> null;
+            default -> {
+                String after = sessions.get(session.viewer) == session && !session.prompting ? iconAt(session, index) : null;
+                if (Icons.TOGGLE_OFF.equals(before) && Icons.TOGGLE_ON.equals(after)) {
+                    yield com.jason.plugins.moderra.engine.SoundSettings.GUI_TOGGLE_ON;
+                }
+                if (Icons.TOGGLE_ON.equals(before) && Icons.TOGGLE_OFF.equals(after)) {
+                    yield com.jason.plugins.moderra.engine.SoundSettings.GUI_TOGGLE_OFF;
+                }
+                yield com.jason.plugins.moderra.engine.SoundSettings.GUI_CLICK;
+            }
+        };
+        if (sound != null) {
+            com.jason.plugins.moderra.engine.SoundSettings.play(engine(), player.getUniqueId(), sound);
+        }
     }
 
     void onClose(Player player, Inventory inventory) {

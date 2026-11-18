@@ -82,6 +82,11 @@ class GuiEditorTest {
         return Menu.submitText(state, answer, admin);
     }
 
+    /** First content slot of the current view (content is centred, see Page.contentSlot). */
+    private int first() {
+        return Menu.render(state).stream().mapToInt(Slot::index).filter(i -> i < Page.CONTENT_SLOTS + 10).min().orElseThrow();
+    }
+
     private MenuAction done() {
         return click(Page.DONE, ClickType.LEFT);
     }
@@ -298,25 +303,25 @@ class GuiEditorTest {
         denied.add(Menu.editNode("Spam"));
         assertEquals("moderra.gui.edit.spam", Menu.editNode("Spam"));
         open("Spam");
-        MenuAction action = click(0, ClickType.LEFT);
+        MenuAction action = click(first(), ClickType.LEFT);
         assertEquals(MenuAction.Kind.ERROR, action.kind());
         assertTrue(action.message().contains("moderra.gui.edit.spam"), action.message());
         assertFalse(state.hasUnsavedChanges());
         // viewing still works, the lore says why
-        assertTrue(Menu.render(state).get(0).lore().stream().anyMatch(l -> l.contains("You may not change this")));
+        assertTrue(Menu.render(state).stream().filter(x -> x.index() == first()).findFirst().orElseThrow().lore().stream().anyMatch(l -> l.contains("You may not change this")));
         // another category is fine
         click(Page.HOME, ClickType.LEFT);
         open("Scanning");
-        assertEquals(MenuAction.Kind.REFRESH, click(0, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.REFRESH, click(first(), ClickType.LEFT).kind());
         assertTrue(state.hasUnsavedChanges());
     }
 
     @Test
     void rightsRemovedWhileTheMenuIsOpenStopTheNextClickAndTheSave() {
         open("Scanning");
-        assertEquals(MenuAction.Kind.REFRESH, click(0, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.REFRESH, click(first(), ClickType.LEFT).kind());
         denied.add(Menu.editNode("Scanning"));
-        assertEquals(MenuAction.Kind.ERROR, click(0, ClickType.LEFT).kind(), "the next click is refused");
+        assertEquals(MenuAction.Kind.ERROR, click(first(), ClickType.LEFT).kind(), "the next click is refused");
         assertEquals(MenuAction.Kind.ERROR, done().kind(), "the staged change is not written without the right");
         assertTrue(state.hasUnsavedChanges());
     }

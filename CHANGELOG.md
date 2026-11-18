@@ -2,6 +2,19 @@
 
 Version numbers are `<major>.<minor>`: the major number grows with a big update, the minor number with small updates.
 
+## Unreleased: menu look, feedback sounds and presets
+
+* **Icons:** every category and many settings now have their own icon (for example swords for Punishment, a bell for Mute, a note block for Sounds).
+  The icons are configurable per category and per setting in `gui-icons.yml` (Bukkit family) and built in for Fabric and Forge.
+* **On/off toggles:** switched-on settings show lime concrete, switched-off settings show red concrete (Done and Cancel use the same colours).
+* **Centred menus:** content is laid out in rows of 7, centred horizontally and vertically (35 entries per page instead of 45). Empty slots are filled
+  with gray stained glass panes; the filler item is configurable with `filler:` in `gui-icons.yml`.
+* **Feedback sounds:** new settings category **Sounds** (`sounds.*` in `config.yml`): menu click, switched on/off, saved and error sounds, plus sounds
+  for a warning, a punishment, a staff alert and a blocked muted message. Each is one line `<sound> [volume] [pitch]`; an empty line turns that sound off and
+  `sounds.enabled: false` turns them all off.
+* **Presets page:** a new menu page with ready-made setups (for example language and ladder presets) that you can apply in one click. Open it from the
+  main menu or with `/moderra gui presets`.
+
 ## 1.0 (first Moderra release; the project was called AntiBadWords before)
 
 **Renamed to Moderra.** The version counter starts again at 1.0. The older entries below ("Before Moderra") are the history of the

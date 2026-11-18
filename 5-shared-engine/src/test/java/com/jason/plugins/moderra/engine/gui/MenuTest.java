@@ -94,7 +94,7 @@ class MenuTest {
         }
         state = Menu.open(access);
         viewer = new Viewer();
-        click(0, ClickType.LEFT); // open Alpha: slots 0..7 in registration order
+        click(named("Alpha"), ClickType.LEFT); // open Alpha: 8 settings, centred (see Page.contentSlot)
     }
 
     private MenuAction click(int slot, ClickType type) {
@@ -105,7 +105,15 @@ class MenuTest {
         return Menu.render(state).stream().filter(s -> s.index() == index).findFirst().orElse(null);
     }
 
-    private static final int ON = 0, COUNT = 1, RATIO = 2, WAIT = 3, MODE = 4, NAME = 5, TOKEN = 6, WORDS = 7;
+    /** Slot of the entry named {@code name} in the current view. */
+    private int named(String name) {
+        return Menu.render(state).stream().filter(s -> name.equals(s.name())).findFirst().orElseThrow().index();
+    }
+
+    /** Alpha has 8 settings, laid out centred by Page.contentSlot. */
+    private static final int ON = Page.contentSlot(0, 8), COUNT = Page.contentSlot(1, 8), RATIO = Page.contentSlot(2, 8),
+        WAIT = Page.contentSlot(3, 8), MODE = Page.contentSlot(4, 8), NAME = Page.contentSlot(5, 8),
+        TOKEN = Page.contentSlot(6, 8), WORDS = Page.contentSlot(7, 8);
 
     private Object value(String key) {
         return state.value(access.registry.get(key));
@@ -223,9 +231,9 @@ class MenuTest {
     void listEditAddRemovePaginated() {
         click(WORDS, ClickType.LEFT);
         assertEquals("List: Words", Menu.title(state));
-        assertEquals("one", slot(0).name());
-        assertEquals("two", slot(1).name());
-        click(0, ClickType.LEFT); // remove "one"
+        assertEquals("one", slot(Page.contentSlot(0, 2)).name());
+        assertEquals("two", slot(Page.contentSlot(1, 2)).name());
+        click(Page.contentSlot(0, 2), ClickType.LEFT); // remove "one"
         assertEquals(List.of("two"), value("a.words"));
         MenuAction ask = click(Page.ADD, ClickType.LEFT);
         assertEquals(TextRequest.Purpose.ADD_ITEM, ask.request().purpose());
@@ -244,9 +252,11 @@ class MenuTest {
         assertEquals(46, ((List<?>) value("a.words")).size());
         assertNull(slot(Page.PREV));
         assertEquals(MenuAction.Kind.REFRESH, click(Page.NEXT, ClickType.LEFT).kind());
-        assertEquals("w43", slot(0).name());
-        assertEquals(1, Menu.render(state).stream().filter(s -> s.index() < 45).count());
-        click(0, ClickType.LEFT);
+        assertEquals("w33", slot(Page.contentSlot(0, 11)).name());
+        assertEquals(11, Menu.render(state).stream().filter(s -> s.index() < 45).count());
+        for (int left = 11; left >= 1; left--) {
+            click(Page.contentSlot(0, left), ClickType.LEFT); // empty page two item by item
+        }
         assertNull(slot(Page.NEXT), "clamped back to the only page once page 2 is empty");
         assertEquals(0, state.current().page());
         click(Page.BACK, ClickType.LEFT);
@@ -304,7 +314,7 @@ class MenuTest {
         assertEquals(0, access.saves);
         // save from the confirm page (a closed menu is dropped; open a fresh one)
         state = Menu.open(access);
-        click(0, ClickType.LEFT);
+        click(named("Alpha"), ClickType.LEFT);
         click(ON, ClickType.LEFT);
         Menu.closeRequested(state, viewer);
         assertEquals(MenuAction.Kind.SAVED, click(20, ClickType.LEFT).kind());
@@ -316,26 +326,27 @@ class MenuTest {
     @Test
     void paginationEdges() {
         click(Page.BACK, ClickType.LEFT);
-        click(1, ClickType.LEFT); // Big: 46 entries
+        click(named("Big"), ClickType.LEFT); // Big: 46 entries
         assertEquals("Moderra: Big", Menu.title(state));
-        assertEquals(45, Menu.render(state).stream().filter(s -> s.index() < 45).count());
+        assertEquals(Page.CONTENT_SLOTS, Menu.render(state).stream().filter(s -> s.index() < 45).count());
         assertNull(slot(Page.PREV), "no previous page on the first page");
         assertEquals("Page 1 of 2", slot(Page.INFO).name());
         assertEquals(MenuAction.Kind.NONE, click(Page.PREV, ClickType.LEFT).kind());
         click(Page.NEXT, ClickType.LEFT);
-        assertEquals("S45", slot(0).name());
-        assertNull(slot(1));
+        int first = Page.contentSlot(0, 11);
+        assertEquals("S35", slot(first).name());
+        assertEquals(11, Menu.render(state).stream().filter(s -> s.index() < 45).count());
         assertNull(slot(Page.NEXT), "no next page on the last page");
         assertEquals("Page 2 of 2", slot(Page.INFO).name());
-        click(0, ClickType.LEFT); // toggle on the second page
-        assertEquals(Icons.TOGGLE_ON, slot(0).icon());
+        click(first, ClickType.LEFT); // toggle on the second page
+        assertEquals(Icons.TOGGLE_ON, slot(first).icon());
         click(Page.PREV, ClickType.LEFT);
-        assertEquals("S0", slot(0).name());
+        assertEquals("S0", slot(Page.contentSlot(0, 35)).name());
         click(Page.HOME, ClickType.LEFT);
         assertEquals("Moderra", Menu.title(state).replace(" *", ""));
         assertNull(slot(Page.BACK), "main menu has no back button");
         // an empty slot and a click type that does nothing
-        assertEquals(MenuAction.Kind.NONE, click(30, ClickType.LEFT).kind());
+        assertEquals(MenuAction.Kind.NONE, click(0, ClickType.LEFT).kind());
         click(Page.BACK, ClickType.LEFT);
         assertEquals(MenuAction.Kind.NONE, click(0, ClickType.OTHER).kind());
     }

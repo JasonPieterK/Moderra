@@ -118,6 +118,21 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | `messages.notify-staff` | true or false | `true` | yes | Tell staff (permission moderra.notify) about every blocked word. |
 | `messages.staff-notify-format` | text | `&8[&6&lModerra&8]&r &6&lStaff notice. &7Blocked &c&o{word}&7 from &f{player}&7 in &f{source}&7. Violations: &f{count}&7 of &f{limit}&7.` | yes | What staff see. Colours: & codes. |
 
+### Sounds
+
+| Key | Type | Default | Per world | What it does |
+|-----|------|---------|:---------:|--------------|
+| `sounds.enabled` | true or false | `true` | no | Master switch for every Moderra feedback sound below (punishment sounds are separate). |
+| `sounds.gui-click` | text | `ui.button.click 0.5 1.2` | no | Played when a menu button is clicked.<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.gui-toggle-on` | text | `block.note_block.pling 0.7 1.6` | no | Played when an on/off setting is switched on (lime).<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.gui-toggle-off` | text | `block.note_block.bass 0.7 0.8` | no | Played when an on/off setting is switched off (red).<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.gui-save` | text | `entity.player.levelup 0.6 1.4` | no | Played when menu changes are saved.<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.gui-error` | text | `entity.villager.no 0.7 1.0` | no | Played when a menu action is refused (invalid value, no permission).<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.warning` | text | `block.note_block.bell 1.0 0.7` | no | Played to a player who gets a warning (blocked message, not punished yet).<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.punished` | text | `entity.elder_guardian.curse 0.6 1.2` | no | Played to a player who is punished or reaches a ladder step.<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.staff-alert` | text | `block.note_block.chime 0.8 1.8` | no | Played to staff (moderra.notify) together with a violation message.<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+| `sounds.muted` | text | `block.anvil.land 0.4 1.6` | no | Played to a muted player whose message was blocked.<br>Format: <sound> [volume] [pitch], for example "block.note_block.pling 1.0 1.5" (any name from<br>/playsound). Empty = no sound. |
+
 ## `moderation/ladder.yml`
 
 ### Punishment

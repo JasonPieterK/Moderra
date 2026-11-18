@@ -1,23 +1,30 @@
-# Moderra menu icons: which item stands for which abstract icon name.
+# Moderra menu icons: which item stands for which icon name.
 #
-# The menu (shared engine) only knows icon NAMES like "toggle_on". This file says which Bukkit Material shows for each
-# name. Admins can change it: copy this file to plugins/Moderra/gui-icons.yml and edit; keys you leave out keep the
-# default below. Names are Bukkit Material names (e.g. LIME_DYE), see the Material list of your server version.
+# The menu (shared engine) only knows icon NAMES. This file says which Bukkit Material shows for each name. Admins can
+# change it: copy this file to plugins/Moderra/gui-icons.yml and edit; keys you leave out keep the default below.
+# Names are Bukkit Material names (e.g. LIME_CONCRETE), see the Material list of your server version.
 # A name that does not exist on your server version (or is not an item) shows the "fallback" material instead.
 # The file is read again every time a menu opens.
+#
+# Lookup order for every item: a specific key first, then the general one.
+#   categories:  "category.<name>"  (lower case, spaces become _), then "category"
+#   settings:    "setting.<key>"    (on/off settings always use toggle_on / toggle_off), then the type icon
 fallback: PAPER
+# Fills every empty slot of a menu. "none" leaves them empty.
+filler: GRAY_STAINED_GLASS_PANE
 icons:
-  category: CHEST
-  toggle_on: LIME_DYE
-  toggle_off: GRAY_DYE
-  number: CLOCK
+  # ---- general ----
+  category: BOOKSHELF
+  toggle_on: LIME_CONCRETE
+  toggle_off: RED_CONCRETE
+  number: REPEATER
   duration: CLOCK
   cycle: COMPARATOR
   text: NAME_TAG
   secret: TRIPWIRE_HOOK
-  list: BOOK
-  list_item: PAPER
-  add: EMERALD
+  list: WRITABLE_BOOK
+  list_item: MAP
+  add: LIME_STAINED_GLASS_PANE
   back: ARROW
   home: OAK_DOOR
   prev_page: SPECTRAL_ARROW
@@ -27,4 +34,75 @@ icons:
   cancel: RED_CONCRETE
   reset: BARRIER
   warning: ORANGE_CONCRETE
+  status: BEACON
+  language: GLOBE_BANNER_PATTERN
+  language_off: GRAY_CONCRETE
+  word: WRITTEN_BOOK
+  ladder: LADDER
+  mute: BELL
+  profile: PLAYER_HEAD
+  search: SPYGLASS
   rule: COMPASS
+
+  # ---- categories (main menu) ----
+  category.general: COMMAND_BLOCK
+  category.languages: GLOBE_BANNER_PATTERN
+  category.scanning: SPYGLASS
+  category.matching: TARGET
+  category.whitelist: WHITE_BANNER
+  category.messages: PAPER
+  category.punishment: IRON_SWORD
+  category.ladder: LADDER
+  category.strikes: TNT
+  category.mute: BELL
+  category.history: KNOWLEDGE_BOOK
+  category.spam: SLIME_BALL
+  category.links: CHAIN
+  category.evasion: ENDER_PEARL
+  category.look_alike_tables: LIGHT_BLUE_STAINED_GLASS
+  category.player_names: NAME_TAG
+  category.worlds: GRASS_BLOCK
+  category.discord: AMETHYST_SHARD
+  category.integrations: PISTON
+  category.sounds: NOTE_BLOCK
+  category.presets: ENCHANTED_BOOK
+
+  # ---- presets page ----
+  preset.ladder_soft: WOODEN_SWORD
+  preset.ladder_standard: IRON_SWORD
+  preset.ladder_strict: NETHERITE_SWORD
+  preset.ladder_warn: GOLDEN_SWORD
+  preset.filter_relaxed: LEATHER_CHESTPLATE
+  preset.filter_standard: IRON_CHESTPLATE
+  preset.filter_strict: NETHERITE_CHESTPLATE
+  preset.words_en: WRITTEN_BOOK
+  preset.words_europe: BLUE_BANNER
+  preset.words_americas: GREEN_BANNER
+  preset.words_asia: RED_BANNER
+  preset.spam_on: LIME_CONCRETE
+  preset.spam_off: RED_CONCRETE
+  preset.sounds_on: JUKEBOX
+  preset.sounds_off: NOTE_BLOCK
+
+  # ---- single settings ----
+  setting.punishment.violations-before-punish: DIAMOND_SWORD
+  setting.punishment.violations-expire-minutes: CLOCK
+  setting.punishment.final-command.command: NETHERITE_AXE
+  setting.ladder.ban-command: NETHERITE_SWORD
+  setting.ladder.default-reason: WRITABLE_BOOK
+  setting.ladder.when-several-steps-are-reached: IRON_AXE
+  setting.strikes.max-points: TNT
+  setting.strikes.decay.every: CLOCK
+  setting.strikes.decay.points: GUNPOWDER
+  setting.mute.default-duration: CLOCK
+  setting.mute.check-every: CLOCK
+  setting.filters.protection-level: SHIELD
+  setting.filters.whitelist: WHITE_BANNER
+  setting.filters.enabled-word-lists: WRITTEN_BOOK
+  setting.filters.matching.repeated-letter-threshold: REPEATER
+  setting.filters.matching.partial-min-length: REPEATER
+  setting.filters.join-names.action: IRON_SWORD
+  setting.history.retention-days: CLOCK
+  setting.history.max-total-size-mb: CHEST
+  setting.gui.prompt.timeout: CLOCK
+  setting.integrations.outgoing-scan.action: IRON_SWORD

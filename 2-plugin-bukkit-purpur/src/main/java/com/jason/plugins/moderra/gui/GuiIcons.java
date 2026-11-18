@@ -23,6 +23,7 @@ public final class GuiIcons {
 
     private final Map<String, String> names = new HashMap<>();
     private String fallback = LAST_RESORT.name();
+    private String filler = "GRAY_STAINED_GLASS_PANE";
 
     /** Reads the jar defaults and then the override file in {@code dataFolder} (if present). Never throws. */
     public static GuiIcons load(Path dataFolder, Consumer<String> warn) {
@@ -55,6 +56,10 @@ public final class GuiIcons {
         if (fb != null) {
             fallback = String.valueOf(fb).trim();
         }
+        if (map.containsKey("filler")) {
+            Object f = map.get("filler");
+            filler = f == null ? "" : String.valueOf(f).trim();
+        }
         if (map.get("icons") instanceof Map<?, ?> icons) {
             icons.forEach((key, value) -> {
                 if (key != null && value != null) {
@@ -74,6 +79,23 @@ public final class GuiIcons {
             material = lookup(fallback);
         }
         return material == null ? LAST_RESORT : material;
+    }
+
+    /** The material for the first name of {@code candidates} that has a working mapping (most specific first). */
+    public Material material(java.util.List<String> candidates) {
+        for (String icon : candidates) {
+            String wanted = icon == null ? null : names.get(icon.toLowerCase(Locale.ROOT));
+            Material material = wanted == null ? null : lookup(wanted);
+            if (material != null) {
+                return material;
+            }
+        }
+        return material(candidates.isEmpty() ? null : candidates.get(candidates.size() - 1));
+    }
+
+    /** The item that fills empty menu slots, or null when the admin set {@code filler: ""} / {@code none}. */
+    public Material filler() {
+        return filler.isEmpty() || filler.equalsIgnoreCase("none") ? null : lookup(filler);
     }
 
     private static Material lookup(String name) {

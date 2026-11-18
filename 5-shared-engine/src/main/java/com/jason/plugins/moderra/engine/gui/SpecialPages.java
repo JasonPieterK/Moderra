@@ -70,6 +70,8 @@ final class SpecialPages {
             (s, t) -> open(s, MenuState.Kind.PROFILES, "")));
         out.add(new Entry(Icons.RULE, "World rules", List.of(state.sectionValue(WorldProfiles.WORLDS).size() + " rules", "Which world uses which profile"), false,
             (s, t) -> open(s, MenuState.Kind.RULES, "")));
+        out.add(new Entry(Icons.LADDER, "Presets", List.of("Ready-made setups: punishment ladders,", "filter strength, word lists, sounds.",
+            "Click to choose one"), false, (s, t) -> open(s, MenuState.Kind.PRESETS, "")).hinted("category.presets"));
 
         Object level = state.value(CoreSettings.PROTECTION_LEVEL);
         out.add(info(Icons.STATUS, "Protection level: " + level, List.of("1 = mild words only, 3 = everything",
