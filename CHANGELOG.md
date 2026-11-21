@@ -4,6 +4,11 @@ Version numbers are `<major>.<minor>`: the major number grows with a big update,
 
 ## Unreleased: menu look, feedback sounds and presets
 
+* **New console banner (Bukkit, Spigot, Paper, Purpur):** the red ASCII banner is replaced by an animated, colourful MODERRA banner
+  (version, platform, Minecraft and Java, loaded languages and words, integrations, health, Discord status) and a short one on shutdown.
+  It animates only on a real terminal; on hosting panels, in redirected output and with `NO_COLOR` it prints one static frame.
+  New setting `general.startup-banner: full | compact | off` (default `full`). Every mode also writes one plain summary line to the log.
+  The banner no longer shows an author credit.
 * **Icons:** every category and many settings now have their own icon (for example swords for Punishment, a bell for Mute, a note block for Sounds).
   The icons are configurable per category and per setting in `gui-icons.yml` (Bukkit family) and built in for Fabric and Forge.
 * **On/off toggles:** switched-on settings show lime concrete, switched-off settings show red concrete (Done and Cancel use the same colours).

@@ -180,6 +180,10 @@ public final class CoreSettings {
     public static final Setting<String> STAFF_NOTIFY_FORMAT = message("staff-notify-format", "Staff notification",
         "What staff see.", "&8[&6&lModerra&8]&r &6&lStaff notice. &7Blocked &c&o{word}&7 from &f{player}&7 in &f{source}&7. Violations: &f{count}&7 of &f{limit}&7.");
 
+    public static final Setting<String> STARTUP_BANNER = Setting.choice("general.startup-banner", "full", "full", "compact", "off")
+        .file(CONFIG).category(GENERAL).title("Startup banner")
+        .description("Console banner at start and stop: full (animated on a real terminal), compact (8 lines) or off (one log line). Bukkit family only.").build();
+
     public static final Setting<Boolean> LOG_CONSOLE = Setting.bool("logging.console", true)
         .file(CONFIG).category(GENERAL).title("Log to console").overridable()
         .description("Print every blocked word to the server console.").build();
@@ -281,6 +285,7 @@ public final class CoreSettings {
         r.register(PUNISHMENT_DISABLED_PLAYER);
         r.register(NOTIFY_STAFF);
         r.register(STAFF_NOTIFY_FORMAT);
+        r.register(STARTUP_BANNER);
         r.register(LOG_CONSOLE);
         r.register(LIST_PAGE_SIZE);
         r.register(PUNISHMENT_ENABLED);

@@ -99,7 +99,7 @@ Differences you can see (none remove a feature):
 
 * Attribute timers count real seconds; the plugin counts server ticks (identical unless the server lags).
 * Effects and sounds are applied through the vanilla `/effect` and `/playsound` commands.
-* No coloured ASCII-art banner at startup, only log lines.
+* No animated console banner at startup (Bukkit family only), only log lines; `general.startup-banner` has no effect.
 
 ## Building and testing
 

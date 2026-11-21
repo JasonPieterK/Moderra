@@ -42,6 +42,7 @@ Messages accept `&` colour codes and these placeholders (any capitalisation):
 | Key | Type | Default | Per world | What it does |
 |-----|------|---------|:---------:|--------------|
 | `config-version` | whole number | `2` | no | Layout version of this config folder. Do not change it (it tells the plugin that this is the new folder layout). |
+| `general.startup-banner` | one of: full, compact, off | `full` | no | Console banner at start and stop: full (animated on a real terminal), compact (8 lines) or off (one log line). Bukkit family only. |
 | `logging.console` | true or false | `true` | yes | Print every blocked word to the server console. |
 | `commands.list-page-size` | whole number from 1 to 100 | `10` | no | How many entries one page of a list command shows (for example /moderra whitelist list). |
 | `gui.prompt.mode` | one of: auto, sign, anvil, chat | `auto` | no | How the menu asks a player to type a value. sign = a sign editor opens (Fabric and Forge: a fake sign that<br>only the player sees; the real block is restored). anvil = a rename screen of an anvil (Fabric and Forge only; no item,<br>no XP). chat = the player's next chat message is taken, never shown to anyone, never checked or saved.<br>auto = sign where the server software supports it, otherwise the chat. A mode that is not available uses the chat. |

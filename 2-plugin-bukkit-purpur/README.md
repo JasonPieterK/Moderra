@@ -25,6 +25,16 @@ start. The unit tests moved to the engine too (`cd ../5-shared-engine && mvn tes
 The finished jars are on GitHub Releases (see [`../1-download-jars/README.md`](../1-download-jars/README.md)). What still needs a real-server
 test: [`../handoffs/BUILD-VERIFICATION-TODO.md`](../handoffs/BUILD-VERIFICATION-TODO.md).
 
+## Console banner (`banner` package)
+
+`ModerraPlugin` creates a `BannerService` at the end of `onEnable` and calls `cancel()` / `showShutdown()` in `onDisable`.
+The service gathers its data on the main thread (on the first server tick for the animated variant) and animates on the
+daemon thread `Moderra-Banner`, writing to the raw stdout (`FileDescriptor.out`) because the server logger prefixes every
+line of `System.out`. Everything that decides or draws is pure and unit tested: `BannerTerminal` (TTY, `TERM`, `NO_COLOR`,
+hosting-panel variables, size, config value), `BannerRenderer` (frames, compact, shutdown, plain summary), `Canvas`, `Tone`,
+`ColorMode`, `BannerData`. Setting: `general.startup-banner` (`CoreSettings.STARTUP_BANNER`). Preview of the last frame:
+`java -cp target/classes:target/test-classes com.jason.plugins.moderra.banner.BannerPreview <folder>`.
+
 ## What is new in this round
 
 The listener now also hands the engine: the player name when somebody joins (`filters.scan.join-names`), the side of a

@@ -1,5 +1,7 @@
 package com.jason.plugins.moderra;
 
+import com.jason.plugins.moderra.banner.BannerData;
+import com.jason.plugins.moderra.banner.BannerService;
 import com.jason.plugins.moderra.engine.Engine;
 import com.jason.plugins.moderra.engine.config.WorldProfiles;
 import com.jason.plugins.moderra.engine.integrations.PapiLuckPermsSettings;
@@ -9,8 +11,6 @@ import com.jason.plugins.moderra.integrations.VaultHook;
 import com.jason.plugins.moderra.integrations.essentials.EssentialsHook;
 import java.util.Locale;
 import java.util.Objects;
-import org.bukkit.ChatColor;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -34,9 +34,11 @@ public final class ModerraPlugin extends JavaPlugin {
     private PlaceholderApiHook placeholderApi;
     private BukkitPlatform platform;
     private NetworkMessaging networkMessaging;
+    private BannerService banner;
 
     @Override
     public void onEnable() {
+        long enableStart = System.currentTimeMillis();
         punishmentExecutor = new PunishmentExecutor(this);
         // Creates the config folder on the first start, or converts an old single config.yml (a backup is kept).
         platform = new BukkitPlatform(this, punishmentExecutor);
@@ -70,11 +72,15 @@ public final class ModerraPlugin extends JavaPlugin {
         } catch (Throwable ex) {
             getLogger().warning("CoreProtect and packet hooks: error. They did not start (" + ex.getClass().getSimpleName() + ").");
         }
-        logStartupBanner();
+        banner = new BannerService(this, engine, enableStart, this::bannerHooks, this::bannerDiscord);
+        banner.showStartup();
     }
 
     @Override
     public void onDisable() {
+        if (banner != null) {
+            banner.cancel(); // stops a running animation and restores the cursor
+        }
         if (networkMessaging != null) {
             networkMessaging.stop();
             networkMessaging = null;
@@ -103,6 +109,10 @@ public final class ModerraPlugin extends JavaPlugin {
         }
         if (engine != null) {
             engine.shutdown();
+        }
+        if (banner != null) {
+            banner.showShutdown();
+            banner = null;
         }
     }
 
@@ -247,44 +257,25 @@ public final class ModerraPlugin extends JavaPlugin {
         }
     }
 
-    // ------------------------------------------------------------------------------------------
-    // Startup banner
-    // ------------------------------------------------------------------------------------------
+    /** Live state of the soft-dependency hooks for the console banner (main thread). */
+    private java.util.List<BannerData.Hook> bannerHooks() {
+        String source = engine.permissionSource() == null ? "" : engine.permissionSource().name();
+        return java.util.List.of(
+            new BannerData.Hook("EssentialsX", essentials != null),
+            new BannerData.Hook("DiscordSRV", discordSrv != null),
+            new BannerData.Hook("PlaceholderAPI", placeholderApi != null),
+            new BannerData.Hook(LuckPermsHook.PLUGIN_NAME, source.equals(LuckPermsHook.PLUGIN_NAME)),
+            new BannerData.Hook(VaultHook.PLUGIN_NAME, source.equals(VaultHook.PLUGIN_NAME)),
+            new BannerData.Hook("ProtocolLib", platform.hasPlugin("ProtocolLib")),
+            new BannerData.Hook("CoreProtect", platform.hasPlugin("CoreProtect")),
+            new BannerData.Hook("Plan", platform.hasPlugin("Plan")));
+    }
 
-    private void logStartupBanner() {
-        String version = getDescription().getVersion();
-        String line = "==============================================";
-        // "26.3-R0.1-SNAPSHOT" -> "26.3" (getMinecraftVersion() is Paper-only)
-        String gameVersion = getServer().getBukkitVersion().split("-")[0];
-        String red = ChatColor.RED.toString() + ChatColor.BOLD;
-
-        ConsoleCommandSender console = getServer().getConsoleSender();
-        console.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + line);
-        String[] art = {
-            "   AAA   N   N  TTTTT  III ",
-            "   A   A  NN  N    T     I  ",
-            "   AAAAA  N N N    T     I  ",
-            "   A   A  N  NN    T     I  ",
-            "   A   A  N   N    T    III ",
-            " ",
-            "   BBBB    AAA   DDDD ",
-            "   B   B  A   A  D   D",
-            "   BBBB   AAAAA  D   D",
-            "   B   B  A   A  D   D",
-            "   BBBB   A   A  DDDD ",
-            " ",
-            "   W   W  OOO  RRRR   DDDD   SSSS ",
-            "   W   W O   O R   R  D   D S     ",
-            "   W W W O   O RRRR   D   D  SSS  ",
-            "   WW WW O   O R  R   D   D     S ",
-            "   W   W  OOO  R   R  DDDD  SSSS  "
-        };
-        for (String row : art) {
-            console.sendMessage(red + row);
+    /** Discord alert status for the console banner: {@code ok} = alerts are delivered (main thread). */
+    private BannerData.Hook bannerDiscord() {
+        if (discordSrv != null) {
+            return new BannerData.Hook("DiscordSRV linked", true);
         }
-        console.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "-- GAME VERSION: " + ChatColor.AQUA + gameVersion.toUpperCase(Locale.ROOT) + ChatColor.LIGHT_PURPLE + " --");
-        console.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "-- PLUGIN VERSION: " + ChatColor.GREEN + version.toUpperCase(Locale.ROOT) + ChatColor.YELLOW + " --");
-        console.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "-- MADE BY " + ChatColor.GOLD + "JASON P" + ChatColor.AQUA + " --");
-        console.sendMessage(ChatColor.DARK_RED.toString() + ChatColor.BOLD + line);
+        return engine.discord().active() ? new BannerData.Hook("webhooks on", true) : new BannerData.Hook("alerts off", false);
     }
 }
