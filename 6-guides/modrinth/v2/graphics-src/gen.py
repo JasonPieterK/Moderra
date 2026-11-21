@@ -18,6 +18,16 @@ def shape(kind, fill, size=84, stroke=K, sw=6):
             f'style="fill:{fill};stroke:{stroke};stroke-width:{sw};display:block">{body}</svg>')
 
 
+PH_DIR = os.path.join(HERE, "phosphor")
+
+
+def ph(name, color=K, size=64, extra="", weight="bold"):
+    """Inline Phosphor Icons (MIT, vendored in ./phosphor): offline-safe SVG, Bold weight everywhere (Fill only for check-circle)."""
+    s = open(os.path.join(PH_DIR, f"{name}-{weight}.svg")).read()
+    inner = s[s.index(">") + 1:s.rindex("</svg>")]
+    return f'<svg class="ph" viewBox="0 0 256 256" width="{size}" height="{size}" fill="{color}" {extra}>{inner}</svg>'
+
+
 def page(name, css, body):
     with open(os.path.join(HERE, name), "w") as f:
         f.write(f'<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="common.css">'
@@ -42,27 +52,24 @@ page("01-hero.html", """
 .trg{position:absolute;right:110px;top:290px;--s:110px}
 .vr{position:absolute;right:560px;top:0;width:12px;height:520px;background:#111}
 .bar{position:absolute;left:0;right:0;bottom:0;height:100px;background:#111;color:#F4EFE6;display:flex;align-items:center;padding:0 56px;font-size:29px;text-transform:uppercase;gap:26px;white-space:nowrap}
-.bar i{display:inline-block;width:20px;height:20px;background:#F2C230;border-radius:50%}
-.bar i.s{border-radius:0;background:#D6352B}.bar i.t{background:#4C7FD6;border-radius:0}
+.bar span{display:flex;align-items:center;gap:14px}.bar svg{flex:none;display:block}.bar .sep{width:6px;height:44px;background:#F4EFE6;opacity:.35}
 """, '''<div class="frame"><div class="bigc"><img src="../../../branding/logo-a-refined/moderra-icon.svg" alt=""></div>
 <div class="title"><span>Moderra</span></div><div class="two">1.0</div>
 <div class="tag">Keep your chat clean.<br><b>Everywhere</b> players can type.</div>
-<div class="bar"><span>Chat filter</span><i></i><span>Moderation</span><i class="s"></i><span>6 server types</span><i class="t"></i><span>6 Minecraft versions</span></div></div>''')
+<div class="bar"><span>'''+ph("funnel",P,44)+'''Chat filter</span><span class="sep"></span><span>'''+ph("shield-check",P,44)+'''Moderation</span><span class="sep"></span><span>'''+ph("hard-drives",P,44)+'''6 server types</span><span class="sep"></span><span>'''+ph("stack",P,44)+'''6 Minecraft versions</span></div></div>''')
 
 # ---------------------------------------------------------------- 02 where
-items = [("Chat", "Public chat", R, "c"), ("Commands", "/msg /tell /me /say /mail /nick and more", B, "s"),
-         ("Signs", "Front side and back side", Y, "t"), ("Books", "Every page and the title", R, "s"),
-         ("Anvils", "The text of an item rename", B, "c"), ("Join names", "Player names, when they join", Y, "s"),
-         ("Command blocks", "A blocked command does not run", P, "t"),
-         ("Discord", "Messages typed in Discord (DiscordSRV)", R, "c"),
-         ("Outgoing text", "System chat, team and tab list (ProtocolLib or PacketEvents, optional)", B, "t")]
+items = [("Chat", "Public chat", R, "chat-circle-text"), ("Commands", "/msg /tell /me /say /mail /nick and more", B, "terminal-window"),
+         ("Signs", "Front side and back side", Y, "signpost"), ("Books", "Every page and the title", R, "book-open"),
+         ("Anvils", "The text of an item rename", B, "hammer"), ("Join names", "Player names, when they join", Y, "user-plus"),
+         ("Command blocks", "A blocked command does not run", P, "code-block"),
+         ("Discord", "Messages typed in Discord (DiscordSRV)", R, "discord-logo"),
+         ("Outgoing text", "System chat, team and tab list (ProtocolLib or PacketEvents, optional)", B, "broadcast")]
 tiles = ""
 for i, (t, d, c, sh) in enumerate(items):
-    ic = P if c != P else R
-    if c == Y:
-        ic = K
+    ic = on(c)
     tiles += (f'<div class="tile" style="background:{c};color:{on(c)}">'
-              f'{shape(sh, ic, 84, K if c != K else P, 6)}<div class="n">0{i + 1}</div><h3>{t}</h3><p>{d}</p></div>')
+              f'{ph(sh, ic, 84)}<div class="n">0{i + 1}</div><h3>{t}</h3><p>{d}</p></div>')
 page("02-where.html", """
 .grid{display:grid;grid-template-columns:repeat(3,1fr)}
 .tile{height:290px;padding:34px 40px;border-right:12px solid #111;border-bottom:12px solid #111;position:relative}
@@ -72,20 +79,22 @@ page("02-where.html", """
 """, '<div class="frame">' + head("Where it checks", "Nine places where text enters your server", "9") + f'<div class="grid">{tiles}</div></div>')
 
 # ---------------------------------------------------------------- 03 pipeline
+SICON = {"1": "eye-slash", "2": "prohibit", "3": "link-break", "4": "repeat"}
+ARROW = ph("arrow-right", K, 60, 'class="ar"')
 stages = [("1", "Evasion", "Invisible characters, look-alike letters, leetspeak, f*ck", "filters/evasion.yml", "off until you switch it on", B),
           ("2", "Bad words", "37 word lists, 3 strength levels, whitelist, your own words", "wordlists/*.yml", "English + custom on", R),
           ("3", "Links", "Links, hidden links, IP addresses, invites", "filters/links.yml", "off until you pick a mode", Y),
           ("4", "Spam", "Rate, repeat, caps, flood, words, commands", "filters/spam.yml", "off until you switch it on", K)]
 cards = ""
 for i, (n, t, d, f, s, c) in enumerate(stages):
-    cards += (f'<div class="st" style="background:{c};color:{on(c)}"><div class="num">{n}</div><h3>{t}</h3><p>{d}</p>'
+    cards += (f'<div class="st" style="background:{c};color:{on(c)}"><div class="num">{n}</div><div class="sic">{ph(SICON[n], on(c), 64)}</div><h3>{t}</h3><p>{d}</p>'
               f'<div class="meta"><span>{f}</span><span>{s}</span></div></div>')
     if i < 3:
-        cards += f'<svg class="ar" viewBox="0 0 60 60" width="60" height="60"><polygon points="4,18 30,18 30,4 58,30 30,56 30,42 4,42" fill="{K}"/></svg>'
+        cards += ARROW
 page("03-pipeline.html", """
 .flow{display:flex;align-items:center;padding:50px 30px 30px 30px}
 .in{width:150px;height:300px;background:#111;color:#F4EFE6;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:26px;text-transform:uppercase;text-align:center;gap:14px;flex:none}
-.in .c{width:80px;height:80px;border-radius:50%;background:#F2C230}
+.st .sic{position:absolute;right:20px;top:22px}.out b svg{vertical-align:-6px;margin-right:12px}
 .st{width:280px;height:420px;border:12px solid #111;padding:22px 22px;flex:none;position:relative}
 .st .num{font-size:90px;line-height:.9}.st h3{font-size:30px;margin:6px 0 12px}.st p{font-size:21px;line-height:1.25}
 .st .meta{position:absolute;left:22px;right:22px;bottom:18px;font-size:16px;line-height:1.3;display:flex;flex-direction:column;gap:3px;text-transform:uppercase}
@@ -94,25 +103,25 @@ page("03-pipeline.html", """
 .out div{flex:1;padding:26px 40px;font-size:24px;line-height:1.3;border-right:12px solid #111}
 .out div:last-child{border-right:0}.out b{display:block;font-size:40px;margin-bottom:6px;text-transform:uppercase}
 """, '<div class="frame">' + head("Filter pipeline", "A message passes the checks in order", "4") +
-     f'<div class="flow"><div class="in"><div class="c"></div>Message</div><svg class="ar" viewBox="0 0 60 60" width="60" height="60"><polygon points="4,18 30,18 30,4 58,30 30,56 30,42 4,42" fill="{K}"/></svg>{cards}</div>'
-     '<div class="out"><div style="background:#F4EFE6"><b>Passes</b>No check fires. Everyone sees the message.</div>'
-     '<div style="background:#F2C230"><b>Cleaned</b>A check censors the text. The next check reads the cleaned text.</div>'
-     '<div style="background:#D6352B;color:#F4EFE6"><b>Blocked</b>The first check that blocks ends the search. The player gets a strike.</div></div>'
+     f'<div class="flow"><div class="in">{ph("chat-circle-text", P, 80)}Message</div>{ARROW}{cards}</div>'
+     '<div class="out"><div style="background:#F4EFE6"><b>'+ph("check-circle",K,40)+'Passes</b>No check fires. Everyone sees the message.</div>'
+     '<div style="background:#F2C230"><b>'+ph("funnel",K,40)+'Cleaned</b>A check censors the text. The next check reads the cleaned text.</div>'
+     '<div style="background:#D6352B;color:#F4EFE6"><b>'+ph("x-circle",P,40)+'Blocked</b>The first check that blocks ends the search. The player gets a strike.</div></div>'
      '<div class="note">You can change the order with <span style="color:#F2C230">filters.check-order</span>. Default: evasion, badword, link, spam.</div></div>')
 
 # ---------------------------------------------------------------- 04 ladder
-steps = [("2", "Warn", "Watch your language.", Y), ("4", "Mute 10m", "No chat for 10 minutes.", B),
-         ("6", "Kick", "Removed from the server.", R), ("8", "Tempban 7d", "Needs a ban plugin, or vanilla ban.", K)]
+steps = [("2", "Warn", "Watch your language.", Y, "warning"), ("4", "Mute 10m", "No chat for 10 minutes.", B, "speaker-x"),
+         ("6", "Kick", "Removed from the server.", R, "sign-out"), ("8", "Tempban 7d", "Needs a ban plugin, or vanilla ban.", K, "clock-countdown")]
 st = ""
-for i, (n, a, d, c) in enumerate(steps):
+for i, (n, a, d, c, ic) in enumerate(steps):
     h = 240 + i * 110
-    st += (f'<div class="step" style="left:{i * 372}px;height:{h}px;background:{c};color:{on(c)}"><div class="at">AT <b>{n}</b> STRIKES</div>'
+    st += (f'<div class="step" style="left:{i * 372}px;height:{h}px;background:{c};color:{on(c)}"><div class="at">AT <b>{n}</b> STRIKES</div><div class="sic">{ph(ic, on(c), 72)}</div>'
            f'<h3>{a}</h3><p>{d}</p></div>')
 page("04-ladder.html", """
 .stairs{position:relative;height:660px;margin:0 40px 40px}
 .step{position:absolute;bottom:0;width:372px;border:12px solid #111;padding:20px 24px;margin-left:-0px}
 .step .at{font-size:22px}.step .at b{font-size:54px;vertical-align:-6px}
-.step h3{font-size:40px;margin:6px 0}.step p{font-size:21px;line-height:1.25}
+.step .sic{position:absolute;right:22px;top:18px}.step h3{font-size:40px;margin:6px 0}.step p{font-size:21px;line-height:1.25}
 .man{position:absolute;left:1180px;bottom:672px}
 .cap{position:absolute;left:0;top:14px;font-size:30px;line-height:1.3;text-transform:uppercase;width:640px}
 .cap span{background:#F2C230;padding:0 8px}
@@ -129,7 +138,7 @@ for n, c in loaders:
 for v, j in rows:
     cells += f'<div class="c v"><span>{v}</span><small>{j}</small></div>'
     for n, c in loaders:
-        cells += f'<div class="c">{shape("c", c, 58, K, 7)}</div>'
+        cells += f'<div class="c">{ph("check-circle", K, 58, "", "fill")}</div>'
 page("05-matrix.html", """
 .m{display:grid;grid-template-columns:330px repeat(6,1fr)}
 .c{height:92px;border-right:12px solid #111;border-bottom:12px solid #111;display:flex;align-items:center;justify-content:center;font-size:26px;text-transform:uppercase;text-align:center;padding:0 14px;line-height:1.1}
@@ -156,7 +165,7 @@ groups = [("Cyrillic", 2, [("ru", "Russian"), ("uk", "Ukrainian")], R),
           ("Other scripts", 7, [("el", "Greek"), ("he", "Hebrew"), ("hi", "Hindi"), ("bn", "Bengali"), ("ja", "Japanese"), ("ko", "Korean"), ("th", "Thai")], K)]
 right = ""
 for t, n, l, c in groups:
-    right += f'<div class="grp" style="background:{c};color:{on(c)}"><h3>{t} <em>{n}</em></h3><div class="cl">{chips(l, P, K)}</div></div>'
+    right += f'<div class="grp" style="background:{c};color:{on(c)}"><h3>{ph("translate", on(c), 38, 'style="vertical-align:-7px;margin-right:12px"')}{t} <em>{n}</em></h3><div class="cl">{chips(l, P, K)}</div></div>'
 page("06-languages.html", """
 .body{display:flex}
 .lat{width:860px;border-right:12px solid #111;background:#1E4FA3;color:#F4EFE6;padding:30px 36px}
@@ -167,7 +176,7 @@ page("06-languages.html", """
 .rt{flex:1;display:flex;flex-direction:column}.grp{padding:24px 30px;border-bottom:12px solid #111}.grp:last-child{border-bottom:0}
 .grp .chip{min-width:130px}
 """, '<div class="frame">' + head("37 word lists", "35 languages grouped by script", "37") +
-     f'<div class="body"><div class="lat"><h3>Latin script <em>23</em></h3><div class="cl">{chips(latin, P, K)}</div></div><div class="rt">{right}</div></div>'
+     f'<div class="body"><div class="lat"><h3>{ph("translate", P, 38, 'style="vertical-align:-7px;margin-right:12px"')}Latin script <em>23</em></h3><div class="cl">{chips(latin, P, K)}</div></div><div class="rt">{right}</div></div>'
      '<div class="note">3 strength levels per list. English + your custom list start on. Enable more: /moderra lang enable de<br>First drafts written by an AI. All marked unreviewed. Ask a native speaker to read your lists.</div></div>')
 
 # ---------------------------------------------------------------- 07 menu map
@@ -175,6 +184,7 @@ cats = "General Languages Scanning Player-names Matching Whitelist Messages Puni
 lv1 = [("Category pages", "19 categories. One button per setting.", Y, 330), ("Language lists", "On/off per list. Right click browses.", B, 104),
        ("Punishment ladder", "List of steps.", R, 104), ("Muted players", "Time left, reason, who.", B, 104),
        ("World profiles", "Add, delete, edit.", Y, 104), ("World rules", "Pattern to profile.", R, 104), ("Search settings", "Find any setting.", K, 104)]
+L1ICON = ["squares-four", "translate", "list", "speaker-x", "globe", "funnel", "magnifying-glass"]
 lv2 = [None, ("Word browser", "Your custom list, whitelist and read-only lists"), ("Step editor", "At, repeat, message, broadcast, final command, actions"),
        ("Unmute by click", "Needs moderra.mute"), ("Override editor", "key value pairs"), ("Line editor", "Shift-click moves, middle click removes"),
        ("Jump to the setting", "Name, key or text")]
@@ -190,6 +200,7 @@ for i, (t, d, c, h) in enumerate(lv1):
     cy = y + h // 2
     lines += f'<path d="M300 {rooty + 60} H365 V{cy} H430" />'
     lines += f'<path d="M830 {cy} H900" />'
+    boxes += f'<div class="node" style="left:837px;top:{cy - 28}px">{ph(L1ICON[i], K, 36)}</div>'
     if i == 0:
         chipsh = "".join(f'<span>{c}</span>' for c in cats)
         boxes += (f'<div class="b" style="left:900px;top:{y}px;width:640px;height:{h}px;background:#F4EFE6"><h3>Pages of the categories</h3>'
@@ -198,6 +209,7 @@ for i, (t, d, c, h) in enumerate(lv1):
         a, b = lv2[i]
         boxes += (f'<div class="b" style="left:900px;top:{y}px;width:640px;height:{h}px;background:#F4EFE6"><h3>{a}</h3><p>{b}</p></div>')
     y += h + GAP
+boxes += f'<div class="node" style="left:306px;top:{rooty + 60 - 28}px">{ph("terminal-window", K, 36)}</div>'
 boxes += (f'<div class="b" style="left:30px;top:{rooty}px;width:270px;height:120px;background:#111;color:#F4EFE6;display:flex;align-items:center;justify-content:center">'
           '<h3 style="font-size:46px">/moderra</h3></div>')
 height = y + 130
@@ -206,6 +218,7 @@ page("07-menu.html", f"""
 .b{{position:absolute;border:8px solid #111;padding:10px 22px}}
 .b h3{{font-size:28px;margin-bottom:6px}}.b p{{font-size:20px;line-height:1.2}}
 .cc{{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}}.cc span{{border:4px solid #111;padding:3px 9px;font-size:18px;background:#F2C230;text-transform:uppercase}}
+.node{{position:absolute;width:56px;height:56px;background:#F4EFE6;border:6px solid #111;display:flex;align-items:center;justify-content:center}}
 svg.l{{position:absolute;left:0;top:0}}svg.l path{{stroke:#111;stroke-width:8;fill:none}}
 .bot{{position:absolute;left:0;right:0;bottom:0;height:100px;background:#111;color:#F4EFE6;padding:16px 40px;font-size:22px;text-transform:uppercase;line-height:1.35}}
 .bot span{{color:#F2C230}}
@@ -214,29 +227,24 @@ svg.l{{position:absolute;left:0;top:0}}svg.l path{{stroke:#111;stroke-width:8;fi
      '<div class="bot">Bottom row of every page: <span>back, previous, add, cancel, Done, reset, next, main menu</span>.<br>Nothing is saved before you click Done. Permission: moderra.gui</div></div></div>')
 
 # ---------------------------------------------------------------- 08 integrations
-integ = [("EssentialsX", "Mute, nicknames, /msg", B, "s", ""), ("LuckPerms", "Groups pick a rule profile", B, "s", ""),
-         ("PlaceholderAPI", "Strikes and mute as placeholders", B, "s", ""), ("Vault", "Group and prefix", B, "s", ""),
-         ("Ban plugins", "tempban and ipban actions", R, "c", ""), ("Chat plugins", "Channel profiles", R, "c", ""),
-         ("DiscordSRV", "Alerts, filter, !moderra and slash commands", Y, "c", ""), ("Floodgate", "Bedrock player names", Y, "c", ""),
-         ("BungeeCord / Velocity", "Share mutes and strikes", Y, "c", ""), ("ProtocolLib", "Packet scan: sign, book, anvil, outgoing text", K, "t", ""),
-         ("PacketEvents", "Same packet scan as ProtocolLib", K, "t", ""), ("CoreProtect", "Logs blocked sign and book text", K, "t", ""),
-         ("Plan", "Strike data in Plan", K, "t", ""), ("mcMMO", "Party chat commands", P, "s", ""),
-         ("Towny", "Town and nation chat", P, "s", ""), ("Citizens", "NPC names", P, "s", ""),
-         ("DecentHolograms", "Hologram lines", P, "s", "")]
+integ = [("EssentialsX", "Mute, nicknames, /msg", B, "gear-six"), ("LuckPerms", "Groups pick a rule profile", B, "users-three"),
+         ("PlaceholderAPI", "Strikes and mute as placeholders", B, "hash"), ("Vault", "Group and prefix", B, "key"),
+         ("Ban plugins", "tempban and ipban actions", R, "gavel"), ("Chat plugins", "Channel profiles", R, "chat-text"),
+         ("DiscordSRV", "Alerts, filter, !moderra and slash commands", Y, "discord-logo"), ("Floodgate", "Bedrock player names", Y, "door-open"),
+         ("BungeeCord / Velocity", "Share mutes and strikes", Y, "tree-structure"), ("ProtocolLib", "Packet scan: sign, book, anvil, outgoing text", K, "package"),
+         ("PacketEvents", "Same packet scan as ProtocolLib", K, "plug"), ("CoreProtect", "Logs blocked sign and book text", K, "shield-check"),
+         ("Plan", "Strike data in Plan", K, "chart-line-up"), ("mcMMO", "Party chat commands", P, "sword"),
+         ("Towny", "Town and nation chat", P, "flag"), ("Citizens", "NPC names", P, "user-circle"),
+         ("DecentHolograms", "Hologram lines", P, "note-pencil")]
 cells = ""
-for n, d, c, sh, dash in integ:
-    fill = c
-    stroke = K
-    st = ' style="stroke-dasharray:10 8"' if dash else ""
-    sv = shape(sh, fill, 96, stroke, 6)
-    if dash:
-        sv = sv.replace('style="', 'style="stroke-dasharray:12 8;opacity:.55;')
-    cells += f'<div class="ic">{sv}<h3>{n}</h3><p>{d}</p></div>'
-cells += '<div class="ic more"><h3>And more</h3><p>Factions, TAB, NametagEdit</p></div>'
+for n, d, c, icn in integ:
+    cells += (f'<div class="ic"><div class="ib" style="background:{c}">{ph(icn, on(c) if c != P else K, 60)}</div><h3>{n}</h3><p>{d}</p></div>')
+cells += f'<div class="ic more">{ph("puzzle-piece", P, 72, "style=margin-bottom:12px")}<h3>And more</h3><p>Factions, TAB, NametagEdit</p></div>'
 page("08-integrations.html", """
 .g{display:grid;grid-template-columns:repeat(6,1fr)}
 .ic{height:250px;padding:26px 22px;border-right:8px solid #111;border-bottom:8px solid #111;background:#F4EFE6}
 .ic:nth-child(6n){border-right:0}.ic:nth-child(n+13){border-bottom:0}
+.ib{width:96px;height:96px;border:6px solid #111;display:flex;align-items:center;justify-content:center}
 .ic h3{font-size:22px;margin:16px 0 6px;line-height:1.1}.ic p{font-size:17px;line-height:1.25}
 .ic.more{background:#D6352B;color:#F4EFE6;display:flex;flex-direction:column;justify-content:center}.ic.more h3{font-size:30px}
 .key{display:flex;gap:30px;align-items:center}
@@ -248,9 +256,9 @@ page("08-integrations.html", """
 page("09-divider.html", """
 .frame{height:132px;border-width:12px}
 .a{position:absolute;left:0;right:0;top:50%;height:12px;background:#111;margin-top:-6px}
-.c{position:absolute;top:22px;width:64px;height:64px;border:8px solid #111}
+.c{position:absolute;top:22px;width:64px;height:64px;background:#F4EFE6;display:flex;align-items:center;justify-content:center}
 """, '<div class="frame"><div class="a"></div>'
-     '<div class="c" style="left:140px;background:#D6352B;border-radius:50%"></div>'
-     '<div class="c" style="left:760px;background:#1E4FA3"></div>'
-     '<div class="tri" style="--s:36px;position:absolute;left:1340px;top:18px;border-bottom-color:#F2C230"></div>'
+     f'<div class="c" style="left:140px">{ph("chat-circle-text", K, 64)}</div>'
+     f'<div class="c" style="left:760px">{ph("shield-check", K, 64)}</div>'
+     f'<div class="c" style="left:1340px">{ph("prohibit", K, 64)}</div>'
      '<div style="position:absolute;left:0;top:0;width:60px;height:100%;background:#F2C230;border-right:12px solid #111"></div></div>')

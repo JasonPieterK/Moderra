@@ -97,3 +97,8 @@ python3 graphics-src/build-preview.py
 ```
 
 Upload the new PNG in the Gallery. Delete the old one. Copy the new URL. Replace the old URL in the page text.
+
+## Credits
+
+- Icons: Phosphor Icons, MIT licence, phosphoricons.com (`@phosphor-icons/core` 2.1.1, Bold weight, one Fill icon). The SVGs and the
+  licence text are in `graphics-src/phosphor/`. Run `python3 gen.py` then `node render.js` in `graphics-src/` to rebuild the pictures.

@@ -8,6 +8,7 @@ md = open(os.path.join(root, "DESCRIPTION.md"), encoding="utf-8").read()
 for n in range(1, 10):
     f = glob.glob(os.path.join(root, "images", f"{n:02d}-*.png"))[0]
     md = md.replace(f"IMAGE_URL_{n:02d}", "images/" + os.path.basename(f))
+md = re.sub(r"https://raw\.githubusercontent\.com/[^)\s]*/6-guides/modrinth/v2/images/", "images/", md)  # preview uses the local PNGs
 md = md.replace("<details>", "<details markdown=\"1\">")
 html = markdown.markdown(md, extensions=["tables", "fenced_code", "md_in_html", "toc"])
 css = """body{margin:0;background:#1b1b1b;font:16px/1.55 system-ui,sans-serif;color:#e6e6e6}
